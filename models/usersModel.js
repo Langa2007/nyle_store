@@ -47,3 +47,14 @@ module.exports = {
   },
 };
 
+// Admin: Get all users (without passwords)
+const fetchAllUsers = async () => {
+  const result = await pool.query('SELECT id, name, email, is_admin, created_at FROM users ORDER BY id DESC');
+  return result.rows;
+};
+
+module.exports = {
+  // other exports...
+  fetchAllUsers,
+};
+
