@@ -1,60 +1,57 @@
-const { Pool } = require('pg');
-require('dotenv').config();
+// models/usersModel.js
+import pool from '../db/connect.js';
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: false, // Disable SSL for local dev (adjust in production)
-});
-
-// Create the users table if it doesn't exist
-const createUserTable = async () => {
-  const query = `
-    CREATE TABLE IF NOT EXISTS users (
-      id SERIAL PRIMARY KEY,
-      name VARCHAR(100) NOT NULL,
-      email VARCHAR(100) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-  `;
-
-  try {
-    await pool.query(query);
-    console.log("✅ Users table ready");
-  } catch (err) {
-    console.error("❌ Failed to create users table:", err);
-  }
+// ✅ Create a new user
+export const createUser = async (name, email, hashedPassword) => {
+  const result = await pool.query(
+    `INSERT INTO users (name, email, password) 
+     VALUES ($1, $2, $3) 
+     RETURNING id, name, email, is_admin, created_at`,
+    [name, email, hashedPassword]
+  );
+  return result.rows[0];
 };
 
-// Immediately create table when file is imported
-createUserTable();
-
-module.exports = {
-  createUser: async (name, email, hashedPassword) => {
-    const result = await pool.query(
-      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *',
-      [name, email, hashedPassword]
-    );
-    return result.rows[0];
-  },
-
-  getUserByEmail: async (email) => {
-    const result = await pool.query(
-      'SELECT * FROM users WHERE email = $1',
-      [email]
-    );
-    return result.rows[0];
-  },
+// ✅ Get user by email (for login)
+export const getUserByEmail = async (email) => {
+  const result = await pool.query(
+    'SELECT * FROM users WHERE email = $1',
+    [email]
+  );
+  return result.rows[0]; // returns undefined if not found
 };
 
-// Admin: Get all users (without passwords)
-const fetchAllUsers = async () => {
-  const result = await pool.query('SELECT id, name, email, is_admin, created_at FROM users ORDER BY id DESC');
+// ✅ Get user by ID
+export const getUserById = async (id) => {
+  const result = await pool.query(
+    'SELECT id, name, email, is_admin, created_at FROM users WHERE id = $1',
+    [id]
+  );
+  return result.rows[0];
+};
+
+// ✅ Admin: Fetch all users (without passwords)
+export const fetchAllUsers = async () => {
+  const result = await pool.query(
+    'SELECT id, name, email, is_admin, created_at FROM users ORDER BY id DESC'
+  );
   return result.rows;
 };
 
-module.exports = {
-  // other exports...
-  fetchAllUsers,
+// ✅ Delete a user by ID
+export const deleteUserById = async (id) => {
+  const result = await pool.query(
+    'DELETE FROM users WHERE id = $1 RETURNING id, name, email',
+    [id]
+  );
+  return result.rows[0]; // null if user not found
 };
 
+// ✅ Promote a user to admin
+export const promoteToAdmin = async (id) => {
+  const result = await pool.query(
+    'UPDATE users SET is_admin = true WHERE id = $1 RETURNING id, name, email, is_admin',
+    [id]
+  );
+  return result.rows[0];
+};

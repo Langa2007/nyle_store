@@ -1,30 +1,29 @@
 // routes/orders.js
-const express = require('express');
-const router = express.Router();
-const adminAuth = require('../middleware/adminAuth');
-
-const {
-  handleCreateOrder,
-  handleGetAllOrders,
+import express from "express";
+import {
+  createOrder,
+  getAllOrders,
   getOrdersByUserId,
   updateOrderStatus,
-  getAllOrdersWithUserAndProducts
-} = require('../controllers/ordersController');
-const { getAllOrders } = require('../models/ordersModel');
+  getAllOrdersWithUserAndProducts,
+} from "../controllers/orderController.js";
+import { verifyAdmin } from "../middleware/adminAuth.js";
 
-// Route: POST /api/orders — Create a new order
-router.post('/', handleCreateOrder);
+const router = express.Router();
 
-// Route: GET /api/orders — Get all orders
-router.get('/', handleGetAllOrders);
+// ✅ Create an order
+router.post("/", createOrder);
 
-// Route: GET /api/orders/user/:id — Get orders by user ID
-router.get('/user/:id', getOrdersByUserId);
+// ✅ Get all orders
+router.get("/", getAllOrders);
 
-// Route: PUT /api/orders/:id/status — Update order status
-router.put('/:id/status', updateOrderStatus);
+// ✅ Get all orders with details (admin only)
+router.get("/details", verifyAdmin, getAllOrdersWithUserAndProducts);
 
-// Admin: Get detailed order view
-router.get('/admin/details', adminAuth, getAllOrdersWithUserAndProducts);
+// ✅ Get orders by user ID
+router.get("/user/:id", getOrdersByUserId);
 
-module.exports = router;
+// ✅ Update order status (admin only)
+router.put("/:id/status", verifyAdmin, updateOrderStatus);
+
+export default router;

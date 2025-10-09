@@ -1,15 +1,15 @@
-const pool = require('../db/connect'); // ⬅️ ensure this is included if not already
+import pool from '../db/connect.js';
 
-const {
+import {
   createProduct,
   getAllProducts,
   updateProductById,
   getProductById,
   deleteProductById,
-} = require('../models/productsModel');
+} from '../models/productsModel.js';
 
 // ✅ Create a new product
-const handleCreateProduct = async (req, res) => {
+export const handleCreateProduct = async (req, res) => {
   try {
     const { name, description, price, stock } = req.body;
     const newProduct = await createProduct(name, description, price, stock);
@@ -21,7 +21,7 @@ const handleCreateProduct = async (req, res) => {
 };
 
 // ✅ Get all products
-const handleGetAllProducts = async (req, res) => {
+export const handleGetAllProducts = async (req, res) => {
   try {
     const products = await getAllProducts();
     res.status(200).json(products);
@@ -32,7 +32,7 @@ const handleGetAllProducts = async (req, res) => {
 };
 
 // ✅ Get a product by ID
-const handleGetProductById = async (req, res) => {
+export const handleGetProductById = async (req, res) => {
   const { id } = req.params;
   try {
     const product = await getProductById(id);
@@ -47,7 +47,7 @@ const handleGetProductById = async (req, res) => {
 };
 
 // ✅ Update a product by ID
-const handleUpdateProduct = async (req, res) => {
+export const handleUpdateProduct = async (req, res) => {
   const { id } = req.params;
   const { name, description, price, stock } = req.body;
   try {
@@ -63,7 +63,7 @@ const handleUpdateProduct = async (req, res) => {
 };
 
 // ✅ Delete a product by ID
-const handleDeleteProduct = async (req, res) => {
+export const handleDeleteProduct = async (req, res) => {
   const { id } = req.params;
   try {
     const deleted = await deleteProductById(id);
@@ -78,7 +78,7 @@ const handleDeleteProduct = async (req, res) => {
 };
 
 // ✅ Admin-only: update stock for a product
-const updateProductStock = async (req, res) => {
+export const updateProductStock = async (req, res) => {
   const productId = req.params.id;
   const { stock } = req.body;
 
@@ -92,7 +92,7 @@ const updateProductStock = async (req, res) => {
 };
 
 // ✅ Search and filter products
-const searchAndFilterProducts = async (req, res) => {
+export const searchAndFilterProducts = async (req, res) => {
   const { name, category, minPrice, maxPrice } = req.query;
 
   let query = 'SELECT * FROM products WHERE 1=1';
@@ -126,15 +126,4 @@ const searchAndFilterProducts = async (req, res) => {
     console.error('❌ Search/Filter error:', err.message);
     res.status(500).json({ error: 'Failed to search/filter products' });
   }
-};
-
-// ✅ Final single export
-module.exports = {
-  handleCreateProduct,
-  handleGetAllProducts,
-  handleGetProductById,
-  handleUpdateProduct,
-  handleDeleteProduct,
-  updateProductStock,
-  searchAndFilterProducts
 };

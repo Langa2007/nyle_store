@@ -1,7 +1,6 @@
-// models/productsModel.js
-const { pool } = require('../db/connect');
+import pool from '../db/connect.js';
 
-// Ensure the products table exists
+// ✅ Ensure the products table exists
 const createProductTable = async () => {
   const query = `
     CREATE TABLE IF NOT EXISTS products (
@@ -15,7 +14,6 @@ const createProductTable = async () => {
   `;
   try {
     await pool.query(query);
-    console.log('✅ Product table created or already exists');
   } catch (err) {
     console.error('❌ Failed to create products table:', err.message);
   }
@@ -23,8 +21,8 @@ const createProductTable = async () => {
 
 createProductTable(); // ✅ Auto-run table check when model loads
 
-// Create a product
-const createProduct = async (name, description, price, stock) => {
+// ✅ Create a product
+export const createProduct = async (name, description, price, stock) => {
   const result = await pool.query(
     `INSERT INTO products (name, description, price, stock) 
      VALUES ($1, $2, $3, $4) 
@@ -34,23 +32,23 @@ const createProduct = async (name, description, price, stock) => {
   return result.rows[0];
 };
 
-// Get all products
-const getAllProducts = async () => {
+// ✅ Get all products
+export const getAllProducts = async () => {
   const result = await pool.query('SELECT * FROM products ORDER BY id DESC');
   return result.rows;
 };
 
-// Get product by ID
-const getProductById = async (id) => {
+// ✅ Get product by ID
+export const getProductById = async (id) => {
   const result = await pool.query(
     'SELECT * FROM products WHERE id = $1',
     [id]
   );
-  return result.rows[0]; // will be undefined if not found
+  return result.rows[0]; // undefined if not found
 };
 
-// Update product by ID
-const updateProductById = async (id, name, description, price, stock) => {
+// ✅ Update product by ID
+export const updateProductById = async (id, name, description, price, stock) => {
   const result = await pool.query(
     `
     UPDATE products 
@@ -66,19 +64,11 @@ const updateProductById = async (id, name, description, price, stock) => {
   return result.rows[0];
 };
 
-// Delete product by ID
-const deleteProductById = async (id) => {
+// ✅ Delete product by ID
+export const deleteProductById = async (id) => {
   const result = await pool.query(
     'DELETE FROM products WHERE id = $1 RETURNING *',
     [id]
   );
-  return result.rows[0]; // will be undefined if not found
-};
-
-module.exports = {
-  createProduct,
-  getAllProducts,
-  getProductById,
-  updateProductById,
-  deleteProductById,
+  return result.rows[0]; // undefined if not found
 };

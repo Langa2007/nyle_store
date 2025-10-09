@@ -1,15 +1,30 @@
+// routes/vendors.js
+import express from "express";
+import {
+  createVendor,
+  myVendor,
+  getAllVendors,
+  approveVendor,
+  rejectVendor,
+} from "../controllers/vendorController.js";
+import { verifyAdmin } from "../middleware/adminAuth.js"; // if you have admin middleware
+import { verifyVendor } from "../middleware/vendorAuth.js"; // if you have vendor middleware
 
-const express = require('express');
 const router = express.Router();
-const adminAuth = require('../middleware/adminAuth'); // platform admin
-const auth = require('../middleware/auth'); // generic JWT parser sets req.user
-const requireRole = require('../middleware/requireRole');
-const { createVendor, listVendors, approveVendor, myVendor } = require('../controllers/vendorController');
 
-router.post('/apply', auth, createVendor); // a user applies to create a vendor
-router.get('/', adminAuth, listVendors);   // platform admin sees all vendors
-router.post('/:id/approve', adminAuth, approveVendor); // activate after payment/manual review
-router.get('/me', auth, requireRole('vendor_admin','vendor_staff'), myVendor);
+// Vendor applies
+router.post("/apply", createVendor);
 
-module.exports = router;
+// Vendor profile (vendor must be logged in)
+router.get("/me", verifyVendor, myVendor);
 
+// Admin: list vendors
+router.get("/", verifyAdmin, getAllVendors);
+
+// Admin: approve vendor
+router.put("/:id/approve", verifyAdmin, approveVendor);
+
+// Admin: reject vendor
+router.put("/:id/reject", verifyAdmin, rejectVendor);
+
+export default router;

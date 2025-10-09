@@ -1,11 +1,20 @@
-const express = require('express');
+// routes/vendorAuth.js
+import express from "express";
+import {
+  vendorSignup,
+  vendorLogin,
+  verifyEmail,
+} from "../controllers/vendorAuthController.js";
+
 const router = express.Router();
-const { vendorRegister, vendorLogin } = require('../controllers/vendorAuthController');
 
-// Register vendor
-router.post('/register', vendorRegister);
+// --- Signup (sends Gmail verification email) ---
+router.post("/signup", vendorSignup);
 
-// Login vendor
-router.post('/login', vendorLogin);
+// --- Login (only if verified + approved) ---
+router.post("/login", vendorLogin);
 
-module.exports = router;
+// --- Verify email (via Gmail link) ---
+router.get("/verify-email", verifyEmail);
+
+export default router;

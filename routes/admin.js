@@ -1,15 +1,21 @@
-const express = require('express');
+// routes/admin.js
+import express from "express";
+import { verifyAdmin } from "../middleware/adminAuth.js";
+import {
+  getAllUsers,
+  getUserById,
+  deleteUser,
+} from "../controllers/adminController.js";
+
 const router = express.Router();
-const { handleAdminLogin, getAllUsers, getDashboardStats } = require('../controllers/adminController');
-const adminAuth = require('../middleware/adminAuth');
 
-// ✅ Admin login
-router.post('/login', handleAdminLogin);
+// ✅ Get all users (admin only)
+router.get("/users", verifyAdmin, getAllUsers);
 
-// ✅ Admin-only dashboard analytics (stats)
-router.get('/dashboard', adminAuth, getDashboardStats);
+// ✅ Get user by ID (admin only)
+router.get("/users/:id", verifyAdmin, getUserById);
 
-// ✅ Admin-only: View all users
-router.get('/users', adminAuth, getAllUsers);
+// ✅ Delete user (admin only)
+router.delete("/users/:id", verifyAdmin, deleteUser);
 
-module.exports = router;
+export default router;

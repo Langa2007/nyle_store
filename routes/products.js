@@ -1,36 +1,24 @@
-const express = require('express');
-const router = express.Router();
-const adminAuth = require('../middleware/adminAuth');
-
-const {
+// products.js
+import express from "express";
+import { verifyAdmin } from "../middleware/adminAuth.js";
+import {
   handleCreateProduct,
   handleGetAllProducts,
   handleGetProductById,
-  searchAndFilterProducts, // ✅ Added missing comma
+  searchAndFilterProducts,
   handleUpdateProduct,
   handleDeleteProduct,
   updateProductStock
-} = require('../controllers/productController');
+} from "../controllers/productController.js";
 
-// ✅ Search and filter products (MUST come before :id route to prevent conflict)
-router.get('/search', searchAndFilterProducts);
+const router = express.Router();
 
-// ✅ Create a product
-router.post('/', handleCreateProduct);
+router.get("/search", verifyAdmin, searchAndFilterProducts);
+router.post("/", verifyAdmin, handleCreateProduct);
+router.get("/", verifyAdmin, handleGetAllProducts);
+router.get("/:id", verifyAdmin, handleGetProductById);
+router.put("/:id", verifyAdmin, handleUpdateProduct);
+router.delete("/:id", verifyAdmin, handleDeleteProduct);
+router.put("/:id/stock", verifyAdmin, updateProductStock);
 
-// ✅ Get all products
-router.get('/', handleGetAllProducts);
-
-// ✅ Get a product by ID
-router.get('/:id', handleGetProductById);
-
-// ✅ Update product by ID
-router.put('/:id', handleUpdateProduct);
-
-// ✅ Delete product by ID
-router.delete('/:id', handleDeleteProduct);
-
-// ✅ Update stock (admin only)
-router.put('/:id/stock', adminAuth, updateProductStock);
-
-module.exports = router;
+export default router;

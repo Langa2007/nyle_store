@@ -1,63 +1,55 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { pool } = require('../db/connect');
-const { fetchAllUsers } = require('../models/usersModel');
+// controllers/adminController.js
+import pool from "../db/connect.js";
 
-// ✅ Admin Login
-const handleAdminLogin = async (req, res) => {
-  const { email, password } = req.body;
-
+// Get all users
+export const getAllUsers = async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    const user = result.rows[0];
-
-    if (!user.is_admin) {
-      return res.status(403).json({ error: 'Access denied. Not an admin.' });
-    }
-
-    const passwordMatch = await bcrypt.compare(password, user.password);
-
-    if (!passwordMatch) {
-      return res.status(401).json({ error: 'Invalid password' });
-    }
-
-    const token = jwt.sign(
-      { user_id: user.id, is_admin: true },
-      process.env.JWT_SECRET,
-      { expiresIn: '1d' }
-    );
-
-    console.log('✅ Sending token:', token);
-    res.status(200).json({ message: 'Admin login successful', token });
+    const result = await pool.query("SELECT id, name, email, role, created_at FROM users ORDER BY id DESC");
+    res.json(result.rows);
   } catch (err) {
-    console.error('❌ Admin login error:', err.message);
-    res.status(500).json({ error: 'Login failed' });
+    console.error("❌ Error fetching users:", err.message);
+    res.status(500).json({ error: "Failed to fetch users" });
   }
 };
 
-// ✅ Admin-only: Get all users (excluding passwords)
-const getAllUsers = async (req, res) => {
+// Delete a user
+export const deleteUser = async (req, res) => {
+  const { id } = req.params;
   try {
-    const users = await fetchAllUsers();
-    res.status(200).json(users);
+    const result = await pool.query("DELETE FROM users WHERE id = $1 RETURNING id, email", [id]);
+    if (result.rows.length === 0) return res.status(404).json({ error: "User not found" });
+    res.json({ message: "User deleted successfully", user: result.rows[0] });
   } catch (err) {
-    console.error('❌ Error fetching users:', err.message);
-    res.status(500).json({ error: 'Failed to fetch users' });
+    console.error("❌ Error deleting user:", err.message);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+};
+
+// Promote user to admin
+export const promoteUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      "UPDATE users SET role = 'admin' WHERE id = $1 RETURNING id, email, role",
+      [id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: "User not found" });
+    res.json({ message: "User promoted to admin", user: result.rows[0] });
+  } catch (err) {
+    console.error("❌ Error promoting user:", err.message);
+    res.status(500).json({ error: "Failed to promote user" });
   }
 };
 
 // ✅ Admin-only: Dashboard stats
-const getDashboardStats = async (req, res) => {
+export const getDashboardStats = async (req, res) => {
   try {
-    const userCount = await pool.query('SELECT COUNT(*) FROM users');
-    const productCount = await pool.query('SELECT COUNT(*) FROM products');
-    const orderCount = await pool.query('SELECT COUNT(*) FROM orders');
-    const revenueResult = await pool.query('SELECT COALESCE(SUM(total), 0) AS total_revenue FROM orders');
+    const userCount = await pool.query("SELECT COUNT(*) FROM users");
+    const productCount = await pool.query("SELECT COUNT(*) FROM products");
+    const orderCount = await pool.query("SELECT COUNT(*) FROM orders");
+    const revenueResult = await pool.query(
+      "SELECT COALESCE(SUM(total), 0) AS total_revenue FROM orders"
+    );
 
     res.status(200).json({
       users: parseInt(userCount.rows[0].count),
@@ -66,15 +58,7 @@ const getDashboardStats = async (req, res) => {
       revenue: parseFloat(revenueResult.rows[0].total_revenue),
     });
   } catch (err) {
-  console.error('❌ Dashboard stats error:', err); // ✅ SHOW FULL ERROR
-  res.status(500).json({ error: 'Failed to fetch dashboard stats' });
-}
-
-};
-
-// ✅ Export all admin functions
-module.exports = {
-  handleAdminLogin,
-  getAllUsers,
-  getDashboardStats,
+    console.error("❌ Dashboard stats error:", err); // ✅ SHOW FULL ERROR
+    res.status(500).json({ error: "Failed to fetch dashboard stats" });
+  }
 };
