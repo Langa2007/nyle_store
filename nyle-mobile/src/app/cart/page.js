@@ -1,15 +1,10 @@
-"use client";
-import { motion } from "framer-motion";
+import MobileLayout from "../mobile-layout";
 
 export default function CartPage() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="text-gray-200"
-    >
-      <h1 className="text-xl font-bold mb-2">Cart</h1>
-      <p>Your shopping cart is empty.</p>
-    </motion.div>
+    <MobileLayout>
+      <h1 className="text-2xl font-bold text-blue-400 mb-3">Your Cart</h1>
+      <p>Items you’ve added for checkout will appear here.</p>
+    </MobileLayout>
   );
 }
