@@ -1,30 +1,33 @@
 "use client";
+
+import { useEffect } from "react";
 import "./globals.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import { usePathname } from "next/navigation";
-import BottomNav from "../components/BottomNav";
-import { use, useEffect } from "react";
+import Providers from "../providers";
+import Navbar from "../components/Navbar";
 
 export default function RootLayout({ children }) {
-    useEffect(() => {
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker
-                .register("/sw.js").catch(console.error);
-        }
-
-    }, []);
-  const pathname = usePathname();
-  const hideBottomNav = pathname.startsWith("/auth"); // hide on login screens
+  // Register the PWA service worker
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then(() => console.log("✅ Service Worker Registered"))
+        .catch((err) => console.error("❌ SW registration failed:", err));
+    }
+  }, []);
 
   return (
     <html lang="en">
-      <body className="bg-white text-gray-800 flex flex-col min-h-screen">
-        <main className="flex-1 overflow-y-auto pb-16">{children}</main>
-        {!hideBottomNav && <BottomNav />}
-        <providers>
-            <Navbar />
-            <main classname="container mx-auto p-4">{children}</main>
-        </providers>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#1d4ed8" />
+      </head>
+      <body>
+        <Providers>
+          <Navbar />
+          <main className="container mx-auto p-4">{children}</main>
+        </Providers>
       </body>
     </html>
   );
