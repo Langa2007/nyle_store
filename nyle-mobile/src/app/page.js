@@ -1,10 +1,22 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect users straight to the Shop page on load
+    router.replace("/shop");
+  }, [router]);
+
   return (
-    <section className="p-4">
-      <h1 className="text-2xl font-bold mb-4 text-blue-700">Welcome to Nyle Store</h1>
-      <p className="text-gray-600">
-        Discover amazing deals, trending products, and shop with ease — all in one place.
-      </p>
-    </section>
+    <div className="flex flex-col items-center justify-center h-screen bg-black text-gray-300">
+      <h2 className="text-xl font-semibold text-blue-500 mb-2 animate-pulse">
+        Loading Nyle Store...
+      </h2>
+      <p className="text-sm text-gray-400">Please wait while we prepare your experience</p>
+    </div>
   );
 }
