@@ -20,12 +20,12 @@ const products = [
 export default function ShopPage() {
   return (
     <MobileLayout>
-      {/* 🔹 Nyle Luxe Store Header */}
-      <div className="flex flex-col items-center mb-6 mt-2">
+      {/* 🔹 Nyle Luxe Store Header (Left-aligned) */}
+      <div className="flex flex-col items-start mb-6 mt-2 px-2">
         <motion.h1
           className="text-3xl font-bold italic tracking-tight text-blue-400"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: -15 }}
+          animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
           style={{
             fontStyle: "italic",
@@ -39,7 +39,7 @@ export default function ShopPage() {
         </motion.h1>
 
         {/* 🔍 Placeholder for upcoming search bar */}
-        <div className="mt-4 w-full px-3">
+        <div className="mt-4 w-full pr-3">
           <input
             type="text"
             placeholder="Search by category..."
