@@ -17,7 +17,6 @@ const products = [
 ];
 
 export default function ShopPage() {
-  // 💱 This will later change to auto-detect based on country
   const currency = "KES";
 
   return (
@@ -42,7 +41,7 @@ export default function ShopPage() {
             index={i}
             product={{
               ...p,
-              price: `${currency} ${convertToKES(p.price).toLocaleString()}`,
+              price: `${currency} ${convertToKES(p.price).toLocaleString("en-KE")}`,
             }}
           />
         ))}
