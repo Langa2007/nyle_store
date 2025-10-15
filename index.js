@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./db/connect.js";
+import bodyparser from "body-parser";
 
 // Import route files (ESM style)
 import userRoutes from "./routes/users.js";
@@ -14,6 +15,11 @@ import adminVendorRoutes from "./routes/adminVendors.js";   // admin vendor mana
 import adminRoutes from "./routes/adminRoutes.js"; // combined admin routes
 import adminAuthRoutes from "./routes/adminAuthRoutes.js"; // admin auth
 import vendorRoutes from "./routes/vendorRoutes.js";
+import customerOrderRoutes from "./routes/customerOrders.js";
+import productsRoutes from "./routes/product.js";
+import userRoute from "./routes/user.js";
+import cartRoutes from "./routes/cart.js";
+
 dotenv.config();
 
 const app = express();
@@ -26,6 +32,7 @@ app.use(
 );
 
 const PORT = process.env.PORT || 5000;
+app.use(bodyparser.json());
 
 // Middleware
 app.use(express.json());
@@ -47,6 +54,10 @@ app.use("/api/vendor/products", vendorProductRoutes); // ✅ vendor product mana
 app.use("/api/admin/vendors", adminVendorRoutes);     // ✅ admin vendor management
 app.use("/api/admin", adminRoutes); // combined admin routes
 app.use("/api/admin", adminAuthRoutes); // admin auth routes
+app.use("/api/customer/orders", customerOrderRoutes);
+app.use("/api/products", productsRoutes);
+app.use("/api/user", userRoute);
+app.use("/api/cart", cartRoutes);
 
 
 // Home route (optional)
