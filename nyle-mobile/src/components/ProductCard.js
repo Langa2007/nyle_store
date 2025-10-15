@@ -33,7 +33,7 @@ export default function ProductCard({ product, index }) {
       </h3>
 
       <div className="flex items-center justify-between mt-2">
-        <div className="text-blue-400 font-semibold">${product.price}</div>
+        <div className="text-blue-400 font-semibold">{product.price}</div>
 
         <motion.button
           whileTap={{ scale: 0.9 }}
