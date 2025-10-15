@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import "./globals.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Providers from "../providers";
@@ -34,7 +35,18 @@ export default function RootLayout({ children }) {
         <Providers>
           <CartProvider>
             <Navbar />
-            <main className="container mx-auto p-4 pb-20">{children}</main>
+            <AnimatePresence mode="wait">
+              <motion.main
+                key={pathname}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                className="container mx-auto p-4 pb-20"
+              >
+                {children}
+              </motion.main>
+            </AnimatePresence>
             {showFAB && <CartFAB />}
             <CartDrawer />
             <MobileNav />

@@ -4,6 +4,9 @@ import { motion } from "framer-motion";
 import MobileLayout from "../mobile-layout";
 import ProductCard from "../../components/ProductCard";
 
+// ✅ Local price conversion — temporary until global rollout
+const convertToKES = (usd) => Math.round(usd * 130); // Example conversion rate
+
 const products = [
   { id: 1, name: "Wireless Earbuds", price: 49.99, image: "/images/earbuds.jpg" },
   { id: 2, name: "Smart Watch", price: 89.99, image: "/images/smartwatch.jpg" },
@@ -14,17 +17,34 @@ const products = [
 ];
 
 export default function ShopPage() {
+  // 💱 This will later change to auto-detect based on country
+  const currency = "KES";
+
   return (
     <MobileLayout>
       <h1 className="text-2xl font-bold text-blue-400 mb-4">Shop</h1>
+
       <motion.div
         className="grid grid-cols-2 gap-3 pb-20"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.08 },
+          },
+        }}
       >
-        {products.map((p) => (
-          <ProductCard key={p.id} product={p} />
+        {products.map((p, i) => (
+          <ProductCard
+            key={p.id}
+            index={i}
+            product={{
+              ...p,
+              price: `${currency} ${convertToKES(p.price).toLocaleString()}`,
+            }}
+          />
         ))}
       </motion.div>
     </MobileLayout>
