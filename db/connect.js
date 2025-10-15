@@ -1,43 +1,40 @@
-// db/connect.js
 import pkg from "pg";
 import dotenv from "dotenv";
 
 dotenv.config();
 const { Pool } = pkg;
 
-// Decide environment automatically
-const isProd = process.env.NODE_ENV === "production";
+// Try all connection options in order
+const connectionString =
+  process.env.DATABASE_URL_NEON ||
+  process.env.DATABASE_URL_LOCAL ||
+  process.env.DATABASE_URL;
 
-// Pick the right database URL
-const connectionString = isProd
-  ? process.env.DATABASE_URL_NEON
-  : process.env.DATABASE_URL_LOCAL;
-
-// Validate
 if (!connectionString) {
-  console.error("❌ Missing DATABASE_URL_LOCAL or DATABASE_URL_NEON in environment");
+  console.error("❌ Missing all database URLs in environment");
   process.exit(1);
 }
 
-// Initialize pool
 const pool = new Pool({
   connectionString,
-  ssl: isProd
-    ? { require: true, rejectUnauthorized: false } // Neon (Render)
-    : false, // Local PostgreSQL
+  ssl: {
+    require: true,
+    rejectUnauthorized: false, // Needed for Neon & Render
+  },
 });
 
-// Log DB connection info
 pool.query("SELECT current_database()", (err, res) => {
-  if (err) console.error("❌ DB Connection Error:", err.message);
-  else console.log(`🧠 Connected to ${isProd ? "Neon" : "Local"} DB:`, res?.rows?.[0]);
+  if (err) {
+    console.error("❌ DB Connection Error:", err.message);
+  } else {
+    console.log("🧠 Connected to DB:", res?.rows?.[0]);
+  }
 });
 
-// Export
 export const connectDB = async () => {
   try {
     const client = await pool.connect();
-    console.log(`✅ ${isProd ? "Neon" : "Local"} PostgreSQL connection successful`);
+    console.log("✅ PostgreSQL connection successful!");
     client.release();
   } catch (err) {
     console.error("❌ Database connection error:", err.message);
