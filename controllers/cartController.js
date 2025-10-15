@@ -26,7 +26,7 @@ export const getCart = async (req, res) => {
     const { user_id, session_id } = req.query;
     const cart = await getOrCreateCart({ user_id, session_id });
     const { rows } = await pool.query(
-      `SELECT ci.id, ci.product_id, ci.quantity, p.name, p.price, p.image
+      `SELECT ci.id, ci.product_id, ci.quantity, p.name, p.price, p.image_url
        FROM cart_items ci
        LEFT JOIN products p ON p.id = ci.product_id
        WHERE ci.cart_id = $1`,

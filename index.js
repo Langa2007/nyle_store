@@ -59,6 +59,11 @@ app.use("/api/products", productsRoutes);
 app.use("/api/user", userRoute);
 app.use("/api/cart", cartRoutes);
 
+//API Health Check
+app.get("/api", (req, res) => {
+  res.status(200).send("API is running...");
+});
+
 
 // Home route (optional)
 app.get("/", (req, res) => {

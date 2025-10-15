@@ -5,26 +5,39 @@ import dotenv from "dotenv";
 dotenv.config();
 const { Pool } = pkg;
 
-const connectionString = process.env.DATABASE_URL;
+// Decide environment automatically
+const isProd = process.env.NODE_ENV === "production";
 
+// Pick the right database URL
+const connectionString = isProd
+  ? process.env.DATABASE_URL_NEON
+  : process.env.DATABASE_URL_LOCAL;
+
+// Validate
 if (!connectionString) {
-  console.error("❌ Missing DATABASE_URL in environment");
+  console.error("❌ Missing DATABASE_URL_LOCAL or DATABASE_URL_NEON in environment");
   process.exit(1);
 }
 
-// ✅ Works for Neon (requires SSL)
+// Initialize pool
 const pool = new Pool({
   connectionString,
-  ssl: {
-    require: true,
-    rejectUnauthorized: false, // Neon uses managed certs
-  },
+  ssl: isProd
+    ? { require: true, rejectUnauthorized: false } // Neon (Render)
+    : false, // Local PostgreSQL
 });
 
+// Log DB connection info
+pool.query("SELECT current_database()", (err, res) => {
+  if (err) console.error("❌ DB Connection Error:", err.message);
+  else console.log(`🧠 Connected to ${isProd ? "Neon" : "Local"} DB:`, res?.rows?.[0]);
+});
+
+// Export
 export const connectDB = async () => {
   try {
     const client = await pool.connect();
-    console.log("✅ Connected to Neon PostgreSQL successfully");
+    console.log(`✅ ${isProd ? "Neon" : "Local"} PostgreSQL connection successful`);
     client.release();
   } catch (err) {
     console.error("❌ Database connection error:", err.message);
