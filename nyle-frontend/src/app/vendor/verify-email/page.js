@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
@@ -12,6 +14,17 @@ export default function VerifyEmailPage() {
   const token = searchParams.get("token");
 
   useEffect(() => {
+    // Prevent SSR execution entirely
+    if (typeof window === "undefined") return;
+
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl) {
+      console.error("❌ Missing NEXT_PUBLIC_API_URL env variable");
+      setStatus("error");
+      setMessage("Server configuration error. Try again later.");
+      return;
+    }
+
     async function verify() {
       if (!token) {
         setStatus("error");
@@ -20,18 +33,18 @@ export default function VerifyEmailPage() {
       }
 
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/verify-email?token=${token}`);
-        const data = await res.json();
+        const response = await fetch(`${apiUrl}/api/vendors/verify-email?token=${token}`);
+        const data = await response.json();
 
-        if (res.ok) {
+        if (response.ok) {
           setStatus("success");
           setMessage(data.message || "Email verified successfully.");
         } else {
           setStatus("error");
           setMessage(data.message || "Verification failed.");
         }
-      } catch (err) {
-        console.error("Verification request failed:", err);
+      } catch (error) {
+        console.error("Verification failed:", error);
         setStatus("error");
         setMessage("Something went wrong while verifying your email.");
       }
