@@ -25,8 +25,8 @@ export default function VerifyEmailContent() {
         const data = await res.json();
 
         if (res.ok) {
-          // backend should respond with { status: "verified" | "pending" }
-          if (data.status === "pending") setStatus("pending");
+          // backend responds with message: "Email verified. Await admin approval."
+          if (data.message?.includes("Await admin approval")) setStatus("pending");
           else setStatus("success");
         } else {
           setStatus("failed");
