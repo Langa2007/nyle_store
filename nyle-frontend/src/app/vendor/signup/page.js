@@ -30,7 +30,7 @@ export default function VendorSignup() {
     email: "",
     phone: "",
     address: "",
-    country: "", // ✅ FIXED (was county)
+    country: "",
     business_type: "",
     password: "",
     confirm_password: "",
@@ -64,7 +64,7 @@ export default function VendorSignup() {
 
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/vendors/signup", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -74,10 +74,14 @@ export default function VendorSignup() {
 
       if (!res.ok) throw new Error(data.message || "Signup failed");
 
-      alert("Signup successful! Please login.");
+      // Successful signup message
+      alert(
+        "Signup successful! Please verify your email. Once verified, your account will be under review for admin approval. You’ll receive an email once approved or rejected."
+      );
+
       router.push("/vendor/login");
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Signup failed.");
     } finally {
       setLoading(false);
     }
