@@ -5,15 +5,15 @@ import dotenv from "dotenv";
 import { connectDB } from "./db/connect.js";
 import bodyparser from "body-parser";
 
-// Import route files (ESM style)
+// Import route files
 import userRoutes from "./routes/users.js";
 import productRoutes from "./routes/products.js";
-import orderRoutes from "./routes/orders.js";            // vendor profile management
-import vendorAuthRoutes from "./routes/vendorAuth.js";      // vendor auth (signup/login)
-import vendorProductRoutes from "./routes/vendorProducts.js"; // vendor product management
-import adminVendorRoutes from "./routes/adminVendors.js";   // admin vendor management
-import adminRoutes from "./routes/adminRoutes.js"; // combined admin routes
-import adminAuthRoutes from "./routes/adminAuthRoutes.js"; // admin auth
+import orderRoutes from "./routes/orders.js";
+import vendorAuthRoutes from "./routes/vendorAuth.js";
+import vendorProductRoutes from "./routes/vendorProducts.js";
+import adminVendorRoutes from "./routes/adminVendors.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import adminAuthRoutes from "./routes/adminAuthRoutes.js";
 import vendorRoutes from "./routes/vendorRoutes.js";
 import customerOrderRoutes from "./routes/customerOrders.js";
 import productsRoutes from "./routes/product.js";
@@ -23,54 +23,60 @@ import cartRoutes from "./routes/cart.js";
 dotenv.config();
 
 const app = express();
-//Allow CORS for all origins (for development)
+
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"], // allow both frontends
+    origin: ["http://localhost:3000", "http://localhost:3001"],
     credentials: true,
   })
 );
 
 const PORT = process.env.PORT || 5000;
 app.use(bodyparser.json());
-
-// Middleware
 app.use(express.json());
 
-// ✅ log every request
+// Log every request (useful during debugging)
 app.use((req, res, next) => {
   console.log(`➡️ ${req.method} ${req.url}`);
   next();
 });
 
-
-// Routes
+// --- ROUTES ---
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/api/vendors", vendorAuthRoutes);  // ✅ handles /register & /login
-app.use("/api/vendors", vendorRoutes);      // ✅ other vendor-related routes (profile, etc.)
-app.use("/api/vendor/products", vendorProductRoutes); // ✅ vendor product management
-app.use("/api/admin/vendors", adminVendorRoutes);     // ✅ admin vendor management
-app.use("/api/admin", adminRoutes); // combined admin routes
-app.use("/api/admin", adminAuthRoutes); // admin auth routes
+
+// ✅ Vendor authentication (signup, login, verify email)
+app.use("/api/vendor/auth", vendorAuthRoutes);
+
+// ✅ Vendor management (approve/reject, pending, etc.)
+app.use("/api/vendors", vendorRoutes);
+
+// ✅ Vendor product management
+app.use("/api/vendor/products", vendorProductRoutes);
+
+// ✅ Admin routes
+app.use("/api/admin/vendors", adminVendorRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/admin", adminAuthRoutes);
+
+// ✅ Customer & cart routes
 app.use("/api/customer/orders", customerOrderRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/user", userRoute);
 app.use("/api/cart", cartRoutes);
 
-//API Health Check
+// Health check
 app.get("/api", (req, res) => {
   res.status(200).send("API is running...");
 });
 
-
-// Home route (optional)
+// Default route
 app.get("/", (req, res) => {
   res.send("Welcome to Nyle Store API 🚀");
 });
 
-// Connect DB and Start Server
+// Connect DB and start server
 const startServer = async () => {
   try {
     await connectDB();
