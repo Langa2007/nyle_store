@@ -1,12 +1,14 @@
-import path from "path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  outputFileTracingRoot: __dirname,
   experimental: {
     optimizeCss: true,
   },
-  outputFileTracingRoot: path.join(__dirname, "./nyle-frontend"),
+  // Disable pages router fallback to prevent Html import errors
+  trailingSlash: false,
+  skipTrailingSlashRedirect: true,
 };
 
 export default nextConfig;
