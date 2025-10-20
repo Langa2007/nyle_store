@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { getCategories } from "../services/categoryService";
+import ClientProviders from "../components/ClientProviders";
 import { 
   FaCcVisa, 
   FaCcMastercard, 
@@ -18,13 +19,12 @@ import {
   FaYoutube 
 } from "react-icons/fa";
 
-export default function Home() {
+function HomeContent() {
   // Fetch categories
   const { data: categories = [], isLoading, error } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
   });
-
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -216,3 +216,14 @@ export default function Home() {
     </div>
   );
 }
+
+export default function Home() {
+  return (
+    <ClientProviders>
+      <HomeContent />
+    </ClientProviders>
+  );
+}
+
+// Disable static generation for this page since it uses client-side features
+export const dynamic = 'force-dynamic';
