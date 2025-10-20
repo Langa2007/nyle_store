@@ -1,22 +1,13 @@
 import type { NextConfig } from "next";
 
-const isProd = process.env.NODE_ENV === "production";
-
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
 
-  // ✅ Only enable Turbopack in development — not on Render
-  ...(isProd
-    ? {}
-    : {
-        turbopack: {
-          root: "./src",
-        },
-      }),
-
-  // ✅ This fixes the Render “multiple lockfiles” and tracing issues
-  outputFileTracingRoot: __dirname,
+  // ✅ SWC minification is now automatic — no need to define it manually.
+  // ✅ You can safely add experimental keys if needed later.
+  experimental: {
+    optimizeCss: true,
+  },
 };
 
 export default nextConfig;
