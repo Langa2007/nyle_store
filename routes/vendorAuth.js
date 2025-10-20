@@ -3,18 +3,22 @@ import express from "express";
 import {
   vendorSignup,
   vendorLogin,
-  verifyEmail,
+  verifyToken,
+  magicLogin
 } from "../controllers/vendorAuthController.js";
 
 const router = express.Router();
 
-// --- Signup (sends Gmail verification email) ---
+// Signup (sends verification code)
 router.post("/signup", vendorSignup);
 
-// --- Login (only if verified + approved) ---
+// Login (email/password) - requires verified + approved
 router.post("/login", vendorLogin);
 
-// --- Verify email (via Gmail link) ---
-router.get("/verify-email", verifyEmail);
+// Verify token (code) - POST { email, code }
+router.post("/verify-token", verifyToken);
+
+// Exchange magic token for auth JWT - POST { token }
+router.post("/magic-login", magicLogin);
 
 export default router;
