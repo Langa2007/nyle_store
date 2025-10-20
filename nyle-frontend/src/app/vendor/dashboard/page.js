@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { Menu, X, ShoppingCart, Package, BarChart3, Settings } from "lucide-react";
 
+// Disable static generation for this page since it uses client-side features
+export const dynamic = 'force-dynamic';
+
 export default function VendorDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 

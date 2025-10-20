@@ -4,6 +4,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+// Disable static generation for this page since it uses client-side features
+export const dynamic = 'force-dynamic';
+
 export default function VerifyTokenPage() {
   const router = useRouter();
   const [form, setForm] = useState({ email: "", code: "" });
