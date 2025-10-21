@@ -227,3 +227,5 @@ export default function Home() {
 
 // Disable static generation for this page since it uses client-side features
 export const dynamic = 'force-dynamic';
+
+
