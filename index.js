@@ -26,8 +26,8 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://nyle-luxe.onrender.com",
-  "https://nyle-admin.onrender.com"
+  "https://nyle-luxe.vercel.app",
+  "https://nyle-admin.vercel.app",
 ];
 
 app.use(cors({
