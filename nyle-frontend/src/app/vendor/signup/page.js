@@ -65,10 +65,7 @@ export default function VendorSignup() {
       return;
     }
 
-    // Build the URL using the public env var. Make sure NEXT_PUBLIC_API_URL exists in .env.local
     const urlToCall = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/vendor/auth/signup`;
-
-    // Debug: show exact URL in browser console (helps confirm env)
     console.log("DEBUG: About to POST signup to:", urlToCall);
 
     try {
@@ -90,12 +87,10 @@ export default function VendorSignup() {
         }),
       });
 
-      // Read raw text (helps debug when server returns HTML)
       const raw = await res.text();
       console.log("DEBUG: signup response status:", res.status);
       console.log("DEBUG: signup response raw body:", raw);
 
-      // Try parse JSON; if it fails, throw with raw body so you can see what's returned
       let data;
       try {
         data = JSON.parse(raw);
@@ -105,11 +100,10 @@ export default function VendorSignup() {
 
       if (!res.ok) throw new Error(data.message || "Signup failed");
 
-      // Success: message to user and redirect to login
-      alert(
-        "Signup successful! Please check your email to verify your account. Once verified your account will be under review."
-      );
-      router.push("/vendor/login");
+      // ✅ SUCCESS FLOW: Redirect to vendor verification page instead of login
+      alert("Signup successful! A verification code has been sent to your email.");
+      router.push(`/vendor/verify?email=${encodeURIComponent(form.email)}`);
+      
     } catch (err) {
       console.error("Signup error:", err);
       setError(err.message || "Signup failed.");
