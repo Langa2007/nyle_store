@@ -1,26 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-// Disable static generation for this page since it uses client-side features
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-export default function VerifyTokenPage() {
+function VerifyTokenForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Capture email from signup redirect query (?email=example@gmail.com)
-  const prefilledEmail = searchParams.get("email") || "";
-
-  const [form, setForm] = useState({ email: prefilledEmail, code: "" });
+  const emailParam = searchParams.get("email") || "";
+  const [form, setForm] = useState({ email: emailParam, code: "" });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  // Use your backend URL (Render or local)
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,16 +37,15 @@ export default function VerifyTokenPage() {
       try {
         data = JSON.parse(text);
       } catch {
-        throw new Error(`Invalid response: ${text}`);
+        throw new Error(`Invalid response from server: ${text}`);
       }
 
       if (!res.ok) throw new Error(data.message || "Verification failed");
 
-      setMessage("✅ Code verified successfully! Redirecting to login...");
+      setMessage("✅ Code verified! A login link has been sent to your email.");
       setTimeout(() => router.push("/vendor/login"), 2500);
     } catch (err) {
-      console.error("Verification error:", err);
-      setMessage(`❌ ${err.message || "Verification failed"}`);
+      setMessage(err.message || "Verification failed");
     } finally {
       setLoading(false);
     }
@@ -56,12 +53,10 @@ export default function VerifyTokenPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-      <div className="w-full max-w-md bg-white p-6 rounded-xl shadow">
-        <h2 className="text-xl font-bold mb-4 text-center text-blue-700">
-          Verify Your Account
-        </h2>
-        <p className="text-sm text-gray-600 mb-6 text-center">
-          Enter the code sent to your email to activate your vendor account.
+      <div className="w-full max-w-md bg-white p-6 rounded shadow">
+        <h2 className="text-xl font-bold mb-4 text-center">Verify your account</h2>
+        <p className="text-sm text-gray-600 mb-4 text-center">
+          Enter the code we sent to your email to verify your account.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -92,17 +87,17 @@ export default function VerifyTokenPage() {
         </form>
 
         {message && (
-          <p
-            className={`mt-4 text-center text-sm ${
-              message.startsWith("✅")
-                ? "text-green-600"
-                : "text-red-600"
-            }`}
-          >
-            {message}
-          </p>
+          <p className="mt-4 text-center text-sm text-gray-700">{message}</p>
         )}
       </div>
     </div>
+  );
+}
+
+export default function VerifyTokenPage() {
+  return (
+    <Suspense fallback={<div className="text-center p-10">Loading verification page...</div>}>
+      <VerifyTokenForm />
+    </Suspense>
   );
 }

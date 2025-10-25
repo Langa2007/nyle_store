@@ -35,22 +35,37 @@ export default function LoginPage() {
         throw new Error(`Invalid server response: ${text}`);
       }
 
-      if (!res.ok) throw new Error(data.error || data.message || "Login failed");
+      if (!res.ok)
+        throw new Error(data.error || data.message || "Login failed");
 
-      // Save token locally
-      localStorage.setItem("adminToken", data.token);
+      // ✅ Store both tokens securely
+      localStorage.setItem("adminAccessToken", data.accessToken);
+      localStorage.setItem("adminRefreshToken", data.refreshToken);
 
-      // Optional: Verify token immediately
+      // Optional: immediate verification
       const verifyRes = await fetch(`${API_URL}/api/admin/verify-token`, {
-        headers: { Authorization: `Bearer ${data.token}` },
+        headers: { Authorization: `Bearer ${data.accessToken}` },
       });
 
       if (!verifyRes.ok) {
-        localStorage.removeItem("adminToken");
-        throw new Error("Session verification failed, please log in again.");
+        // Try refreshing if verification fails
+        const refreshRes = await fetch(`${API_URL}/api/admin/refresh`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refreshToken: data.refreshToken }),
+        });
+
+        if (refreshRes.ok) {
+          const refreshData = await refreshRes.json();
+          localStorage.setItem("adminAccessToken", refreshData.accessToken);
+        } else {
+          localStorage.removeItem("adminAccessToken");
+          localStorage.removeItem("adminRefreshToken");
+          throw new Error("Session expired. Please log in again.");
+        }
       }
 
-      // Redirect to dashboard
+      // Redirect to dashboard after successful login
       router.push("/dashboard");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
