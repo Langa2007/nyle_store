@@ -1,10 +1,11 @@
+// src/app/login/page.tsx
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/app/components/ui/card";
+import { Input } from "@/app/components/ui/input";
+import { Button } from "@/app/components/ui/button";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -38,34 +39,10 @@ export default function LoginPage() {
       if (!res.ok)
         throw new Error(data.error || data.message || "Login failed");
 
-      // ✅ Store both tokens securely
+      // Save both tokens
       localStorage.setItem("adminAccessToken", data.accessToken);
       localStorage.setItem("adminRefreshToken", data.refreshToken);
 
-      // Optional: immediate verification
-      const verifyRes = await fetch(`${API_URL}/api/admin/verify-token`, {
-        headers: { Authorization: `Bearer ${data.accessToken}` },
-      });
-
-      if (!verifyRes.ok) {
-        // Try refreshing if verification fails
-        const refreshRes = await fetch(`${API_URL}/api/admin/refresh`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refreshToken: data.refreshToken }),
-        });
-
-        if (refreshRes.ok) {
-          const refreshData = await refreshRes.json();
-          localStorage.setItem("adminAccessToken", refreshData.accessToken);
-        } else {
-          localStorage.removeItem("adminAccessToken");
-          localStorage.removeItem("adminRefreshToken");
-          throw new Error("Session expired. Please log in again.");
-        }
-      }
-
-      // Redirect to dashboard after successful login
       router.push("/dashboard");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
@@ -97,9 +74,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-
             {error && <p className="text-red-500 text-sm">{error}</p>}
-
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </Button>

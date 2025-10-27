@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
   CardContent,
-} from "@/components/ui/card";
+} from "@/app/components/ui/card";
 import {
   Table,
   TableHeader,
@@ -16,8 +16,8 @@ import {
   TableHead,
   TableBody,
   TableCell,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+} from "@/app/components/ui/table";
+import { Button } from "@/app/components/ui/button";
 
 // --- Fetch Pending Vendors ---
 async function fetchPendingVendors() {

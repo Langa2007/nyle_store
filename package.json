@@ -19,6 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@tanstack/react-query": "^5.90.2",
+    "@vercel/speed-insights": "^1.2.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
