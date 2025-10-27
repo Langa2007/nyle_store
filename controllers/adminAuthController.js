@@ -58,9 +58,9 @@ export const adminLogin = async (req, res) => {
       refreshToken,
     });
   } catch (err) {
-    console.error("❌ Admin login error:", err.message);
-    res.status(500).json({ error: "Server error during login" });
-  }
+  console.error("Admin login error:", err.message);
+  return res.status(500).json({ message: `Server error: ${err.message}` });
+}
 };
 
 // ==================== REFRESH TOKEN ====================

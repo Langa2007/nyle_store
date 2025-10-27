@@ -1,4 +1,4 @@
-// ✅ FIXED version: src/app/dashboard/layout.tsx
+// src/app/dashboard/layout.tsx
 "use client";
 
 import { ReactNode } from "react";
