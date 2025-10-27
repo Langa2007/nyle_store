@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AdminAuthContext";
 
 interface Vendor {
   id: number;
@@ -12,73 +12,32 @@ interface Vendor {
 }
 
 export default function AdminVendorsPage() {
-  const router = useRouter();
+  const { accessToken } = useAuth();
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState<string | null>(null);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-  //  Load token only on client
-  useEffect(() => {
-    const storedToken = localStorage.getItem("adminToken");
-    if (!storedToken) {
-      router.push("/login"); // redirect if not logged in
-    } else {
-      setToken(storedToken);
-    }
-  }, [router]);
-
-  const fetchVendors = async (authToken: string) => {
+  const fetchVendors = async () => {
+    if (!accessToken) return;
     try {
-      console.log("🟢 Token used to fetch vendors:", authToken);
-      const res = await fetch("http://localhost:5000/api/admin/vendors", {
+      const res = await fetch(`${API_URL}/api/admin/vendors`, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       });
-
-      if (!res.ok) {
-        throw new Error(`Failed to fetch vendors: ${res.status}`);
-      }
-
       const data = await res.json();
       if (Array.isArray(data)) setVendors(data);
-      else setVendors([]);
     } catch (err) {
       console.error("❌ Error fetching vendors:", err);
-      setVendors([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (token) fetchVendors(token); // only fetch when token exists
-  }, [token]);
-
-  const authorizedFetch = async (url: string, method: string) => {
-    if (!token) return alert("You are not authorized!");
-    return fetch(url, {
-      method,
-      headers: { Authorization: `Bearer ${token}` },
-    });
-  };
-
-  const approveVendor = async (id: number) => {
-    await authorizedFetch(`http://localhost:5000/api/admin/vendors/${id}/approve`, "PATCH");
-    fetchVendors(token!);
-  };
-
-  const rejectVendor = async (id: number) => {
-    await authorizedFetch(`http://localhost:5000/api/admin/vendors/${id}/reject`, "PATCH");
-    fetchVendors(token!);
-  };
-
-  const deleteVendor = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this vendor?")) return;
-    await authorizedFetch(`http://localhost:5000/api/admin/vendors/${id}`, "DELETE");
-    fetchVendors(token!);
-  };
+    fetchVendors();
+  }, [accessToken]);
 
   if (loading) return <p className="p-4">Loading vendors...</p>;
 
@@ -103,22 +62,13 @@ export default function AdminVendorsPage() {
               <td className="p-2">{v.status}</td>
               <td className="p-2">{v.is_verified ? "✅" : "❌"}</td>
               <td className="p-2 text-center space-x-2">
-                <button
-                  onClick={() => approveVendor(v.id)}
-                  className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-                >
+                <button className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700">
                   Approve
                 </button>
-                <button
-                  onClick={() => rejectVendor(v.id)}
-                  className="px-2 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700"
-                >
+                <button className="px-2 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700">
                   Reject
                 </button>
-                <button
-                  onClick={() => deleteVendor(v.id)}
-                  className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-                >
+                <button className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700">
                   Delete
                 </button>
               </td>

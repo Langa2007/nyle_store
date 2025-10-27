@@ -1,3 +1,4 @@
+// controllers/adminAuthController.js
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import pool from "../db/connect.js";
@@ -99,3 +100,17 @@ export const refreshAdminToken = async (req, res) => {
     res.status(403).json({ error: "Invalid or expired refresh token" });
   }
 };
+export const verifyAdminToken = async (req, res) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) return res.status(401).json({ message: "No token provided" });
+
+  try {
+    jwt.verify(token, process.env.JWT_SECRET);
+    res.status(200).json({ valid: true });
+  } catch (err) {
+    res.status(401).json({ valid: false, message: "Invalid or expired token" });
+  }
+};
+
