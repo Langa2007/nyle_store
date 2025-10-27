@@ -86,6 +86,18 @@ app.get("/", (req, res) => {
   res.send("Welcome to Nyle Store API 🚀");
 });
 
+
+// --- Error Logger (for debugging database or route errors) ---
+app.use((err, req, res, next) => {
+  console.error("🔥 SERVER ERROR:", {
+    message: err.message,
+    stack: err.stack,
+    query: err.query || null,
+  });
+
+  res.status(500).json({ error: "Internal Server Error", details: err.message });
+})
+
 // Connect DB and start server
 const startServer = async () => {
   try {

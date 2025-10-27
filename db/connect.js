@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 dotenv.config();
 const { Pool } = pkg;
 
-// Try all connection options in order
 const connectionString =
   process.env.DATABASE_URL_NEON ||
   process.env.DATABASE_URL_LOCAL ||
@@ -19,8 +18,14 @@ const pool = new Pool({
   connectionString,
   ssl: {
     require: true,
-    rejectUnauthorized: false, // Needed for Neon & Render
+    rejectUnauthorized: false,
   },
+});
+
+// ✅ Ensure 'public' schema is always used
+pool.on("connect", (client) => {
+  client.query('SET search_path TO public');
+  console.log("🧭 Default schema set to 'public'");
 });
 
 pool.query("SELECT current_database()", (err, res) => {
