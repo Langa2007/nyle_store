@@ -29,6 +29,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://nyle-luxe.vercel.app",
   "https://nyle-admin.vercel.app",
+  "https://nyle-store.onrender.com",
 ];
 
 app.use(
