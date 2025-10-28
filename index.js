@@ -33,6 +33,8 @@ const allowedOrigins = [
   "https://nyle-mobile.vercel.app"
 ];
 
+app.options("*", cors());
+
 app.use(
   cors({
     origin: function (origin, callback) {
