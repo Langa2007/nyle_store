@@ -103,6 +103,7 @@ export default function VendorSignup() {
       // ✅ SUCCESS FLOW: Redirect to vendor verification page instead of login
       alert("Signup successful! A verification code has been sent to your email.");
       router.push(`/vendor/verify?email=${encodeURIComponent(form.email)}`);
+      localStorage.setItem("vendorSignupEmail", form.email);
       
     } catch (err) {
       console.error("Signup error:", err);

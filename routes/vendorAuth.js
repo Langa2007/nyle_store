@@ -4,7 +4,8 @@ import {
   vendorSignup,
   vendorLogin,
   verifyToken,
-  magicLogin
+  magicLogin,
+  resendVerificationCode
 } from "../controllers/vendorAuthController.js";
 
 const router = express.Router();
@@ -20,5 +21,8 @@ router.post("/verify-token", verifyToken);
 
 // Exchange magic token for auth JWT - POST { token }
 router.post("/magic-login", magicLogin);
+
+// Resend verification code - POST { email }
+router.post("/resend-code", resendVerificationCode);
 
 export default router;

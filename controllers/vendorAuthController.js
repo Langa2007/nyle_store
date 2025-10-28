@@ -252,3 +252,36 @@ export const vendorLogin = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// ------------------ Resend verification code ------------------
+export const resendVerificationCode = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Email is required" });
+
+    const q = await pool.query("SELECT id FROM vendors WHERE email = $1", [email]);
+    if (q.rows.length === 0) {
+      return res.status(400).json({ message: "Vendor not found" });
+    }
+
+    const vendorId = q.rows[0].id;
+    const code = String(100000 + Math.floor(Math.random() * 900000)); // new 6-digit code
+    const expires = new Date(Date.now() + VERIF_DURATION_HOURS * 3600 * 1000);
+
+    await pool.query(
+      `UPDATE vendors SET verification_token=$1, verification_expires=$2 WHERE id=$3`,
+      [code, expires, vendorId]
+    );
+
+    try {
+      await sendVerificationCodeEmail(email, code);
+    } catch (e) {
+      console.error("Failed to resend verification code:", e);
+    }
+
+    return res.json({ message: "Verification code resent successfully." });
+  } catch (err) {
+    console.error("Resend code error:", err);
+    res.status(500).json({ message: "Server error while resending code." });
+  }
+};
