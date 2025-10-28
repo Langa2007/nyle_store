@@ -15,9 +15,9 @@ router.delete("/users/:id",verifyAdmin, deleteUser);// only admin can delete use
 router.put("/users/:id/promote",verifyAdmin, promoteUser);// only admin can promote users
 
 // --- Vendors ---
-router.get("/vendors",verifyAdmin, getAllVendors);// only admin can view all vendors
-router.put("/vendors/:id/approve",verifyAdmin, approveVendor);// only admin can approve vendors
-router.put("/vendors/:id/reject",verifyAdmin, rejectVendor);// only admin can reject vendors
+router.get("/vendors", getAllVendors);// only admin can view all vendors
+router.put("/vendors/:id/approve", approveVendor);// only admin can approve vendors
+router.put("/vendors/:id/reject",rejectVendor);// only admin can reject vendors
 
 // --- Categories ---
 router.post("/categories",verifyAdmin, createCategory);// only admin can create categories
