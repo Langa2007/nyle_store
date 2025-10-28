@@ -64,21 +64,21 @@ app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 
-// ✅ Vendor authentication (signup, login, verify email)
+//  Vendor authentication (signup, login, verify email)
 app.use("/api/vendor/auth", vendorAuthRoutes);
 
-// ✅ Vendor management (approve/reject, pending, etc.)
+//  Vendor management (approve/reject, pending, etc.)
 app.use("/api/vendors", vendorRoutes);
 
-// ✅ Vendor product management
+//  Vendor product management
 app.use("/api/vendor/products", vendorProductRoutes);
 
-// ✅ Admin routes
+// Admin authentication & management
+app.use("/api/admin", adminAuthRoutes);       // must come first
 app.use("/api/admin/vendors", adminVendorRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/admin", adminAuthRoutes);
 
-// ✅ Customer & cart routes
+//  Customer & cart routes
 app.use("/api/customer/orders", customerOrderRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/user", userRoute);
