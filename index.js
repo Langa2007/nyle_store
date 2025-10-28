@@ -30,11 +30,13 @@ const allowedOrigins = [
   "https://nyle-luxe.vercel.app",
   "https://nyle-admin.vercel.app",
   "https://nyle-store.onrender.com",
+  "https://nyle-mobile.vercel.app"
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
+      console.log("🌍 Incoming request origin:", origin);
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
