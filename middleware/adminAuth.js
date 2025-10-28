@@ -29,26 +29,20 @@ export const authMiddleware = (req, res, next) => {
 
 // ✅ Admin-only authentication middleware
 export const verifyAdmin = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  console.log("🟣 Raw Authorization Header:", authHeader);
+  const authHeader = req.headers.authorization;
+  console.log("🔐 Admin auth header:", authHeader);
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    console.log("🚫 No valid Bearer header");
-    return res.status(401).json({ message: "Malformed authorization header" });
+    return res.status(401).json({ message: "No token provided" });
   }
 
   const token = authHeader.split(" ")[1];
-  console.log("🟢 Extracted token:", token);
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("✅ Decoded JWT:", decoded);
-
-    if (!decoded.is_admin) {
-      console.log("🚫 Not admin:", decoded);
-      return res.status(403).json({ message: "Not an admin" });
+    console.log("✅ Decoded admin:", decoded);
+    if (!decoded.isAdmin) {
+      return res.status(403).json({ message: "Access denied: not an admin" });
     }
-
     req.admin = decoded;
     next();
   } catch (err) {
@@ -56,4 +50,5 @@ export const verifyAdmin = (req, res, next) => {
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
+
 
