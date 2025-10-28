@@ -15,7 +15,7 @@ export default function AdminVendorsPage() {
   const { accessToken } = useAuth();
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
   const fetchVendors = async () => {
     if (!accessToken) return;

@@ -21,7 +21,7 @@ import { Button } from "@/app/components/ui/button";
 
 // --- Fetch Pending Vendors ---
 async function fetchPendingVendors() {
-  const res = await axios.get("http://localhost:5000/api/vendors/pending");
+  const res = await axios.get("https://nyle-store.onrender.com/api/vendors/pending");
   return res.data;
 }
 
@@ -36,7 +36,7 @@ export default function AdminDashboardPage() {
 
   const approveMutation = useMutation({
     mutationFn: (id: number) =>
-      axios.put(`http://localhost:5000/api/vendors/${id}/approve`),
+      axios.put(`https://nyle-store.onrender.com/api/vendors/${id}/approve`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pendingVendors"] });
     },
@@ -44,7 +44,7 @@ export default function AdminDashboardPage() {
 
   const rejectMutation = useMutation({
     mutationFn: (id: number) =>
-      axios.put(`http://localhost:5000/api/vendors/${id}/reject`),
+      axios.put(`https://nyle-store.onrender.com/api/vendors/${id}/reject`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pendingVendors"] });
     },

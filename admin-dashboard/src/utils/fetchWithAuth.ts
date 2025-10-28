@@ -13,7 +13,7 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
 
   // If access token expired
   if (res.status === 401 && refreshToken) {
-    const refreshRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/admin/auth/refresh`, {
+    const refreshRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "https:nyle-store.onrender.com"}/api/admin/auth/refresh`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refreshToken }),

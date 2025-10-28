@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export default function RequireAuth({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [isVerified, setIsVerified] = useState(false);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
   useEffect(() => {
     const verifyOrRefresh = async () => {
