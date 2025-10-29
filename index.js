@@ -25,6 +25,7 @@ dotenv.config();
 const app = express();
 
 
+// Allowed origins - add anything else you need here
 const allowedOrigins = [
   "http://localhost:3000",
   "https://nyle-luxe.vercel.app",
@@ -33,25 +34,74 @@ const allowedOrigins = [
   "https://nyle-mobile.vercel.app"
 ];
 
-app.options("*", cors());
+// Quick debug toggle (set true temporarily to bypass CORS checks)
+// WARNING: only enable temporarily for debugging — do NOT leave true in production.
+const ALLOW_ALL_ORIGINS_FOR_DEBUG = false;
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      console.log("🌍 Incoming request origin:", origin);
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-  })
-);
+function normalizeOrigin(origin) {
+  // trim whitespace and remove trailing slash if any
+  if (!origin) return origin;
+  return origin.trim().replace(/\/$/, "");
+}
+
+app.use((req, _res, next) => {
+  // log every incoming origin (helps debugging on Render)
+  console.log("🌍 Incoming request origin:", req.headers.origin);
+  next();
+});
+
+if (ALLOW_ALL_ORIGINS_FOR_DEBUG) {
+  console.warn("⚠️ ALLOW_ALL_ORIGINS_FOR_DEBUG is true — CORS is wide open (TEMPORARY)");
+  app.use(cors({ origin: true, credentials: true })); // allow all
+} else {
+  app.use(
+    cors({
+      origin: function (origin, callback) {
+        const orig = normalizeOrigin(origin);
+        // If no origin header (server->server or same-origin request), allow it
+        if (!orig) {
+          return callback(null, true);
+        }
+
+        // exact match allowed
+        if (allowedOrigins.includes(orig)) return callback(null, true);
+
+        // allow Vercel preview domains (*.vercel.app) automatically
+        try {
+          if (/^https?:\/\/[A-Za-z0-9-]+\.vercel\.app$/.test(orig)) {
+            return callback(null, true);
+          }
+        } catch (e) {
+          // ignore
+        }
+
+        console.error("❌ Blocked by CORS:", orig);
+        return callback(new Error("Not allowed by CORS"));
+      },
+      credentials: true,
+      // explicitly allow the headers we use (Authorization needed for JWT)
+      allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+      methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+      preflightContinue: false,
+      optionsSuccessStatus: 204,
+    })
+  );
+}
+
+// handle preflight globally
+app.options("*", cors({ origin: true, credentials: true }));
+
+// After this: body parsers, routes, etc.
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// optional: convert CORS errors into a 403 JSON response (improves logs + client message)
+app.use((err, _req, res, next) => {
+  if (err && err.message === "Not allowed by CORS") {
+    return res.status(403).json({ message: "Not allowed by CORS", error: err.message });
+  }
+  next(err);
+});
 
 
 const PORT = process.env.PORT || 5000;
