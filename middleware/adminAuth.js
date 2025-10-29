@@ -40,9 +40,12 @@ export const verifyAdmin = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("✅ Decoded admin:", decoded);
-    if (!decoded.isAdmin) {
+
+    // ✅ FIX: use correct property name
+    if (!decoded.is_admin) {
       return res.status(403).json({ message: "Access denied: not an admin" });
     }
+
     req.admin = decoded;
     next();
   } catch (err) {
@@ -50,5 +53,4 @@ export const verifyAdmin = (req, res, next) => {
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
-
 
