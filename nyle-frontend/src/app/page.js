@@ -134,7 +134,7 @@ function HomeContent() {
           <div>
             <h3 className="font-bold text-lg mb-4">Sell on Nyle</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:underline">Why Sell on Nyle</a></li>
+              <li><a href="vendor/why-sell" className="hover:underline">Why Sell on Nyle</a></li>
               <li><a href="vendor/signup" className="hover:underline">Become A Seller On Nyle</a></li>
               <li><a href="vendor/quotations" className="hover:underline">Get seller Quotations</a></li>
               <li><a href="vendor/shipping-logistics" className="hover:underline">Shipping & Logistics</a></li>
