@@ -2,41 +2,57 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowLeft, Store, Truck, FileText, Smartphone, ShieldCheck, HelpCircle } from "lucide-react";
+import Image from "next/image";
+import {
+  Store,
+  Truck,
+  FileText,
+  Smartphone,
+  ShieldCheck,
+  HelpCircle,
+} from "lucide-react";
 
-export default function VendorInfoLayout({ title, subtitle, children }) {
+export default function VendorInfoLayout({
+  title,
+  subtitle,
+  bannerImage = "https://images.unsplash.com/photo-1607082349566-187342175e2b?auto=format&fit=crop&w=1500&q=80",
+  children,
+}) {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 via-white to-gray-100">
-      {/* Header Section */}
-      <section className="relative bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white py-16 shadow-lg">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1607082349566-187342175e2b?auto=format&fit=crop&w=1500&q=80')] opacity-20"></div>
-        <div className="relative z-10 max-w-7xl mx-auto px-6 text-center md:text-left">
-          <motion.h1
-            className="text-4xl md:text-5xl font-bold mb-3"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            {title}
-          </motion.h1>
-          {subtitle && (
-            <motion.p
-              className="text-lg opacity-90"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-            >
-              {subtitle}
-            </motion.p>
-          )}
-        </div>
+      {/* 🟦 Animated Hero Section */}
+      <section className="relative h-[40vh] md:h-[50vh] w-full overflow-hidden flex items-center justify-center text-white text-center">
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-blue-900/80 via-blue-700/70 to-blue-500/70 z-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        />
+        <Image
+          src={bannerImage}
+          alt={title}
+          fill
+          className="object-cover brightness-[0.6]"
+          priority
+        />
+        <motion.div
+          className="relative z-20 max-w-3xl px-6"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h1 className="text-4xl md:text-5xl font-bold mb-3">{title}</h1>
+          {subtitle && <p className="text-lg md:text-xl opacity-90">{subtitle}</p>}
+        </motion.div>
       </section>
 
-      {/* Main Content Section */}
+      {/* 🧭 Main Content Section */}
       <div className="flex flex-col md:flex-row flex-grow max-w-7xl mx-auto w-full px-6 py-12 gap-10">
         {/* Sidebar Navigation */}
         <aside className="md:w-1/4 bg-white rounded-2xl shadow-md border border-gray-100 p-6 sticky top-4 self-start">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Vendor Resources</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">
+            Vendor Resources
+          </h3>
           <nav>
             <ul className="space-y-3 text-gray-700">
               {[
@@ -82,7 +98,7 @@ export default function VendorInfoLayout({ title, subtitle, children }) {
         </main>
       </div>
 
-      {/* Footer Section */}
+      {/* Footer */}
       <footer className="bg-gray-900 text-gray-300 py-8 mt-auto">
         <div className="max-w-7xl mx-auto px-6 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-6">
           <div>
@@ -91,7 +107,6 @@ export default function VendorInfoLayout({ title, subtitle, children }) {
               <HelpCircle size={16} className="text-blue-400" /> Contact our Vendor Support Team
             </p>
           </div>
-
           <div className="text-sm opacity-70">
             © {new Date().getFullYear()} Nyle Marketplace. All rights reserved.
           </div>
