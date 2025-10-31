@@ -136,10 +136,10 @@ function HomeContent() {
             <ul className="space-y-2">
               <li><a href="#" className="hover:underline">Why Sell on Nyle</a></li>
               <li><a href="vendor/signup" className="hover:underline">Become A Seller On Nyle</a></li>
-              <li><a href="#" className="hover:underline">Get seller Quotations</a></li>
-              <li><a href="#" className="hover:underline">Shipping & Logistics</a></li>
-              <li><a href="#" className="hover:underline">Seller Policies</a></li>
-              <li><a href="#" className="hover:underline">Get Our Vendors app</a></li>
+              <li><a href="vendor/quotations" className="hover:underline">Get seller Quotations</a></li>
+              <li><a href="vendor/shipping-logistics" className="hover:underline">Shipping & Logistics</a></li>
+              <li><a href="vendor/policies" className="hover:underline">Seller Policies</a></li>
+              <li><a href="vendor/app" className="hover:underline">Get Our Vendors app</a></li>
             </ul>
           </div>
 
