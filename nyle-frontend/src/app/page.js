@@ -159,10 +159,10 @@ function HomeContent() {
           <div>
             <h3 className="font-bold text-lg mb-4">More About Us</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:underline">Know Nyle</a></li>
-              <li><a href="#" className="hover:underline">Careers</a></li>
-              <li><a href="#" className="hover:underline">Newsletter</a></li>
-              <li><a href="#" className="hover:underline">Our Partners</a></li>
+              <li><a href="about/know-nyle" className="hover:underline">Know Nyle</a></li>
+              <li><a href="about/careers" className="hover:underline">Careers</a></li>
+              <li><a href="about/newsletter" className="hover:underline">Newsletter</a></li>
+              <li><a href="about/partners" className="hover:underline">Our Partners</a></li>
             </ul>
           </div>
 
