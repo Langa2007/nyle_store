@@ -1,98 +1,96 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "@/app/components/ui/button";
 
+// 🧩 Define the type for your subscriber object
 interface Subscriber {
-  id: number;
   email: string;
-  subscribed_at: string;
 }
 
-export default function NewsletterManager() {
-  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
-  const [title, setTitle] = useState("");
+export default function NewsletterPage() {
+  const [emails, setEmails] = useState<Subscriber[]>([]);
+  const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const token = localStorage.getItem("adminToken");
-
+  // ✅ Fetch subscribed emails
   useEffect(() => {
-    fetchSubscribers();
+    const fetchEmails = async () => {
+      try {
+        const res = await axios.get("https://nyle-store.onrender.com/api/newsletter");
+        setEmails(res.data || []);
+      } catch (err) {
+        console.error("Failed to fetch emails:", err);
+      }
+    };
+    fetchEmails();
   }, []);
 
-  const fetchSubscribers = async () => {
+  // ✅ Send a newsletter to all subscribers
+  const handleSendNewsletter = async () => {
     try {
-      const res = await axios.get("https://nyle-store.onrender.com/api/newsletter/subscribers", {
-        headers: { Authorization: `Bearer ${token}` },
+      await axios.post("https://nyle-store.onrender.com/api/newsletter/send", {
+        subject,
+        message,
       });
-      setSubscribers(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const sendAnnouncement = async () => {
-    if (!title || !message) return alert("Please fill all fields");
-    setLoading(true);
-    try {
-      await axios.post(
-        "https://nyle-store.onrender.com/api/newsletter/send",
-        { title, message },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      alert("Announcement sent successfully!");
-      setTitle("");
+      alert("✅ Newsletter sent successfully!");
+      setSubject("");
       setMessage("");
     } catch (err) {
-      console.error(err);
-      alert("Error sending announcement");
-    } finally {
-      setLoading(false);
+      console.error("Failed to send newsletter:", err);
+      alert("❌ Failed to send newsletter");
     }
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-4">Newsletter & Announcements</h1>
+    <div className="p-8 w-full">
+      <h1 className="text-3xl font-bold mb-4">Newsletter Management</h1>
+      <p className="text-gray-600 mb-6">
+        Send updates, announcements, and special offers to your subscribers.
+      </p>
 
-      <div className="mb-8 bg-white p-6 rounded-xl shadow">
-        <h2 className="text-xl font-semibold mb-3">Send Announcement</h2>
+      {/* Create Newsletter Section */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h2 className="text-xl font-semibold mb-4">Create Newsletter</h2>
+
         <input
           type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="border w-full mb-3 p-2 rounded"
+          placeholder="Subject"
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          className="border p-2 w-full mb-3 rounded"
         />
+
         <textarea
-          placeholder="Message"
+          placeholder="Write your message here..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="border w-full mb-3 p-2 rounded h-32"
+          className="border p-2 w-full mb-3 rounded h-40"
         />
-        <Button onClick={sendAnnouncement} disabled={loading}>
-          {loading ? "Sending..." : "Send Announcement"}
+
+        <Button
+          onClick={handleSendNewsletter}
+          className="bg-blue-600 text-white hover:bg-blue-700"
+        >
+          Send Newsletter
         </Button>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow">
-        <h2 className="text-xl font-semibold mb-3">Subscribers</h2>
-        <table className="w-full border">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="p-2 text-left">Email</th>
-              <th className="p-2 text-left">Subscribed At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {subscribers.map((s) => (
-              <tr key={s.id} className="border-t">
-                <td className="p-2">{s.email}</td>
-                <td className="p-2">{new Date(s.subscribed_at).toLocaleString()}</td>
-              </tr>
+      {/* Subscriber List Section */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-semibold mb-4">Subscribers List</h2>
+        {emails.length > 0 ? (
+          <ul className="space-y-2">
+            {emails.map((subscriber, index) => (
+              <li key={index} className="border-b pb-1 text-gray-700">
+                {subscriber.email}
+              </li>
             ))}
-          </tbody>
-        </table>
+          </ul>
+        ) : (
+          <p className="text-gray-500">No subscribers yet.</p>
+        )}
       </div>
     </div>
   );
