@@ -39,6 +39,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               <Link href="/dashboard/products">Products</Link>
               <Link href="/dashboard/orders">Orders</Link>
               <Link href="/dashboard/settings">Settings</Link>
+              <Link href="/dashboard/newsletter">Newsletter</Link>
             </nav>
           </aside>
 
