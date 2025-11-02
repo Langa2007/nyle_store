@@ -19,7 +19,7 @@ export default function VendorInfoLayout({
   children,
 }) {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 via-white to-gray-100">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-700 via-white to-blue-100">
       {/* 🟦 Animated Hero Section */}
       <section className="relative h-[40vh] md:h-[50vh] w-full overflow-hidden flex items-center justify-center text-white text-center">
         <motion.div
