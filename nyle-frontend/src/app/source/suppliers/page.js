@@ -4,19 +4,33 @@ export default function SuppliersPage() {
   return (
     <BuyerInfoLayout
       title="Verified Suppliers"
-      subtitle="Shop confidently with Nyle’s verified and trusted suppliers."
+      subtitle="We verify, you trade with confidence."
     >
-      <p className="mb-6">
-        Every supplier on Nyle undergoes strict verification to ensure
-        authenticity, reliability, and performance — giving you peace of mind
-        when placing orders.
+      <p className="text-lg mb-6">
+        Every supplier on Nyle undergoes identity verification, business
+        registration checks, and quality screening. When you see the
+        <span className="font-semibold text-blue-600"> “Verified”</span> badge,
+        it means your supplier has earned trust — through performance.
       </p>
-      <ul className="space-y-3">
-        <li>✅ Verified business credentials and trade history</li>
-        <li>✅ Customer reviews and supplier ratings</li>
-        <li>✅ Consistent order fulfillment and communication</li>
-        <li>✅ Dedicated supplier support from Nyle</li>
-      </ul>
+
+      <div className="grid md:grid-cols-2 gap-8 items-center my-10">
+        <ul className="space-y-4 text-lg">
+          <li>✅ Verified business documents and trade licenses</li>
+          <li>🌍 Transparent company profiles and reviews</li>
+          <li>📈 Performance tracking and reliability scores</li>
+          <li>🎯 Nyle dispute resolution for peace of mind</li>
+        </ul>
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/810/810354.png"
+          alt="Verified Supplier"
+          className="w-64 mx-auto"
+        />
+      </div>
+
+      <p className="text-lg">
+        Discover suppliers that care about long-term partnerships — not just
+        quick sales.
+      </p>
     </BuyerInfoLayout>
   );
 }

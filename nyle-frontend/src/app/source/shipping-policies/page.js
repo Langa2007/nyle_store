@@ -4,19 +4,32 @@ export default function ShippingPoliciesPage() {
   return (
     <BuyerInfoLayout
       title="Shipping Rates & Policies"
-      subtitle="Transparent and reliable shipping across Kenya and beyond."
+      subtitle="Clarity and reliability from checkout to delivery."
     >
-      <p className="mb-6">
-        We partner with leading logistics providers to deliver fair shipping
-        rates and consistent delivery times. Our policies are designed for
-        simplicity and fairness.
+      <p className="text-lg mb-6">
+        Nyle provides predictable and fair shipping rates — with clear return
+        and refund options. Every order includes detailed delivery timelines,
+        and most regions enjoy next-day dispatch.
       </p>
-      <ul className="space-y-3">
-        <li>✅ Clear pricing before checkout</li>
-        <li>✅ Free shipping on eligible bulk orders</li>
-        <li>✅ Returns accepted under buyer protection</li>
-        <li>✅ Delivery updates via SMS & email</li>
-      </ul>
+
+      <div className="grid md:grid-cols-2 gap-6 my-10">
+        <ul className="space-y-4 text-lg">
+          <li>🚚 Transparent shipping fees before purchase</li>
+          <li>🎁 Free delivery for bulk or premium-tier orders</li>
+          <li>🔁 Easy return process under Nyle Buyer Protection</li>
+          <li>📩 SMS & email delivery updates every step of the way</li>
+        </ul>
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/1995/1995574.png"
+          alt="Shipping"
+          className="w-64 mx-auto"
+        />
+      </div>
+
+      <p className="text-lg">
+        We value your time and trust — that’s why Nyle keeps shipping honest,
+        fair, and fast.
+      </p>
     </BuyerInfoLayout>
   );
 }
