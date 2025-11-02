@@ -170,10 +170,10 @@ function HomeContent() {
           <div>
             <h3 className="font-bold text-lg mb-4">Get Support</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:underline">Help Center</a></li>
-              <li><a href="#" className="hover:underline">Contact Us</a></li>
-              <li><a href="#" className="hover:underline">Report an Issue</a></li>
-              <li><a href="#" className="hover:underline">FAQs</a></li>
+              <li><a href="support/help-center" className="hover:underline">Help Center</a></li>
+              <li><a href="support/contact" className="hover:underline">Contact Us</a></li>
+              <li><a href="support/report-issue" className="hover:underline">Report an Issue</a></li>
+              <li><a href="support/faqs" className="hover:underline">FAQs</a></li>
             </ul>
           </div>
 
