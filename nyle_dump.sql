@@ -50,6 +50,42 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: announcements; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.announcements (
+    id integer NOT NULL,
+    title character varying(255) NOT NULL,
+    message text NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.announcements OWNER TO postgres;
+
+--
+-- Name: announcements_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.announcements_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.announcements_id_seq OWNER TO postgres;
+
+--
+-- Name: announcements_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.announcements_id_seq OWNED BY public.announcements.id;
+
+
+--
 -- Name: cart; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -122,6 +158,41 @@ ALTER SEQUENCE public.categories_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.categories_id_seq OWNED BY public.categories.id;
+
+
+--
+-- Name: newsletter_subscribers; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.newsletter_subscribers (
+    id integer NOT NULL,
+    email character varying(255) NOT NULL,
+    subscribed_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.newsletter_subscribers OWNER TO postgres;
+
+--
+-- Name: newsletter_subscribers_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.newsletter_subscribers_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.newsletter_subscribers_id_seq OWNER TO postgres;
+
+--
+-- Name: newsletter_subscribers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.newsletter_subscribers_id_seq OWNED BY public.newsletter_subscribers.id;
 
 
 --
@@ -481,6 +552,13 @@ ALTER SEQUENCE public.vendors_id_seq OWNED BY public.vendors.id;
 
 
 --
+-- Name: announcements id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.announcements ALTER COLUMN id SET DEFAULT nextval('public.announcements_id_seq'::regclass);
+
+
+--
 -- Name: cart id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -492,6 +570,13 @@ ALTER TABLE ONLY public.cart ALTER COLUMN id SET DEFAULT nextval('public.cart_id
 --
 
 ALTER TABLE ONLY public.categories ALTER COLUMN id SET DEFAULT nextval('public.categories_id_seq'::regclass);
+
+
+--
+-- Name: newsletter_subscribers id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.newsletter_subscribers ALTER COLUMN id SET DEFAULT nextval('public.newsletter_subscribers_id_seq'::regclass);
 
 
 --
@@ -558,6 +643,14 @@ ALTER TABLE ONLY public.vendors ALTER COLUMN id SET DEFAULT nextval('public.vend
 
 
 --
+-- Data for Name: announcements; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.announcements (id, title, message, created_at) FROM stdin;
+\.
+
+
+--
 -- Data for Name: cart; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -571,6 +664,14 @@ COPY public.cart (id, user_id, session_id, product_id, quantity, created_at, upd
 
 COPY public.categories (id, name, description, created_at) FROM stdin;
 1	Electronics	\N	2025-09-23 16:39:37.401395
+\.
+
+
+--
+-- Data for Name: newsletter_subscribers; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.newsletter_subscribers (id, email, subscribed_at) FROM stdin;
 \.
 
 
@@ -663,6 +764,13 @@ COPY public.vendors (id, legal_name, email, phone, address, created_at, company_
 
 
 --
+-- Name: announcements_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.announcements_id_seq', 1, false);
+
+
+--
 -- Name: cart_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -674,6 +782,13 @@ SELECT pg_catalog.setval('public.cart_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.categories_id_seq', 1, true);
+
+
+--
+-- Name: newsletter_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.newsletter_subscribers_id_seq', 1, false);
 
 
 --
@@ -740,6 +855,14 @@ SELECT pg_catalog.setval('public.vendors_id_seq', 8, true);
 
 
 --
+-- Name: announcements announcements_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.announcements
+    ADD CONSTRAINT announcements_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: cart cart_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -761,6 +884,22 @@ ALTER TABLE ONLY public.categories
 
 ALTER TABLE ONLY public.categories
     ADD CONSTRAINT categories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: newsletter_subscribers newsletter_subscribers_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.newsletter_subscribers
+    ADD CONSTRAINT newsletter_subscribers_email_key UNIQUE (email);
+
+
+--
+-- Name: newsletter_subscribers newsletter_subscribers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.newsletter_subscribers
+    ADD CONSTRAINT newsletter_subscribers_pkey PRIMARY KEY (id);
 
 
 --

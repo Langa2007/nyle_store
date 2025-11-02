@@ -19,6 +19,7 @@ import customerOrderRoutes from "./routes/customerOrders.js";
 import productsRoutes from "./routes/product.js";
 import userRoute from "./routes/user.js";
 import cartRoutes from "./routes/cart.js";
+import newsletterRoutes from "./routes/newsletterRoutes.js";
 
 dotenv.config();
 
@@ -138,6 +139,9 @@ app.use("/api/customer/orders", customerOrderRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/user", userRoute);
 app.use("/api/cart", cartRoutes);
+
+// Newsletter routes
+app.use("/api/newsletter", newsletterRoutes);
 
 // Health check
 app.get("/api", (req, res) => {
