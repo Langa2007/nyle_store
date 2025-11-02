@@ -19,6 +19,12 @@ export default function Sidebar() {
         <Link href="/dashboard/orders" className="block p-2 rounded hover:bg-gray-100">
           Orders
         </Link>
+          <Link href="/dashboard/settings" className="block p-2 rounded hover:bg-gray-100">
+          Settings
+        </Link>
+        <Link href="/dashboard/newsletter" className="block p-2 rounded hover:bg-gray-100">
+          Newsletter
+        </Link>
       </nav>
     </aside>
   )
