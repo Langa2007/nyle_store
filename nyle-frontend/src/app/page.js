@@ -147,11 +147,11 @@ function HomeContent() {
           <div>
             <h3 className="font-bold text-lg mb-4">Source on Nyle</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:underline">Get Quotation</a></li>
-              <li><a href="#" className="hover:underline">Verified Suppliers</a></li>
-              <li><a href="#" className="hover:underline">Get Logistics</a></li>
-              <li><a href="#" className="hover:underline">Trade Assurance</a></li>
-              <li><a href="#" className="hover:underline">Shipping Rates & Policies</a></li>
+              <li><a href="source/quotation" className="hover:underline">Get Quotation</a></li>
+              <li><a href="source/suppliers" className="hover:underline">Verified Suppliers</a></li>
+              <li><a href="source/logistics" className="hover:underline">Get Logistics</a></li>
+              <li><a href="source/trade-assurance" className="hover:underline">Trade Assurance</a></li>
+              <li><a href="source/shipping-policies" className="hover:underline">Shipping Rates & Policies</a></li>
             </ul>
           </div>
 
