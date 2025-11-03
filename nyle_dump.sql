@@ -161,6 +161,83 @@ ALTER SEQUENCE public.categories_id_seq OWNED BY public.categories.id;
 
 
 --
+-- Name: faqs; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.faqs (
+    id integer NOT NULL,
+    question text NOT NULL,
+    answer text NOT NULL,
+    category text,
+    order_index integer DEFAULT 0,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.faqs OWNER TO postgres;
+
+--
+-- Name: faqs_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.faqs_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.faqs_id_seq OWNER TO postgres;
+
+--
+-- Name: faqs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.faqs_id_seq OWNED BY public.faqs.id;
+
+
+--
+-- Name: newsletter_logs; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.newsletter_logs (
+    id integer NOT NULL,
+    subject text NOT NULL,
+    body text NOT NULL,
+    sent_by integer,
+    sent_at timestamp with time zone DEFAULT now(),
+    recipients_count integer
+);
+
+
+ALTER TABLE public.newsletter_logs OWNER TO postgres;
+
+--
+-- Name: newsletter_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.newsletter_logs_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.newsletter_logs_id_seq OWNER TO postgres;
+
+--
+-- Name: newsletter_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.newsletter_logs_id_seq OWNED BY public.newsletter_logs.id;
+
+
+--
 -- Name: newsletter_subscribers; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -354,6 +431,47 @@ ALTER SEQUENCE public.products_id_seq OWNED BY public.products.id;
 
 
 --
+-- Name: reported_issues; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.reported_issues (
+    id integer NOT NULL,
+    reporter_name text,
+    reporter_email text,
+    description text NOT NULL,
+    url text,
+    priority text DEFAULT 'normal'::text,
+    status text DEFAULT 'open'::text NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.reported_issues OWNER TO postgres;
+
+--
+-- Name: reported_issues_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.reported_issues_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.reported_issues_id_seq OWNER TO postgres;
+
+--
+-- Name: reported_issues_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.reported_issues_id_seq OWNED BY public.reported_issues.id;
+
+
+--
 -- Name: reviews; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -390,6 +508,46 @@ ALTER SEQUENCE public.reviews_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.reviews_id_seq OWNED BY public.reviews.id;
+
+
+--
+-- Name: support_messages; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.support_messages (
+    id integer NOT NULL,
+    name text,
+    email text NOT NULL,
+    subject text,
+    message text NOT NULL,
+    status text DEFAULT 'open'::text NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.support_messages OWNER TO postgres;
+
+--
+-- Name: support_messages_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.support_messages_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.support_messages_id_seq OWNER TO postgres;
+
+--
+-- Name: support_messages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.support_messages_id_seq OWNED BY public.support_messages.id;
 
 
 --
@@ -573,6 +731,20 @@ ALTER TABLE ONLY public.categories ALTER COLUMN id SET DEFAULT nextval('public.c
 
 
 --
+-- Name: faqs id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.faqs ALTER COLUMN id SET DEFAULT nextval('public.faqs_id_seq'::regclass);
+
+
+--
+-- Name: newsletter_logs id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.newsletter_logs ALTER COLUMN id SET DEFAULT nextval('public.newsletter_logs_id_seq'::regclass);
+
+
+--
 -- Name: newsletter_subscribers id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -608,10 +780,24 @@ ALTER TABLE ONLY public.products ALTER COLUMN id SET DEFAULT nextval('public.pro
 
 
 --
+-- Name: reported_issues id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reported_issues ALTER COLUMN id SET DEFAULT nextval('public.reported_issues_id_seq'::regclass);
+
+
+--
 -- Name: reviews id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.reviews ALTER COLUMN id SET DEFAULT nextval('public.reviews_id_seq'::regclass);
+
+
+--
+-- Name: support_messages id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.support_messages ALTER COLUMN id SET DEFAULT nextval('public.support_messages_id_seq'::regclass);
 
 
 --
@@ -668,6 +854,22 @@ COPY public.categories (id, name, description, created_at) FROM stdin;
 
 
 --
+-- Data for Name: faqs; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.faqs (id, question, answer, category, order_index, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: newsletter_logs; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.newsletter_logs (id, subject, body, sent_by, sent_at, recipients_count) FROM stdin;
+\.
+
+
+--
 -- Data for Name: newsletter_subscribers; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -715,10 +917,26 @@ COPY public.products (id, name, description, price, image_url, created_at, stock
 
 
 --
+-- Data for Name: reported_issues; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.reported_issues (id, reporter_name, reporter_email, description, url, priority, status, created_at, updated_at) FROM stdin;
+\.
+
+
+--
 -- Data for Name: reviews; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.reviews (id, product_id, user_id, rating, comment, created_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: support_messages; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.support_messages (id, name, email, subject, message, status, created_at, updated_at) FROM stdin;
 \.
 
 
@@ -785,6 +1003,20 @@ SELECT pg_catalog.setval('public.categories_id_seq', 1, true);
 
 
 --
+-- Name: faqs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.faqs_id_seq', 1, false);
+
+
+--
+-- Name: newsletter_logs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.newsletter_logs_id_seq', 1, false);
+
+
+--
 -- Name: newsletter_subscribers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -820,10 +1052,24 @@ SELECT pg_catalog.setval('public.products_id_seq', 4, true);
 
 
 --
+-- Name: reported_issues_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.reported_issues_id_seq', 1, false);
+
+
+--
 -- Name: reviews_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.reviews_id_seq', 1, false);
+
+
+--
+-- Name: support_messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.support_messages_id_seq', 1, false);
 
 
 --
@@ -887,6 +1133,22 @@ ALTER TABLE ONLY public.categories
 
 
 --
+-- Name: faqs faqs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.faqs
+    ADD CONSTRAINT faqs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: newsletter_logs newsletter_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.newsletter_logs
+    ADD CONSTRAINT newsletter_logs_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: newsletter_subscribers newsletter_subscribers_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -935,11 +1197,27 @@ ALTER TABLE ONLY public.products
 
 
 --
+-- Name: reported_issues reported_issues_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reported_issues
+    ADD CONSTRAINT reported_issues_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: reviews reviews_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.reviews
     ADD CONSTRAINT reviews_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: support_messages support_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.support_messages
+    ADD CONSTRAINT support_messages_pkey PRIMARY KEY (id);
 
 
 --
@@ -1012,6 +1290,34 @@ ALTER TABLE ONLY public.vendors
 
 ALTER TABLE ONLY public.vendors
     ADD CONSTRAINT vendors_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_newsletter_email; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_newsletter_email ON public.newsletter_subscribers USING btree (email);
+
+
+--
+-- Name: idx_reported_issues_status; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_reported_issues_status ON public.reported_issues USING btree (status);
+
+
+--
+-- Name: idx_support_messages_email; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_support_messages_email ON public.support_messages USING btree (email);
+
+
+--
+-- Name: idx_support_messages_status; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_support_messages_status ON public.support_messages USING btree (status);
 
 
 --

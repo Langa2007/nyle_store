@@ -20,6 +20,9 @@ import productsRoutes from "./routes/product.js";
 import userRoute from "./routes/user.js";
 import cartRoutes from "./routes/cart.js";
 import newsletterRoutes from "./routes/newsletterRoutes.js";
+import supportRoutes from "./routes/supportRoutes.js";
+import faqRoutes from "./routes/faqRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
 
 dotenv.config();
 
@@ -142,6 +145,15 @@ app.use("/api/cart", cartRoutes);
 
 // Newsletter routes
 app.use("/api/newsletter", newsletterRoutes);
+
+// Support routes
+app.use("/api/support", supportRoutes);
+
+// FAQ routes
+app.use("/api/faqs", faqRoutes);  
+
+// Reported issues routes
+app.use("/api/reports", reportRoutes);
 
 // Health check
 app.get("/api", (req, res) => {
