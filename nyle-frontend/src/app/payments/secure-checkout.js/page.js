@@ -1,4 +1,4 @@
-import PaymentLayout from "@/components/PaymentLayout";
+import PaymentLayout from "@/components/payments/PaymentLayout";
 
 export default function SecureCheckout() {
   return (
