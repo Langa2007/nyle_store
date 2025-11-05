@@ -3,11 +3,13 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, ShoppingBag, Heart, MapPin, CreditCard, User } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function BuyerInfoLayout({ title, subtitle, children, icons = [] }) {
   const [mounted, setMounted] = useState(false);
   const [screenWidth, setScreenWidth] = useState(400);
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
@@ -16,10 +18,19 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [] 
     }
   }, []);
 
+  // ✅ Sidebar Navigation Links
+  const navItems = [
+    { href: "/buyer/orders", label: "My Orders", icon: <ShoppingBag size={18} /> },
+    { href: "/buyer/wishlist", label: "Wishlist", icon: <Heart size={18} /> },
+    { href: "/buyer/addresses", label: "Addresses", icon: <MapPin size={18} /> },
+    { href: "/buyer/payments", label: "Payment Methods", icon: <CreditCard size={18} /> },
+    { href: "/buyer/account", label: "Account Info", icon: <User size={18} /> },
+  ];
+
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col overflow-hidden">
-      {/* ✅ Nyle Top Banner */}
-      <div className="bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white py-10 shadow-md">
+      {/* 🌊 Nyle Top Banner */}
+      <div className="bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white py-12 shadow-md">
         <div className="max-w-5xl mx-auto text-center px-6">
           <motion.h1
             initial={{ y: -20, opacity: 0 }}
@@ -29,6 +40,7 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [] 
           >
             {title}
           </motion.h1>
+
           {subtitle && (
             <motion.p
               initial={{ y: -10, opacity: 0 }}
@@ -42,7 +54,7 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [] 
         </div>
       </div>
 
-      {/* ✅ Floating Animated Icons */}
+      {/* 🌠 Floating Animated Icons */}
       {mounted &&
         icons.map((icon, index) => (
           <motion.img
@@ -70,16 +82,47 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [] 
           />
         ))}
 
-      {/* ✅ Main Content Card */}
-      <div className="relative z-10 max-w-4xl mx-auto mt-12 mb-20 bg-white rounded-3xl shadow-xl p-8 md:p-12 text-gray-800">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="text-left leading-relaxed space-y-5"
+      {/* 🧭 Sidebar + Main Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-4 gap-10">
+        {/* Sidebar */}
+        <motion.aside
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 h-fit sticky top-4"
         >
-          {children}
-        </motion.div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Buyer Dashboard</h3>
+          <ul className="space-y-2 text-gray-700">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 ${
+                      isActive
+                        ? "bg-blue-600 text-white font-semibold shadow-sm"
+                        : "hover:bg-blue-50 hover:text-blue-700"
+                    }`}
+                  >
+                    {item.icon}
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </motion.aside>
+
+        {/* Main Content */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="md:col-span-3 bg-white rounded-3xl shadow-xl p-8 md:p-12 text-gray-800 border border-gray-100"
+        >
+          <div className="space-y-5 leading-relaxed text-lg">{children}</div>
+        </motion.section>
       </div>
 
       {/* ✅ Footer */}
@@ -104,7 +147,7 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [] 
         </div>
       </footer>
 
-      {/* ✅ Decorative Blue Wave Footer */}
+      {/* 🌊 Decorative Blue Wave */}
       <div className="absolute bottom-0 left-0 right-0">
         <svg
           xmlns="http://www.w3.org/2000/svg"
