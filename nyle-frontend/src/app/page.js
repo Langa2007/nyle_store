@@ -181,11 +181,11 @@ function HomeContent() {
           <div>
             <h3 className="font-bold text-lg mb-4">Nyle Payments</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:underline">Payment Policies</a></li>
-              <li><a href="#" className="hover:underline">Refunds & Returns</a></li>
-              <li><a href="#" className="hover:underline">Secure Checkout</a></li>
-              <li><a href="#" className="hover:underline">Accepted Methods</a></li>
-              <li><a href="#" className="hover:underline">Customer Protection</a></li>
+              <li><a href="payments/policies" className="hover:underline">Payment Policies</a></li>
+              <li><a href="payments/returns" className="hover:underline">Refunds & Returns</a></li>
+              <li><a href="payments/secure-checkout" className="hover:underline">Secure Checkout</a></li>
+              <li><a href="payments/methods" className="hover:underline">Accepted Methods</a></li>
+              <li><a href="payments/protection" className="hover:underline">Customer Protection</a></li>
             </ul>
           </div>
         </div>
