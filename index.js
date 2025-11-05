@@ -4,6 +4,12 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./db/connect.js";
 import bodyparser from "body-parser";
+import {publicLimiter} from "./middleware/rateLimit.js";
+import { contactLimiter } from "./middleware/rateLimit.js";
+import {createBullBoard} from "@bull-board/api";
+import {BullMQAdapter} from "@bull-board/api/bullMQAdapter";
+import {ExpressAdapter} from "@bull-board/express";
+import { emailQueue } from "./services/emailQueue.js";
 
 // Import route files
 import userRoutes from "./routes/users.js";
@@ -23,6 +29,7 @@ import newsletterRoutes from "./routes/newsletterRoutes.js";
 import supportRoutes from "./routes/supportRoutes.js";
 import faqRoutes from "./routes/faqRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
+
 
 dotenv.config();
 
@@ -118,6 +125,18 @@ app.use((req, res, next) => {
   next();
 });
 
+// --- BULL BOARD SETUP ---
+const serverAdapter = new ExpressAdapter();
+serverAdapter.setBasePath("/admin/queues");
+
+createBullBoard({
+  queues: [new BullMQAdapter(emailQueue)],
+  serverAdapter: serverAdapter,
+});
+
+app.use(publicLimiter); // Apply rate limiting to all requests
+app.use("/api/support/contact", contactLimiter); // Apply stricter rate limiting to contact route
+
 // --- ROUTES ---
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
@@ -136,6 +155,7 @@ app.use("/api/vendor/products", vendorProductRoutes);
 app.use("/api/admin", adminAuthRoutes);       // must come first
 app.use("/api/admin/vendors", adminVendorRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/admin/queues", serverAdapter.getRouter()); // Bull Board UI
 
 //  Customer & cart routes
 app.use("/api/customer/orders", customerOrderRoutes);
@@ -154,6 +174,8 @@ app.use("/api/faqs", faqRoutes);
 
 // Reported issues routes
 app.use("/api/reports", reportRoutes);
+
+
 
 // Health check
 app.get("/api", (req, res) => {

@@ -1,5 +1,6 @@
 // routes/supportRoutes.js
 import express from "express";
+import { body, validationResult } from "express-validator";
 import {
   createSupportMessage,
   listSupportMessages,
@@ -12,5 +13,6 @@ const router = express.Router();
 router.post("/contact", createSupportMessage);
 router.get("/messages", verifyAdmin, listSupportMessages);
 router.patch("/messages/:id/status", verifyAdmin, updateSupportStatus);
+
 
 export default router;

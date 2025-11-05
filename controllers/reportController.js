@@ -45,3 +45,17 @@ export const updateReportStatus = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const createSupportMessage = async (req, res) => {
+  try {
+    const { email, message } = req.body;
+    const q = await pool.query(
+      `INSERT INTO support_messages (email, message) VALUES ($1,$2) RETURNING id`,
+      [email, message]
+    );
+    res.status(201).json({ message: "Support message sent", id: q.rows[0].id });
+  } catch (err) {
+    console.error("createSupportMessage error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
