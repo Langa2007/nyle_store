@@ -40,6 +40,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               <Link href="/dashboard/orders">Orders</Link>
               <Link href="/dashboard/settings">Settings</Link>
               <Link href="/dashboard/newsletter">Newsletter</Link>
+              <Link href="/dashboard/categories">Categories</Link>
             </nav>
           </aside>
 
@@ -58,6 +59,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 <Link href="/dashboard/orders">Orders</Link>
                 <Link href="/dashboard/settings">Settings</Link>
                 <Link href="/dashboard/newsletter">Newsletter</Link>
+                <link href="/dashboard/categories">Categories</link>
               </nav>
             </SheetContent>
           </Sheet>
