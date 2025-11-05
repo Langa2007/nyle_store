@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { HelpCircle } from "lucide-react";
 
 export default function BuyerInfoLayout({ title, subtitle, children, icons = [] }) {
   const [mounted, setMounted] = useState(false);
@@ -15,7 +17,7 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [] 
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-blue-50 to-white overflow-hidden">
+    <div className="relative min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col overflow-hidden">
       {/* ✅ Nyle Top Banner */}
       <div className="bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white py-10 shadow-md">
         <div className="max-w-5xl mx-auto text-center px-6">
@@ -79,6 +81,28 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [] 
           {children}
         </motion.div>
       </div>
+
+      {/* ✅ Footer */}
+      <footer className="bg-gray-900 text-gray-300 py-8 mt-auto relative z-20">
+        <div className="max-w-7xl mx-auto px-6 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-6">
+          <div>
+            <h4 className="font-semibold text-white mb-2">Need Help?</h4>
+            <p className="text-sm flex items-center justify-center md:justify-start gap-2">
+              <HelpCircle size={16} className="text-blue-400" />
+              <Link
+                href="/support/contact"
+                className="text-blue-400 hover:text-blue-300 transition-all duration-200 underline-offset-4 hover:underline"
+              >
+                Contact our Support Team
+              </Link>
+            </p>
+          </div>
+
+          <div className="text-sm opacity-70">
+            © {new Date().getFullYear()} Nyle Marketplace. All rights reserved.
+          </div>
+        </div>
+      </footer>
 
       {/* ✅ Decorative Blue Wave Footer */}
       <div className="absolute bottom-0 left-0 right-0">

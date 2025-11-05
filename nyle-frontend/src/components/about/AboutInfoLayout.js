@@ -1,23 +1,24 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { HelpCircle } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function AboutInfoLayout({ title, subtitle, children }) {
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => setMounted(true), []);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-blue-50 to-white overflow-hidden">
-      {/* Nyle Banner */}
-      <div className="bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white py-10 shadow-md">
+    <div className="relative min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white overflow-hidden">
+      {/* 🌊 Hero Section */}
+      <div className="bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white py-16 shadow-lg">
         <div className="max-w-5xl mx-auto text-center px-6">
           <motion.h1
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
-            className="text-3xl md:text-5xl font-extrabold tracking-tight"
+            className="text-4xl md:text-5xl font-extrabold tracking-tight"
           >
             {title}
           </motion.h1>
@@ -34,7 +35,7 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
         </div>
       </div>
 
-      {/* Content */}
+      {/* 📘 Content */}
       <div className="relative z-10 max-w-4xl mx-auto mt-12 mb-20 bg-white rounded-3xl shadow-xl p-8 md:p-12 text-gray-800">
         <motion.div
           initial={{ opacity: 0 }}
@@ -46,12 +47,33 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
         </motion.div>
       </div>
 
-      {/* Blue Wave Footer */}
+      {/* 📞 Footer */}
+      <footer className="bg-gray-900 text-gray-300 py-8 mt-auto relative z-20">
+        <div className="max-w-7xl mx-auto px-6 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-6">
+          <div>
+            <h4 className="font-semibold text-white mb-2">Need Help?</h4>
+            <p className="text-sm flex items-center justify-center md:justify-start gap-2">
+              <HelpCircle size={16} className="text-blue-400" />
+              <Link
+                href="/support/contact"
+                className="text-blue-400 hover:text-blue-300 underline underline-offset-4 transition-all duration-200"
+              >
+                Contact our Support Team
+              </Link>
+            </p>
+          </div>
+          <div className="text-sm opacity-70">
+            © {new Date().getFullYear()} Nyle Marketplace. All rights reserved.
+          </div>
+        </div>
+      </footer>
+
+      {/* 🌊 Decorative Wave */}
       <div className="absolute bottom-0 left-0 right-0">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 1440 320"
-          className="w-full h-40 text-blue-500 opacity-30"
+          className="w-full h-40 text-blue-500 opacity-25"
           preserveAspectRatio="none"
         >
           <path
