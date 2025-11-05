@@ -3,30 +3,33 @@
 import { motion } from "framer-motion";
 import { HelpCircle } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
-export default function SupportInfoLayout({ title, subtitle, children, icons = [] }) {
-  const [mounted, setMounted] = useState(false);
-  const [screenWidth, setScreenWidth] = useState(400);
+export default function SupportInfoLayout({ title, subtitle, children }) {
+  const pathname = usePathname();
 
-  useEffect(() => {
-    setMounted(true);
-    if (typeof window !== "undefined") setScreenWidth(window.innerWidth);
-  }, []);
+  const navItems = [
+    { href: "/support/contact", label: "Contact Support" },
+    { href: "/support/shipping", label: "Shipping & Delivery" },
+    { href: "/support/returns", label: "Returns & Refunds" },
+    { href: "/support/account", label: "Account Assistance" },
+    { href: "/support/faqs", label: "FAQs" },
+  ];
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col overflow-hidden">
-      {/* 🌊 Hero Section */}
-      <div className="bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white py-14 shadow-lg relative z-10">
+    <div className="relative min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white overflow-hidden">
+      {/* 🌊 Top Banner */}
+      <div className="bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white py-16 shadow-lg">
         <div className="max-w-5xl mx-auto text-center px-6">
           <motion.h1
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
-            className="text-3xl md:text-5xl font-extrabold tracking-tight"
+            className="text-4xl md:text-5xl font-extrabold tracking-tight"
           >
             {title}
           </motion.h1>
+
           {subtitle && (
             <motion.p
               initial={{ y: -10, opacity: 0 }}
@@ -40,58 +43,64 @@ export default function SupportInfoLayout({ title, subtitle, children, icons = [
         </div>
       </div>
 
-      {/* ✨ Floating Icons (optional aesthetic) */}
-      {mounted &&
-        icons.map((icon, index) => (
-          <motion.img
-            key={index}
-            src={icon}
-            alt="floating icon"
-            className="absolute w-10 md:w-14 opacity-25"
-            initial={{
-              y: Math.random() * 150 - 75,
-              x: Math.random() * screenWidth - 100,
-            }}
-            animate={{
-              y: [0, -20, 0],
-              rotate: [0, 10, -10, 0],
-            }}
-            transition={{
-              duration: 6 + index * 2,
-              repeat: Infinity,
-              repeatType: "mirror",
-            }}
-            style={{
-              top: `${20 + Math.random() * 60}%`,
-              left: `${10 + Math.random() * 80}%`,
-            }}
-          />
-        ))}
-
-      {/* 📘 Main Content */}
-      <div className="relative z-10 max-w-4xl mx-auto mt-12 mb-20 bg-white rounded-3xl shadow-xl p-8 md:p-12 text-gray-800">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="text-left leading-relaxed space-y-5"
+      {/* 🧭 Sidebar + Main Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-4 gap-10">
+        {/* Sidebar Navigation */}
+        <motion.aside
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 h-fit sticky top-4"
         >
-          {children}
-        </motion.div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Support Center
+          </h3>
+          <ul className="space-y-2 text-gray-700">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={`block px-3 py-2 rounded-lg transition-all duration-200 ${
+                      isActive
+                        ? "bg-blue-600 text-white font-semibold shadow-sm"
+                        : "hover:bg-blue-50 hover:text-blue-700"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </motion.aside>
+
+        {/* Main Content */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="md:col-span-3 bg-white rounded-3xl shadow-xl p-8 md:p-12 text-gray-800 border border-gray-100"
+        >
+          <div className="space-y-5 leading-relaxed text-lg">
+            {children}
+          </div>
+        </motion.section>
       </div>
 
       {/* 📞 Footer */}
       <footer className="bg-gray-900 text-gray-300 py-8 mt-auto relative z-20">
         <div className="max-w-7xl mx-auto px-6 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-6">
           <div>
-            <h4 className="font-semibold text-white mb-2">Need Help?</h4>
+            <h4 className="font-semibold text-white mb-2">Need More Help?</h4>
             <p className="text-sm flex items-center justify-center md:justify-start gap-2">
               <HelpCircle size={16} className="text-blue-400" />
               <Link
                 href="/support/contact"
                 className="text-blue-400 hover:text-blue-300 underline underline-offset-4 transition-all duration-200"
               >
-                Contact our Support Team
+                Reach our Support Team
               </Link>
             </p>
           </div>

@@ -4,10 +4,19 @@ import { motion } from "framer-motion";
 import { HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function AboutInfoLayout({ title, subtitle, children }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+  const pathname = usePathname();
+
+  const navItems = [
+    { href: "/about/know-nyle", label: "About the Company" },
+    { href: "/about/partner", label: "Our Team" },
+    { href: "/about/careers", label: "Careers" },
+    { href: "/about/newsletter", label: "Blog" },
+  ];
 
   return (
     <div className="relative min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white overflow-hidden">
@@ -35,16 +44,50 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
         </div>
       </div>
 
-      {/* 📘 Content */}
-      <div className="relative z-10 max-w-4xl mx-auto mt-12 mb-20 bg-white rounded-3xl shadow-xl p-8 md:p-12 text-gray-800">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="space-y-5 leading-relaxed text-lg"
+      {/* 🧭 Sidebar + Main Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-4 gap-10">
+        {/* Sidebar Navigation */}
+        <motion.aside
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 h-fit sticky top-4"
         >
-          {children}
-        </motion.div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Learn More
+          </h3>
+          <ul className="space-y-2 text-gray-700">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={`block px-3 py-2 rounded-lg transition-all duration-200 ${
+                      isActive
+                        ? "bg-blue-600 text-white font-semibold shadow-sm"
+                        : "hover:bg-blue-50 hover:text-blue-700"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </motion.aside>
+
+        {/* Main Content Area */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="md:col-span-3 bg-white rounded-3xl shadow-xl p-8 md:p-12 text-gray-800 border border-gray-100"
+        >
+          <div className="space-y-5 leading-relaxed text-lg">
+            {children}
+          </div>
+        </motion.section>
       </div>
 
       {/* 📞 Footer */}
