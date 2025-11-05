@@ -100,15 +100,24 @@ export default function VendorInfoLayout({
 
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-300 py-8 mt-auto">
-        <div className="max-w-7xl mx-auto px-6 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="max-w-7xl mx auto px-6 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-6">
+
+          {/* Left side - contact help */}
           <div>
             <h4 className="font-semibold text-white mb-2">Need Help?</h4>
             <p className="text-sm flex items-center justify-center md:justify-start gap-2">
-              <HelpCircle size={16} className="text-blue-400" /> Contact our Vendor Support Team
+              <HelpCircle size={16}  className="text-blue-400" />
+              <Link
+                href="/support/contact"
+                className="text-blue-400 hover:text-blue-300 transition-all duration-200 underline-offset-4 hover:underline"
+                >
+                  Contact our Nyle Support Team   
+                </Link>
             </p>
           </div>
+          {/* Right side - copyright */}
           <div className="text-sm opacity-70">
-            © {new Date().getFullYear()} Nyle Marketplace. All rights reserved.
+             © {new Date().getFullYear()} Nyle Marketplace. All rights reserved.
           </div>
         </div>
       </footer>
