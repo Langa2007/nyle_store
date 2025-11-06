@@ -65,38 +65,18 @@ if (ALLOW_ALL_ORIGINS_FOR_DEBUG) {
   console.warn("⚠️ ALLOW_ALL_ORIGINS_FOR_DEBUG is true — CORS is wide open (TEMPORARY)");
   app.use(cors({ origin: true, credentials: true })); // allow all
 } else {
-  app.use(
-    cors({
-      origin: function (origin, callback) {
-        const orig = normalizeOrigin(origin);
-        // If no origin header (server->server or same-origin request), allow it
-        if (!orig) {
-          return callback(null, true);
-        }
-
-        // exact match allowed
-        if (allowedOrigins.includes(orig)) return callback(null, true);
-
-        // allow Vercel preview domains (*.vercel.app) automatically
-        try {
-          if (/^https?:\/\/[A-Za-z0-9-]+\.vercel\.app$/.test(orig)) {
-            return callback(null, true);
-          }
-        } catch (e) {
-          // ignore
-        }
-
-        console.error("❌ Blocked by CORS:", orig);
-        return callback(new Error("Not allowed by CORS"));
-      },
-      credentials: true,
-      // explicitly allow the headers we use (Authorization needed for JWT)
-      allowedHeaders: ["Content-Type", "Authorization", "Accept"],
-      methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
-      preflightContinue: false,
-      optionsSuccessStatus: 204,
-    })
-  );
+ app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 }
 
 // handle preflight globally
