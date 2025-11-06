@@ -25,11 +25,11 @@ export default function AdminLayout({ title, children }: AdminLayoutProps) {
   const pathname = usePathname();
 
   const navItems = [
-    { name: "Dashboard", href: "/admin", icon: <LayoutDashboard size={18} /> },
-    { name: "Products", href: "/admin/products", icon: <Package size={18} /> },
-    { name: "Categories", href: "/admin/categories", icon: <List size={18} /> },
-    { name: "Orders", href: "/admin/orders", icon: <ShoppingCart size={18} /> },
-    { name: "Settings", href: "/admin/settings", icon: <Settings size={18} /> },
+    { name: "Dashboard", href: "/dashboard/page", icon: <LayoutDashboard size={18} /> },
+    { name: "Products", href: "/dashboard/products", icon: <Package size={18} /> },
+    { name: "Categories", href: "/dashboard/categories", icon: <List size={18} /> },
+    { name: "Orders", href: "/dashboard/orders", icon: <ShoppingCart size={18} /> },
+    { name: "Settings", href: "/dashboard/settings", icon: <Settings size={18} /> },
   ];
 
   return (
