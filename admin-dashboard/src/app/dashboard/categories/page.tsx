@@ -12,6 +12,7 @@ interface Category {
   name: string;
 }
 
+export const baseurl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://nyle-store.onrender.com";
 export default function AdminCategoryPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
