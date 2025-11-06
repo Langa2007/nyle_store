@@ -190,6 +190,8 @@ function HomeContent() {
               <li><Link href="/vendor/signup" className="hover:underline">Become A Seller</Link></li>
               <li><Link href="/vendor/quotations" className="hover:underline">Get Seller Quotations</Link></li>
               <li><Link href="/vendor/policies" className="hover:underline">Seller Policies</Link></li>
+              <li><Link href="/vendor/shipping-logistics" className="hover:underline">Shipping logistics</Link></li>
+              <li><Link href="/vendor/app" className="hover:underline">Get our app</Link></li>
             </ul>
           </div>
 
@@ -199,6 +201,7 @@ function HomeContent() {
               <li><Link href="/about/know-nyle" className="hover:underline">Know Nyle</Link></li>
               <li><Link href="/about/careers" className="hover:underline">Careers</Link></li>
               <li><Link href="/about/partners" className="hover:underline">Partners</Link></li>
+              <li><Link href="/about/newsletter"className="hover:underline">Newsletter</Link></li>
             </ul>
           </div>
 
@@ -208,9 +211,34 @@ function HomeContent() {
               <li><Link href="/support/help-center" className="hover:underline">Help Center</Link></li>
               <li><Link href="/support/contact" className="hover:underline">Contact Us</Link></li>
               <li><Link href="/support/faqs" className="hover:underline">FAQs</Link></li>
+              <li><Link href="/support/report-issue" className="hover:underline">Report issue</Link></li>
             </ul>
           </div>
         </div>
+
+        <div>
+          <h3 className="font-bold text-lg mb-4">payments</h3>
+          <ul className="space-y-2">
+            <li><Link href="/payments/methods" className="hover:underline">methods of payments</Link></li>
+            <li><Link href="/payments/policies" className="hover:underline">payments policies</Link></li>
+            <li><Link href="/payments/protection" className="hover:underline">Customer Protection</Link></li>
+            <li><Link href="/payments/returns" className="hover:underline">Refunds & Returns</Link></li>
+            <li><Link href="/payments/secure-checkout" className="hover:underline">Secure Checkout</Link></li>
+          </ul>
+        </div>
+
+         <div>
+            <h3 className="font-bold text-lg mb-4">Source on Nyle</h3>
+            <ul className="space-y-2">
+              <li><a href="source/quotation" className="hover:underline">Get Quotation</a></li>
+              <li><a href="source/suppliers" className="hover:underline">Verified Suppliers</a></li>
+              <li><a href="source/logistics" className="hover:underline">Get Logistics</a></li>
+              <li><a href="source/trade-assurance" className="hover:underline">Trade Assurance</a></li>
+              <li><a href="source/shipping-policies" className="hover:underline">Shipping Rates & Policies</a></li>
+            </ul>
+          </div>
+
+          
 
         <div className="mt-12 flex justify-center space-x-6 text-2xl">
           <a href="#" title="Facebook" className="hover:text-blue-200"><FaFacebookF /></a>
