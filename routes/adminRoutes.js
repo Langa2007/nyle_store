@@ -20,15 +20,15 @@ router.put("/vendors/:id/approve", approveVendor);// only admin can approve vend
 router.put("/vendors/:id/reject",rejectVendor);// only admin can reject vendors
 
 // --- Categories ---
-router.post("/categories",verifyAdmin, createCategory);// only admin can create categories
+router.post("/categories", createCategory);// only admin can create categories
 router.get("/categories", getAllCategories);// public route
-router.put("/categories/:id",verifyAdmin, updateCategory);// only admin can update categories
-router.delete("/categories/:id",verifyAdmin, deleteCategory);// only admin can delete categories
+router.put("/categories/:id", updateCategory);// only admin can update categories
+router.delete("/categories/:id", deleteCategory);// only admin can delete categories
 
 // --- Products ---
-router.get("/products",verifyAdmin, getAllProducts);// only admin can view all products
-router.delete("/products/:id",verifyAdmin, deleteProduct);// only admin can delete products
-router.put("/products/:id/stock",verifyAdmin, updateStock);// only admin can update stock
+router.get("/products", getAllProducts);// only admin can view all products
+router.delete("/products/:id", deleteProduct);// only admin can delete products
+router.put("/products/:id/stock", updateStock);// only admin can update stock
 
 // --- Orders ---
 router.get("/orders",verifyAdmin, getAllOrders);// only admin can view all orders
