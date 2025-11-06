@@ -30,7 +30,7 @@ function HomeContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [products, setProducts] = useState([]);
 
-  // Simulated featured products (replace with API fetch later)
+  // Dummy Featured Products
   useEffect(() => {
     const sampleProducts = [
       { id: 1, name: "Smartphone", price: 15000 },
@@ -45,17 +45,15 @@ function HomeContent() {
     setProducts(sampleProducts);
   }, []);
 
-  // Detect user's location and currency
+  // Detect Currency
   useEffect(() => {
     fetch("https://ipapi.co/json/")
       .then((res) => res.json())
       .then((data) => {
-        const currencyCode = data?.currency || "KES";
-        setCurrency(currencyCode);
-
-        // Simple exchange simulation
-        if (currencyCode === "USD") setExchangeRate(0.0077);
-        else if (currencyCode === "EUR") setExchangeRate(0.0070);
+        const code = data?.currency || "KES";
+        setCurrency(code);
+        if (code === "USD") setExchangeRate(0.0077);
+        else if (code === "EUR") setExchangeRate(0.0070);
         else setExchangeRate(1);
       })
       .catch(() => setCurrency("KES"));
@@ -68,7 +66,6 @@ function HomeContent() {
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Filtered product list based on search term
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -165,7 +162,9 @@ function HomeContent() {
                 className="bg-white p-6 border rounded-xl shadow hover:shadow-xl hover:scale-105 transition"
               >
                 <div className="h-40 bg-gradient-to-r from-blue-100 to-indigo-100 rounded mb-4 flex items-center justify-center">
-                  <span className="text-blue-600 font-bold">{item.name[0]}</span>
+                  <span className="text-blue-600 font-bold text-2xl">
+                    {item.name[0]}
+                  </span>
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{item.name}</h3>
                 <p className="text-gray-500 mb-3">
@@ -183,6 +182,7 @@ function HomeContent() {
       {/* Footer */}
       <footer className="mt-20 bg-gradient-to-r from-indigo-600 to-blue-700 text-white py-16 px-6">
         <div className="container mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10 text-sm">
+          {/* Sell on Nyle */}
           <div>
             <h3 className="font-bold text-lg mb-4">Sell on Nyle</h3>
             <ul className="space-y-2">
@@ -190,56 +190,58 @@ function HomeContent() {
               <li><Link href="/vendor/signup" className="hover:underline">Become A Seller</Link></li>
               <li><Link href="/vendor/quotations" className="hover:underline">Get Seller Quotations</Link></li>
               <li><Link href="/vendor/policies" className="hover:underline">Seller Policies</Link></li>
-              <li><Link href="/vendor/shipping-logistics" className="hover:underline">Shipping logistics</Link></li>
-              <li><Link href="/vendor/app" className="hover:underline">Get our app</Link></li>
+              <li><Link href="/vendor/app" className="hover:underline">Get Our App</Link></li>
+              <li><Link href="/vendor/shipping-logistics" className="hover:underline">Shipping Logisitics</Link></li>
             </ul>
           </div>
 
+          {/* More About Us */}
           <div>
             <h3 className="font-bold text-lg mb-4">More About Us</h3>
             <ul className="space-y-2">
               <li><Link href="/about/know-nyle" className="hover:underline">Know Nyle</Link></li>
               <li><Link href="/about/careers" className="hover:underline">Careers</Link></li>
               <li><Link href="/about/partners" className="hover:underline">Partners</Link></li>
-              <li><Link href="/about/newsletter"className="hover:underline">Newsletter</Link></li>
+              <li><Link href="/about/newsletter" className="hover:underline">Newsletter</Link></li>
             </ul>
           </div>
 
+          {/* Support */}
           <div>
             <h3 className="font-bold text-lg mb-4">Support</h3>
             <ul className="space-y-2">
               <li><Link href="/support/help-center" className="hover:underline">Help Center</Link></li>
               <li><Link href="/support/contact" className="hover:underline">Contact Us</Link></li>
               <li><Link href="/support/faqs" className="hover:underline">FAQs</Link></li>
-              <li><Link href="/support/report-issue" className="hover:underline">Report issue</Link></li>
+              <li><Link href="/support/report-issue" className="hover:underline">Report An Issue</Link></li>
             </ul>
           </div>
-        </div>
 
-        <div>
-          <h3 className="font-bold text-lg mb-4">payments</h3>
-          <ul className="space-y-2">
-            <li><Link href="/payments/methods" className="hover:underline">methods of payments</Link></li>
-            <li><Link href="/payments/policies" className="hover:underline">payments policies</Link></li>
-            <li><Link href="/payments/protection" className="hover:underline">Customer Protection</Link></li>
-            <li><Link href="/payments/returns" className="hover:underline">Refunds & Returns</Link></li>
-            <li><Link href="/payments/secure-checkout" className="hover:underline">Secure Checkout</Link></li>
-          </ul>
-        </div>
-
-         <div>
-            <h3 className="font-bold text-lg mb-4">Source on Nyle</h3>
+          {/* Buyer Info */}
+          <div>
+            <h3 className="font-bold text-lg mb-4">Nyle Payments</h3>
             <ul className="space-y-2">
-              <li><a href="source/quotation" className="hover:underline">Get Quotation</a></li>
-              <li><a href="source/suppliers" className="hover:underline">Verified Suppliers</a></li>
-              <li><a href="source/logistics" className="hover:underline">Get Logistics</a></li>
-              <li><a href="source/trade-assurance" className="hover:underline">Trade Assurance</a></li>
-              <li><a href="source/shipping-policies" className="hover:underline">Shipping Rates & Policies</a></li>
+              <li><Link href="/payments/methods" className="hover:underline">Accepted Payment Methods</Link></li>
+              <li><Link href="/payments/returns" className="hover:underline">Returns & Refunds</Link></li>
+              <li><Link href="/payments/policies" className="hover:underline">Shipping & Delivery</Link></li>
+              <li><Link href="/payments/protection" className="hover:underline">Customer Protection</Link></li>
             </ul>
           </div>
 
-          
+          {/* Legal & Policies */}
+          <div>
+            <h3 className="font-bold text-lg mb-4">Source On Nyle</h3>
+            <ul className="space-y-2">
+              <li><Link href="/source/suppliers" className="hover:underline">Nyle Verified Suppliers</Link></li>
+              <li><Link href="/source/logistics" className="hover:underline">Get Logisitics</Link></li>
+              <li><Link href="/source/Quotation" className="hover:underline">Get Quotation</Link></li>
+              <li><Link href="/source/trade-assurance" className="hover:underline">Trade Assurance</Link></li>
+              <li><Link href="/source/shipping-policies" className="hover:underline">Shipping Policies & Rates</Link></li>
+            </ul>
+          </div>
+        </div>
 
+        {/* Social Icons */}
         <div className="mt-12 flex justify-center space-x-6 text-2xl">
           <a href="#" title="Facebook" className="hover:text-blue-200"><FaFacebookF /></a>
           <a href="#" title="Twitter" className="hover:text-blue-200"><FaTwitter /></a>
@@ -248,6 +250,7 @@ function HomeContent() {
           <a href="#" title="YouTube" className="hover:text-blue-200"><FaYoutube /></a>
         </div>
 
+        {/* Payment Icons */}
         <div className="mt-8 flex justify-center space-x-6 text-4xl">
           <FaCcVisa />
           <FaCcMastercard />
