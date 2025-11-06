@@ -20,7 +20,7 @@ export default function AdminCategoryPage() {
   // ✅ Fetch categories
   const fetchCategories = async () => {
     try {
-      const res = await fetch("/api/admin/categories");
+      const res = await fetch('${baseurl}/api/admin/categories');
       const data = await res.json();
       setCategories(data);
     } catch (err) {
@@ -38,7 +38,7 @@ export default function AdminCategoryPage() {
   // ✅ Create category
   const handleCreate = async (name: string) => {
     try {
-      const res = await fetch("/api/admin/categories", {
+      const res = await fetch('${baseurl}/api/admin/categories', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
@@ -58,7 +58,7 @@ export default function AdminCategoryPage() {
   // ✅ Delete category
   const handleDelete = async (id: number) => {
     try {
-      const res = await fetch(`/api/admin/categories/${id}`, { method: "DELETE" });
+      const res = await fetch(`${baseurl}/api/admin/categories/${id}`, { method: "DELETE" });
       const data = await res.json();
       if (res.ok) {
         setCategories((prev) => prev.filter((cat) => cat.id !== id));
