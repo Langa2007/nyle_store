@@ -36,63 +36,48 @@ dotenv.config();
 const app = express();
 
 
-// Allowed origins - add anything else you need here
+
+// ✅ Allowed origins — keep only active production & local URLs
 const allowedOrigins = [
-  "http://localhost:3000",
-  "https://nyle-luxe.vercel.app",
-  "https://nyle-admin.vercel.app",
-  "https://nyle-store.onrender.com",
-  "https://nyle-mobile.vercel.app"
+  "http://localhost:3000",           // Local admin/frontend dev
+  "https://nyle-admin.vercel.app",   // Admin dashboard (TSX)
+  "https://nyle-luxe.vercel.app",    // Main eCommerce frontend
+  "https://nyle-store.onrender.com", // API backend (self-origin)
+  "https://nyle-mobile.vercel.app",  // Mobile frontend (optional)
 ];
 
-// Quick debug toggle (set true temporarily to bypass CORS checks)
-// WARNING: only enable temporarily for debugging — do NOT leave true in production.
-const ALLOW_ALL_ORIGINS_FOR_DEBUG = false;
-
+// ✅ Utility: normalize origin to prevent slash mismatches
 function normalizeOrigin(origin) {
-  // trim whitespace and remove trailing slash if any
-  if (!origin) return origin;
-  return origin.trim().replace(/\/$/, "");
+  return origin ? origin.trim().replace(/\/$/, "") : origin;
 }
 
-app.use((req, _res, next) => {
-  // log every incoming origin (helps debugging on Render)
-  console.log("🌍 Incoming request origin:", req.headers.origin);
-  next();
+// ✅ CORS middleware
+app.use((req, res, next) => {
+  const origin = normalizeOrigin(req.headers.origin);
+  console.log("🌍 Request Origin:", origin || "(none)");
+
+  if (!origin || allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin || "*");
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
+    res.header("Access-Control-Allow-Credentials", "true");
+
+    // ✅ Handle preflight quickly
+    if (req.method === "OPTIONS") {
+      return res.sendStatus(204);
+    }
+
+    next();
+  } else {
+    console.warn("🚫 Blocked by CORS:", origin);
+    res.status(403).json({ message: "CORS policy: Origin not allowed" });
+  }
 });
 
-if (ALLOW_ALL_ORIGINS_FOR_DEBUG) {
-  console.warn("⚠️ ALLOW_ALL_ORIGINS_FOR_DEBUG is true — CORS is wide open (TEMPORARY)");
-  app.use(cors({ origin: true, credentials: true })); // allow all
-} else {
- app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
-}
-
-// handle preflight globally
-app.options("*", cors({ origin: true, credentials: true }));
-
-// After this: body parsers, routes, etc.
+// ✅ Body parsers (always after CORS)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// optional: convert CORS errors into a 403 JSON response (improves logs + client message)
-app.use((err, _req, res, next) => {
-  if (err && err.message === "Not allowed by CORS") {
-    return res.status(403).json({ message: "Not allowed by CORS", error: err.message });
-  }
-  next(err);
-});
 
 
 const PORT = process.env.PORT || 5000;
