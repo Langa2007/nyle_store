@@ -11,6 +11,7 @@ import {BullMQAdapter} from "@bull-board/api/bullMQAdapter";
 import {ExpressAdapter} from "@bull-board/express";
 import { emailQueue } from "./services/emailQueue.js";
 
+
 // Import route files
 import userRoutes from "./routes/users.js";
 import productRoutes from "./routes/products.js";
