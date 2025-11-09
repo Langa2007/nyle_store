@@ -1,6 +1,6 @@
 // products.js
 import express from "express";
-import { verifyAdmin } from "../middleware/adminAuth.js";
+import upload from "../middleware/upload.js";
 import {
   handleCreateProduct,
   handleGetAllProducts,
@@ -13,12 +13,13 @@ import {
 
 const router = express.Router();
 
-router.get("/search", verifyAdmin, searchAndFilterProducts);
-router.post("/", verifyAdmin, handleCreateProduct);
-router.get("/", verifyAdmin, handleGetAllProducts);
-router.get("/:id", verifyAdmin, handleGetProductById);
-router.put("/:id", verifyAdmin, handleUpdateProduct);
-router.delete("/:id", verifyAdmin, handleDeleteProduct);
-router.put("/:id/stock", verifyAdmin, updateProductStock);
+router.get("/search",  searchAndFilterProducts);
+router.post("/",  handleCreateProduct);
+router.get("/",  handleGetAllProducts);
+router.get("/:id", handleGetProductById);
+router.put("/:id",  handleUpdateProduct);
+router.delete("/:id",  handleDeleteProduct);
+router.put("/:id/stock", updateProductStock);
+router.post("/", upload.single("image"), handleCreateProduct);
 
 export default router;

@@ -1,6 +1,7 @@
 import pool from "../db/connect.js";
 import cloudinary from "../config/cloudinary.js";
 import multer from "multer";
+import streamifier from "streamifier"; // needed for upload_stream
 
 import {
   createProduct,
@@ -10,9 +11,23 @@ import {
   deleteProductById,
 } from "../models/productsModel.js";
 
-// ✅ Setup multer for temporary file handling
+// ✅ Setup multer for in-memory uploads
 const storage = multer.memoryStorage();
 export const upload = multer({ storage });
+
+// ✅ Upload buffer to Cloudinary via stream
+const uploadToCloudinary = (fileBuffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "nyle-products" },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+    streamifier.createReadStream(fileBuffer).pipe(stream);
+  });
+};
 
 // ✅ Create a new product (with optional image upload)
 export const handleCreateProduct = async (req, res) => {
@@ -20,24 +35,20 @@ export const handleCreateProduct = async (req, res) => {
     const { name, description, price, stock, category } = req.body;
     let imageUrl = null;
 
-    // ✅ If image is uploaded, upload it to Cloudinary
     if (req.file) {
-      const uploadResult = await cloudinary.uploader.upload_stream(
-        { folder: "nyle-products" },
-        (error, result) => {
-          if (error) {
-            console.error("❌ Cloudinary upload error:", error);
-            return res.status(500).json({ error: "Image upload failed" });
-          }
-          imageUrl = result.secure_url;
-        }
-      );
-
-      // Required for upload_stream to complete
-      uploadResult.end(req.file.buffer);
+      const uploadResult = await uploadToCloudinary(req.file.buffer);
+      imageUrl = uploadResult.secure_url;
     }
 
-    const newProduct = await createProduct(name, description, price, stock, category, imageUrl);
+    const newProduct = await createProduct(
+      name,
+      description,
+      price,
+      stock,
+      category,
+      imageUrl
+    );
+
     res.status(201).json(newProduct);
   } catch (err) {
     console.error("❌ Product Creation Error:", err.message);
@@ -78,22 +89,22 @@ export const handleUpdateProduct = async (req, res) => {
     let imageUrl;
 
     if (req.file) {
-      const uploadResult = await cloudinary.uploader.upload_stream(
-        { folder: "nyle-products" },
-        (error, result) => {
-          if (error) {
-            console.error("❌ Cloudinary upload error:", error);
-            return res.status(500).json({ error: "Image upload failed" });
-          }
-          imageUrl = result.secure_url;
-        }
-      );
-
-      uploadResult.end(req.file.buffer);
+      const uploadResult = await uploadToCloudinary(req.file.buffer);
+      imageUrl = uploadResult.secure_url;
     }
 
-    const updated = await updateProductById(id, name, description, price, stock, category, imageUrl);
+    const updated = await updateProductById(
+      id,
+      name,
+      description,
+      price,
+      stock,
+      category,
+      imageUrl
+    );
+
     if (!updated) return res.status(404).json({ error: "Product not found" });
+
     res.status(200).json(updated);
   } catch (err) {
     console.error("❌ Update Error:", err.message);
@@ -120,7 +131,10 @@ export const updateProductStock = async (req, res) => {
   const { stock } = req.body;
 
   try {
-    await pool.query("UPDATE products SET stock = $1 WHERE id = $2", [stock, productId]);
+    await pool.query("UPDATE products SET stock = $1 WHERE id = $2", [
+      stock,
+      productId,
+    ]);
     res.status(200).json({ message: "Stock updated successfully" });
   } catch (err) {
     console.error("❌ Stock update error:", err.message);
