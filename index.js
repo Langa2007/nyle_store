@@ -35,45 +35,26 @@ dotenv.config();
 
 const app = express();
 
-
-
-// ✅ Allowed origins — keep only active production & local URLs
 const allowedOrigins = [
-  "http://localhost:3000",           // Local admin/frontend dev
-  "https://nyle-admin.vercel.app",   // Admin dashboard (TSX)
-  "https://nyle-luxe.vercel.app",    // Main eCommerce frontend
-  "https://nyle-store.onrender.com", // API backend (self-origin)
-  "https://nyle-mobile.vercel.app",  // Mobile frontend (optional)
+  "http://localhost:3000",
+  "https://nyle-admin.vercel.app",
+  "https://nyle-luxe.vercel.app",
+  "https://nyle-store.onrender.com",
+  "https://nyle-mobile.vercel.app",
 ];
 
-// ✅ Utility: normalize origin to prevent slash mismatches
-function normalizeOrigin(origin) {
-  return origin ? origin.trim().replace(/\/$/, "") : origin;
-}
-
-// ✅ CORS middleware
-app.use((req, res, next) => {
-  const origin = normalizeOrigin(req.headers.origin);
-  console.log("🌍 Request Origin:", origin || "(none)");
-
-  if (!origin || allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin || "*");
-    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-    res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
-    res.header("Access-Control-Allow-Credentials", "true");
-
-    // ✅ Handle preflight quickly
-    if (req.method === "OPTIONS") {
-      return res.sendStatus(204);
-    }
-
-    next();
-  } else {
-    console.warn("🚫 Blocked by CORS:", origin);
-    res.status(403).json({ message: "CORS policy: Origin not allowed" });
-  }
-});
-
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // Allow mobile/postman
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 // ✅ Body parsers (always after CORS)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
