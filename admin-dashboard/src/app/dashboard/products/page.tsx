@@ -44,7 +44,7 @@ export default function AdminProductsPage() {
     const fetchData = async () => {
       try {
         const [prodRes, catRes] = await Promise.all([
-          fetch(`${baseurl}/api/admin/products`, { credentials: "include" }),
+          fetch(`${baseurl}/api/products`, { credentials: "include" }),
           fetch(`${baseurl}/api/admin/categories`, { credentials: "include" }),
         ]);
 
@@ -108,7 +108,7 @@ export default function AdminProductsPage() {
     if (selectedFile) form.append("image", selectedFile);
 
     try {
-      const res = await fetch(`${baseurl}/api/admin/products`, {
+      const res = await fetch(`${baseurl}/api/products`, {
         method: "POST",
         body: form,
         credentials: "include",
@@ -147,7 +147,7 @@ export default function AdminProductsPage() {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      const res = await fetch(`${baseurl}/api/admin/products/${id}`, {
+      const res = await fetch(`${baseurl}/api/products/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
