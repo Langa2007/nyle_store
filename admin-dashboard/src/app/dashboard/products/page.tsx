@@ -27,6 +27,7 @@ export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [submitting, setSubmitting] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -46,6 +47,10 @@ export default function AdminProductsPage() {
           fetch(`${baseurl}/api/admin/products`, { credentials: "include" }),
           fetch(`${baseurl}/api/admin/categories`, { credentials: "include" }),
         ]);
+
+        if (!prodRes.ok || !catRes.ok) {
+          throw new Error("Failed to fetch data");
+        }
 
         const [prodData, catData] = await Promise.all([
           prodRes.json(),
@@ -82,7 +87,7 @@ export default function AdminProductsPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Create product
+  // ✅ Create product (Add button)
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -91,6 +96,8 @@ export default function AdminProductsPage() {
       toast.error("Please fill all required fields");
       return;
     }
+
+    setSubmitting(true);
 
     const form = new FormData();
     form.append("name", name);
@@ -106,11 +113,12 @@ export default function AdminProductsPage() {
         body: form,
         credentials: "include",
       });
+
       const data = await res.json();
 
       if (res.ok) {
         setProducts((prev) => [data, ...prev]);
-        toast.success("Product created successfully");
+        toast.success("✅ Product created successfully");
         setFormData({
           name: "",
           description: "",
@@ -121,11 +129,16 @@ export default function AdminProductsPage() {
         setSelectedFile(null);
         setPreview(null);
       } else {
-        toast.error(data.error || "Failed to create product");
+        toast.error(
+          data?.error ||
+            `Failed to create product (Status ${res.status}): ${data?.message || "Unknown error"}`
+        );
       }
-    } catch (err) {
-      console.error("Error creating product:", err);
-      toast.error("Error creating product");
+    } catch (err: any) {
+      console.error("❌ Error creating product:", err);
+      toast.error(`Error creating product: ${err.message}`);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -142,12 +155,12 @@ export default function AdminProductsPage() {
 
       if (res.ok) {
         setProducts((prev) => prev.filter((p) => p.id !== id));
-        toast.success("Product deleted");
+        toast.success("Product deleted successfully");
       } else {
         toast.error(data.error || "Failed to delete product");
       }
     } catch (err) {
-      console.error("Delete error:", err);
+      console.error("❌ Delete error:", err);
       toast.error("Error deleting product");
     }
   };
@@ -292,9 +305,14 @@ export default function AdminProductsPage() {
 
           <button
             type="submit"
-            className="mt-8 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md transition-colors"
+            disabled={submitting}
+            className={`mt-8 font-semibold py-2 px-6 rounded-md transition-colors ${
+              submitting
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            }`}
           >
-            Add Product
+            {submitting ? "Adding..." : "Add Product"}
           </button>
         </form>
 
