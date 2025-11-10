@@ -6,6 +6,7 @@ import { createCategory, getAllCategories, updateCategory, deleteCategory } from
 import { getAllProducts, deleteProduct, updateStock } from "../controllers/adminProductController.js";
 import { getAllOrders, updateOrderStatus } from "../controllers/adminOrderController.js";
 import { verifyAdmin } from "../middleware/adminAuth.js"; // ✅ only admins can access these routes
+import { handleCreateProduct } from "../controllers/productController.js";
 
 const router = express.Router();
 
@@ -15,23 +16,24 @@ router.delete("/users/:id",verifyAdmin, deleteUser);// only admin can delete use
 router.put("/users/:id/promote",verifyAdmin, promoteUser);// only admin can promote users
 
 // --- Vendors ---
-router.get("/vendors", getAllVendors);// only admin can view all vendors
-router.put("/vendors/:id/approve", approveVendor);// only admin can approve vendors
-router.put("/vendors/:id/reject",rejectVendor);// only admin can reject vendors
+router.get("/vendors", getAllVendors);
+router.put("/vendors/:id/approve", approveVendor);
+router.put("/vendors/:id/reject",rejectVendor);
 
 // --- Categories ---
-router.post("/categories", createCategory);// only admin can create categories
-router.get("/categories", getAllCategories);// public route
-router.put("/categories/:id", updateCategory);// only admin can update categories
-router.delete("/categories/:id", deleteCategory);// only admin can delete categories
+router.post("/categories", createCategory);
+router.get("/categories", getAllCategories);
+router.put("/categories/:id", updateCategory);
+router.delete("/categories/:id", deleteCategory);
 
 // --- Products ---
-router.get("/products", getAllProducts);// only admin can view all products
-router.delete("/products/:id", deleteProduct);// only admin can delete products
-router.put("/products/:id/stock", updateStock);// only admin can update stock
+router.post("/products", handleCreateProduct);
+router.get("/products", getAllProducts);
+router.delete("/products/:id", deleteProduct);
+router.put("/products/:id/stock", updateStock);
 
 // --- Orders ---
-router.get("/orders", getAllOrders);// only admin can view all orders
-router.put("/orders/:id/status", updateOrderStatus);// only admin can update order status
+router.get("/orders", getAllOrders);
+router.put("/orders/:id/status", updateOrderStatus);
 
 export default router;
