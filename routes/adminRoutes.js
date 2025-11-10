@@ -31,7 +31,7 @@ router.delete("/products/:id", deleteProduct);// only admin can delete products
 router.put("/products/:id/stock", updateStock);// only admin can update stock
 
 // --- Orders ---
-router.get("/orders",verifyAdmin, getAllOrders);// only admin can view all orders
-router.put("/orders/:id/status",verifyAdmin, updateOrderStatus);// only admin can update order status
+router.get("/orders", getAllOrders);// only admin can view all orders
+router.put("/orders/:id/status", updateOrderStatus);// only admin can update order status
 
 export default router;
