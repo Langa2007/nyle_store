@@ -23,7 +23,6 @@ import adminRoutes from "./routes/adminRoutes.js";
 import adminAuthRoutes from "./routes/adminAuthRoutes.js";
 import vendorRoutes from "./routes/vendorRoutes.js";
 import customerOrderRoutes from "./routes/customerOrders.js";
-import productsRoutes from "./routes/product.js";
 import userRoute from "./routes/user.js";
 import cartRoutes from "./routes/cart.js";
 import newsletterRoutes from "./routes/newsletterRoutes.js";
@@ -125,7 +124,6 @@ app.use("/admin/queues", serverAdapter.getRouter()); // Bull Board UI
 
 //  Customer & cart routes
 app.use("/api/customer/orders", customerOrderRoutes);
-app.use("/api/products", productsRoutes);
 app.use("/api/user", userRoute);
 app.use("/api/cart", cartRoutes);
 
