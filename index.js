@@ -42,7 +42,6 @@ const allowedOrigins = [
   "https://nyle-store.onrender.com",
   "https://nyle-mobile.vercel.app",
 ];
-
 app.use(
   cors({
     origin: function (origin, callback) {
