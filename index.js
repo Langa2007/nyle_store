@@ -55,6 +55,7 @@ app.use(
     credentials: true,
   })
 );
+app.options("*", cors()); // Enable pre-flight for all routes
 // ✅ Body parsers (always after CORS)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
