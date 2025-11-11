@@ -16,21 +16,21 @@ router.delete("/users/:id", verifyAdmin, deleteUser);
 router.put("/users/:id/promote", verifyAdmin, promoteUser);
 
 // --- Vendors ---
-router.get("/vendors", verifyAdmin, getAllVendors);
-router.put("/vendors/:id/approve", verifyAdmin, approveVendor);
-router.put("/vendors/:id/reject", verifyAdmin, rejectVendor);
+router.get("/vendors",  getAllVendors);
+router.put("/vendors/:id/approve", approveVendor);
+router.put("/vendors/:id/reject", rejectVendor);
 
 // --- Categories ---
-router.post("/categories", verifyAdmin, createCategory);
-router.get("/categories", verifyAdmin, getAllCategories);
-router.put("/categories/:id", verifyAdmin, updateCategory);
-router.delete("/categories/:id", verifyAdmin, deleteCategory);
+router.post("/categories", createCategory);
+router.get("/categories",  getAllCategories);
+router.put("/categories/:id", updateCategory);
+router.delete("/categories/:id",  deleteCategory);
 
 // --- Products (Admin CRUD) ---
-router.post("/products", upload.single("image"), verifyAdmin, handleCreateProduct);
-router.get("/products", verifyAdmin, handleGetAllProducts);
-router.put("/products/:id", upload.single("image"), verifyAdmin, handleUpdateProduct);
-router.delete("/products/:id", verifyAdmin, handleDeleteProduct);
+router.post("/products", upload.single("image"),  handleCreateProduct);
+router.get("/products",  handleGetAllProducts);
+router.put("/products/:id", upload.single("image"),  handleUpdateProduct);
+router.delete("/products/:id",  handleDeleteProduct);
 
 // --- Orders ---
 router.get("/orders", verifyAdmin, getAllOrders);
