@@ -3,37 +3,37 @@ import express from "express";
 import { getAllUsers, deleteUser, promoteUser } from "../controllers/adminController.js";
 import { getAllVendors, approveVendor, rejectVendor } from "../controllers/adminVendorController.js";
 import { createCategory, getAllCategories, updateCategory, deleteCategory } from "../controllers/adminCategoryController.js";
-import { getAllProducts, deleteProduct, updateStock } from "../controllers/adminProductController.js";
 import { getAllOrders, updateOrderStatus } from "../controllers/adminOrderController.js";
-import { verifyAdmin } from "../middleware/adminAuth.js"; // ✅ only admins can access these routes
-import { handleCreateProduct } from "../controllers/productController.js";
+import { handleCreateProduct, handleGetAllProducts, handleDeleteProduct, handleUpdateProduct } from "../controllers/productController.js";
+import { verifyAdmin } from "../middleware/adminAuth.js";
+import  upload  from "../middleware/upload.js";
 
 const router = express.Router();
 
 // --- Users ---
-router.get("/users",verifyAdmin, getAllUsers);// only admin can view all users
-router.delete("/users/:id",verifyAdmin, deleteUser);// only admin can delete users
-router.put("/users/:id/promote",verifyAdmin, promoteUser);// only admin can promote users
+router.get("/users", verifyAdmin, getAllUsers);
+router.delete("/users/:id", verifyAdmin, deleteUser);
+router.put("/users/:id/promote", verifyAdmin, promoteUser);
 
 // --- Vendors ---
-router.get("/vendors", getAllVendors);
-router.put("/vendors/:id/approve", approveVendor);
-router.put("/vendors/:id/reject",rejectVendor);
+router.get("/vendors", verifyAdmin, getAllVendors);
+router.put("/vendors/:id/approve", verifyAdmin, approveVendor);
+router.put("/vendors/:id/reject", verifyAdmin, rejectVendor);
 
 // --- Categories ---
-router.post("/categories", createCategory);
-router.get("/categories", getAllCategories);
-router.put("/categories/:id", updateCategory);
-router.delete("/categories/:id", deleteCategory);
+router.post("/categories", verifyAdmin, createCategory);
+router.get("/categories", verifyAdmin, getAllCategories);
+router.put("/categories/:id", verifyAdmin, updateCategory);
+router.delete("/categories/:id", verifyAdmin, deleteCategory);
 
-// --- Products ---
-router.post("/products", handleCreateProduct);
-router.get("/products", getAllProducts);
-router.delete("/products/:id", deleteProduct);
-router.put("/products/:id/stock", updateStock);
+// --- Products (Admin CRUD) ---
+router.post("/products", upload.single("image"), verifyAdmin, handleCreateProduct);
+router.get("/products", verifyAdmin, handleGetAllProducts);
+router.put("/products/:id", upload.single("image"), verifyAdmin, handleUpdateProduct);
+router.delete("/products/:id", verifyAdmin, handleDeleteProduct);
 
 // --- Orders ---
-router.get("/orders", getAllOrders);
-router.put("/orders/:id/status", updateOrderStatus);
+router.get("/orders", verifyAdmin, getAllOrders);
+router.put("/orders/:id/status", verifyAdmin, updateOrderStatus);
 
 export default router;
