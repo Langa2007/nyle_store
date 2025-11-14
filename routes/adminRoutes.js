@@ -1,7 +1,6 @@
 // routes/adminRoutes.js
 import express from "express";
 import { verifyAdmin } from "../middleware/adminAuth.js";
-import { upload, handleCreateProduct } from "../controllers/productController.js";
 import {
   getAllUsers,
   deleteUser,
@@ -19,16 +18,23 @@ import {
   deleteCategory,
 } from "../controllers/adminCategoryController.js";
 import {
-  getAllProducts,
-  deleteProduct,
-  updateStock,
-} from "../controllers/adminProductController.js";
+  upload,
+  handleCreateProduct,
+  handleGetProductById,
+  handleGetAllProducts,
+  handleUpdateProduct,
+  handleDeleteProduct
+} from "../controllers/productController.js";
 import { getAllOrders, updateOrderStatus } from "../controllers/adminOrderController.js";
 
 const router = express.Router();
 
 // ✅ Products (most important route)
-router.post("/products", verifyAdmin, upload.single("image"), handleCreateProduct);
+router.post("/products",  upload.single("image"), handleCreateProduct);
+router.get("/products", handleGetAllProducts);
+router.get("/products/:id", handleGetProductById);
+router.put("/products/:id", upload.single("image"), handleUpdateProduct);
+router.delete("/products/:id", handleDeleteProduct);
 
 // --- Users ---
 router.get("/users", verifyAdmin, getAllUsers);
@@ -36,18 +42,18 @@ router.delete("/users/:id", verifyAdmin, deleteUser);
 router.put("/users/:id/promote", verifyAdmin, promoteUser);
 
 // --- Vendors ---
-router.get("/vendors", verifyAdmin, getAllVendors);
-router.put("/vendors/:id/approve", verifyAdmin, approveVendor);
-router.put("/vendors/:id/reject", verifyAdmin, rejectVendor);
+router.get("/vendors", getAllVendors);
+router.put("/vendors/:id/approve",  approveVendor);
+router.put("/vendors/:id/reject",  rejectVendor);
 
 // --- Categories ---
-router.post("/categories", verifyAdmin, createCategory);
-router.get("/categories", verifyAdmin, getAllCategories);
-router.put("/categories/:id", verifyAdmin, updateCategory);
-router.delete("/categories/:id", verifyAdmin, deleteCategory);
+router.post("/categories",  createCategory);
+router.get("/categories",  getAllCategories);
+router.put("/categories/:id",  updateCategory);
+router.delete("/categories/:id",  deleteCategory);
 
 // --- Orders ---
-router.get("/orders", verifyAdmin, getAllOrders);
-router.put("/orders/:id/status", verifyAdmin, updateOrderStatus);
+router.get("/orders", getAllOrders);
+router.put("/orders/:id/status",  updateOrderStatus);
 
 export default router;
