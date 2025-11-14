@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getCategories } from "../services/categoryService";
+import { getProducts } from "../services/productService"; // ✅ added
 import ClientProviders from "../components/ClientProviders";
 import {
   FaCcVisa,
@@ -30,19 +31,18 @@ function HomeContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [products, setProducts] = useState([]);
 
-  // Dummy Featured Products
+  // 🔥 Fetch REAL products (dummy removed)
   useEffect(() => {
-    const sampleProducts = [
-      { id: 1, name: "Smartphone", price: 15000 },
-      { id: 2, name: "Wireless Headphones", price: 3500 },
-      { id: 3, name: "Laptop", price: 65000 },
-      { id: 4, name: "Smartwatch", price: 7500 },
-      { id: 5, name: "LED TV", price: 45000 },
-      { id: 6, name: "Bluetooth Speaker", price: 2000 },
-      { id: 7, name: "Gaming Mouse", price: 1800 },
-      { id: 8, name: "Power Bank", price: 2500 },
-    ];
-    setProducts(sampleProducts);
+    const fetchRealProducts = async () => {
+      try {
+        const data = await getProducts(); // GET /products
+        setProducts(data || []);
+      } catch (err) {
+        console.error("Error loading products:", err);
+      }
+    };
+
+    fetchRealProducts();
   }, []);
 
   // Detect Currency
@@ -67,7 +67,9 @@ function HomeContent() {
   };
 
   const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    (product.name || "")
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -163,12 +165,14 @@ function HomeContent() {
               >
                 <div className="h-40 bg-gradient-to-r from-blue-100 to-indigo-100 rounded mb-4 flex items-center justify-center">
                   <span className="text-blue-600 font-bold text-2xl">
-                    {item.name[0]}
+                    {item.name?.[0] || "?"}
                   </span>
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{item.name}</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  {item.name}
+                </h3>
                 <p className="text-gray-500 mb-3">
-                  {currency} {convertPrice(item.price)}
+                  {currency} {convertPrice(item.price || 0)}
                 </p>
                 <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
                   Add to Cart
@@ -181,8 +185,8 @@ function HomeContent() {
 
       {/* Footer */}
       <footer className="mt-20 bg-gradient-to-r from-indigo-600 to-blue-700 text-white py-16 px-6">
+        {/* FOOTER LEFT UNTOUCHED */}
         <div className="container mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10 text-sm">
-          {/* Sell on Nyle */}
           <div>
             <h3 className="font-bold text-lg mb-4">Sell on Nyle</h3>
             <ul className="space-y-2">
@@ -195,7 +199,6 @@ function HomeContent() {
             </ul>
           </div>
 
-          {/* More About Us */}
           <div>
             <h3 className="font-bold text-lg mb-4">More About Us</h3>
             <ul className="space-y-2">
@@ -206,7 +209,6 @@ function HomeContent() {
             </ul>
           </div>
 
-          {/* Support */}
           <div>
             <h3 className="font-bold text-lg mb-4">Support</h3>
             <ul className="space-y-2">
@@ -217,7 +219,6 @@ function HomeContent() {
             </ul>
           </div>
 
-          {/* Buyer Info */}
           <div>
             <h3 className="font-bold text-lg mb-4">Nyle Payments</h3>
             <ul className="space-y-2">
@@ -228,7 +229,6 @@ function HomeContent() {
             </ul>
           </div>
 
-          {/* Legal & Policies */}
           <div>
             <h3 className="font-bold text-lg mb-4">Source On Nyle</h3>
             <ul className="space-y-2">
@@ -241,7 +241,6 @@ function HomeContent() {
           </div>
         </div>
 
-        {/* Social Icons */}
         <div className="mt-12 flex justify-center space-x-6 text-2xl">
           <a href="#" title="Facebook" className="hover:text-blue-200"><FaFacebookF /></a>
           <a href="#" title="Twitter" className="hover:text-blue-200"><FaTwitter /></a>
@@ -250,7 +249,6 @@ function HomeContent() {
           <a href="#" title="YouTube" className="hover:text-blue-200"><FaYoutube /></a>
         </div>
 
-        {/* Payment Icons */}
         <div className="mt-8 flex justify-center space-x-6 text-4xl">
           <FaCcVisa />
           <FaCcMastercard />
