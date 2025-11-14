@@ -67,9 +67,7 @@ function HomeContent() {
   };
 
   const filteredProducts = products.filter((product) =>
-    (product.name || "")
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
+    (product.name || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -163,11 +161,22 @@ function HomeContent() {
                 key={item.id}
                 className="bg-white p-6 border rounded-xl shadow hover:shadow-xl hover:scale-105 transition"
               >
-                <div className="h-40 bg-gradient-to-r from-blue-100 to-indigo-100 rounded mb-4 flex items-center justify-center">
-                  <span className="text-blue-600 font-bold text-2xl">
-                    {item.name?.[0] || "?"}
-                  </span>
+                {/* ✅ IMAGE FIXED */}
+                <div className="h-40 rounded mb-4 overflow-hidden flex items-center justify-center bg-gray-100">
+                  {item.image_url ? (
+                    <img
+                      src={item.image_url}
+                      alt={item.name}
+                      className="h-full w-full object-cover"
+                      onError={(e) => (e.target.style.display = "none")}
+                    />
+                  ) : (
+                    <span className="text-blue-600 font-bold text-2xl">
+                      {item.name?.[0] || "?"}
+                    </span>
+                  )}
                 </div>
+
                 <h3 className="text-lg font-semibold mb-2">
                   {item.name}
                 </h3>
@@ -185,13 +194,12 @@ function HomeContent() {
 
       {/* Footer */}
       <footer className="mt-20 bg-gradient-to-r from-indigo-600 to-blue-700 text-white py-16 px-6">
-        {/* FOOTER LEFT UNTOUCHED */}
         <div className="container mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10 text-sm">
           <div>
             <h3 className="font-bold text-lg mb-4">Sell on Nyle</h3>
             <ul className="space-y-2">
               <li><Link href="/vendor/why-sell" className="hover:underline">Why Sell on Nyle</Link></li>
-              <li><Link href="/vendor/signup" className="hover:underline">Become A Seller</Link></li>
+              <li><Link href="/vendor/signup" className="hover:underline">Become a Seller</Link></li>
               <li><Link href="/vendor/quotations" className="hover:underline">Get Seller Quotations</Link></li>
               <li><Link href="/vendor/policies" className="hover:underline">Seller Policies</Link></li>
               <li><Link href="/vendor/app" className="hover:underline">Get Our App</Link></li>
@@ -234,7 +242,7 @@ function HomeContent() {
             <ul className="space-y-2">
               <li><Link href="/source/suppliers" className="hover:underline">Nyle Verified Suppliers</Link></li>
               <li><Link href="/source/logistics" className="hover:underline">Get Logisitics</Link></li>
-              <li><Link href="/source/Quotation" className="hover:underline">Get Quotation</Link></li>
+              <li><Link href="/source/quotation" className="hover:underline">Get Quotation</Link></li>
               <li><Link href="/source/trade-assurance" className="hover:underline">Trade Assurance</Link></li>
               <li><Link href="/source/shipping-policies" className="hover:underline">Shipping Policies & Rates</Link></li>
             </ul>
