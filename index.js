@@ -42,11 +42,16 @@ const allowedOrigins = [
   "https://nyle-store.onrender.com",
   "https://nyle-mobile.vercel.app",
 ];
+
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // Allow mobile/postman
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      // Allow requests with no origin (mobile apps, curl, Postman)
+      if (!origin) return callback(null, true);
+
+      // Exact match
+      if (allowedOrigins.includes(origin)) return callback(null, true)
+      console.warn("Blocked CORS request from:", origin);
       return callback(new Error("Not allowed by CORS"));
     },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -54,7 +59,10 @@ app.use(
     credentials: true,
   })
 );
-app.options("*", cors()); // Enable pre-flight for all routes
+
+// Handle preflight for all routes
+app.options("*", cors({ origin: allowedOrigins, credentials: true }));
+
 // ✅ Body parsers (always after CORS)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
