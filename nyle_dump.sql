@@ -50,6 +50,43 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: activity_logs; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.activity_logs (
+    id integer NOT NULL,
+    admin_id integer,
+    action text,
+    target text,
+    created_at timestamp without time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.activity_logs OWNER TO postgres;
+
+--
+-- Name: activity_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.activity_logs_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.activity_logs_id_seq OWNER TO postgres;
+
+--
+-- Name: activity_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.activity_logs_id_seq OWNED BY public.activity_logs.id;
+
+
+--
 -- Name: announcements; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -158,6 +195,44 @@ ALTER SEQUENCE public.categories_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.categories_id_seq OWNED BY public.categories.id;
+
+
+--
+-- Name: email_logs; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.email_logs (
+    id integer NOT NULL,
+    to_email text NOT NULL,
+    subject text,
+    status text DEFAULT 'sent'::text,
+    error_message text,
+    created_at timestamp without time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.email_logs OWNER TO postgres;
+
+--
+-- Name: email_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.email_logs_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.email_logs_id_seq OWNER TO postgres;
+
+--
+-- Name: email_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.email_logs_id_seq OWNED BY public.email_logs.id;
 
 
 --
@@ -402,7 +477,8 @@ CREATE TABLE public.products (
     image_url text,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     stock integer DEFAULT 0,
-    vendor_id integer
+    vendor_id integer,
+    category text NOT NULL
 );
 
 
@@ -710,6 +786,13 @@ ALTER SEQUENCE public.vendors_id_seq OWNED BY public.vendors.id;
 
 
 --
+-- Name: activity_logs id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.activity_logs ALTER COLUMN id SET DEFAULT nextval('public.activity_logs_id_seq'::regclass);
+
+
+--
 -- Name: announcements id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -728,6 +811,13 @@ ALTER TABLE ONLY public.cart ALTER COLUMN id SET DEFAULT nextval('public.cart_id
 --
 
 ALTER TABLE ONLY public.categories ALTER COLUMN id SET DEFAULT nextval('public.categories_id_seq'::regclass);
+
+
+--
+-- Name: email_logs id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.email_logs ALTER COLUMN id SET DEFAULT nextval('public.email_logs_id_seq'::regclass);
 
 
 --
@@ -829,6 +919,14 @@ ALTER TABLE ONLY public.vendors ALTER COLUMN id SET DEFAULT nextval('public.vend
 
 
 --
+-- Data for Name: activity_logs; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.activity_logs (id, admin_id, action, target, created_at) FROM stdin;
+\.
+
+
+--
 -- Data for Name: announcements; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -850,6 +948,14 @@ COPY public.cart (id, user_id, session_id, product_id, quantity, created_at, upd
 
 COPY public.categories (id, name, description, created_at) FROM stdin;
 1	Electronics	\N	2025-09-23 16:39:37.401395
+\.
+
+
+--
+-- Data for Name: email_logs; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.email_logs (id, to_email, subject, status, error_message, created_at) FROM stdin;
 \.
 
 
@@ -882,8 +988,6 @@ COPY public.newsletter_subscribers (id, email, subscribed_at) FROM stdin;
 --
 
 COPY public.order_items (id, order_id, product_id, quantity, price_at_order_time, price, vendor_id) FROM stdin;
-7	7	1	2	\N	\N	\N
-8	7	2	1	\N	\N	\N
 \.
 
 
@@ -892,7 +996,6 @@ COPY public.order_items (id, order_id, product_id, quantity, price_at_order_time
 --
 
 COPY public.orders (id, user_id, total_price, status, created_at, total_amount, total) FROM stdin;
-7	1	\N	pending	2025-07-27 09:51:44.908284	1500.00	0
 \.
 
 
@@ -908,11 +1011,7 @@ COPY public.payments (id, order_id, provider, provider_ref, amount, currency, st
 -- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.products (id, name, description, price, image_url, created_at, stock, vendor_id) FROM stdin;
-1	Updated Product	Updated description	999.99	20	2025-07-26 19:35:29.351756	10	\N
-2	Product Two	Second product	500.00	\N	2025-07-27 09:51:04.442786	50	\N
-3	Wireless Mouse	Ergonomic wireless mouse with USB receiver	1500.50	\N	2025-09-16 07:55:29.878642	20	3
-4	Sample Product	This is a great product	99.99	\N	2025-09-18 13:54:26.295517	20	\N
+COPY public.products (id, name, description, price, image_url, created_at, stock, vendor_id, category) FROM stdin;
 \.
 
 
@@ -982,6 +1081,13 @@ COPY public.vendors (id, legal_name, email, phone, address, created_at, company_
 
 
 --
+-- Name: activity_logs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.activity_logs_id_seq', 1, false);
+
+
+--
 -- Name: announcements_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -1000,6 +1106,13 @@ SELECT pg_catalog.setval('public.cart_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.categories_id_seq', 1, true);
+
+
+--
+-- Name: email_logs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.email_logs_id_seq', 1, false);
 
 
 --
@@ -1101,6 +1214,14 @@ SELECT pg_catalog.setval('public.vendors_id_seq', 8, true);
 
 
 --
+-- Name: activity_logs activity_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.activity_logs
+    ADD CONSTRAINT activity_logs_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: announcements announcements_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1130,6 +1251,14 @@ ALTER TABLE ONLY public.categories
 
 ALTER TABLE ONLY public.categories
     ADD CONSTRAINT categories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: email_logs email_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.email_logs
+    ADD CONSTRAINT email_logs_pkey PRIMARY KEY (id);
 
 
 --
