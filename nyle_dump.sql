@@ -1161,7 +1161,7 @@ SELECT pg_catalog.setval('public.payments_id_seq', 1, false);
 -- Name: products_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.products_id_seq', 4, true);
+SELECT pg_catalog.setval('public.products_id_seq', 1, false);
 
 
 --
