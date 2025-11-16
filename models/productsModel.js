@@ -1,6 +1,6 @@
 import pool from '../db/connect.js';
 
-// ✅ Ensure the products table exists with image_url column
+// ✅ Ensure the products table exists with category + image_url
 const createProductTable = async () => {
   const query = `
     CREATE TABLE IF NOT EXISTS products (
@@ -9,7 +9,8 @@ const createProductTable = async () => {
       description TEXT,
       price NUMERIC(10, 2) NOT NULL,
       stock INTEGER DEFAULT 0,
-      image_url TEXT,  -- ✅ Added Cloudinary image URL
+      category TEXT,        -- ✅ Added
+      image_url TEXT,       -- ✅ Cloudinary URL
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `;
@@ -21,20 +22,34 @@ const createProductTable = async () => {
   }
 };
 
-createProductTable(); // ✅ Auto-run table check when model loads
+createProductTable(); // Auto-run table initialization
 
-// ✅ Create a product (with image)
-export const createProduct = async (name, description, price, stock, imageUrl) => {
+//  CREATE PRODUCT
+
+export const createProduct = async (
+  name,
+  description,
+  price,
+  stock,
+  category,
+  imageUrl
+) => {
   const result = await pool.query(
-    `INSERT INTO products (name, description, price, stock, image_url)
-     VALUES ($1, $2, $3, $4, $5)
-     RETURNING *`,
-    [name, description, price, stock, imageUrl]
+    `
+    INSERT INTO products
+      (name, description, price, stock, category, image_url)
+    VALUES
+      ($1, $2, $3, $4, $5, $6)
+    RETURNING *;
+    `,
+    [name, description, price, stock, category, imageUrl]
   );
+
   return result.rows[0];
 };
 
-// ✅ Get all products
+
+// GET ALL PRODUCT
 export const getAllProducts = async () => {
   const result = await pool.query(
     'SELECT * FROM products ORDER BY id DESC'
@@ -42,7 +57,8 @@ export const getAllProducts = async () => {
   return result.rows;
 };
 
-// ✅ Get product by ID
+//  GET PRODUCT BY ID
+
 export const getProductById = async (id) => {
   const result = await pool.query(
     'SELECT * FROM products WHERE id = $1',
@@ -51,39 +67,52 @@ export const getProductById = async (id) => {
   return result.rows[0];
 };
 
-// ✅ Update product (including image if provided)
-export const updateProductById = async (id, name, description, price, stock, imageUrl) => {
-  // If image is provided, update it too
-  const query = imageUrl
-    ? `
-      UPDATE products 
+//  UPDATE PRODUCT
+export const updateProductById = async (
+  id,
+  name,
+  description,
+  price,
+  stock,
+  category,
+  imageUrl
+) => {
+  let query, values;
+
+  if (imageUrl) {
+    // Update with new image
+    query = `
+      UPDATE products
       SET name = $1,
           description = $2,
           price = $3,
           stock = $4,
-          image_url = $5
-      WHERE id = $6
+          category = $5,
+          image_url = $6
+      WHERE id = $7
       RETURNING *;
-      `
-    : `
-      UPDATE products 
+    `;
+    values = [name, description, price, stock, category, imageUrl, id];
+  } else {
+    // Update without changing the image
+    query = `
+      UPDATE products
       SET name = $1,
           description = $2,
           price = $3,
-          stock = $4
-      WHERE id = $5
+          stock = $4,
+          category = $5
+      WHERE id = $6
       RETURNING *;
-      `;
-  
-  const values = imageUrl
-    ? [name, description, price, stock, imageUrl, id]
-    : [name, description, price, stock, id];
+    `;
+    values = [name, description, price, stock, category, id];
+  }
 
   const result = await pool.query(query, values);
   return result.rows[0];
 };
 
-// ✅ Delete product by ID
+//  DELETE PRODUCT
 export const deleteProductById = async (id) => {
   const result = await pool.query(
     'DELETE FROM products WHERE id = $1 RETURNING *',
