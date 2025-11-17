@@ -37,7 +37,7 @@ async function sendVerificationCodeEmail(toEmail, code) {
 
 async function sendMagicLoginLink(toEmail, magicToken) {
   const transporter = createTransporter();
-  const loginUrl = `${process.env.FRONTEND_URL || "http://localhost:3000"}/vendor/magic-login?token=${encodeURIComponent(magicToken)}`;
+  const loginUrl = `${process.env.FRONTEND_URL || "https://nyle-luxe.vercel.app"}/vendor/magic-login?token=${encodeURIComponent(magicToken)}`;
   const html = `
     <h2>Your Nyle login link</h2>
     <p>Click the link below to log in. The link is valid for ${MAGIC_LINK_MINUTES} minutes.</p>

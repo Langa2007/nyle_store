@@ -9,7 +9,7 @@ export default function MagicLoginPage() {
   const token = searchParams.get("token");
   const router = useRouter();
   const [status, setStatus] = useState("verifying"); // verifying, success, error
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
   useEffect(() => {
     if (!token) {

@@ -13,7 +13,7 @@ export default function VendorLogin() {
 
   // ✅ Base API URL (automatically switches between local & production)
   const API_URL =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
   // ✅ Handle input changes
   const handleChange = (e) => {

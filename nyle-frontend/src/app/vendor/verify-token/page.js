@@ -14,7 +14,7 @@ function VerifyTokenForm() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
