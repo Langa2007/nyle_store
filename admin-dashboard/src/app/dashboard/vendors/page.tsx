@@ -1,8 +1,6 @@
-// File: admin-dashboard/src/app/dashboard/vendors/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "@/context/AdminAuthContext";
 
 interface Vendor {
   id: number;
@@ -13,20 +11,15 @@ interface Vendor {
 }
 
 export default function AdminVendorsPage() {
-  const { accessToken } = useAuth();
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
   const fetchVendors = async () => {
-    if (!accessToken) return;
     try {
-      const res = await fetch(`${API_URL}/api/admin/vendors`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const res = await fetch(`${API_URL}/api/admin/vendors`);
+      if (!res.ok) throw new Error("Failed to fetch vendors");
       const data = await res.json();
       if (Array.isArray(data)) setVendors(data);
     } catch (err) {
@@ -34,12 +27,11 @@ export default function AdminVendorsPage() {
     } finally {
       setLoading(false);
     }
-    
   };
 
   useEffect(() => {
     fetchVendors();
-  }, [accessToken]);
+  }, []);
 
   if (loading) return <p className="p-4">Loading vendors...</p>;
 
@@ -57,26 +49,27 @@ export default function AdminVendorsPage() {
           </tr>
         </thead>
         <tbody>
-          {vendors.map((v) => (
-            <tr key={v.id} className="border-t">
-              <td className="p-2">{v.company_name}</td>
-              <td className="p-2">{v.email}</td>
-              <td className="p-2">{v.status}</td>
-              <td className="p-2">{v.is_verified ? "✅" : "❌"}</td>
-              <td className="p-2 text-center space-x-2">
-                <button className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700">
-                  Approve
-                </button>
-                <button className="px-2 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700">
-                  Reject
-                </button>
-                <button className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700">
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-          {vendors.length === 0 && (
+          {vendors.length > 0 ? (
+            vendors.map((v) => (
+              <tr key={v.id} className="border-t">
+                <td className="p-2">{v.company_name}</td>
+                <td className="p-2">{v.email}</td>
+                <td className="p-2">{v.status}</td>
+                <td className="p-2">{v.is_verified ? "✅" : "❌"}</td>
+                <td className="p-2 text-center space-x-2">
+                  <button className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700">
+                    Approve
+                  </button>
+                  <button className="px-2 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700">
+                    Reject
+                  </button>
+                  <button className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700">
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
             <tr>
               <td colSpan={5} className="p-4 text-center text-gray-500">
                 No vendors found
