@@ -65,7 +65,7 @@ export default function VendorSignup() {
       return;
     }
 
-    const urlToCall = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/vendor/auth/signup`;
+    const urlToCall = `${process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com"}/api/vendor/auth/signup`;
     console.log("DEBUG: About to POST signup to:", urlToCall);
 
     try {
