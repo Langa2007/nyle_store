@@ -40,7 +40,7 @@ export default function AdminProductsPage() {
     category: "",
   });
 
-  // ✅ Fetch products & categories
+  // Fetch products + categories
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -50,7 +50,7 @@ export default function AdminProductsPage() {
         ]);
 
         if (!prodRes.ok || !catRes.ok) {
-          throw new Error("Failed to fetch data");
+          throw new Error("Failed to fetch");
         }
 
         const [prodData, catData] = await Promise.all([
@@ -61,16 +61,16 @@ export default function AdminProductsPage() {
         setProducts(prodData);
         setCategories(catData);
       } catch (err) {
-        console.error("Fetch error:", err);
         toast.error("Failed to load data");
       } finally {
         setLoading(false);
       }
     };
+
     fetchData();
   }, []);
 
-  // ✅ Handle image preview
+  // Handle preview image
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -79,7 +79,7 @@ export default function AdminProductsPage() {
     }
   };
 
-  // ✅ Handle form input
+  // Handle form input
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -88,7 +88,7 @@ export default function AdminProductsPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Create product (Add button)
+  // CREATE product
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -119,7 +119,8 @@ export default function AdminProductsPage() {
 
       if (res.ok) {
         setProducts((prev) => [data, ...prev]);
-        toast.success("✅ Product created successfully");
+        toast.success("Product created successfully");
+
         setFormData({
           name: "",
           description: "",
@@ -127,23 +128,20 @@ export default function AdminProductsPage() {
           stock: "",
           category: "",
         });
+
         setSelectedFile(null);
         setPreview(null);
       } else {
-        toast.error(
-          data?.error ||
-            `Failed to create product (Status ${res.status}): ${data?.message || "Unknown error"}`
-        );
+        toast.error(data.error || "Failed to create product");
       }
     } catch (err: any) {
-      console.error("❌ Error creating product:", err);
-      toast.error(`Error creating product: ${err.message}`);
+      toast.error("Error creating product: " + err.message);
     } finally {
       setSubmitting(false);
     }
   };
 
-  // ✅ Delete product
+  // DELETE product
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
@@ -152,17 +150,17 @@ export default function AdminProductsPage() {
         method: "DELETE",
         credentials: "include",
       });
+
       const data = await res.json();
 
       if (res.ok) {
         setProducts((prev) => prev.filter((p) => p.id !== id));
-        toast.success("Product deleted successfully");
+        toast.success("Product deleted");
       } else {
         toast.error(data.error || "Failed to delete product");
       }
     } catch (err) {
-      console.error("❌ Delete error:", err);
-      toast.error("Error deleting product");
+      toast.error("Delete error");
     }
   };
 
@@ -185,7 +183,7 @@ export default function AdminProductsPage() {
           Product Management
         </motion.h1>
 
-        {/* ✅ Add Product Form */}
+        {/* ADD PRODUCT FORM */}
         <form
           onSubmit={handleCreate}
           className="bg-white shadow-md rounded-lg p-6 mb-10"
@@ -201,14 +199,14 @@ export default function AdminProductsPage() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
+                className="w-full border rounded-md p-2"
                 placeholder="Product name"
                 required
               />
             </div>
             <div>
               <label htmlFor="price" className="block text-sm font-semibold mb-2">
-                Price (Ksh)
+                Price
               </label>
               <input
                 id="price"
@@ -216,8 +214,8 @@ export default function AdminProductsPage() {
                 name="price"
                 value={formData.price}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
-                placeholder="e.g. 999"
+                className="w-full border rounded-md p-2"
+                placeholder="999"
                 required
               />
             </div>
@@ -231,16 +229,13 @@ export default function AdminProductsPage() {
                 name="stock"
                 value={formData.stock}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
+                className="w-full border rounded-md p-2"
                 placeholder="Quantity"
                 required
               />
             </div>
             <div>
-              <label
-                htmlFor="category"
-                className="block text-sm font-semibold mb-2"
-              >
+              <label htmlFor="category" className="block text-sm font-semibold mb-2">
                 Category
               </label>
               <select
@@ -248,7 +243,9 @@ export default function AdminProductsPage() {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md p-2"
+                className="w-full border rounded-md p-2"
+                title="Select a Category"
+                aria-label="Product Category"
               >
                 <option value="">Select Category</option>
                 {categories.map((cat) => (
@@ -261,10 +258,7 @@ export default function AdminProductsPage() {
           </div>
 
           <div className="mt-6">
-            <label
-              htmlFor="description"
-              className="block text-sm font-semibold mb-2"
-            >
+            <label htmlFor="description" className="block text-sm font-semibold mb-2">
               Description
             </label>
             <textarea
@@ -273,32 +267,29 @@ export default function AdminProductsPage() {
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              className="w-full border border-gray-300 rounded-md p-2"
+              className="w-full border rounded-md p-2"
               placeholder="Product description"
             />
           </div>
 
           <div className="mt-6">
-            <label
-              htmlFor="product-image"
-              className="block text-sm font-semibold mb-2"
-            >
+            <label htmlFor="product-image" className="block text-sm font-semibold mb-2">
               Product Image
             </label>
             <input
               id="product-image"
               type="file"
               accept="image/*"
-              title="Select a product image"
               onChange={handleImageChange}
-              className="w-full border border-gray-300 rounded-md p-2"
+              className="w-full border rounded-md p-2"
             />
+
             {preview && (
-              <div className="mt-4">
+              <div className="mt-4 w-40 h-40 bg-gray-100 rounded-md flex items-center justify-center overflow-hidden">
                 <img
                   src={preview}
                   alt="Preview"
-                  className="w-32 h-32 object-cover rounded-md border"
+                  className="w-full h-full object-contain"
                 />
               </div>
             )}
@@ -307,7 +298,7 @@ export default function AdminProductsPage() {
           <button
             type="submit"
             disabled={submitting}
-            className={`mt-8 font-semibold py-2 px-6 rounded-md transition-colors ${
+            className={`mt-8 font-semibold py-2 px-6 rounded-md ${
               submitting
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700 text-white"
@@ -317,44 +308,40 @@ export default function AdminProductsPage() {
           </button>
         </form>
 
-        {/* ✅ Product Table */}
+        {/* PRODUCT TABLE */}
         <div className="overflow-x-auto bg-white shadow-md rounded-lg">
           <table className="min-w-full table-auto">
             <thead className="bg-gray-100 border-b">
               <tr>
-                <th className="text-left py-3 px-4">Image</th>
-                <th className="text-left py-3 px-4">Name</th>
-                <th className="text-left py-3 px-4">Price</th>
-                <th className="text-left py-3 px-4">Stock</th>
-                <th className="text-left py-3 px-4">Category</th>
-                <th className="text-left py-3 px-4">Actions</th>
+                <th className="py-3 px-4 text-left">Image</th>
+                <th className="py-3 px-4 text-left">Name</th>
+                <th className="py-3 px-4 text-left">Price</th>
+                <th className="py-3 px-4 text-left">Stock</th>
+                <th className="py-3 px-4 text-left">Category</th>
+                <th className="py-3 px-4 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
               {products.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={6}
-                    className="text-center py-8 text-gray-500 italic"
-                  >
+                  <td colSpan={6} className="py-8 text-center text-gray-500 italic">
                     No products found
                   </td>
                 </tr>
               ) : (
                 products.map((p) => (
-                  <tr
-                    key={p.id}
-                    className="border-b hover:bg-gray-50 transition-colors"
-                  >
+                  <tr key={p.id} className="border-b hover:bg-gray-50 transition">
                     <td className="py-3 px-4">
                       {p.image_url ? (
-                        <img
-                          src={p.image_url}
-                          alt={p.name}
-                          className="w-12 h-12 object-cover rounded-md"
-                        />
+                        <div className="w-24 h-24 bg-gray-100 rounded-md flex items-center justify-center overflow-hidden">
+                          <img
+                            src={p.image_url}
+                            alt={p.name}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
                       ) : (
-                        <div className="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center text-gray-400 text-sm">
+                        <div className="w-24 h-24 bg-gray-200 rounded-md flex items-center justify-center text-gray-400">
                           N/A
                         </div>
                       )}
@@ -362,9 +349,7 @@ export default function AdminProductsPage() {
                     <td className="py-3 px-4">{p.name}</td>
                     <td className="py-3 px-4">Ksh {p.price}</td>
                     <td className="py-3 px-4">{p.stock}</td>
-                    <td className="py-3 px-4 capitalize">
-                      {p.category || "Uncategorized"}
-                    </td>
+                    <td className="py-3 px-4 capitalize">{p.category || "Uncategorized"}</td>
                     <td className="py-3 px-4">
                       <button
                         onClick={() => handleDelete(p.id)}
