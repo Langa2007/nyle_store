@@ -27,13 +27,17 @@ async function sendVerificationCodeEmail(toEmail, code) {
     <p>This code expires in ${VERIF_DURATION_HOURS} hour(s).</p>
     <p>If you didn't sign up, ignore this message.</p>
   `;
+  try {
   await transporter.sendMail({
     from: `"Nyle Store" <${process.env.GMAIL_USER}>`,
     to: toEmail,
     subject: "Your Nyle vendor verification code",
     html,
   });
-}
+  console.log("Verification code sent succesfully")
+  } catch (err) {
+    console.error("Error sending verification email:", err);
+}}
 
 async function sendMagicLoginLink(toEmail, magicToken) {
   const transporter = createTransporter();
