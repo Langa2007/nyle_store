@@ -14,7 +14,7 @@ const MAGIC_LINK_MINUTES = Number(process.env.MAGIC_LINK_DURATION_MINUTES || 20)
 async function sendVerificationCodeEmail(toEmail, code) {
   try {
     await resend.emails.send({
-      from: "Nyle Store <noreply@nyle-store.resend.dev>",
+      from: "onboarding@resend.dev",
       to: toEmail,
       subject: "Your Nyle vendor verification code",
       html: `
@@ -36,7 +36,7 @@ async function sendMagicLoginLink(toEmail, magicToken) {
     const loginUrl = `${process.env.FRONTEND_URL || "https://nyle-luxe.vercel.app"}/vendor/magic-login?token=${encodeURIComponent(magicToken)}`;
 
     await resend.emails.send({
-      from: "Nyle Store <noreply@nyle-store.resend.dev>",
+      from: "onboarding@resend.dev",
       to: toEmail,
       subject: "Your Nyle instant login link",
       html: `
