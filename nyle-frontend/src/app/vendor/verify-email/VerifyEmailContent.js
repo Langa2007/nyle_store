@@ -10,6 +10,8 @@ export default function VerifyEmailContent() {
   const token = searchParams.get("token");
   const [status, setStatus] = useState("verifying");
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
+
   useEffect(() => {
     if (!token) {
       setStatus("invalid");
@@ -18,28 +20,27 @@ export default function VerifyEmailContent() {
 
     const verifyEmail = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/vendors/verify-email?token=${token}`
-        );
-
-        const data = await res.json();
+        const res = await fetch(`${API_URL}/api/vendor/auth/magic-login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        });
 
         if (res.ok) {
-          // backend responds with message: "Email verified. Await admin approval."
-          if (data.message?.includes("Await admin approval")) setStatus("pending");
-          else setStatus("success");
+          setStatus("success");
+        } else if (res.status === 403) {
+          setStatus("pending"); // awaiting admin approval
         } else {
           setStatus("failed");
         }
-      } catch (error) {
+      } catch (err) {
         setStatus("error");
       }
     };
 
     verifyEmail();
-  }, [token]);
+  }, [token, API_URL]);
 
-  // auto redirect after success
   useEffect(() => {
     if (status === "success") {
       const timer = setTimeout(() => router.push("/vendor/login"), 4000);
@@ -59,7 +60,7 @@ export default function VerifyEmailContent() {
       {status === "success" && (
         <div className="text-green-600 space-y-2">
           <p className="text-lg font-semibold">✅ Email verified successfully!</p>
-          <p className="text-gray-700 text-sm">Redirecting you to login...</p>
+          <p className="text-gray-700 text-sm">Redirecting to login...</p>
         </div>
       )}
 
@@ -67,7 +68,7 @@ export default function VerifyEmailContent() {
         <div className="text-yellow-600 space-y-2">
           <p className="text-lg font-semibold">🕒 Account Under Review</p>
           <p className="text-gray-700 text-sm">
-            Your email is verified, but your account is still pending approval by the Nyle team.
+            Your email is verified, but your account is awaiting admin approval.
           </p>
         </div>
       )}
@@ -83,9 +84,7 @@ export default function VerifyEmailContent() {
       )}
 
       {status === "error" && (
-        <p className="text-red-600 font-semibold">
-          ⚠️ Server error. Please try again later.
-        </p>
+        <p className="text-red-600 font-semibold">⚠️ Server error. Please try again later.</p>
       )}
     </div>
   );

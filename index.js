@@ -21,7 +21,6 @@ import vendorProductRoutes from "./routes/vendorProducts.js";
 import adminVendorRoutes from "./routes/adminVendors.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import adminAuthRoutes from "./routes/adminAuthRoutes.js";
-import vendorRoutes from "./routes/vendorRoutes.js";
 import customerOrderRoutes from "./routes/customerOrders.js";
 import userRoute from "./routes/user.js";
 import cartRoutes from "./routes/cart.js";
@@ -99,8 +98,6 @@ app.use("/api/orders", orderRoutes);
 //  Vendor authentication (signup, login, verify email)
 app.use("/api/vendor/auth", vendorAuthRoutes);
 
-//  Vendor management (approve/reject, pending, etc.)
-app.use("/api/vendors", vendorRoutes);
 
 //  Vendor product management
 app.use("/api/vendor/products", vendorProductRoutes);
