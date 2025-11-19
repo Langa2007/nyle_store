@@ -99,8 +99,8 @@ app.use("/api/orders", orderRoutes);
 //  Vendor authentication (signup, login, verify email)
 app.use("/api/vendor/auth", vendorAuthRoutes);
 
-// Vendor routes (protected routes for vendors)
-app.use("/api/vendor", vendorRoutes);
+// Vendor management routes
+app.use("/api/vendors", vendorRoutes);
 
 
 //  Vendor product management
