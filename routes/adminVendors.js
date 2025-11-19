@@ -7,23 +7,23 @@ import {
   rejectVendor,
   deleteVendor,
 } from "../controllers/adminVendorController.js";
-import { verifyAdmin } from "../middleware/adminAuth.js";
+
 
 const router = express.Router();
 
 // ✅ Get all vendors (any status)
-router.get("/", verifyAdmin, getAllVendors);
+router.get("/",  getAllVendors);
 
 // ✅ Get only pending vendors
-router.get("/pending", verifyAdmin, getPendingVendors);
+router.get("/pending",  getPendingVendors);
 
 // ✅ Approve vendor
-router.patch("/:id/approve", verifyAdmin, approveVendor);
+router.patch("/:id/approve",  approveVendor);
 
 // ✅ Reject vendor
-router.patch("/:id/reject", verifyAdmin, rejectVendor);
+router.patch("/:id/reject",  rejectVendor);
 
 // ✅ Delete vendor
-router.delete("/:id", verifyAdmin, deleteVendor);
+router.delete("/:id", deleteVendor);
 
 export default router;
