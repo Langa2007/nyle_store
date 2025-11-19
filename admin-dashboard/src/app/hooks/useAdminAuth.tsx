@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
@@ -9,14 +9,12 @@ const INACTIVITY_LIMIT = 10 * 60 * 1000; // 10 minutes
 export const useAdminAuth = () => {
   const router = useRouter();
   const [admin, setAdmin] = useState<any>(null);
-  const inactivityTimer = useRef<NodeJS.Timeout | null>(null);
-  const verifyingRef = useRef(false);
 
   const logout = useCallback(() => {
     localStorage.removeItem("adminAccessToken");
     localStorage.removeItem("adminRefreshToken");
+    localStorage.setItem("adminLoggedOut", Date.now().toString());
     setAdmin(null);
-    sessionStorage.removeItem("adminTab");
     router.push("/login");
   }, [router]);
 
@@ -38,20 +36,12 @@ export const useAdminAuth = () => {
       return data.accessToken;
     } catch {
       logout();
-      return null;
     }
   }, [logout]);
 
   const verifyToken = useCallback(async () => {
-    if (verifyingRef.current) return;
-    verifyingRef.current = true;
-
     const accessToken = localStorage.getItem("adminAccessToken");
-    if (!accessToken) {
-      logout();
-      verifyingRef.current = false;
-      return;
-    }
+    if (!accessToken) return logout();
 
     try {
       const res = await fetch(`${API_URL}/api/admin/verify-token`, {
@@ -63,41 +53,48 @@ export const useAdminAuth = () => {
 
       setAdmin(data.admin);
     } catch {
-      // Try refreshing token
       const newToken = await refreshAccessToken();
-      if (newToken) {
-        await verifyToken(); // re-verify with new token
-      }
-    } finally {
-      verifyingRef.current = false;
+      if (newToken) verifyToken();
     }
   }, [logout, refreshAccessToken]);
 
+  // Inactivity across tabs
   const resetInactivity = useCallback(() => {
-    if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
-    inactivityTimer.current = setTimeout(logout, INACTIVITY_LIMIT);
-  }, [logout]);
+    localStorage.setItem("adminLastActive", Date.now().toString());
+  }, []);
 
   useEffect(() => {
-    // On mount, verify token
     verifyToken();
 
-    // Track user activity
-    const events = ["mousemove", "keydown", "click", "scroll", "touchstart"];
-    events.forEach((evt) => window.addEventListener(evt, resetInactivity));
+    // Inactivity events
+    window.addEventListener("mousemove", resetInactivity);
+    window.addEventListener("keydown", resetInactivity);
+    window.addEventListener("click", resetInactivity);
+    window.addEventListener("scroll", resetInactivity);
 
-    resetInactivity();
+    // Check inactivity every second
+    const interval = setInterval(() => {
+      const lastActive = parseInt(localStorage.getItem("adminLastActive") || "0", 10);
+      if (Date.now() - lastActive > INACTIVITY_LIMIT) logout();
+    }, 1000);
 
-    // Force logout if tab closed/reopened
-    if (!sessionStorage.getItem("adminTab")) {
-      logout();
-    }
+    // Cross-tab logout
+    const storageListener = (e: StorageEvent) => {
+      if (e.key === "adminLoggedOut") logout();
+    };
+    window.addEventListener("storage", storageListener);
+
+    // Tab close / new tab
+    if (!sessionStorage.getItem("adminTab")) logout();
     sessionStorage.setItem("adminTab", "open");
 
-    // Clean up
     return () => {
-      if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
-      events.forEach((evt) => window.removeEventListener(evt, resetInactivity));
+      clearInterval(interval);
+      window.removeEventListener("mousemove", resetInactivity);
+      window.removeEventListener("keydown", resetInactivity);
+      window.removeEventListener("click", resetInactivity);
+      window.removeEventListener("scroll", resetInactivity);
+      window.removeEventListener("storage", storageListener);
       sessionStorage.removeItem("adminTab");
     };
   }, [verifyToken, resetInactivity, logout]);
