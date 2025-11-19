@@ -636,7 +636,10 @@ CREATE TABLE public.users (
     email character varying(100) NOT NULL,
     password character varying(255) NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    is_admin boolean DEFAULT false
+    is_admin boolean DEFAULT false,
+    last_ip character varying(45),
+    last_activity timestamp without time zone,
+    session_valid boolean DEFAULT true
 );
 
 
@@ -1043,11 +1046,11 @@ COPY public.support_messages (id, name, email, subject, message, status, created
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users (id, name, email, password, created_at, is_admin) FROM stdin;
-1	john doe	john@example.com	123456	2025-07-26 21:58:36.630158	f
-4	Admin User	admin@example.com	$2b$10$6WbO/EYOxqlDwd6Z90.kIe3zUARM1D8.YntE854msr0d6pkGJhMpq	2025-07-27 13:54:50.436222	t
-5	Admin User	fidellanga67@gmail.com	$2b$10$umIrOicOALby3lpn.YpybuC1suc1Z8y0sIn0s5iZ5we8VBE2sWeci	2025-07-27 19:39:13.500069	t
-7	Test User	testuser@example.com	$2b$10$LNCwOhHDTVyK2381qEOb/.Uv4AUJGK/Q5uzNKLpTkJiXLOZwlXuDy	2025-10-15 15:39:53.832293	f
+COPY public.users (id, name, email, password, created_at, is_admin, last_ip, last_activity, session_valid) FROM stdin;
+1	john doe	john@example.com	123456	2025-07-26 21:58:36.630158	f	\N	\N	t
+4	Admin User	admin@example.com	$2b$10$6WbO/EYOxqlDwd6Z90.kIe3zUARM1D8.YntE854msr0d6pkGJhMpq	2025-07-27 13:54:50.436222	t	\N	\N	t
+5	Admin User	fidellanga67@gmail.com	$2b$10$umIrOicOALby3lpn.YpybuC1suc1Z8y0sIn0s5iZ5we8VBE2sWeci	2025-07-27 19:39:13.500069	t	\N	\N	t
+7	Test User	testuser@example.com	$2b$10$LNCwOhHDTVyK2381qEOb/.Uv4AUJGK/Q5uzNKLpTkJiXLOZwlXuDy	2025-10-15 15:39:53.832293	f	\N	\N	t
 \.
 
 
