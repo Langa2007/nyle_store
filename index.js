@@ -28,6 +28,7 @@ import newsletterRoutes from "./routes/newsletterRoutes.js";
 import supportRoutes from "./routes/supportRoutes.js";
 import faqRoutes from "./routes/faqRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
+import vendorRoutes from "./routes/vendorRoutes.js";
 
 
 dotenv.config();
@@ -97,6 +98,9 @@ app.use("/api/orders", orderRoutes);
 
 //  Vendor authentication (signup, login, verify email)
 app.use("/api/vendor/auth", vendorAuthRoutes);
+
+// Vendor routes (protected routes for vendors)
+app.use("/api/vendor", vendorRoutes);
 
 
 //  Vendor product management
