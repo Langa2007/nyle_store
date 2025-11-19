@@ -152,6 +152,55 @@ export const verifyToken = async (req, res) => {
   }
 };
 
+// ------------------ Vendor Login ------------------
+export const vendorLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password)
+      return res.status(400).json({ message: "Email and password are required" });
+
+    const q = await pool.query(
+      "SELECT id, password, is_verified, status FROM vendors WHERE email=$1",
+      [email]
+    );
+
+    if (!q.rows.length)
+      return res.status(400).json({ message: "Vendor not found" });
+
+    const vendor = q.rows[0];
+
+    // Must verify email first
+    if (!vendor.is_verified)
+      return res.status(403).json({ message: "Email not verified" });
+
+    // Must wait for admin approval
+    if (vendor.status !== "approved")
+      return res.status(403).json({ message: "Account awaiting admin approval" });
+
+    const match = await bcrypt.compare(password, vendor.password);
+    if (!match)
+      return res.status(400).json({ message: "Incorrect password" });
+
+    const token = jwt.sign(
+      { vendor_id: vendor.id, role: "vendor" },
+      process.env.JWT_SECRET,
+      { expiresIn: "12h" }
+    );
+
+    return res.json({
+      message: "Login successful",
+      token,
+      vendor: { id: vendor.id, status: vendor.status }
+    });
+
+  } catch (err) {
+    console.error("vendorLogin error:", err);
+    res.status(500).json({ message: "Server error during login" });
+  }
+};
+
+
 // ------------------ Magic Login ------------------
 export const magicLogin = async (req, res) => {
   try {
