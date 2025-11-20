@@ -161,31 +161,52 @@ function HomeContent() {
                 key={item.id}
                 className="bg-white p-6 border rounded-xl shadow hover:shadow-xl hover:scale-105 transition"
               >
-                {/* ✅ IMAGE FIXED */}
-                <div className="h-40 rounded mb-4 overflow-hidden flex items-center justify-center bg-gray-100">
-                  {item.image_url ? (
-                    <img
-                      src={item.image_url}
-                      alt={item.name}
-                      className="h-full w-full object-cover"
-                      onError={(e) => (e.target.style.display = "none")}
-                    />
-                  ) : (
-                    <span className="text-blue-600 font-bold text-2xl">
-                      {item.name?.[0] || "?"}
-                    </span>
-                  )}
-                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+  {filteredProducts.map((item) => (
+    <Link
+      key={item.id}
+      href={`/product/${item.id}`}
+      className="bg-white p-5 border rounded-xl shadow hover:shadow-xl transition hover:-translate-y-1 group"
+    >
+      {/* Image */}
+      <div className="h-56 rounded-lg overflow-hidden bg-gray-100 mb-4">
+        {item.image_url ? (
+          <img
+            src={item.image_url}
+            alt={item.name}
+            className="h-full w-full object-cover group-hover:scale-105 transition"
+          />
+        ) : (
+          <div className="h-full flex items-center justify-center text-4xl font-bold text-blue-600">
+            {item.name?.[0]}
+          </div>
+        )}
+      </div>
 
-                <h3 className="text-lg font-semibold mb-2">
-                  {item.name}
-                </h3>
-                <p className="text-gray-500 mb-3">
-                  {currency} {convertPrice(item.price || 0)}
-                </p>
-                <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
-                  Add to Cart
-                </button>
+      {/* Product Name */}
+      <h3 className="text-lg font-semibold text-gray-800 line-clamp-2 mb-2">
+        {item.name}
+      </h3>
+
+      {/* Description Preview */}
+      <p className="text-gray-500 text-sm line-clamp-2 mb-3">
+        {item.description || "No description provided"}
+      </p>
+
+      {/* Price */}
+      <p className="text-xl font-bold text-blue-700 mb-1">
+        {currency} {convertPrice(item.price || 0)}
+      </p>
+
+      {/* Shipping badge */}
+      <p className="text-xs text-green-600 font-medium">
+        ✓ Ships from vendor — delivery guaranteed
+      </p>
+
+    </Link>
+  ))}
+</div>
+
               </div>
             ))}
           </div>

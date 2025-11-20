@@ -1,5 +1,7 @@
 import db from "../db/connect.js";
-import nodemailer from "nodemailer";
+import {Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // --- Subscribe to Newsletter ---
 export const subscribeNewsletter = async (req, res) => {
@@ -7,7 +9,7 @@ export const subscribeNewsletter = async (req, res) => {
   if (!email) return res.status(400).json({ message: "Email is required" });
 
   try {
-    // Ensure table exists (for first run in dev)
+    // Ensure table exists
     await db.query(`
       CREATE TABLE IF NOT EXISTS newsletter_subscribers (
         id SERIAL PRIMARY KEY,
@@ -88,28 +90,23 @@ export const sendAnnouncement = async (req, res) => {
     if (subscribers.length === 0)
       return res.status(200).json({ message: "No subscribers to send to." });
 
-    // Configure email transporter
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    // Send announcement to each subscriber
+    // Send announcement via Resend
     for (const sub of subscribers) {
-      await transporter.sendMail({
-        from: `"Nyle Updates" <${process.env.EMAIL_USER}>`,
-        to: sub.email,
-        subject: title,
-        html: `
-          <h2>${title}</h2>
-          <p>${message}</p>
-          <br/>
-          <p style="font-size: 0.9rem; color: #555;">— Team Nyle</p>
-        `,
-      });
+      try {
+        await resend.emails.send({
+          from: "onboarding@nyle.dev",
+          to: sub.email,
+          subject: title,
+          html: `
+            <h2>${title}</h2>
+            <p>${message}</p>
+            <br/>
+            <p style="font-size: 0.9rem; color: #555;">— Team Nyle</p>
+          `,
+        });
+      } catch (err) {
+        console.error(`Failed to send email to ${sub.email}:`, err);
+      }
     }
 
     res.status(200).json({ message: "Announcement sent successfully!" });

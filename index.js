@@ -29,6 +29,7 @@ import supportRoutes from "./routes/supportRoutes.js";
 import faqRoutes from "./routes/faqRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import vendorRoutes from "./routes/vendorRoutes.js";
+import authRoutes from "./routes/auth.js";
 
 
 dotenv.config();
@@ -93,6 +94,7 @@ app.use("/api/support/contact", contactLimiter); // Apply stricter rate limiting
 
 // --- ROUTES ---
 app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 

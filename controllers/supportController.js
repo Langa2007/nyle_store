@@ -1,22 +1,15 @@
 // controllers/supportController.js
 import { pool } from "../db/connect.js";
-import nodemailer from "nodemailer";
+import {Resend} from "resend";
 
-function createTransporter() {
-  return nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_PASS,
-    },
-  });
-}
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // POST /api/support/contact
 export const createSupportMessage = async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
-    if (!email || !message) return res.status(400).json({ message: "Email and message are required" });
+    if (!email || !message)
+      return res.status(400).json({ message: "Email and message are required" });
 
     const q = await pool.query(
       `INSERT INTO support_messages (name, email, subject, message)
@@ -24,21 +17,22 @@ export const createSupportMessage = async (req, res) => {
       [name || null, email, subject || null, message]
     );
 
-    // optionally notify admin email (best-effort)
+    // Notify admin via Resend (best-effort)
     try {
-      const transporter = createTransporter();
-      await transporter.sendMail({
-        from: `"Nyle Support" <${process.env.GMAIL_USER}>`,
+      await resend.emails.send({
+        from: "onboarding@nyle.dev",
         to: process.env.GMAIL_USER,
         subject: `New support message: ${subject || "No subject"}`,
         html: `<p><strong>From:</strong> ${name || "Anonymous"} &lt;${email}&gt;</p>
                <p><strong>Message:</strong></p><p>${message}</p>`,
       });
     } catch (e) {
-      console.error("Failed to send admin notification:", e);
+      console.error("Failed to send admin notification via Resend:", e);
     }
 
-    res.status(201).json({ message: "Support message received", id: q.rows[0].id });
+    res
+      .status(201)
+      .json({ message: "Support message received", id: q.rows[0].id });
   } catch (err) {
     console.error("createSupportMessage error:", err);
     res.status(500).json({ message: "Server error" });
@@ -58,7 +52,12 @@ export const listSupportMessages = async (req, res) => {
     );
 
     const totalQ = await pool.query(`SELECT COUNT(*) FROM support_messages`);
-    res.json({ items: q.rows, total: Number(totalQ.rows[0].count), page, pageSize });
+    res.json({
+      items: q.rows,
+      total: Number(totalQ.rows[0].count),
+      page,
+      pageSize,
+    });
   } catch (err) {
     console.error("listSupportMessages error:", err);
     res.status(500).json({ message: "Server error" });
@@ -69,7 +68,10 @@ export const updateSupportStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
-    await pool.query(`UPDATE support_messages SET status=$1, updated_at=now() WHERE id=$2`, [status || "open", id]);
+    await pool.query(
+      `UPDATE support_messages SET status=$1, updated_at=now() WHERE id=$2`,
+      [status || "open", id]
+    );
     res.json({ message: "Updated" });
   } catch (err) {
     console.error("updateSupportStatus error:", err);

@@ -105,7 +105,7 @@ export default function AdminLayout({ title, children }: AdminLayoutProps) {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Top Bar */}
-        <header className="bg-white shadow-sm border-b border-gray-100 flex items-center justify-between px-6 py-4 sticky top-0 z-10">
+        <header className="bg-white shadow-sm border-b border-gray-100 flex items-center justify-between px-6 py-4 z-10">
           <div className="flex items-center gap-4">
             <button
               aria-label="Open sidebar"
