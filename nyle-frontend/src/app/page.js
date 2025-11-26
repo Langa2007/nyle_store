@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getCategories } from "../services/categoryService";
-import { getProducts } from "../services/productService"; // ✅ added
+import { getProducts } from "../services/productService"; //  added
 import ClientProviders from "../components/ClientProviders";
 import {
   FaCcVisa,
@@ -155,59 +155,50 @@ function HomeContent() {
             No products found matching “{searchTerm}”
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-            {filteredProducts.map((item) => (
-              <div
-                key={item.id}
-                className="bg-white p-6 border rounded-xl shadow hover:shadow-xl hover:scale-105 transition"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-  {filteredProducts.map((item) => (
-    <Link
-      key={item.id}
-      href={`/product/${item.id}`}
-      className="bg-white p-5 border rounded-xl shadow hover:shadow-xl transition hover:-translate-y-1 group"
-    >
-      {/* Image */}
-      <div className="h-56 rounded-lg overflow-hidden bg-gray-100 mb-4">
-        {item.image_url ? (
-          <img
-            src={item.image_url}
-            alt={item.name}
-            className="h-full w-full object-cover group-hover:scale-105 transition"
-          />
-        ) : (
-          <div className="h-full flex items-center justify-center text-4xl font-bold text-blue-600">
-            {item.name?.[0]}
-          </div>
-        )}
-      </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4  gap-8">
+            {filteredProducts.map((product) => (
+              <Link
+                key={moveItem.id}
+                href={`/product/${product.id}`}
+                className="bg-white p-5 rounded-xl shadow hover:shadow-xl transition"
+                >
+                  <div className="h-56 rounded-lg overflow-hidden bg-gray-100 mb-4">
+                    
+                    {Item.image_url ? (
+                      <img
+                        src={item.image_url}
+                        alt={item.name}
+                        className="h-full w-full object-cover group-hover:scale-105 transition"
+                      />
+                    ) : (
+                      <div className="h-full flex items-center justify-center text-4xl font-bold text-blue 600">
+                        {item.name?.[0]}
+                      </div>
+                    )}
+                  </div>
+                  {/* Product Details */}
+                  <h3 className="text-lg font-semibold text-gray-800 line clamp-2 mb-2">
+                    {item.name}
+                  </h3>
 
-      {/* Product Name */}
-      <h3 className="text-lg font-semibold text-gray-800 line-clamp-2 mb-2">
-        {item.name}
-      </h3>
+                  {/* description */}
+                  <p className="text-sm text-gray-500 line-clamp-2 mb-3">
+                    {item.description  || "No description available."}
+                  </p>
 
-      {/* Description Preview */}
-      <p className="text-gray-500 text-sm line-clamp-2 mb-3">
-        {item.description || "No description provided"}
-      </p>
+                  {/* Price */}
+                  <p className="text-xl font-bold text-blue-700 mb-1"> 
+                    {currency} {convertPrice(item.price || 0)}
+                  </p>
 
-      {/* Price */}
-      <p className="text-xl font-bold text-blue-700 mb-1">
-        {currency} {convertPrice(item.price || 0)}
-      </p>
+                  {/*shipping info */}
+                  <p className="text-xs text-green-600 font-medium">
+                    ships from seller - delivery guarenteed
+                  </p>
+    
 
-      {/* Shipping badge */}
-      <p className="text-xs text-green-600 font-medium">
-        ✓ Ships from vendor — delivery guaranteed
-      </p>
-
-    </Link>
-  ))}
-</div>
-
-              </div>
+        
+                </Link>
             ))}
           </div>
         )}

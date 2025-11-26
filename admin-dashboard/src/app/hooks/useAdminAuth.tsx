@@ -23,7 +23,7 @@ export const useAdminAuth = () => {
     if (!refreshToken) return logout();
 
     try {
-      const res = await fetch(`${API_URL}/api/admin/refresh-token`, {
+      const res = await fetch(`${API_URL}/api/admin/auth/refresh-token`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refreshToken }),
@@ -44,7 +44,7 @@ export const useAdminAuth = () => {
     if (!accessToken) return logout();
 
     try {
-      const res = await fetch(`${API_URL}/api/admin/verify-token`, {
+      const res = await fetch(`${API_URL}/api/admin/auth/verify-token`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
 

@@ -109,7 +109,7 @@ app.use("/api/vendors", vendorRoutes);
 app.use("/api/vendor/products", vendorProductRoutes);
 
 // Admin authentication & management
-app.use("/api/admin", adminAuthRoutes);       // must come first
+app.use("/api/admin/auth", adminAuthRoutes);       // must come first
 app.use("/api/admin/vendors", adminVendorRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/admin/queues", serverAdapter.getRouter()); // Bull Board UI
