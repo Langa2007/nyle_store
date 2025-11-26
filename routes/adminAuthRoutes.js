@@ -7,9 +7,9 @@ import {
 
 const router = express.Router();
 
-// Auth routes
+// prefix will be /api/admin/auth
 router.post("/login", adminLogin);
-router.post("/refresh", refreshAdminToken);  // new
-router.get("/verify-token",verifyAdminToken); // new
+router.post("/refresh-token", refreshAdminToken);
+router.get("/verify-token", verifyAdminToken);
 
 export default router;
