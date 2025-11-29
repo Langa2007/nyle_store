@@ -158,13 +158,13 @@ function HomeContent() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4  gap-8">
             {filteredProducts.map((product) => (
               <Link
-                key={moveItem.id}
+                key={moveitem.id}
                 href={`/product/${product.id}`}
                 className="bg-white p-5 rounded-xl shadow hover:shadow-xl transition"
                 >
                   <div className="h-56 rounded-lg overflow-hidden bg-gray-100 mb-4">
                     
-                    {Item.image_url ? (
+                    {item.image_url ? (
                       <img
                         src={item.image_url}
                         alt={item.name}
