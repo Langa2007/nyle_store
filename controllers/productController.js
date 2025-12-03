@@ -1,148 +1,56 @@
 import pool from "../db/connect.js";
-import cloudinary from "../config/cloudinary.js";
-import multer from "multer";
-import streamifier from "streamifier"; // needed for upload_stream
 
-import {
-  createProduct,
-  getAllProducts,
-  updateProductById,
-  getProductById,
-  deleteProductById,
-} from "../models/productsModel.js";
+// ✅ PUBLIC: LIST PRODUCTS
+export const listProducts = async (req, res) => {
+  try {
+    const q = `
+      SELECT p.*, v.legal_name AS vendor_name, v.company_name
+      FROM products p
+      LEFT JOIN vendors v ON p.vendor_id = v.id
+      ORDER BY p.created_at DESC
+      LIMIT 200
+    `;
 
-// ✅ Setup multer for in-memory uploads
-const storage = multer.memoryStorage();
-export const upload = multer({ storage });
-
-// ✅ Upload buffer to Cloudinary via stream
-const uploadToCloudinary = (fileBuffer) => {
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      { folder: "nyle-products" },
-      (error, result) => {
-        if (error) reject(error);
-        else resolve(result);
-      }
-    );
-    streamifier.createReadStream(fileBuffer).pipe(stream);
-  });
+    const { rows } = await pool.query(q);
+    res.json(rows);
+  } catch (err) {
+    console.error("❌ List products error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
 };
 
-// ✅ Create a new product (with optional image upload)
-export const handleCreateProduct = async (req, res) => {
+// ✅ PUBLIC: GET PRODUCT BY ID (WITH VENDOR)
+export const getProductById = async (req, res) => {
   try {
-    const { name, description, price, stock, category } = req.body;
-    let imageUrl = null;
+    const { id } = req.params;
 
-    if (req.file) {
-      const uploadResult = await uploadToCloudinary(req.file.buffer);
-      imageUrl = uploadResult.secure_url;
+    const q = `
+      SELECT p.*, 
+        v.id AS vendor_id,
+        v.legal_name AS vendor_name,
+        v.company_name,
+        v.shipping_profile,
+        v.shipping_rate,
+        v.email AS vendor_email
+      FROM products p
+      LEFT JOIN vendors v ON p.vendor_id = v.id
+      WHERE p.id = $1
+    `;
+
+    const { rows } = await pool.query(q, [id]);
+
+    if (!rows.length) {
+      return res.status(404).json({ error: "Product not found" });
     }
 
-    const newProduct = await createProduct(
-      name,
-      description,
-      price,
-      stock,
-      category,
-      imageUrl
-    );
-
-    res.status(201).json(newProduct);
+    res.json(rows[0]);
   } catch (err) {
-    console.error("❌ Product Creation Error:", err.message);
-    res.status(500).json({ error: "Failed to create product" });
+    console.error("❌ Fetch product error:", err.message);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-// ✅ Get all products
-export const handleGetAllProducts = async (req, res) => {
-  try {
-    const products = await getAllProducts();
-    res.status(200).json(products);
-  } catch (err) {
-    console.error("❌ Fetch Products Error:", err.message);
-    res.status(500).json({ error: "Failed to fetch products" });
-  }
-};
-
-// ✅ Get a product by ID
-export const handleGetProductById = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const product = await getProductById(id);
-    if (!product) return res.status(404).json({ error: "Product not found" });
-    res.status(200).json(product);
-  } catch (err) {
-    console.error("❌ Fetch Product Error:", err.message);
-    res.status(500).json({ error: "Failed to fetch product" });
-  }
-};
-
-// ✅ Update a product (with optional new image)
-export const handleUpdateProduct = async (req, res) => {
-  const { id } = req.params;
-  const { name, description, price, stock, category } = req.body;
-
-  try {
-    let imageUrl;
-
-    if (req.file) {
-      const uploadResult = await uploadToCloudinary(req.file.buffer);
-      imageUrl = uploadResult.secure_url;
-    }
-
-    const updated = await updateProductById(
-      id,
-      name,
-      description,
-      price,
-      stock,
-      category,
-      imageUrl
-    );
-
-    if (!updated) return res.status(404).json({ error: "Product not found" });
-
-    res.status(200).json(updated);
-  } catch (err) {
-    console.error("❌ Update Error:", err.message);
-    res.status(500).json({ error: "Failed to update product" });
-  }
-};
-
-// ✅ Delete a product
-export const handleDeleteProduct = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const deleted = await deleteProductById(id);
-    if (!deleted) return res.status(404).json({ error: "Product not found" });
-    res.status(200).json({ message: "Product deleted successfully" });
-  } catch (err) {
-    console.error("❌ Delete Error:", err.message);
-    res.status(500).json({ error: "Failed to delete product" });
-  }
-};
-
-// ✅ Update product stock
-export const updateProductStock = async (req, res) => {
-  const productId = req.params.id;
-  const { stock } = req.body;
-
-  try {
-    await pool.query("UPDATE products SET stock = $1 WHERE id = $2", [
-      stock,
-      productId,
-    ]);
-    res.status(200).json({ message: "Stock updated successfully" });
-  } catch (err) {
-    console.error("❌ Stock update error:", err.message);
-    res.status(500).json({ error: "Failed to update stock" });
-  }
-};
-
-// ✅ Search and filter products
+// ✅ PUBLIC: SEARCH & FILTER
 export const searchAndFilterProducts = async (req, res) => {
   const { name, category, minPrice, maxPrice } = req.query;
 
@@ -154,24 +62,27 @@ export const searchAndFilterProducts = async (req, res) => {
     query += ` AND LOWER(name) LIKE $${count++}`;
     values.push(`%${name.toLowerCase()}%`);
   }
+
   if (category) {
     query += ` AND LOWER(category) = $${count++}`;
     values.push(category.toLowerCase());
   }
+
   if (minPrice) {
     query += ` AND price >= $${count++}`;
     values.push(minPrice);
   }
+
   if (maxPrice) {
     query += ` AND price <= $${count++}`;
     values.push(maxPrice);
   }
 
   try {
-    const result = await pool.query(query, values);
-    res.status(200).json(result.rows);
+    const { rows } = await pool.query(query, values);
+    res.json(rows);
   } catch (err) {
-    console.error("❌ Search/Filter error:", err.message);
-    res.status(500).json({ error: "Failed to search/filter products" });
+    console.error("❌ Search error:", err.message);
+    res.status(500).json({ error: "Failed to search/filter" });
   }
 };

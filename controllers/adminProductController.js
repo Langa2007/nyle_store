@@ -1,42 +1,126 @@
 import pool from "../db/connect.js";
+import cloudinary from "../config/cloudinary.js";
+import multer from "multer";
+import streamifier from "streamifier";
 
-// ✅ Get all products
-export const getAllProducts = async (req, res) => {
+// ✅ Multer setup
+const storage = multer.memoryStorage();
+export const upload = multer({ storage });
+
+// ✅ Cloudinary uploader
+const uploadToCloudinary = (fileBuffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "nyle-products" },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+
+    streamifier.createReadStream(fileBuffer).pipe(stream);
+  });
+};
+
+// ✅ ADMIN CREATE PRODUCT WITH VENDOR
+export const adminCreateProduct = async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM products ORDER BY id DESC");
-    res.json(result.rows);
+    const { name, description, price, stock, category, vendor_id } = req.body;
+
+    if (!vendor_id) {
+      return res.status(400).json({ error: "vendor_id is required" });
+    }
+
+    let imageUrl = null;
+
+    if (req.file) {
+      const uploadResult = await uploadToCloudinary(req.file.buffer);
+      imageUrl = uploadResult.secure_url;
+    }
+
+    const q = `
+      INSERT INTO products
+      (name, description, price, stock, category, image_url, vendor_id)
+      VALUES ($1,$2,$3,$4,$5,$6,$7)
+      RETURNING *
+    `;
+
+    const values = [
+      name,
+      description,
+      price,
+      stock,
+      category,
+      imageUrl,
+      vendor_id,
+    ];
+
+    const { rows } = await pool.query(q, values);
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    console.error("❌ Admin create product error:", err.message);
+    res.status(500).json({ error: "Failed to create product" });
+  }
+};
+
+// ✅ ADMIN GET ALL PRODUCTS
+export const adminGetAllProducts = async (req, res) => {
+  try {
+    const q = `
+      SELECT p.*, v.legal_name AS vendor_name
+      FROM products p
+      LEFT JOIN vendors v ON p.vendor_id = v.id
+      ORDER BY p.created_at DESC
+    `;
+
+    const { rows } = await pool.query(q);
+    res.json(rows);
   } catch (err) {
     console.error("❌ Error fetching products:", err.message);
     res.status(500).json({ error: "Failed to fetch products" });
   }
 };
 
-// ✅ Delete product
-export const deleteProduct = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const result = await pool.query("DELETE FROM products WHERE id = $1 RETURNING *", [id]);
-    if (result.rows.length === 0) return res.status(404).json({ error: "Product not found" });
-    res.json({ message: "Product deleted successfully", product: result.rows[0] });
-  } catch (err) {
-    console.error("❌ Error deleting product:", err.message);
-    res.status(500).json({ error: "Failed to delete product" });
-  }
-};
-
-// ✅ Update stock
-export const updateStock = async (req, res) => {
+// ✅ ADMIN UPDATE STOCK
+export const adminUpdateStock = async (req, res) => {
   const { id } = req.params;
   const { stock } = req.body;
+
   try {
-    const result = await pool.query(
-      "UPDATE products SET stock = $1 WHERE id = $2 RETURNING *",
-      [stock, id]
-    );
-    if (result.rows.length === 0) return res.status(404).json({ error: "Product not found" });
-    res.json({ message: "Stock updated successfully", product: result.rows[0] });
+    const q = `
+      UPDATE products SET stock = $1
+      WHERE id = $2
+      RETURNING *
+    `;
+
+    const { rows } = await pool.query(q, [stock, id]);
+
+    if (!rows.length) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.json(rows[0]);
   } catch (err) {
     console.error("❌ Error updating stock:", err.message);
     res.status(500).json({ error: "Failed to update stock" });
+  }
+};
+
+// ✅ ADMIN DELETE PRODUCT
+export const adminDeleteProduct = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const q = "DELETE FROM products WHERE id = $1 RETURNING *";
+    const { rows } = await pool.query(q, [id]);
+
+    if (!rows.length) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.json({ message: "Product deleted successfully", product: rows[0] });
+  } catch (err) {
+    console.error("❌ Error deleting product:", err.message);
+    res.status(500).json({ error: "Failed to delete product" });
   }
 };

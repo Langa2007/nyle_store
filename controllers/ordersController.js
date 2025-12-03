@@ -1,39 +1,85 @@
 // controllers/ordersController.js
-import pool from '../db/connect.js';
+import pool from "../db/connect.js";
 
+//  CREATE ORDER (SINGLE PRODUCT CHECKOUT)
 export const createOrder = async (req, res) => {
+  const client = await pool.connect();
   try {
-    const { user_id = null, items = [] } = req.body;
-    if (!items || !items.length) return res.status(400).json({ error: 'No items' });
+    const user_id = req.user.id; // from JWT middleware
+    const { product_id, quantity, shipping_address } = req.body;
 
-    // compute total and create order
-    let total = 0;
-    // fetch product prices to validate
-    const productIds = items.map(i => i.product_id);
-    const { rows: products } = await pool.query('SELECT id, price FROM products WHERE id = ANY($1)', [productIds]);
-
-    const priceMap = new Map(products.map(p => [p.id, Number(p.price)]));
-
-    for (const it of items) {
-      const price = priceMap.get(it.product_id) ?? 0;
-      total += price * (it.quantity || 1);
+    if (!product_id || !quantity || !shipping_address) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const { rows } = await pool.query('INSERT INTO orders(user_id, total, status) VALUES($1,$2,$3) RETURNING *', [user_id, total, 'pending']);
-    const order = rows[0];
+    await client.query("BEGIN");
 
-    // insert order items
-    const insertPromises = items.map(it =>
-      pool.query('INSERT INTO order_items(order_id, product_id, quantity, unit_price) VALUES($1,$2,$3,$4)', [order.id, it.product_id, it.quantity, priceMap.get(it.product_id) || 0])
+    //  1. Get product + vendor
+    const productRes = await client.query(
+      `SELECT id, price, stock, vendor_id 
+       FROM products 
+       WHERE id = $1`,
+      [product_id]
     );
-    await Promise.all(insertPromises);
 
-    res.status(201).json({ order_id: order.id, total, status: order.status });
+    if (productRes.rows.length === 0) {
+      throw new Error("Product not found");
+    }
+
+    const product = productRes.rows[0];
+
+    if (product.stock < quantity) {
+      throw new Error("Insufficient stock");
+    }
+
+    const total_amount = product.price * quantity;
+
+    // 2. Create order (WITH vendor_id )
+    const orderRes = await client.query(
+      `INSERT INTO orders (user_id, vendor_id, total_amount, shipping_address, status)
+       VALUES ($1, $2, $3, $4, 'pending')
+       RETURNING *`,
+      [user_id, product.vendor_id, total_amount, shipping_address]
+    );
+
+    const order = orderRes.rows[0];
+
+    //  3. Insert order item (WITH vendor_id )
+    await client.query(
+      `INSERT INTO order_items (order_id, product_id, vendor_id, quantity, price)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [
+        order.id,
+        product.id,
+        product.vendor_id,
+        quantity,
+        product.price,
+      ]
+    );
+
+    //  4. Reduce stock
+    await client.query(
+      `UPDATE products 
+       SET stock = stock - $1 
+       WHERE id = $2`,
+      [quantity, product.id]
+    );
+
+    await client.query("COMMIT");
+
+    res.status(201).json({
+      message: "Order placed successfully",
+      order,
+    });
   } catch (err) {
-    console.error('createOrder failed', err);
-    res.status(500).json({ error: 'Failed to create order' });
+    await client.query("ROLLBACK");
+    console.error("❌ Checkout Error:", err.message);
+    res.status(500).json({ error: err.message });
+  } finally {
+    client.release();
   }
 };
+
 
 export const listOrders = async (req, res) => {
   try {

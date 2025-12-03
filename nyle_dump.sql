@@ -397,7 +397,8 @@ CREATE TABLE public.orders (
     status character varying(50) DEFAULT 'pending'::character varying,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     total_amount numeric(10,2),
-    total numeric DEFAULT 0
+    total numeric DEFAULT 0,
+    vendor_id integer
 );
 
 
@@ -998,7 +999,7 @@ COPY public.order_items (id, order_id, product_id, quantity, price_at_order_time
 -- Data for Name: orders; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.orders (id, user_id, total_price, status, created_at, total_amount, total) FROM stdin;
+COPY public.orders (id, user_id, total_price, status, created_at, total_amount, total, vendor_id) FROM stdin;
 \.
 
 
@@ -1429,6 +1430,13 @@ ALTER TABLE ONLY public.vendors
 --
 
 CREATE INDEX idx_newsletter_email ON public.newsletter_subscribers USING btree (email);
+
+
+--
+-- Name: idx_order_items_vendor_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_order_items_vendor_id ON public.order_items USING btree (vendor_id);
 
 
 --
