@@ -10,9 +10,8 @@ export default function SupportInfoLayout({ title, subtitle, children }) {
 
   const navItems = [
     { href: "/support/contact", label: "Contact Support" },
-    { href: "/support/shipping", label: "Shipping & Delivery" },
-    { href: "/support/returns", label: "Returns & Refunds" },
-    { href: "/support/account", label: "Account Assistance" },
+    { href: "/support/help-center", label: "Help Center" },
+    { href: "/support/report-issue", label: "Report Issues" },
     { href: "/support/faqs", label: "FAQs" },
   ];
 

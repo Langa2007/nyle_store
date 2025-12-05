@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
 export default function ProductPage({ params }) {
   const { id } = params;
@@ -22,12 +23,16 @@ export default function ProductPage({ params }) {
   }, [id]);
 
   const ensureAuthThen = (cb) => {
-    const token = localStorage.getItem("accessToken") || localStorage.getItem("adminAccessToken"); // adapt for user token
+    const token =
+      localStorage.getItem("accessToken") ||
+      localStorage.getItem("userAccessToken");
+
     if (!token) {
-      // redirect to login with return-to param
-      router.push(`/auth/login?next=/product/${id}`);
+      // FIX: redirect to /products/... (correct route)
+      router.push(`/auth/login?next=/products/${id}`);
       return;
     }
+
     cb();
   };
 
@@ -52,7 +57,11 @@ export default function ProductPage({ params }) {
     <div className="container mx-auto p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
-          <img src={product.image_url || "/placeholder.png"} alt={product.name} className="w-full rounded" />
+          <img
+            src={product.image_url || "/placeholder.png"}
+            alt={product.name}
+            className="w-full rounded"
+          />
         </div>
 
         <div>
@@ -63,10 +72,17 @@ export default function ProductPage({ params }) {
           <div className="mb-4">
             <h3 className="font-semibold">Seller</h3>
             <p>{vendor.name}</p>
-            {vendor.shipping_rate !== undefined && <p>Shipping from vendor: Ksh {vendor.shipping_rate}</p>}
+            {vendor.shipping_rate !== undefined && (
+              <p>Shipping from vendor: Ksh {vendor.shipping_rate}</p>
+            )}
           </div>
 
-          <button onClick={goToCheckout} className="bg-blue-600 text-white px-4 py-2 rounded">Buy now</button>
+          <button
+            onClick={goToCheckout}
+            className="bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            Buy now
+          </button>
         </div>
       </div>
     </div>
