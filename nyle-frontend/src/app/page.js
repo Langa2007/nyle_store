@@ -159,7 +159,7 @@ function HomeContent() {
            {filteredProducts.map((product) => (
   <Link
     key={product.id}
-    href={`/product/${product.id}`}
+    href={`/products/${product.id}`}
     className="bg-white p-5 rounded-xl shadow hover:shadow-xl transition"
   >
     <div className="h-56 rounded-lg overflow-hidden bg-gray-100 mb-4">
