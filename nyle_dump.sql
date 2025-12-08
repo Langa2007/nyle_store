@@ -761,7 +761,8 @@ CREATE TABLE public.vendors (
     county character varying(100),
     is_verified boolean DEFAULT false,
     verification_token text,
-    verification_expires timestamp without time zone
+    verification_expires timestamp without time zone,
+    shipping_rate numeric DEFAULT 0
 );
 
 
@@ -1075,12 +1076,12 @@ COPY public.vendor_payout_accounts (id, vendor_id, provider, account_ref, create
 -- Data for Name: vendors; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.vendors (id, legal_name, email, phone, address, created_at, company_name, contact_person, password, status, country, business_type, county, is_verified, verification_token, verification_expires) FROM stdin;
-3	\N	vendor1@example.com	0712345678	\N	2025-09-12 09:14:29.173845	Test Company	John Doe	$2b$10$xSQRt8y2ZZc4aiDBr7kGc.cn56r/gj.3SeIMw0tzo55ks8kUcJ.TC	pending	\N	\N	\N	f	\N	\N
-4	nyle store	fidellanga67@gmail.com	0704521408	31680	2025-09-29 11:14:20.901191	nyle	Fidel Owiti	$2b$10$Eq.Uwvk312KxDDvtyaeEtOn9zfReVhhlzeR6r1y4ApvMutTgq.ynC	approved	\N	Phones & Tablets	Migori	f	\N	\N
-5	kencoms	langafidel264@gmail.com	0704521408	31680	2025-09-30 17:35:11.820031	kencom	kenedy onyango	$2b$10$0FZUOwDyMd5jKxRiUce9/ORnQtVy/SRDwZw/NLk1L1I9bPvnJb5Uy	rejected	Kakamega	Computers	\N	f	\N	\N
-6	alimama	fidzgel@gmail.com	0704521408	3180	2025-10-01 10:17:08.690453	alimama	lyn stephanie	$2b$10$6JddslTZrl7ZGImk6QntFOc9rcJ7TTv5EW3jOOZEGwwGe/eS5XSG.	rejected	Nyeri	Home & Garden	\N	f	a55cd8a13b17d63f7f342259ecf04fb1067d71eab347607f6df24948ba46b931	2025-10-02 10:17:08.698
-8	pepsodent	lynn91582@gmail.com	0726846599	4444	2025-10-05 14:08:42.956266	pepsodent	stephanie	$2b$10$9nnYApk9szbwaDALXZX6Xuo.s2QK6Tbo7T0K8lWcNP09CM.r4J90K	pending	Nyeri	Sports Gears	\N	f	42dbd41f903193a957434a153586bf8fa8996928828bf66bc09097ecc16d6188	2025-10-06 14:08:42.966
+COPY public.vendors (id, legal_name, email, phone, address, created_at, company_name, contact_person, password, status, country, business_type, county, is_verified, verification_token, verification_expires, shipping_rate) FROM stdin;
+3	\N	vendor1@example.com	0712345678	\N	2025-09-12 09:14:29.173845	Test Company	John Doe	$2b$10$xSQRt8y2ZZc4aiDBr7kGc.cn56r/gj.3SeIMw0tzo55ks8kUcJ.TC	pending	\N	\N	\N	f	\N	\N	0
+4	nyle store	fidellanga67@gmail.com	0704521408	31680	2025-09-29 11:14:20.901191	nyle	Fidel Owiti	$2b$10$Eq.Uwvk312KxDDvtyaeEtOn9zfReVhhlzeR6r1y4ApvMutTgq.ynC	approved	\N	Phones & Tablets	Migori	f	\N	\N	0
+5	kencoms	langafidel264@gmail.com	0704521408	31680	2025-09-30 17:35:11.820031	kencom	kenedy onyango	$2b$10$0FZUOwDyMd5jKxRiUce9/ORnQtVy/SRDwZw/NLk1L1I9bPvnJb5Uy	rejected	Kakamega	Computers	\N	f	\N	\N	0
+6	alimama	fidzgel@gmail.com	0704521408	3180	2025-10-01 10:17:08.690453	alimama	lyn stephanie	$2b$10$6JddslTZrl7ZGImk6QntFOc9rcJ7TTv5EW3jOOZEGwwGe/eS5XSG.	rejected	Nyeri	Home & Garden	\N	f	a55cd8a13b17d63f7f342259ecf04fb1067d71eab347607f6df24948ba46b931	2025-10-02 10:17:08.698	0
+8	pepsodent	lynn91582@gmail.com	0726846599	4444	2025-10-05 14:08:42.956266	pepsodent	stephanie	$2b$10$9nnYApk9szbwaDALXZX6Xuo.s2QK6Tbo7T0K8lWcNP09CM.r4J90K	pending	Nyeri	Sports Gears	\N	f	42dbd41f903193a957434a153586bf8fa8996928828bf66bc09097ecc16d6188	2025-10-06 14:08:42.966	0
 \.
 
 
