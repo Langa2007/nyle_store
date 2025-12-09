@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -16,10 +15,14 @@ export default function ProductPage({ params }) {
   const router = useRouter();
 
   useEffect(() => {
+    if (!id) return;
+
     fetch(`${API_URL}/api/products/${id}`)
       .then((r) => r.json())
-      .then((d) => setProduct(d))
-      .catch((e) => console.error(e))
+      .then((data) => {
+        setProduct(data); // ✅ OBJECT, not array
+      })
+      .catch((e) => console.error("Fetch error:", e))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -29,7 +32,6 @@ export default function ProductPage({ params }) {
       localStorage.getItem("userAccessToken");
 
     if (!token) {
-      // FIX: redirect to /products/... (correct route)
       router.push(`/auth/login?next=/products/${id}`);
       return;
     }
@@ -43,39 +45,32 @@ export default function ProductPage({ params }) {
     });
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (!product) return <div>Not found</div>;
-
-  const vendor = {
-    id: product.vendor_id,
-    name: product.vendor_name || product.company_name || "Unknown Seller",
-    shipping_profile: product.shipping_profile || {},
-    shipping_rate: product.shipping_rate || 0,
-    email: product.vendor_email,
-  };
+  if (loading) return <div className="p-6">Loading...</div>;
+  if (!product || product.error) return <div className="p-6">Not found</div>;
 
   return (
     <div className="container mx-auto p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* IMAGE */}
         <div>
           <img
-            src={product.image_url || "/placeholder.png"}
+            src={product.image_url}
             alt={product.name}
             className="w-full rounded"
           />
         </div>
 
+        {/* DETAILS */}
         <div>
           <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
           <p className="text-gray-600 mb-4">{product.description}</p>
-          <p className="text-xl font-bold mb-4">Ksh {product.price}</p>
+          <p className="text-xl font-bold mb-4">
+            Ksh {Number(product.price).toLocaleString()}
+          </p>
 
           <div className="mb-4">
             <h3 className="font-semibold">Seller</h3>
-            <p>{vendor.name}</p>
-            {vendor.shipping_rate !== undefined && (
-              <p>Shipping from vendor: Ksh {vendor.shipping_rate}</p>
-            )}
+            <p>{product.vendor_name || "Nyle Store"}</p>
           </div>
 
           <button
