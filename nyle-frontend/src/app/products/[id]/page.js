@@ -13,6 +13,9 @@ export default function ProductPage({ params }) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  
+  console.log("API URL = ", API_URL);
+
 
   useEffect(() => {
     if (!id) return;
