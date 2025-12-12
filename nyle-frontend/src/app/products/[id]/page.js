@@ -15,6 +15,8 @@ export default function ProductPage({ params }) {
   const router = useRouter();
   
   console.log("API URL = ", API_URL);
+  console.log("PAGE PARAMS =", params);
+
 
 
   useEffect(() => {
