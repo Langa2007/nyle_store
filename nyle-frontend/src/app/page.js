@@ -12,7 +12,7 @@ import {
   FaStar, FaTruck, FaShieldAlt, FaTag, FaFire, FaBolt, FaRocket,
   FaShoppingBag, FaGem, FaHeadphones, FaLaptop, FaHome, FaTshirt,
   FaArrowRight, FaChevronRight, FaHeart, FaShoppingCart, FaAward,
-  FaClock, FaCheckCircle, FaUsers, FaGlobe, FaLeaf, FaCrown
+  FaClock, FaCheckCircle, FaUsers, FaGlobe, FaLeaf, FaCrown, FaStore
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 
