@@ -5,7 +5,7 @@ import { ShoppingCart, Menu, X, Search } from "lucide-react";
 import Link from "next/link";
 import { FaHeart, FaUser, FaSignInAlt, FaUserPlus, FaStore } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import debounce from "lodash.debounce"; // Install with: npm install lodash.debounce
+import debounce from "lodash.debounce";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -18,26 +18,27 @@ export default function Navbar() {
   const searchRef = useRef(null);
   const router = useRouter();
 
-
- const searchProducts = async (query) => {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/search?q=${encodeURIComponent(query)}`);
-    if (!response.ok) throw new Error('Search failed');
-    return await response.json();
-  } catch (error) {
-    console.error('Search error:', error);
-    return [];
-  }
-};
-    return new Promise(resolve => {
-      setTimeout(() => {
-        const filtered = mockProducts.filter(product =>
-          product.name.toLowerCase().includes(query.toLowerCase()) ||
-          product.category.toLowerCase().includes(query.toLowerCase())
-        );
-        resolve(filtered);
-      }, 300);
-    });
+  // Real API search function
+  const searchProducts = async (query) => {
+    if (!query.trim()) return [];
+    
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/search?q=${encodeURIComponent(query)}&limit=5`
+      );
+      
+      if (!response.ok) {
+        // If API fails, return empty results (no mock fallback)
+        console.warn('Search API failed, returning empty results');
+        return [];
+      }
+      
+      const data = await response.json();
+      return data.products || data.items || data || [];
+    } catch (error) {
+      console.error('Search error:', error);
+      return []; // Return empty array on error
+    }
   };
 
   // Debounced search function
@@ -51,7 +52,7 @@ export default function Navbar() {
 
       setIsSearching(true);
       try {
-        const results = await mockSearchProducts(query);
+        const results = await searchProducts(query);
         setSearchResults(results);
         setShowSearchResults(true);
       } catch (error) {
@@ -123,6 +124,12 @@ export default function Navbar() {
 
   const getHoverColor = () => {
     return isScrolled ? "hover:text-blue-600" : "hover:text-blue-200";
+  };
+
+  // Format price function
+  const formatPrice = (price) => {
+    if (!price) return "Ksh 0";
+    return `Ksh ${parseInt(price).toLocaleString()}`;
   };
 
   return (
@@ -215,8 +222,8 @@ export default function Navbar() {
                         </div>
                         {searchResults.map((product) => (
                           <Link
-                            key={product.id}
-                            href={`/products/${product.id}`}
+                            key={product.id || product._id}
+                            href={`/products/${product.id || product._id || product.slug}`}
                             onClick={() => {
                               setShowSearchResults(false);
                               setSearchQuery("");
@@ -224,11 +231,17 @@ export default function Navbar() {
                             className="block px-4 py-3 hover:bg-blue-50 border-b last:border-b-0 transition"
                           >
                             <div className="flex justify-between items-center">
-                              <div>
-                                <p className="font-medium text-gray-900">{product.name}</p>
-                                <p className="text-sm text-gray-600">{product.category}</p>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-gray-900 truncate">
+                                  {product.name || product.title}
+                                </p>
+                                <p className="text-sm text-gray-600 truncate">
+                                  {product.category || product.type || "Product"}
+                                </p>
                               </div>
-                              <p className="font-bold text-blue-700">Ksh {product.price.toLocaleString()}</p>
+                              <p className="font-bold text-blue-700 ml-2">
+                                {formatPrice(product.price)}
+                              </p>
                             </div>
                           </Link>
                         ))}
@@ -260,7 +273,7 @@ export default function Navbar() {
               </span>
             </button>
             
-            {/* User Account Dropdown - POINTS TO USER AUTH */}
+            {/* User Account Dropdown */}
             <div className="relative group">
               <button className={`p-2 transition flex items-center ${getTextColor()} ${getHoverColor()}`}>
                 <FaUser className="h-5 w-5" />
@@ -314,7 +327,7 @@ export default function Navbar() {
               </span>
             </button>
 
-            {/* Become Seller Button - POINTS TO VENDOR SIGNUP */}
+            {/* Become Seller Button */}
             <Link href="/vendor/signup" className="hidden md:block">
               <button className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-lg font-medium hover:from-yellow-600 hover:to-orange-600 transition shadow-lg flex items-center">
                 <FaStore className="mr-2" />
@@ -489,3 +502,4 @@ export default function Navbar() {
       )}
     </nav>
   );
+}
