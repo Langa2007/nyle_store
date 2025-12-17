@@ -1,6 +1,6 @@
 import express from "express";
 import { verifyAdmin } from "../middleware/adminAuth.js";
-import upload from "../middleware/upload.js";
+
 
 import {
   getAllUsers,
