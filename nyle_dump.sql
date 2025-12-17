@@ -427,6 +427,43 @@ ALTER SEQUENCE public.orders_id_seq OWNED BY public.orders.id;
 
 
 --
+-- Name: password_reset_tokens; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.password_reset_tokens (
+    id integer NOT NULL,
+    vendor_id integer NOT NULL,
+    token character varying(128) NOT NULL,
+    expires_at bigint NOT NULL,
+    created_at timestamp without time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.password_reset_tokens OWNER TO postgres;
+
+--
+-- Name: password_reset_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.password_reset_tokens_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.password_reset_tokens_id_seq OWNER TO postgres;
+
+--
+-- Name: password_reset_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.password_reset_tokens_id_seq OWNED BY public.password_reset_tokens.id;
+
+
+--
 -- Name: payments; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -742,6 +779,43 @@ ALTER SEQUENCE public.vendor_payout_accounts_id_seq OWNED BY public.vendor_payou
 
 
 --
+-- Name: vendor_sessions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.vendor_sessions (
+    id integer NOT NULL,
+    vendor_id integer NOT NULL,
+    session_token character varying(255) NOT NULL,
+    created_at timestamp without time zone DEFAULT now(),
+    expires_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.vendor_sessions OWNER TO postgres;
+
+--
+-- Name: vendor_sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.vendor_sessions_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.vendor_sessions_id_seq OWNER TO postgres;
+
+--
+-- Name: vendor_sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.vendor_sessions_id_seq OWNED BY public.vendor_sessions.id;
+
+
+--
 -- Name: vendors; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -861,6 +935,13 @@ ALTER TABLE ONLY public.orders ALTER COLUMN id SET DEFAULT nextval('public.order
 
 
 --
+-- Name: password_reset_tokens id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.password_reset_tokens ALTER COLUMN id SET DEFAULT nextval('public.password_reset_tokens_id_seq'::regclass);
+
+
+--
 -- Name: payments id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -914,6 +995,13 @@ ALTER TABLE ONLY public.vendor_members ALTER COLUMN id SET DEFAULT nextval('publ
 --
 
 ALTER TABLE ONLY public.vendor_payout_accounts ALTER COLUMN id SET DEFAULT nextval('public.vendor_payout_accounts_id_seq'::regclass);
+
+
+--
+-- Name: vendor_sessions id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vendor_sessions ALTER COLUMN id SET DEFAULT nextval('public.vendor_sessions_id_seq'::regclass);
 
 
 --
@@ -1005,6 +1093,14 @@ COPY public.orders (id, user_id, total_price, status, created_at, total_amount, 
 
 
 --
+-- Data for Name: password_reset_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.password_reset_tokens (id, vendor_id, token, expires_at, created_at) FROM stdin;
+\.
+
+
+--
 -- Data for Name: payments; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1069,6 +1165,14 @@ COPY public.vendor_members (id, vendor_id, user_id, role) FROM stdin;
 --
 
 COPY public.vendor_payout_accounts (id, vendor_id, provider, account_ref, created_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: vendor_sessions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.vendor_sessions (id, vendor_id, session_token, created_at, expires_at) FROM stdin;
 \.
 
 
@@ -1156,6 +1260,13 @@ SELECT pg_catalog.setval('public.orders_id_seq', 7, true);
 
 
 --
+-- Name: password_reset_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.password_reset_tokens_id_seq', 1, false);
+
+
+--
 -- Name: payments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -1209,6 +1320,13 @@ SELECT pg_catalog.setval('public.vendor_members_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.vendor_payout_accounts_id_seq', 1, false);
+
+
+--
+-- Name: vendor_sessions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.vendor_sessions_id_seq', 1, false);
 
 
 --
@@ -1315,6 +1433,22 @@ ALTER TABLE ONLY public.orders
 
 
 --
+-- Name: password_reset_tokens password_reset_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.password_reset_tokens
+    ADD CONSTRAINT password_reset_tokens_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: password_reset_tokens password_reset_tokens_token_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.password_reset_tokens
+    ADD CONSTRAINT password_reset_tokens_token_key UNIQUE (token);
+
+
+--
 -- Name: payments payments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1403,6 +1537,14 @@ ALTER TABLE ONLY public.vendor_payout_accounts
 
 
 --
+-- Name: vendor_sessions vendor_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vendor_sessions
+    ADD CONSTRAINT vendor_sessions_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: vendors vendors_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1441,6 +1583,27 @@ CREATE INDEX idx_order_items_vendor_id ON public.order_items USING btree (vendor
 
 
 --
+-- Name: idx_password_reset_expires; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_password_reset_expires ON public.password_reset_tokens USING btree (expires_at);
+
+
+--
+-- Name: idx_password_reset_token; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_password_reset_token ON public.password_reset_tokens USING btree (token);
+
+
+--
+-- Name: idx_password_reset_vendor; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_password_reset_vendor ON public.password_reset_tokens USING btree (vendor_id);
+
+
+--
 -- Name: idx_reported_issues_status; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1459,6 +1622,27 @@ CREATE INDEX idx_support_messages_email ON public.support_messages USING btree (
 --
 
 CREATE INDEX idx_support_messages_status ON public.support_messages USING btree (status);
+
+
+--
+-- Name: idx_vendor_sessions_expires; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_vendor_sessions_expires ON public.vendor_sessions USING btree (expires_at);
+
+
+--
+-- Name: idx_vendor_sessions_token; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_vendor_sessions_token ON public.vendor_sessions USING btree (session_token);
+
+
+--
+-- Name: idx_vendor_sessions_vendor; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_vendor_sessions_vendor ON public.vendor_sessions USING btree (vendor_id);
 
 
 --
@@ -1517,6 +1701,14 @@ ALTER TABLE ONLY public.orders
 
 
 --
+-- Name: password_reset_tokens password_reset_tokens_vendor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.password_reset_tokens
+    ADD CONSTRAINT password_reset_tokens_vendor_id_fkey FOREIGN KEY (vendor_id) REFERENCES public.vendors(id) ON DELETE CASCADE;
+
+
+--
 -- Name: payments payments_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1570,6 +1762,14 @@ ALTER TABLE ONLY public.vendor_members
 
 ALTER TABLE ONLY public.vendor_payout_accounts
     ADD CONSTRAINT vendor_payout_accounts_vendor_id_fkey FOREIGN KEY (vendor_id) REFERENCES public.vendors(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vendor_sessions vendor_sessions_vendor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vendor_sessions
+    ADD CONSTRAINT vendor_sessions_vendor_id_fkey FOREIGN KEY (vendor_id) REFERENCES public.vendors(id) ON DELETE CASCADE;
 
 
 --

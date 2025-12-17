@@ -30,6 +30,7 @@ import faqRoutes from "./routes/faqRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import vendorRoutes from "./routes/vendorRoutes.js";
 import authRoutes from "./routes/auth.js";
+import passwordroutes from "./routes/passwordResetRoutes.js";
 
 
 dotenv.config();
@@ -100,6 +101,7 @@ app.use("/api/orders", orderRoutes);
 
 //  Vendor authentication (signup, login, verify email)
 app.use("/api/vendor/auth", vendorAuthRoutes);
+app.use("/api/password-reset", passwordroutes);
 
 // Vendor management routes
 app.use("/api/vendors", vendorRoutes);

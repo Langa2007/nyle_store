@@ -5,7 +5,7 @@ import streamifier from "streamifier";
 
 // ✅ Multer setup for multiple images
 const storage = multer.memoryStorage();
-export const upload = multer({ 
+export const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
@@ -28,11 +28,11 @@ const uploadToCloudinary = (fileBuffer, folder = "nyle-products") => {
 // ✅ ADMIN CREATE OR SELECT VENDOR
 export const createOrSelectVendor = async (req, res) => {
   try {
-    const { 
-      vendor_id, 
-      legal_name, 
-      business_email, 
-      phone, 
+    const {
+      vendor_id,
+      legal_name,
+      business_email,
+      phone,
       business_address,
       tax_id,
       business_type,
@@ -42,28 +42,28 @@ export const createOrSelectVendor = async (req, res) => {
     } = req.body;
 
     let vendorId = vendor_id;
-    
+
     // If vendor_id is provided, use existing vendor
     if (vendor_id) {
       const checkVendor = await pool.query(
         "SELECT id, legal_name FROM vendors WHERE id = $1",
         [vendor_id]
       );
-      
+
       if (checkVendor.rows.length === 0) {
         return res.status(404).json({ error: "Vendor not found" });
       }
-      
-      return res.json({ 
+
+      return res.json({
         vendor_id: vendorId,
         vendor_name: checkVendor.rows[0].legal_name
       });
     }
-    
+
     // Create new vendor
     if (!legal_name || !business_email) {
-      return res.status(400).json({ 
-        error: "Legal name and business email are required for new vendors" 
+      return res.status(400).json({
+        error: "Legal name and business email are required for new vendors"
       });
     }
 
@@ -71,7 +71,7 @@ export const createOrSelectVendor = async (req, res) => {
     let logoUrl = null;
     if (req.files && req.files.company_logo) {
       const uploadResult = await uploadToCloudinary(
-        req.files.company_logo[0].buffer, 
+        req.files.company_logo[0].buffer,
         "nyle-vendors"
       );
       logoUrl = uploadResult.secure_url;
@@ -99,8 +99,8 @@ export const createOrSelectVendor = async (req, res) => {
 
     const vendorResult = await pool.query(vendorQuery, vendorValues);
     vendorId = vendorResult.rows[0].id;
-    
-    res.status(201).json({ 
+
+    res.status(201).json({
       vendor_id: vendorId,
       vendor_name: vendorResult.rows[0].legal_name
     });
@@ -113,15 +113,15 @@ export const createOrSelectVendor = async (req, res) => {
 // ✅ ADMIN CREATE PRODUCT WITH VENDOR & SHIPPING
 export const adminCreateProduct = async (req, res) => {
   const connection = await pool.connect();
-  
+
   try {
     await connection.query('BEGIN');
-    
-    const { 
-      name, 
-      description, 
-      price, 
-      stock, 
+
+    const {
+      name,
+      description,
+      price,
+      stock,
       category,
       vendor_id,
       sku,
@@ -137,8 +137,8 @@ export const adminCreateProduct = async (req, res) => {
     // Validate required fields
     if (!name || !price || !vendor_id) {
       await connection.query('ROLLBACK');
-      return res.status(400).json({ 
-        error: "Name, price, and vendor are required" 
+      return res.status(400).json({
+        error: "Name, price, and vendor are required"
       });
     }
 
@@ -147,7 +147,7 @@ export const adminCreateProduct = async (req, res) => {
       "SELECT id, legal_name FROM vendors WHERE id = $1",
       [vendor_id]
     );
-    
+
     if (vendorCheck.rows.length === 0) {
       await connection.query('ROLLBACK');
       return res.status(404).json({ error: "Vendor not found" });
@@ -212,7 +212,7 @@ export const adminCreateProduct = async (req, res) => {
             (product_id, sku, price, stock, attributes, image_url)
             VALUES ($1, $2, $3, $4, $5, $6)
           `;
-          
+
           await connection.query(variantQuery, [
             productId,
             variant.sku,
@@ -234,7 +234,7 @@ export const adminCreateProduct = async (req, res) => {
         (vendor_id, product_id, cost, free_threshold, estimated_days)
         VALUES ($1, $2, $3, $4, $5)
       `;
-      
+
       await connection.query(shippingQuery, [
         vendor_id,
         productId,
@@ -245,7 +245,7 @@ export const adminCreateProduct = async (req, res) => {
     }
 
     await connection.query('COMMIT');
-    
+
     // Fetch complete product with vendor info
     const finalProduct = await connection.query(`
       SELECT p.*, v.legal_name as vendor_name, v.business_email, v.phone
@@ -255,7 +255,7 @@ export const adminCreateProduct = async (req, res) => {
     `, [productId]);
 
     res.status(201).json(finalProduct.rows[0]);
-    
+
   } catch (err) {
     await connection.query('ROLLBACK');
     console.error("❌ Admin create product error:", err.message);
@@ -275,7 +275,7 @@ export const getAllVendors = async (req, res) => {
       WHERE status = 'active'
       ORDER BY legal_name
     `;
-    
+
     const { rows } = await pool.query(query);
     res.json(rows);
   } catch (err) {
@@ -288,7 +288,7 @@ export const getAllVendors = async (req, res) => {
 export const getVendorDetails = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const query = `
       SELECT v.*, 
              COUNT(p.id) as product_count,
@@ -299,13 +299,13 @@ export const getVendorDetails = async (req, res) => {
       WHERE v.id = $1
       GROUP BY v.id
     `;
-    
+
     const { rows } = await pool.query(query, [id]);
-    
+
     if (rows.length === 0) {
       return res.status(404).json({ error: "Vendor not found" });
     }
-    
+
     res.json(rows[0]);
   } catch (err) {
     console.error("❌ Error fetching vendor:", err.message);
@@ -343,13 +343,13 @@ export const adminGetAllProducts = async (req, res) => {
 export const adminUpdateProduct = async (req, res) => {
   const { id } = req.params;
   const connection = await pool.connect();
-  
+
   try {
     await connection.query('BEGIN');
-    
-    const { 
+
+    const {
       name, description, price, stock, category, vendor_id,
-      sku, weight, dimensions, shipping_cost 
+      sku, weight, dimensions, shipping_cost
     } = req.body;
 
     // Check if product exists and belongs to vendor if vendor_id is changed
@@ -358,7 +358,7 @@ export const adminUpdateProduct = async (req, res) => {
         "SELECT vendor_id FROM products WHERE id = $1",
         [id]
       );
-      
+
       if (productCheck.rows.length === 0) {
         await connection.query('ROLLBACK');
         return res.status(404).json({ error: "Product not found" });
@@ -397,7 +397,7 @@ export const adminUpdateProduct = async (req, res) => {
     }
 
     values.push(id);
-    
+
     const q = `
       UPDATE products 
       SET ${updates.join(', ')}, updated_at = NOW()
@@ -422,22 +422,22 @@ export const adminUpdateProduct = async (req, res) => {
 export const adminDeleteProduct = async (req, res) => {
   const { id } = req.params;
   const connection = await pool.connect();
-  
+
   try {
     await connection.query('BEGIN');
-    
+
     // First, delete variants if any
     await connection.query(
       "DELETE FROM product_variants WHERE product_id = $1",
       [id]
     );
-    
+
     // Delete shipping info
     await connection.query(
       "DELETE FROM vendor_shipping_zones WHERE product_id = $1",
       [id]
     );
-    
+
     // Then delete the product
     const q = "DELETE FROM products WHERE id = $1 RETURNING *";
     const { rows } = await connection.query(q, [id]);
@@ -448,9 +448,9 @@ export const adminDeleteProduct = async (req, res) => {
     }
 
     await connection.query('COMMIT');
-    res.json({ 
-      message: "Product and associated data deleted successfully", 
-      product: rows[0] 
+    res.json({
+      message: "Product and associated data deleted successfully",
+      product: rows[0]
     });
   } catch (err) {
     await connection.query('ROLLBACK');
@@ -465,7 +465,7 @@ export const adminDeleteProduct = async (req, res) => {
 export const getProductsByVendor = async (req, res) => {
   try {
     const { vendor_id } = req.params;
-    
+
     const q = `
       SELECT p.*, COUNT(pv.id) as variant_count
       FROM products p
@@ -474,11 +474,37 @@ export const getProductsByVendor = async (req, res) => {
       GROUP BY p.id
       ORDER BY p.created_at DESC
     `;
-    
+
     const { rows } = await pool.query(q, [vendor_id]);
     res.json(rows);
   } catch (err) {
     console.error("❌ Error fetching vendor products:", err.message);
     res.status(500).json({ error: "Failed to fetch vendor products" });
+  }
+};
+
+// ✅ ADMIN UPDATE STOCK
+export const adminUpdateStock = async (req, res) => {
+  const { id } = req.params;
+  const { stock } = req.body;
+
+  try {
+    const query = `
+      UPDATE products 
+      SET stock = $1, updated_at = NOW()
+      WHERE id = $2
+      RETURNING id, stock, name
+    `;
+
+    const { rows } = await pool.query(query, [stock, id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error("❌ Error updating stock:", err.message);
+    res.status(500).json({ error: "Failed to update stock" });
   }
 };

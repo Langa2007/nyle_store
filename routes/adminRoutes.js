@@ -25,7 +25,13 @@ import {
   adminCreateProduct,
   adminDeleteProduct,
   adminGetAllProducts,
+  adminUpdateProduct,
   adminUpdateStock,
+  createOrSelectVendor,
+  getAllVendors as getActiveVendors,
+  getVendorDetails,
+  getProductsByVendor,
+  upload as productUpload
 } from "../controllers/adminProductController.js";
 
 import {
@@ -36,17 +42,24 @@ import {
 const router = express.Router();
 
 //  PRODUCTS
-router.post("/products", upload.single("image"), adminCreateProduct);
+router.post("/products", productUpload.fields([{ name: 'main_image', maxCount: 1 }, { name: 'gallery_images', maxCount: 5 }]), adminCreateProduct);
 router.get("/products", adminGetAllProducts);
+router.put("/products/:id", productUpload.single("image"), adminUpdateProduct);
 router.put("/products/:id/stock", adminUpdateStock);
 router.delete("/products/:id", adminDeleteProduct);
+
+// PRODUCT VENDOR HELPERS
+router.post("/vendors/create-or-select", productUpload.fields([{ name: 'company_logo', maxCount: 1 }]), createOrSelectVendor);
+router.get("/vendors/active-list", getActiveVendors);
+router.get("/vendors/details/:id", getVendorDetails);
+router.get("/vendors/:vendor_id/products", getProductsByVendor);
 
 //  USERS
 router.get("/users", verifyAdmin, getAllUsers);
 router.delete("/users/:id", verifyAdmin, deleteUser);
 router.put("/users/:id/promote", verifyAdmin, promoteUser);
 
-//  VENDORS
+//  VENDORS (Admin Management)
 router.get("/vendors", getAllVendors);
 router.put("/vendors/:id/approve", approveVendor);
 router.put("/vendors/:id/reject", rejectVendor);
