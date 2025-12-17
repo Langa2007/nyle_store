@@ -6,15 +6,29 @@ import { useEffect, useState, useRef } from "react";
 import { getCategories } from "../services/categoryService";
 import { getProducts } from "../services/productService";
 import ClientProviders from "../components/ClientProviders";
-import {
-  FaCcVisa, FaCcMastercard, FaCcPaypal, FaGooglePay, FaApplePay,
-  FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaYoutube, FaSearch,
-  FaStar, FaTruck, FaShieldAlt, FaTag, FaFire, FaBolt, FaRocket,
-  FaShoppingBag, FaGem, FaHeadphones, FaLaptop, FaHome, FaTshirt,
-  FaArrowRight, FaChevronRight, FaHeart, FaShoppingCart, FaAward,
-  FaClock, FaCheckCircle, FaUsers, FaGlobe, FaLeaf, FaCrown, FaStore
-} from "react-icons/fa";
 import { motion } from "framer-motion";
+
+// Import ALL icons used in the component
+import {
+  // Payment methods
+  FaCcVisa,
+  FaCcMastercard,
+  FaCcPaypal,
+  FaGooglePay,
+  FaApplePay,
+  
+  // Social media
+  FaFacebookF,
+  FaTwitter,
+  FaInstagram,
+  FaLinkedinIn,
+  FaYoutube,
+  
+  // UI Icons
+  FaSearch,FaStar,FaTruck,FaShieldAlt,FaFire,FaBolt,FaRocket,FaShoppingBag,FaGem,FaHeadphones,FaLaptop,FaHome,FaTshirt,
+  FaArrowRight,FaChevronRight,FaHeart,FaShoppingCart,FaAward,FaClock,FaCheckCircle,FaUsers,FaGlobe,FaLeaf,
+  FaCrown,FaStore,FaTag,FaEnvelope,FaExclamationTriangle,FaGift,FaShippingFast
+} from "react-icons/fa";
 
 function HomeContent() {
   const { data: categories = [] } = useQuery({
@@ -28,7 +42,6 @@ function HomeContent() {
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isScrolled, setIsScrolled] = useState(false);
-  const heroRef = useRef(null);
 
   // Enhanced featured categories with icons
   const featuredCategories = [
@@ -98,6 +111,26 @@ function HomeContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      {/* STATIC Announcement Bar (NOT marquee) */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 px-4">
+        <div className="container mx-auto flex flex-col md:flex-row items-center justify-center md:justify-between gap-2">
+          <div className="flex items-center space-x-2">
+            <FaGift className="text-yellow-300" />
+            <span className="font-medium">🎉 Black Friday Sale: Up to 60% OFF on Selected Items!</span>
+          </div>
+          <div className="flex items-center space-x-4 text-sm">
+            <div className="flex items-center space-x-1">
+              <FaShippingFast />
+              <span>Free Delivery on Orders Over Ksh 3,000</span>
+            </div>
+            <div className="hidden md:flex items-center space-x-1">
+              <FaShieldAlt />
+              <span>100% Secure Shopping</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Floating Navigation */}
       <motion.nav
         initial={{ y: -100 }}
@@ -127,7 +160,7 @@ function HomeContent() {
         </div>
       </motion.nav>
 
-      {/* Hero Section - Redesigned */}
+      {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white pt-32 pb-20 px-6">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden">
@@ -262,7 +295,7 @@ function HomeContent() {
         </div>
       </section>
 
-      {/* Categories Section - Redesigned */}
+      {/* Categories Section */}
       <section id="categories" className="container mx-auto px-6 mt-20">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -337,7 +370,7 @@ function HomeContent() {
         )}
       </section>
 
-      {/* Featured Products - Enhanced */}
+      {/* Featured Products */}
       <section id="products-section" className="container mx-auto px-6 mt-16">
         <div className="text-center mb-12">
           <div className="inline-flex items-center bg-blue-100 text-blue-700 px-4 py-2 rounded-full mb-4">
@@ -551,120 +584,135 @@ function HomeContent() {
         </div>
       </section>
 
-      {/* Enhanced Footer */}
+      {/* ENHANCED FOOTER - WITH ALL ORIGINAL LINKS RESTORED */}
       <footer className="mt-24 bg-gradient-to-br from-gray-900 to-blue-900 text-white">
         <div className="container mx-auto px-6 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
-            {/* Company Info */}
-            <div className="lg:col-span-2">
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
-                  <FaCrown className="text-white text-xl" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">Nyle Store</div>
-                  <div className="text-sm text-gray-400">Kenya's Premier Marketplace</div>
-                </div>
-              </div>
-              <p className="text-gray-300 mb-6 max-w-md">
-                Transforming online shopping in Kenya with quality products, trusted vendors, and exceptional customer service since 2023.
-              </p>
-              <div className="flex space-x-4">
-                {[FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaYoutube].map((Icon, index) => (
-                  <a
-                    key={index}
-                    href="#"
-                    className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-blue-600 transition"
-                  >
-                    <Icon />
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {/* Quick Links */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10">
+            {/* Sell on Nyle Section - RESTORED */}
             <div>
-              <h3 className="text-lg font-bold mb-6 flex items-center">
-                <FaChevronRight className="mr-2 text-blue-400" />
-                Quick Links
-              </h3>
-              <ul className="space-y-3">
-                <li><Link href="/" className="text-gray-300 hover:text-white transition">Home</Link></li>
-                <li><Link href="/products" className="text-gray-300 hover:text-white transition">All Products</Link></li>
-                <li><Link href="/about" className="text-gray-300 hover:text-white transition">About Us</Link></li>
-                <li><Link href="/contact" className="text-gray-300 hover:text-white transition">Contact</Link></li>
-                <li><Link href="/blog" className="text-gray-300 hover:text-white transition">Blog</Link></li>
-              </ul>
-            </div>
-
-            {/* Customer Service */}
-            <div>
-              <h3 className="text-lg font-bold mb-6 flex items-center">
-                <FaHeadphones className="mr-2 text-blue-400" />
-                Customer Service
-              </h3>
-              <ul className="space-y-3">
-                <li><Link href="/help" className="text-gray-300 hover:text-white transition">Help Center</Link></li>
-                <li><Link href="/track-order" className="text-gray-300 hover:text-white transition">Track Order</Link></li>
-                <li><Link href="/returns" className="text-gray-300 hover:text-white transition">Returns & Refunds</Link></li>
-                <li><Link href="/shipping" className="text-gray-300 hover:text-white transition">Shipping Info</Link></li>
-                <li><Link href="/faq" className="text-gray-300 hover:text-white transition">FAQ</Link></li>
-              </ul>
-            </div>
-
-            {/* Seller Info */}
-            <div>
-              <h3 className="text-lg font-bold mb-6 flex items-center">
+              <h3 className="font-bold text-lg mb-4 flex items-center">
                 <FaStore className="mr-2 text-blue-400" />
-                For Sellers
+                Sell on Nyle
               </h3>
-              <ul className="space-y-3">
-                <li><Link href="/vendor/signup" className="text-gray-300 hover:text-white transition">Become a Seller</Link></li>
-                <li><Link href="/vendor/dashboard" className="text-gray-300 hover:text-white transition">Seller Dashboard</Link></li>
-                <li><Link href="/vendor/policies" className="text-gray-300 hover:text-white transition">Seller Policies</Link></li>
-                <li><Link href="/vendor/support" className="text-gray-300 hover:text-white transition">Seller Support</Link></li>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/vendor/why-sell" className="text-gray-300 hover:text-white transition hover:underline">Why Sell on Nyle</Link></li>
+                <li><Link href="/vendor/signup" className="text-gray-300 hover:text-white transition hover:underline">Become a Seller</Link></li>
+                <li><Link href="/vendor/quotations" className="text-gray-300 hover:text-white transition hover:underline">Get Seller Quotations</Link></li>
+                <li><Link href="/vendor/policies" className="text-gray-300 hover:text-white transition hover:underline">Seller Policies</Link></li>
+                <li><Link href="/vendor/app" className="text-gray-300 hover:text-white transition hover:underline">Get Our App</Link></li>
+                <li><Link href="/vendor/shipping-logistics" className="text-gray-300 hover:text-white transition hover:underline">Shipping Logistics</Link></li>
+              </ul>
+            </div>
+
+            {/* More About Us Section - RESTORED */}
+            <div>
+              <h3 className="font-bold text-lg mb-4 flex items-center">
+                <FaGlobe className="mr-2 text-blue-400" />
+                More About Us
+              </h3>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/about/know-nyle" className="text-gray-300 hover:text-white transition hover:underline">Know Nyle</Link></li>
+                <li><Link href="/about/careers" className="text-gray-300 hover:text-white transition hover:underline">Careers</Link></li>
+                <li><Link href="/about/partners" className="text-gray-300 hover:text-white transition hover:underline">Partners</Link></li>
+                <li><Link href="/about/newsletter" className="text-gray-300 hover:text-white transition hover:underline">Newsletter</Link></li>
+              </ul>
+            </div>
+
+            {/* Support Section - RESTORED */}
+            <div>
+              <h3 className="font-bold text-lg mb-4 flex items-center">
+                <FaHeadphones className="mr-2 text-blue-400" />
+                Support
+              </h3>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/support/help-center" className="text-gray-300 hover:text-white transition hover:underline">Help Center</Link></li>
+                <li><Link href="/support/contact" className="text-gray-300 hover:text-white transition hover:underline">Contact Us</Link></li>
+                <li><Link href="/support/faqs" className="text-gray-300 hover:text-white transition hover:underline">FAQs</Link></li>
+                <li><Link href="/support/report-issue" className="text-gray-300 hover:text-white transition hover:underline">Report An Issue</Link></li>
+              </ul>
+            </div>
+
+            {/* Nyle Payments Section - RESTORED */}
+            <div>
+              <h3 className="font-bold text-lg mb-4 flex items-center">
+                <FaCcVisa className="mr-2 text-blue-400" />
+                Nyle Payments
+              </h3>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/payments/methods" className="text-gray-300 hover:text-white transition hover:underline">Accepted Payment Methods</Link></li>
+                <li><Link href="/payments/returns" className="text-gray-300 hover:text-white transition hover:underline">Returns & Refunds</Link></li>
+                <li><Link href="/payments/policies" className="text-gray-300 hover:text-white transition hover:underline">Shipping & Delivery</Link></li>
+                <li><Link href="/payments/protection" className="text-gray-300 hover:text-white transition hover:underline">Customer Protection</Link></li>
+              </ul>
+            </div>
+
+            {/* Source On Nyle Section - RESTORED */}
+            <div>
+              <h3 className="font-bold text-lg mb-4 flex items-center">
+                <FaTag className="mr-2 text-blue-400" />
+                Source On Nyle
+              </h3>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/source/suppliers" className="text-gray-300 hover:text-white transition hover:underline">Nyle Verified Suppliers</Link></li>
+                <li><Link href="/source/logistics" className="text-gray-300 hover:text-white transition hover:underline">Get Logistics</Link></li>
+                <li><Link href="/source/quotation" className="text-gray-300 hover:text-white transition hover:underline">Get Quotation</Link></li>
+                <li><Link href="/source/trade-assurance" className="text-gray-300 hover:text-white transition hover:underline">Trade Assurance</Link></li>
+                <li><Link href="/source/shipping-policies" className="text-gray-300 hover:text-white transition hover:underline">Shipping Policies & Rates</Link></li>
               </ul>
             </div>
           </div>
 
-          {/* Payment Methods */}
+          {/* Social Media & Payment Methods */}
           <div className="mt-16 pt-8 border-t border-gray-800">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <div className="mb-6 md:mb-0">
-                <h4 className="text-sm font-semibold mb-4">Accepted Payment Methods</h4>
-                <div className="flex space-x-4 text-3xl">
-                  {[FaCcVisa, FaCcMastercard, FaCcPaypal, FaGooglePay, FaApplePay].map((Icon, index) => (
-                    <div key={index} className="bg-white/10 p-3 rounded-lg">
-                      <Icon />
-                    </div>
-                  ))}
+            {/* Social Media Links */}
+            <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+              <div className="mb-6 md:mb-0 text-center md:text-left">
+                <h4 className="text-lg font-bold mb-4">Connect With Us</h4>
+                <div className="flex space-x-4 text-2xl">
+                  <a href="#" title="Facebook" className="hover:text-blue-300 transition">
+                    <FaFacebookF />
+                  </a>
+                  <a href="#" title="Twitter" className="hover:text-blue-300 transition">
+                    <FaTwitter />
+                  </a>
+                  <a href="#" title="Instagram" className="hover:text-blue-300 transition">
+                    <FaInstagram />
+                  </a>
+                  <a href="#" title="LinkedIn" className="hover:text-blue-300 transition">
+                    <FaLinkedinIn />
+                  </a>
+                  <a href="#" title="YouTube" className="hover:text-blue-300 transition">
+                    <FaYoutube />
+                  </a>
                 </div>
               </div>
               
+              {/* Payment Methods */}
               <div className="text-center md:text-right">
-                <div className="text-sm text-gray-400 mb-2">© {new Date().getFullYear()} Nyle Store. All rights reserved.</div>
-                <div className="flex space-x-6 text-sm">
-                  <Link href="/privacy" className="text-gray-400 hover:text-white">Privacy Policy</Link>
-                  <Link href="/terms" className="text-gray-400 hover:text-white">Terms of Service</Link>
-                  <Link href="/cookies" className="text-gray-400 hover:text-white">Cookie Policy</Link>
+                <h4 className="text-lg font-bold mb-4">We Accept</h4>
+                <div className="flex space-x-4 text-3xl">
+                  <FaCcVisa />
+                  <FaCcMastercard />
+                  <FaCcPaypal />
+                  <FaGooglePay />
+                  <FaApplePay />
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Trust Badges */}
-          <div className="mt-8 flex flex-wrap justify-center gap-6">
-            {[
-              { text: "SSL Secured", icon: <FaShieldAlt /> },
-              { text: "100% Safe", icon: <FaCheckCircle /> },
-              { text: "Kenyan Owned", icon: <FaGlobe /> },
-              { text: "Eco-Friendly", icon: <FaLeaf /> }
-            ].map((badge, index) => (
-              <div key={index} className="flex items-center space-x-2 text-sm text-gray-400">
-                <div className="text-blue-400">{badge.icon}</div>
-                <span>{badge.text}</span>
+            {/* Copyright & Legal */}
+            <div className="text-center pt-6 border-t border-gray-800">
+              <p className="text-sm text-blue-100">
+                © {new Date().getFullYear()} Nyle Store. All rights reserved.
+              </p>
+              <div className="mt-4 flex flex-wrap justify-center gap-6 text-xs text-gray-400">
+                <Link href="/privacy" className="hover:text-white transition">Privacy Policy</Link>
+                <Link href="/terms" className="hover:text-white transition">Terms of Service</Link>
+                <Link href="/cookies" className="hover:text-white transition">Cookie Policy</Link>
+                <Link href="/sitemap" className="hover:text-white transition">Sitemap</Link>
+                <Link href="/accessibility" className="hover:text-white transition">Accessibility</Link>
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </footer>
@@ -677,7 +725,7 @@ function HomeContent() {
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full shadow-2xl flex items-center justify-center z-50"
       >
-        <FaArrowRight className="text-white -rotate-90" />
+        <span className="text-white font-bold text-xl">↑</span>
       </motion.button>
     </div>
   );
