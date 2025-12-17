@@ -31,6 +31,7 @@ import reportRoutes from "./routes/reportRoutes.js";
 import vendorRoutes from "./routes/vendorRoutes.js";
 import authRoutes from "./routes/auth.js";
 import passwordroutes from "./routes/passwordResetRoutes.js";
+import userResetPasswordRoutes from "./routes/UserResetPasswordRoutes.js";
 
 
 dotenv.config();
@@ -120,6 +121,7 @@ app.use("/admin/queues", serverAdapter.getRouter()); // Bull Board UI
 app.use("/api/customer/orders", customerOrderRoutes);
 app.use("/api/user", userRoute);
 app.use("/api/cart", cartRoutes);
+app.use("/api/user/password-reset", userResetPasswordRoutes);
 
 // Newsletter routes
 app.use("/api/newsletter", newsletterRoutes);

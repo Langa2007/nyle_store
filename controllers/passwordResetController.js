@@ -23,12 +23,10 @@ const isValidEmail = (email) => {
   return emailRegex.test(email);
 };
 
-// ✅ 1. FORGOT PASSWORD REQUEST
+// ✅ 1. FORGOT PASSWORD REQUEST (for BOTH users and vendors)
 export const forgotPassword = async (req, res) => {
-  const connection = await pool.connect();
-  
   try {
-    const { email } = req.body;
+    const { email, user_type = 'user' } = req.body; // Default to 'user'
     
     // Validate email
     if (!email || !isValidEmail(email)) {
@@ -36,39 +34,38 @@ export const forgotPassword = async (req, res) => {
         error: "Valid email address is required" 
       });
     }
-    
-    await connection.query('BEGIN');
-    
-    // Check if vendor exists
-    const vendorCheck = await connection.query(
-      `SELECT id, legal_name, email, status FROM vendors WHERE email = $1`,
+
+    // Validate user_type
+    if (!['user', 'vendor'].includes(user_type)) {
+      return res.status(400).json({ 
+        error: "Invalid user type. Must be 'user' or 'vendor'" 
+      });
+    }
+
+    // Determine which table to query based on user_type
+    const tableName = user_type === 'vendor' ? 'vendors' : 'users';
+    const nameColumn = user_type === 'vendor' ? 'legal_name' : 'name';
+
+    // Check if user/vendor exists
+    const userCheck = await pool.query(
+      `SELECT id, email, ${nameColumn} as name FROM ${tableName} WHERE email = $1`,
       [email]
     );
     
-    // Always return success for security (don't reveal if email exists)
-    if (vendorCheck.rows.length === 0) {
-      await connection.query('ROLLBACK');
-      
-      // Still return 200 for security, but don't actually send email
+    // Security: always return success even if email doesn't exist
+    if (userCheck.rows.length === 0) {
       return res.status(200).json({ 
         message: "If an account exists with this email, you will receive a password reset link shortly." 
       });
     }
     
-    const vendor = vendorCheck.rows[0];
+    const user = userCheck.rows[0];
     
-    // Check if vendor is active
-    if (vendor.status !== 'active') {
-      await connection.query('ROLLBACK');
-      return res.status(403).json({ 
-        error: "Account is not active. Please contact support." 
-      });
-    }
-    
-    // Delete any existing reset tokens for this vendor
-    await connection.query(
-      `DELETE FROM password_reset_tokens WHERE vendor_id = $1`,
-      [vendor.id]
+    // Delete any existing reset tokens for this user/vendor
+    await pool.query(
+      `DELETE FROM password_reset_tokens 
+       WHERE user_id = $1 AND user_type = $2`,
+      [user.id, user_type]
     );
     
     // Generate secure reset token
@@ -77,23 +74,29 @@ export const forgotPassword = async (req, res) => {
     const expiresAt = Date.now() + 3600000; // 1 hour from now
     
     // Store hashed token in database
-    await connection.query(
-      `INSERT INTO password_reset_tokens (vendor_id, token, expires_at) 
-       VALUES ($1, $2, $3)`,
-      [vendor.id, hashedToken, expiresAt]
+    await pool.query(
+      `INSERT INTO password_reset_tokens (user_id, token, expires_at, user_type) 
+       VALUES ($1, $2, $3, $4)`,
+      [user.id, hashedToken, expiresAt, user_type]
     );
     
     // Construct reset URL
-    // For development, use your localhost or Render URL
     const baseUrl = process.env.FRONTEND_URL || 'https://nyle-luxe.vercel.app';
-    const resetUrl = `${baseUrl}/vendor/reset-password?token=${resetToken}`;
+    const resetPath = user_type === 'vendor' ? '/vendor/reset-password' : '/auth/reset-password';
+    const resetUrl = `${baseUrl}${resetPath}?token=${resetToken}`;
     
     // Send email via Resend
     try {
-      const emailData = await resend.emails.send({
+      const subject = user_type === 'vendor' 
+        ? 'Reset Your Nyle Store Vendor Password'
+        : 'Reset Your Nyle Store Account Password';
+      
+      const portalName = user_type === 'vendor' ? 'Vendor Portal' : 'Customer Account';
+      
+      await resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL || 'Nyle Store <onboarding@resend.dev>',
         to: [email],
-        subject: 'Reset Your Nyle Store Vendor Password',
+        subject: subject,
         html: `
           <!DOCTYPE html>
           <html>
@@ -113,12 +116,12 @@ export const forgotPassword = async (req, res) => {
               <div class="container">
                 <div class="header">
                   <div class="logo">NYLE STORE</div>
-                  <div style="color: white; opacity: 0.9;">Vendor Portal</div>
+                  <div style="color: white; opacity: 0.9;">${portalName}</div>
                 </div>
                 <div class="content">
                   <h2>Password Reset Request</h2>
-                  <p>Hello <strong>${vendor.legal_name}</strong>,</p>
-                  <p>We received a request to reset your password for your Nyle Store vendor account.</p>
+                  <p>Hello <strong>${user.name}</strong>,</p>
+                  <p>We received a request to reset your password for your Nyle Store ${user_type === 'vendor' ? 'vendor' : 'customer'} account.</p>
                   <p>Click the button below to reset your password:</p>
                   
                   <div style="text-align: center; margin: 30px 0;">
@@ -135,7 +138,7 @@ export const forgotPassword = async (req, res) => {
                   </div>
                   
                   <div class="footer">
-                    <p>If you have any questions, contact our vendor support at support@nyle.co.ke</p>
+                    <p>If you have any questions, contact our ${user_type === 'vendor' ? 'vendor' : 'customer'} support at support@nyle.co.ke</p>
                     <p>&copy; ${new Date().getFullYear()} Nyle Store. All rights reserved.</p>
                   </div>
                 </div>
@@ -143,40 +146,34 @@ export const forgotPassword = async (req, res) => {
             </body>
           </html>
         `,
-        text: `Password Reset for Nyle Store Vendor Account\n\nHello ${vendor.legal_name},\n\nTo reset your password, click on this link: ${resetUrl}\n\nThis link expires in 1 hour.\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nNyle Store Team`
+        text: `Password Reset for Nyle Store ${user_type === 'vendor' ? 'Vendor' : 'Customer'} Account\n\nHello ${user.name},\n\nTo reset your password, click on this link: ${resetUrl}\n\nThis link expires in 1 hour.\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nNyle Store Team`
       });
       
-      console.log('✅ Password reset email sent:', emailData.id);
+      console.log(`✅ Password reset email sent to ${user_type}:`, email);
       
     } catch (emailError) {
       console.error('❌ Resend email error:', emailError);
-      await connection.query('ROLLBACK');
       return res.status(500).json({ 
         error: "Failed to send reset email. Please try again later." 
       });
     }
-    
-    await connection.query('COMMIT');
     
     res.status(200).json({ 
       message: "If an account exists with this email, you will receive a password reset link shortly." 
     });
     
   } catch (err) {
-    await connection.query('ROLLBACK');
     console.error("❌ Forgot password error:", err.message);
     res.status(500).json({ 
       error: "An error occurred while processing your request" 
     });
-  } finally {
-    connection.release();
   }
 };
 
-// ✅ 2. VALIDATE RESET TOKEN
+// ✅ 2. VALIDATE RESET TOKEN (for BOTH users and vendors)
 export const validateResetToken = async (req, res) => {
   try {
-    const { token } = req.query;
+    const { token, user_type = 'user' } = req.query;
     
     if (!token) {
       return res.status(400).json({ 
@@ -189,11 +186,22 @@ export const validateResetToken = async (req, res) => {
     
     // Find token and check expiration
     const tokenResult = await pool.query(
-      `SELECT prt.*, v.email, v.legal_name 
+      `SELECT prt.*, 
+              CASE 
+                WHEN prt.user_type = 'vendor' THEN v.email
+                ELSE u.email
+              END as email,
+              CASE 
+                WHEN prt.user_type = 'vendor' THEN v.legal_name
+                ELSE u.name
+              END as name
        FROM password_reset_tokens prt
-       JOIN vendors v ON prt.vendor_id = v.id
-       WHERE prt.token = $1 AND prt.expires_at > $2`,
-      [hashedToken, currentTime]
+       LEFT JOIN vendors v ON prt.user_type = 'vendor' AND prt.user_id = v.id
+       LEFT JOIN users u ON prt.user_type = 'user' AND prt.user_id = u.id
+       WHERE prt.token = $1 
+         AND prt.expires_at > $2
+         AND prt.user_type = $3`,
+      [hashedToken, currentTime, user_type]
     );
     
     if (tokenResult.rows.length === 0) {
@@ -205,7 +213,8 @@ export const validateResetToken = async (req, res) => {
     res.status(200).json({ 
       valid: true,
       email: tokenResult.rows[0].email,
-      legal_name: tokenResult.rows[0].legal_name
+      name: tokenResult.rows[0].name,
+      user_type: tokenResult.rows[0].user_type
     });
     
   } catch (err) {
@@ -216,12 +225,12 @@ export const validateResetToken = async (req, res) => {
   }
 };
 
-// ✅ 3. RESET PASSWORD (with new password)
+// ✅ 3. RESET PASSWORD (for BOTH users and vendors)
 export const resetPassword = async (req, res) => {
   const connection = await pool.connect();
   
   try {
-    const { token, newPassword } = req.body;
+    const { token, newPassword, user_type = 'user' } = req.body;
     
     if (!token || !newPassword) {
       return res.status(400).json({ 
@@ -244,11 +253,12 @@ export const resetPassword = async (req, res) => {
     
     // Find valid token
     const tokenResult = await connection.query(
-      `SELECT prt.*, v.id as vendor_id 
+      `SELECT prt.* 
        FROM password_reset_tokens prt
-       JOIN vendors v ON prt.vendor_id = v.id
-       WHERE prt.token = $1 AND prt.expires_at > $2`,
-      [hashedToken, currentTime]
+       WHERE prt.token = $1 
+         AND prt.expires_at > $2
+         AND prt.user_type = $3`,
+      [hashedToken, currentTime, user_type]
     );
     
     if (tokenResult.rows.length === 0) {
@@ -258,56 +268,68 @@ export const resetPassword = async (req, res) => {
       });
     }
     
-    const { vendor_id } = tokenResult.rows[0];
+    const { user_id, user_type: tokenUserType } = tokenResult.rows[0];
     
     // Hash new password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
     
-    // Update vendor password
+    // Update password in correct table
+    const tableName = tokenUserType === 'vendor' ? 'vendors' : 'users';
     await connection.query(
-      `UPDATE vendors SET password = $1, updated_at = NOW() WHERE id = $2`,
-      [hashedPassword, vendor_id]
+      `UPDATE ${tableName} SET password = $1, updated_at = NOW() WHERE id = $2`,
+      [hashedPassword, user_id]
     );
     
     // Delete used token
     await connection.query(
-      `DELETE FROM password_reset_tokens WHERE vendor_id = $1`,
-      [vendor_id]
+      `DELETE FROM password_reset_tokens WHERE user_id = $1 AND user_type = $2`,
+      [user_id, tokenUserType]
     );
     
-    // Invalidate all existing sessions/tokens (optional but recommended)
+    // Invalidate all existing sessions/tokens
+    const sessionTable = tokenUserType === 'vendor' ? 'vendor_sessions' : 'user_sessions';
     await connection.query(
-      `DELETE FROM vendor_sessions WHERE vendor_id = $1`,
-      [vendor_id]
+      `DELETE FROM ${sessionTable} WHERE ${tokenUserType}_id = $1`,
+      [user_id]
     );
     
     await connection.query('COMMIT');
     
-    // Send confirmation email
-    try {
-      const vendorResult = await connection.query(
-        `SELECT email, legal_name FROM vendors WHERE id = $1`,
-        [vendor_id]
-      );
+    // Get user details for confirmation email
+    const userResult = await connection.query(
+      `SELECT email, 
+              CASE 
+                WHEN $2 = 'vendor' THEN legal_name
+                ELSE name
+              END as name
+       FROM ${tableName} WHERE id = $1`,
+      [user_id, tokenUserType]
+    );
+    
+    if (userResult.rows.length > 0) {
+      const user = userResult.rows[0];
       
-      if (vendorResult.rows.length > 0) {
-        const vendor = vendorResult.rows[0];
+      // Send confirmation email
+      try {
+        const subject = tokenUserType === 'vendor' 
+          ? 'Your Nyle Store Vendor Password Has Been Reset'
+          : 'Your Nyle Store Account Password Has Been Reset';
         
         await resend.emails.send({
           from: process.env.RESEND_FROM_EMAIL || 'Nyle Store <onboarding@resend.dev>',
-          to: [vendor.email],
-          subject: 'Your Nyle Store Password Has Been Reset',
+          to: [user.email],
+          subject: subject,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
               <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 30px; text-align: center; color: white; border-radius: 10px 10px 0 0;">
                 <h1 style="margin: 0;">NYLE STORE</h1>
-                <p style="opacity: 0.9; margin: 5px 0 0 0;">Vendor Portal</p>
+                <p style="opacity: 0.9; margin: 5px 0 0 0;">${tokenUserType === 'vendor' ? 'Vendor Portal' : 'Customer Account'}</p>
               </div>
               <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
                 <h2>Password Reset Confirmation</h2>
-                <p>Hello <strong>${vendor.legal_name}</strong>,</p>
-                <p>Your Nyle Store vendor account password has been successfully reset.</p>
+                <p>Hello <strong>${user.name}</strong>,</p>
+                <p>Your Nyle Store ${tokenUserType === 'vendor' ? 'vendor' : 'customer'} account password has been successfully reset.</p>
                 
                 <div style="background: #e0f2fe; border-left: 4px solid #0ea5e9; padding: 15px; margin: 20px 0; border-radius: 5px;">
                   <p><strong>Security Notice:</strong></p>
@@ -318,26 +340,25 @@ export const resetPassword = async (req, res) => {
                   </ul>
                 </div>
                 
-                <p>You can now <a href="${process.env.FRONTEND_URL || 'https://nyle-luxe.vercel.app'}/vendor/login" style="color: #2563eb;">login to your dashboard</a> with your new password.</p>
+                <p>You can now <a href="${process.env.FRONTEND_URL || 'https://nyle-luxe.vercel.app'}/${tokenUserType === 'vendor' ? 'vendor/login' : 'auth/login'}" style="color: #2563eb;">login to your account</a> with your new password.</p>
                 
                 <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 14px;">
-                  <p>Need help? Contact vendor support at support@nyle.co.ke</p>
+                  <p>Need help? Contact ${tokenUserType === 'vendor' ? 'vendor' : 'customer'} support at support@nyle.co.ke</p>
                   <p>&copy; ${new Date().getFullYear()} Nyle Store</p>
                 </div>
               </div>
             </div>
-          `,
-          text: `Password Reset Confirmation\n\nHello ${vendor.legal_name},\n\nYour Nyle Store vendor password has been successfully reset on ${new Date().toLocaleString()}.\n\nAll existing sessions have been terminated for security.\n\nIf you didn't make this change, please contact support immediately.\n\nYou can now login at: ${process.env.FRONTEND_URL || 'https://nyle-luxe.vercel.app'}/vendor/login\n\nBest regards,\nNyle Store Team`
+          `
         });
+      } catch (emailError) {
+        console.warn('⚠️ Password reset confirmation email failed:', emailError);
       }
-    } catch (emailError) {
-      console.warn('⚠️ Password reset confirmation email failed:', emailError);
-      // Don't fail the reset process if confirmation email fails
     }
     
     res.status(200).json({ 
       success: true,
-      message: "Password reset successful. You can now login with your new password." 
+      message: "Password reset successful. You can now login with your new password.",
+      user_type: tokenUserType
     });
     
   } catch (err) {
@@ -351,10 +372,10 @@ export const resetPassword = async (req, res) => {
   }
 };
 
-// ✅ 4. PASSWORD RESET PAGE RENDERER (for frontend)
+// ✅ 4. PASSWORD RESET PAGE RENDERER (for BOTH users and vendors)
 export const renderResetPage = async (req, res) => {
   try {
-    const { token } = req.query;
+    const { token, user_type = 'user' } = req.query;
     
     if (!token) {
       return res.status(400).send(`
@@ -362,16 +383,11 @@ export const renderResetPage = async (req, res) => {
         <html>
           <head>
             <title>Invalid Reset Link - Nyle Store</title>
-            <style>
-              body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-              .error { color: #dc2626; }
-              a { color: #2563eb; text-decoration: none; }
-            </style>
           </head>
-          <body>
-            <h1 class="error">Invalid Reset Link</h1>
+          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+            <h1 style="color: #dc2626;">Invalid Reset Link</h1>
             <p>The password reset link is invalid or missing.</p>
-            <p><a href="/vendor/login">Return to Login</a></p>
+            <p><a href="/${user_type === 'vendor' ? 'vendor/login' : 'auth/login'}" style="color: #2563eb; text-decoration: none;">Return to Login</a></p>
           </body>
         </html>
       `);
@@ -382,11 +398,16 @@ export const renderResetPage = async (req, res) => {
     const currentTime = Date.now();
     
     const tokenResult = await pool.query(
-      `SELECT prt.*, v.email, v.legal_name 
+      `SELECT prt.*, 
+              CASE 
+                WHEN prt.user_type = 'vendor' THEN v.legal_name
+                ELSE u.name
+              END as name
        FROM password_reset_tokens prt
-       JOIN vendors v ON prt.vendor_id = v.id
-       WHERE prt.token = $1 AND prt.expires_at > $2`,
-      [hashedToken, currentTime]
+       LEFT JOIN vendors v ON prt.user_type = 'vendor' AND prt.user_id = v.id
+       LEFT JOIN users u ON prt.user_type = 'user' AND prt.user_id = u.id
+       WHERE prt.token = $1 AND prt.expires_at > $2 AND prt.user_type = $3`,
+      [hashedToken, currentTime, user_type]
     );
     
     if (tokenResult.rows.length === 0) {
@@ -395,22 +416,19 @@ export const renderResetPage = async (req, res) => {
         <html>
           <head>
             <title>Expired Reset Link - Nyle Store</title>
-            <style>
-              body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-              .warning { color: #d97706; }
-              a { color: #2563eb; text-decoration: none; }
-            </style>
           </head>
-          <body>
-            <h1 class="warning">Link Expired</h1>
+          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+            <h1 style="color: #d97706;">Link Expired</h1>
             <p>This password reset link has expired.</p>
-            <p><a href="/vendor/forgot-password">Request a new reset link</a></p>
+            <p><a href="/${user_type === 'vendor' ? 'vendor/forgot-password' : 'auth/forgot-password'}" style="color: #2563eb; text-decoration: none;">Request a new reset link</a></p>
           </body>
         </html>
       `);
     }
     
-    // Send HTML form for password reset
+    const userType = tokenResult.rows[0].user_type;
+    const portalName = userType === 'vendor' ? 'Vendor Portal' : 'Customer Account';
+    
     res.send(`
       <!DOCTYPE html>
       <html>
@@ -433,15 +451,16 @@ export const renderResetPage = async (req, res) => {
           <div class="container">
             <div class="header">
               <div class="logo">NYLE STORE</div>
-              <div>Vendor Portal - Reset Password</div>
+              <div>${portalName} - Reset Password</div>
             </div>
             
             <h2>Set New Password</h2>
-            <p>Hello <strong>${tokenResult.rows[0].legal_name}</strong>,</p>
+            <p>Hello <strong>${tokenResult.rows[0].name}</strong>,</p>
             <p>Please enter your new password below.</p>
             
             <form id="resetForm">
               <input type="hidden" id="token" value="${token}">
+              <input type="hidden" id="user_type" value="${userType}">
               
               <label for="newPassword">New Password</label>
               <input type="password" id="newPassword" required placeholder="Enter new password">
@@ -463,6 +482,7 @@ export const renderResetPage = async (req, res) => {
                 e.preventDefault();
                 
                 const token = document.getElementById('token').value;
+                const user_type = document.getElementById('user_type').value;
                 const newPassword = document.getElementById('newPassword').value;
                 const confirmPassword = document.getElementById('confirmPassword').value;
                 const errorElement = document.getElementById('errorMessage');
@@ -483,10 +503,14 @@ export const renderResetPage = async (req, res) => {
                 }
                 
                 try {
-                  const response = await fetch('/api/vendor/auth/reset-password', {
+                  const endpoint = user_type === 'vendor' 
+                    ? '/api/vendor/auth/reset-password' 
+                    : '/api/auth/reset-password';
+                  
+                  const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, newPassword })
+                    body: JSON.stringify({ token, newPassword, user_type })
                   });
                   
                   const data = await response.json();
@@ -494,7 +518,7 @@ export const renderResetPage = async (req, res) => {
                   if (response.ok) {
                     successElement.textContent = data.message + ' Redirecting to login...';
                     setTimeout(() => {
-                      window.location.href = '/vendor/login';
+                      window.location.href = user_type === 'vendor' ? '/vendor/login' : '/auth/login';
                     }, 3000);
                   } else {
                     errorElement.textContent = data.error || 'Failed to reset password';
