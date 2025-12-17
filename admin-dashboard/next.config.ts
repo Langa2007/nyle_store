@@ -1,10 +1,14 @@
+// next.config.ts - MINIMAL FIX
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  eslint: {
-    // ✅ Ignore ESLint errors during production builds (safe for deployment)
-    ignoreDuringBuilds: true,
-  },
+  // Remove the eslint property - that's the error
+  // eslint: {
+  //   ignoreDuringBuilds: true,
+  // },
+  
+  // Keep everything else as is
+  // ... rest of your config
 };
 
 export default nextConfig;
