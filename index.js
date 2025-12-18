@@ -37,7 +37,6 @@ import userResetPasswordRoutes from "./routes/UserResetPasswordRoutes.js";
 dotenv.config();
 
 const app = express();
-
 const allowedOrigins = [
   "http://localhost:3000",
   "https://nyle-admin.vercel.app",
@@ -46,6 +45,7 @@ const allowedOrigins = [
   "https://nyle-mobile.vercel.app",
 ];
 
+// Main CORS middleware - FIXED
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -57,15 +57,27 @@ app.use(
       console.warn("Blocked CORS request from:", origin);
       return callback(new Error("Not allowed by CORS"));
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cache-Control", "X-Client-IP"], // ADDED Cache-Control
+    exposedHeaders: ["Content-Range", "X-Content-Range"], // Optional: for pagination
     credentials: true,
   })
 );
 
-// Handle preflight for all routes
-app.options("*", cors({ origin: allowedOrigins, credentials: true }));
-
+// Enhanced preflight handler - FIXED
+app.options("*", (req, res) => {
+  const origin = req.headers.origin;
+  
+  if (origin && allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, Cache-Control, X-Client-IP"); // ADDED Cache-Control
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Max-Age", "86400"); // Cache preflight for 24 hours
+  }
+  
+  res.status(204).send(); // No content for OPTIONS
+});
 // ✅ Body parsers (always after CORS)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
