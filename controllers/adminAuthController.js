@@ -73,7 +73,7 @@ export const verifyAdminToken = async (req, res, next) => {
 
     // Check last IP
     const result = await pool.query("SELECT last_ip FROM users WHERE id=$1", [decoded.id]);
-    const lastIP = result.rows[0]?.last_ip;
+    const lastIP = req.headers[ 'x-client-ip' ] || req.ip;
     if (lastIP && lastIP !== req.ip)
       return res.status(401).json({ message: "IP changed, please log in again" });
 
