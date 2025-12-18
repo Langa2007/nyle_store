@@ -1,64 +1,58 @@
-// services/vendorService.js
-
+// services/api.js (or api.ts)
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
 /**
- * Fetch all active vendors for admin dropdown
- * @param {string} token - Admin access token (JWT)
- * @returns {Array} List of vendors
+ * A generic helper to make authenticated API requests.
+ * @param {string} endpoint - The API endpoint (e.g., '/admin/vendors').
+ * @param {object} options - Fetch options (method, body, etc.).
+ * @returns {Promise} - The parsed JSON response.
  */
-async function getVendors(token) {
+export const apiRequest = async (endpoint, options = {}) => {
+  // 1. Get the admin token from localStorage (for client-side)
+  const token = typeof window !== 'undefined' ? localStorage.getItem("adminAccessToken") : null;
+
+  // 2. Set up default headers
+  const headers = {
+    "Content-Type": "application/json",
+    ...options.headers, // Allow custom headers to override
+  };
+
+  // 3. Add Authorization header if a token exists
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  // 4. Make the fetch request
   try {
-    const res = await fetch(`${API_URL}/api/admin/vendors`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+    const response = await fetch(`${API_URL}/api${endpoint}`, {
+      ...options,
+      headers,
+      credentials: "include", // Keep if your backend uses sessions/cookies
     });
 
-    if (!res.ok) {
-      console.error("Failed to fetch vendors:", res.status);
-      return [];
-    }
-
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching vendors:", error);
-    return [];
-  }
-}
-
-/**
- * Fetch a single vendor by ID
- * @param {string} id - Vendor ID (UUID)
- * @param {string} token - Admin access token (JWT)
- * @returns {Object|null} Vendor object
- */
-async function getVendorById(id, token) {
-  try {
-    const res = await fetch(`${API_URL}/api/admin/vendors/${id}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+    // 5. Check if the response is OK (status 200-299)
+    if (!response.ok) {
+      // Handle specific errors like 401 (Unauthorized)
+      if (response.status === 401) {
+        console.error("Authentication failed. Redirecting to login.");
+        // You might want to trigger a logout here
+        if (typeof window !== 'undefined') {
+          window.location.href = "/admin/login";
+        }
+        throw new Error("Unauthorized access");
       }
-    });
-
-    if (!res.ok) {
-      console.error(`Failed to fetch vendor ${id}:`, res.status);
-      return null;
+      // Throw a generic error for other status codes
+      const errorText = await response.text();
+      throw new Error(`API request failed: ${response.status} - ${errorText}`);
     }
 
-    const data = await res.json();
-    return data;
+    // 6. Parse and return JSON for successful responses
+    return await response.json();
   } catch (error) {
-    console.error("Error fetching vendor:", error);
-    return null;
+    // 7. Handle network errors or errors thrown above[citation:6][citation:10]
+    console.error(`API call to ${endpoint} failed:`, error.message);
+    
+    // Re-throw the error so the calling function can handle it
+    throw error;
   }
-}
-
-// Export as a module
-module.exports = {
-  getVendors,
-  getVendorById
 };
