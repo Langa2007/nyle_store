@@ -176,17 +176,17 @@ function HomeContent() {
           </div>
         </div>
       </motion.nav>
-
-      {/* UPDATED Hero Section with Premium Fridge Image */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 text-white pt-32 pb-20 px-6">
+            {/* UPDATED Hero Section - Combining Store Info with Premium Fridge Image */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white pt-32 pb-20 px-6">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl"></div>
-          <div className="absolute top-60 -left-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-60 -left-40 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl"></div>
         </div>
 
         <div className="container mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* LEFT SIDE: Store Information (ORIGINAL - KEEPING THIS) */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
@@ -194,40 +194,21 @@ function HomeContent() {
             >
               <div className="inline-flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
                 <FaFire className="text-orange-400 mr-2" />
-                <span className="text-sm font-medium">🚀 Featured Product of the Week</span>
+                <span className="text-sm font-medium">🚀 Kenya's Fastest Growing Marketplace</span>
               </div>
               
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6">
-                Premium
+                Discover Amazing
                 <span className="block bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                  Smart Refrigerator
+                  Products Daily
                 </span>
               </h1>
               
               <p className="text-xl text-blue-100 mb-8 max-w-2xl">
-                Experience the future of kitchen technology with our <span className="font-bold text-white">AI-powered smart fridge</span>. 
-                Featuring touchscreen controls, energy-efficient cooling, and smart inventory tracking to transform your cooking experience.
+                Welcome to <span className="font-bold text-white">Nyle Store</span> – 
+                Your premier destination for quality products from trusted vendors across Kenya.
+                Shop smart, live better.
               </p>
-
-              {/* Key Features */}
-              <div className="mb-8 grid grid-cols-2 gap-4">
-                <div className="flex items-center">
-                  <FaCheckCircle className="text-green-400 mr-3" />
-                  <span>Wi-Fi Connected</span>
-                </div>
-                <div className="flex items-center">
-                  <FaCheckCircle className="text-green-400 mr-3" />
-                  <span>Energy Star Certified</span>
-                </div>
-                <div className="flex items-center">
-                  <FaCheckCircle className="text-green-400 mr-3" />
-                  <span>Smart Temperature Control</span>
-                </div>
-                <div className="flex items-center">
-                  <FaCheckCircle className="text-green-400 mr-3" />
-                  <span>2-Year Warranty</span>
-                </div>
-              </div>
 
               {/* Enhanced Search Bar */}
               <div className="max-w-2xl mb-8">
@@ -236,7 +217,7 @@ function HomeContent() {
                   <div className="relative flex items-center bg-white rounded-xl shadow-2xl">
                     <input
                       type="text"
-                      placeholder="Search for products, categories, or brands..."
+                      placeholder="What are you looking for today?"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="flex-grow px-6 py-4 text-gray-800 rounded-xl focus:outline-none text-lg"
@@ -259,18 +240,18 @@ function HomeContent() {
                   onClick={scrollToProducts}
                   className="bg-gradient-to-r from-white to-blue-50 text-blue-700 px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-all flex items-center group"
                 >
-                  Shop This Product
+                  Start Shopping Now
                   <FaArrowRight className="ml-3 group-hover:translate-x-2 transition-transform" />
                 </motion.button>
                 
-                <Link href="/products?category=electronics">
+                <Link href="/vendor/signup">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="border-2 border-white/30 backdrop-blur-sm text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white/10 transition-all flex items-center group"
                   >
-                    <FaBolt className="mr-3" />
-                    Browse Electronics
+                    <FaRocket className="mr-3" />
+                    Become a Seller
                   </motion.button>
                 </Link>
               </div>
@@ -292,7 +273,7 @@ function HomeContent() {
               </div>
             </motion.div>
 
-            {/* UPDATED Hero Image - Premium Smart Fridge */}
+            {/* RIGHT SIDE: UPDATED Hero Image - Premium Smart Fridge */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
@@ -300,30 +281,34 @@ function HomeContent() {
               className="relative"
             >
               <div className="relative rounded-3xl overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500 border-4 border-white/20">
-                {/* Premium Fridge Image */}
+                {/* Premium Smart Fridge Image */}
                 <img
-                  src="https://images.unsplash.com/photo-1571175443880-49e1d1b5d50b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
-                  alt="Premium Smart Refrigerator with Touchscreen"
-                  className="w-full h-[500px] object-cover group-hover:scale-105 transition-transform duration-500"
+                  src="https://images.unsplash.com/photo-1584569136372-3e15d0b9b0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+                  alt="Premium Smart Refrigerator - Featured Product"
+                  className="w-full h-[500px] object-cover"
+                  onError={(e) => {
+                    // Fallback image if Unsplash fails
+                    e.target.src = "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
+                  }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/60 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/50 to-transparent"></div>
                 
-                {/* Product Badge */}
+                {/* Featured Product Badge */}
                 <div className="absolute top-6 left-6">
                   <span className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                    ⭐ Best Seller
+                    🔥 Featured Product
                   </span>
                 </div>
                 
-                {/* Floating Price Card */}
-                <div className="absolute -bottom-6 -right-6 bg-white rounded-2xl p-6 shadow-2xl w-72 transform rotate-3">
+                {/* Floating product card */}
+                <div className="absolute -bottom-6 -right-6 bg-white rounded-2xl p-6 shadow-2xl w-72">
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl flex items-center justify-center">
                       <FaSnowflake className="text-blue-600 text-2xl" />
                     </div>
                     <div>
                       <div className="font-bold text-gray-900">Smart Fridge Pro</div>
-                      <div className="text-sm text-gray-600">Model 2024</div>
+                      <div className="text-sm text-gray-600">Energy Star Rated</div>
                     </div>
                   </div>
                   <div className="space-y-3">
@@ -333,10 +318,13 @@ function HomeContent() {
                     </div>
                     <div className="flex items-center text-sm text-gray-600">
                       <FaTruck className="mr-2 text-green-600" />
-                      <span>Free Installation & Delivery</span>
+                      <span>Free Delivery Nationwide</span>
                     </div>
-                    <button className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-lg font-bold hover:from-blue-700 hover:to-cyan-700 transition shadow-lg">
-                      Add to Cart
+                    <button 
+                      onClick={scrollToProducts}
+                      className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-lg font-bold hover:from-blue-700 hover:to-cyan-700 transition shadow-lg"
+                    >
+                      Shop Now
                     </button>
                   </div>
                 </div>
@@ -410,7 +398,7 @@ function HomeContent() {
                     selectedCategory === cat.name 
                       ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg" 
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
+                }`}
                 >
                   {cat.name}
                 </button>
