@@ -103,9 +103,26 @@ function HomeContent() {
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Handle category click - FIXED FUNCTION
+  const handleCategoryClick = (categoryId) => {
+    setSelectedCategory(categoryId);
+    setTimeout(() => {
+      const el = document.getElementById("products-section");
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
+
+  // Enhanced filtering logic - FIXED
   const filteredProducts = products.filter((product) => {
     const matchesSearch = (product.name || "").toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
+    let matchesCategory = true;
+    
+    if (selectedCategory !== "all") {
+      matchesCategory = product.category === selectedCategory || 
+                       product.category_id === selectedCategory ||
+                       (product.category && product.category.toLowerCase() === selectedCategory.toLowerCase());
+    }
+    
     return matchesSearch && matchesCategory;
   });
 
@@ -160,12 +177,12 @@ function HomeContent() {
         </div>
       </motion.nav>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white pt-32 pb-20 px-6">
+      {/* UPDATED Hero Section with Premium Fridge Image */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 text-white pt-32 pb-20 px-6">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl"></div>
-          <div className="absolute top-60 -left-40 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-60 -left-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl"></div>
         </div>
 
         <div className="container mx-auto relative z-10">
@@ -177,21 +194,40 @@ function HomeContent() {
             >
               <div className="inline-flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
                 <FaFire className="text-orange-400 mr-2" />
-                <span className="text-sm font-medium">🚀 Kenya's Fastest Growing Marketplace</span>
+                <span className="text-sm font-medium">🚀 Featured Product of the Week</span>
               </div>
               
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6">
-                Discover Amazing
+                Premium
                 <span className="block bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                  Products Daily
+                  Smart Refrigerator
                 </span>
               </h1>
               
               <p className="text-xl text-blue-100 mb-8 max-w-2xl">
-                Welcome to <span className="font-bold text-white">Nyle Store</span> – 
-                Your premier destination for quality products from trusted vendors across Kenya.
-                Shop smart, live better.
+                Experience the future of kitchen technology with our <span className="font-bold text-white">AI-powered smart fridge</span>. 
+                Featuring touchscreen controls, energy-efficient cooling, and smart inventory tracking to transform your cooking experience.
               </p>
+
+              {/* Key Features */}
+              <div className="mb-8 grid grid-cols-2 gap-4">
+                <div className="flex items-center">
+                  <FaCheckCircle className="text-green-400 mr-3" />
+                  <span>Wi-Fi Connected</span>
+                </div>
+                <div className="flex items-center">
+                  <FaCheckCircle className="text-green-400 mr-3" />
+                  <span>Energy Star Certified</span>
+                </div>
+                <div className="flex items-center">
+                  <FaCheckCircle className="text-green-400 mr-3" />
+                  <span>Smart Temperature Control</span>
+                </div>
+                <div className="flex items-center">
+                  <FaCheckCircle className="text-green-400 mr-3" />
+                  <span>2-Year Warranty</span>
+                </div>
+              </div>
 
               {/* Enhanced Search Bar */}
               <div className="max-w-2xl mb-8">
@@ -200,7 +236,7 @@ function HomeContent() {
                   <div className="relative flex items-center bg-white rounded-xl shadow-2xl">
                     <input
                       type="text"
-                      placeholder="What are you looking for today?"
+                      placeholder="Search for products, categories, or brands..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="flex-grow px-6 py-4 text-gray-800 rounded-xl focus:outline-none text-lg"
@@ -223,18 +259,18 @@ function HomeContent() {
                   onClick={scrollToProducts}
                   className="bg-gradient-to-r from-white to-blue-50 text-blue-700 px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-all flex items-center group"
                 >
-                  Start Shopping Now
+                  Shop This Product
                   <FaArrowRight className="ml-3 group-hover:translate-x-2 transition-transform" />
                 </motion.button>
                 
-                <Link href="/vendor/signup">
+                <Link href="/products?category=electronics">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="border-2 border-white/30 backdrop-blur-sm text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white/10 transition-all flex items-center group"
                   >
-                    <FaRocket className="mr-3" />
-                    Become a Seller
+                    <FaBolt className="mr-3" />
+                    Browse Electronics
                   </motion.button>
                 </Link>
               </div>
@@ -256,36 +292,51 @@ function HomeContent() {
               </div>
             </motion.div>
 
-            {/* Hero Image/Visual */}
+            {/* UPDATED Hero Image - Premium Smart Fridge */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500">
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500 border-4 border-white/20">
+                {/* Premium Fridge Image */}
                 <img
-                  src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&h=800&fit=crop"
-                  alt="Modern Shopping Experience"
-                  className="w-full h-auto"
+                  src="https://images.unsplash.com/photo-1571175443880-49e1d1b5d50b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+                  alt="Premium Smart Refrigerator with Touchscreen"
+                  className="w-full h-[500px] object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/50 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/60 via-transparent to-transparent"></div>
                 
-                {/* Floating product cards */}
-                <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl p-4 shadow-2xl w-64">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <FaTshirt className="text-blue-600" />
+                {/* Product Badge */}
+                <div className="absolute top-6 left-6">
+                  <span className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                    ⭐ Best Seller
+                  </span>
+                </div>
+                
+                {/* Floating Price Card */}
+                <div className="absolute -bottom-6 -right-6 bg-white rounded-2xl p-6 shadow-2xl w-72 transform rotate-3">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl flex items-center justify-center">
+                      <FaSnowflake className="text-blue-600 text-2xl" />
                     </div>
                     <div>
-                      <div className="font-bold text-gray-900">Summer Collection</div>
-                      <div className="text-sm text-gray-600">50% OFF Today</div>
+                      <div className="font-bold text-gray-900">Smart Fridge Pro</div>
+                      <div className="text-sm text-gray-600">Model 2024</div>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-2xl font-bold text-blue-700">Ksh 2,499</span>
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition">
-                      Shop Now
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-2xl font-bold text-blue-700">Ksh 89,999</span>
+                      <span className="text-sm text-gray-500 line-through">Ksh 109,999</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <FaTruck className="mr-2 text-green-600" />
+                      <span>Free Installation & Delivery</span>
+                    </div>
+                    <button className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-lg font-bold hover:from-blue-700 hover:to-cyan-700 transition shadow-lg">
+                      Add to Cart
                     </button>
                   </div>
                 </div>
@@ -295,18 +346,18 @@ function HomeContent() {
         </div>
       </section>
 
-      {/* Categories Section */}
+      {/* Categories Section - UPDATED WITH CLICK FUNCTIONALITY */}
       <section id="categories" className="container mx-auto px-6 mt-20">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
             Shop by <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Category</span>
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Explore thousands of products across our curated categories
+            Click any category to view all products in that section
           </p>
         </div>
 
-        {/* Category Cards Grid */}
+        {/* Category Cards Grid - MADE CLICKABLE */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-12">
           {featuredCategories.map((category, index) => (
             <motion.div
@@ -316,49 +367,48 @@ function HomeContent() {
               transition={{ delay: index * 0.1 }}
               whileHover={{ y: -10 }}
               className="group cursor-pointer"
-              onClick={() => {
-                setSelectedCategory(category.id);
-                scrollToProducts();
-              }}
+              onClick={() => handleCategoryClick(category.id)}
             >
-              <div className={`bg-gradient-to-br ${category.color} rounded-2xl p-8 text-center text-white shadow-xl transform group-hover:scale-105 transition-all duration-300`}>
+              <div className={`bg-gradient-to-br ${category.color} rounded-2xl p-8 text-center text-white shadow-xl transform group-hover:scale-105 transition-all duration-300 ${selectedCategory === category.id ? 'ring-4 ring-blue-300 ring-opacity-50' : ''}`}>
                 <div className="text-4xl mb-4 transform group-hover:scale-110 transition-transform">
                   {category.icon}
                 </div>
                 <h3 className="text-xl font-bold mb-2">{category.name}</h3>
-                <div className="text-sm opacity-80">Explore Now →</div>
+                <div className="text-sm opacity-80">
+                  {selectedCategory === category.id ? '✓ Viewing Now' : 'Click to Explore →'}
+                </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* All Categories Scroll */}
+        {/* All Categories Scroll - UPDATED */}
         {categories.length > 0 && (
           <div className="mb-16">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-bold text-gray-800">All Categories</h3>
-              <button className="text-blue-600 font-medium hover:text-blue-800 flex items-center">
-                View All <FaChevronRight className="ml-1" />
-              </button>
+              <h3 className="text-2xl font-bold text-gray-800">Browse All Categories</h3>
+              <div className="text-sm text-gray-500">
+                {selectedCategory !== "all" ? `Showing: ${selectedCategory}` : "Showing: All Products"}
+              </div>
             </div>
             <div className="flex overflow-x-auto pb-4 space-x-4 scrollbar-hide">
               <button
-                onClick={() => setSelectedCategory("all")}
+                onClick={() => handleCategoryClick("all")}
                 className={`flex-shrink-0 px-6 py-3 rounded-full font-medium transition-all ${
                   selectedCategory === "all" 
-                    ? "bg-blue-600 text-white shadow-lg" 
+                    ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg" 
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >
-                All Products
+                🌟 All Products
               </button>
               {categories.map((cat) => (
                 <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.name)}
+                  key={cat.id || cat._id}
+                  onClick={() => handleCategoryClick(cat.name)}
                   className={`flex-shrink-0 px-6 py-3 rounded-full font-medium transition-all ${
                     selectedCategory === cat.name 
-                      ? "bg-blue-600 text-white shadow-lg" 
+                      ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg" 
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
                 >
@@ -366,22 +416,39 @@ function HomeContent() {
                 </button>
               ))}
             </div>
+            {selectedCategory !== "all" && (
+              <div className="mt-6 text-center">
+                <p className="text-blue-600 font-medium">
+                  Showing products in <span className="font-bold">{selectedCategory}</span> category
+                  <button 
+                    onClick={() => handleCategoryClick("all")}
+                    className="ml-3 text-sm text-gray-500 hover:text-blue-700"
+                  >
+                    (Clear filter)
+                  </button>
+                </p>
+              </div>
+            )}
           </div>
         )}
       </section>
 
-      {/* Featured Products */}
+      {/* Featured Products - NOW FILTERED BY CATEGORY */}
       <section id="products-section" className="container mx-auto px-6 mt-16">
         <div className="text-center mb-12">
           <div className="inline-flex items-center bg-blue-100 text-blue-700 px-4 py-2 rounded-full mb-4">
             <FaFire className="mr-2" />
-            <span className="font-medium">🔥 Hot Deals This Week</span>
+            <span className="font-medium">
+              {selectedCategory === "all" ? "🔥 All Products" : `🔥 ${selectedCategory} Products`}
+            </span>
           </div>
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Featured Products
+            {selectedCategory === "all" ? "Featured Products" : `Products in ${selectedCategory}`}
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Carefully selected products from our top-rated vendors
+            {selectedCategory === "all" 
+              ? "Carefully selected products from our top-rated vendors" 
+              : `Browse all ${filteredProducts.length} products in this category`}
           </p>
         </div>
 
@@ -392,30 +459,60 @@ function HomeContent() {
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-3">No products found</h3>
             <p className="text-gray-600 max-w-md mx-auto mb-6">
-              We couldn't find any products matching "{searchTerm}". Try a different search term or browse our categories.
+              {selectedCategory !== "all" 
+                ? `We couldn't find any products in "${selectedCategory}" category. Try another category or view all products.`
+                : `We couldn't find any products matching "${searchTerm}". Try a different search term or browse our categories.`}
             </p>
-            <button
-              onClick={() => {
-                setSearchTerm("");
-                setSelectedCategory("all");
-              }}
-              className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition"
-            >
-              View All Products
-            </button>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedCategory("all");
+                }}
+                className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition"
+              >
+                View All Products
+              </button>
+              <button
+                onClick={() => document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" })}
+                className="bg-gray-200 text-gray-800 px-8 py-3 rounded-lg font-medium hover:bg-gray-300 transition"
+              >
+                Browse Categories
+              </button>
+            </div>
           </div>
         ) : (
           <>
+            {/* Category Filter Info */}
+            {selectedCategory !== "all" && (
+              <div className="mb-8 p-4 bg-blue-50 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <FaCheckCircle className="text-green-500 mr-3" />
+                    <span className="font-medium">
+                      Showing <span className="text-blue-700 font-bold">{filteredProducts.length}</span> products in <span className="text-blue-700 font-bold">{selectedCategory}</span>
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => handleCategoryClick("all")}
+                    className="text-sm text-gray-600 hover:text-blue-700"
+                  >
+                    Clear filter ×
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {filteredProducts.slice(0, 8).map((product, index) => (
+              {filteredProducts.slice(0, 12).map((product, index) => (
                 <motion.div
-                  key={product.id}
+                  key={product.id || product._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ y: -8 }}
                 >
-                  <Link href={`/products/${product.id}`}>
+                  <Link href={`/products/${product.id || product._id}`}>
                     <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100">
                       {/* Product Image */}
                       <div className="relative h-64 overflow-hidden bg-gradient-to-br from-blue-50 to-gray-50">
@@ -443,6 +540,15 @@ function HomeContent() {
                           </span>
                         </div>
                         
+                        {/* Category Badge */}
+                        <div className="absolute bottom-4 left-4">
+                          {product.category && (
+                            <span className="bg-blue-600/90 text-white px-3 py-1 rounded-full text-xs font-medium">
+                              {product.category}
+                            </span>
+                          )}
+                        </div>
+                        
                         {/* Quick Actions */}
                         <div className="absolute top-4 right-4 flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow hover:shadow-lg transition">
@@ -457,9 +563,16 @@ function HomeContent() {
                       {/* Product Details */}
                       <div className="p-6">
                         <div className="flex items-start justify-between mb-3">
-                          <h3 className="text-lg font-bold text-gray-900 line-clamp-1">
-                            {product.name}
-                          </h3>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900 line-clamp-1">
+                              {product.name}
+                            </h3>
+                            {product.category && (
+                              <div className="text-xs text-gray-500 mt-1">
+                                {product.category}
+                              </div>
+                            )}
+                          </div>
                           <div className="flex items-center text-yellow-400">
                             <FaStar />
                             <span className="ml-1 text-sm font-medium">4.5</span>
@@ -504,11 +617,11 @@ function HomeContent() {
             </div>
 
             {/* View More Button */}
-            {filteredProducts.length > 8 && (
+            {filteredProducts.length > 12 && (
               <div className="text-center mt-12">
-                <Link href="/products">
+                <Link href={`/products${selectedCategory !== "all" ? `?category=${selectedCategory}` : ''}`}>
                   <button className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-10 py-4 rounded-full font-bold text-lg hover:shadow-2xl transition-all transform hover:scale-105 flex items-center mx-auto group">
-                    View All Products
+                    View All {selectedCategory !== "all" ? selectedCategory : ''} Products ({filteredProducts.length})
                     <FaArrowRight className="ml-3 group-hover:translate-x-2 transition-transform" />
                   </button>
                 </Link>
