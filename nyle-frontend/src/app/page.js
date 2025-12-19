@@ -283,7 +283,7 @@ function HomeContent() {
               <div className="relative rounded-3xl overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500 border-4 border-white/20">
                 {/* Premium Smart Fridge Image */}
                 <img
-                  src="https://images.unsplash.com/photo-1584569136372-3e15d0b9b0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+                  src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
                   alt="Premium Smart Refrigerator - Featured Product"
                   className="w-full h-[500px] object-cover"
                   onError={(e) => {
