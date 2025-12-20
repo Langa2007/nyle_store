@@ -1,4 +1,4 @@
-// app/payments/methods/page.js
+"use client";
 import PaymentLayout from "@/components/payments/PaymentLayout";
 import { 
   CreditCard, Smartphone, Building, Wallet, Bitcoin, 
@@ -6,11 +6,31 @@ import {
 } from "lucide-react";
 import { 
   FaCcVisa, FaCcMastercard, FaCcAmex, FaCcPaypal, 
-  FaGooglePay, FaApplePay, FaAndroid 
+  FaGooglePay, FaApplePay, FaAndroid, FaMobileAlt 
 } from "react-icons/fa";
-import { SiSafaricom } from "react-icons/si";
 
 export default function AcceptedMethods() {
+  // Custom M-Pesa icon component
+  const MpesaIcon = ({ className }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+    </svg>
+  );
+
+  // Custom Airtel Money icon
+  const AirtelIcon = ({ className }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+    </svg>
+  );
+
+  // Custom T-Kash icon
+  const TKashIcon = ({ className }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+    </svg>
+  );
+
   const paymentMethods = [
     {
       category: "Credit & Debit Cards",
@@ -48,21 +68,21 @@ export default function AcceptedMethods() {
       methods: [
         { 
           name: "M-Pesa", 
-          icon: <SiSafaricom className="text-green-600 text-2xl" />, 
+          icon: <MpesaIcon className="text-green-600 text-2xl w-8 h-8" />, 
           processing: "Instant", 
           fee: "1.5%", 
           available: true 
         },
         { 
           name: "Airtel Money", 
-          icon: <div className="text-red-500 font-bold text-lg">Airtel</div>, 
+          icon: <AirtelIcon className="text-red-500 text-2xl w-8 h-8" />, 
           processing: "Instant", 
           fee: "1.5%", 
           available: true 
         },
         { 
           name: "T-Kash", 
-          icon: <div className="text-blue-500 font-bold text-lg">TK</div>, 
+          icon: <TKashIcon className="text-blue-500 text-2xl w-8 h-8" />, 
           processing: "Instant", 
           fee: "1.5%", 
           available: true 
@@ -163,13 +183,14 @@ export default function AcceptedMethods() {
           processing: "Instant", 
           fee: "1.5%", 
           available: false,
-          comingSoon: "Q2 2026"
+          comingSoon: "Q2 2024"
         },
       ],
       description: "Exciting new payment options launching soon"
     },
   ];
 
+  // Rest of the component remains exactly the same...
   const keyFeatures = [
     {
       icon: <Shield />,
