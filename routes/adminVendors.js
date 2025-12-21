@@ -7,6 +7,14 @@ import {
   rejectVendor,
   deleteVendor,
 } from "../controllers/adminVendorController.js";
+import {
+   getPendingProducts,
+  approveProduct,
+  rejectProduct,
+  bulkApproveProducts
+} from "../controllers/adminProductApprovalController.js";
+
+
 
 
 const router = express.Router();
@@ -25,5 +33,15 @@ router.patch("/:id/reject",  rejectVendor);
 
 // ✅ Delete vendor
 router.delete("/:id", deleteVendor);
+// ================= PRODUCT APPROVAL ROUTES ================= //
+
+// ✅ Get all pending products
+router.get("/products/pending", getPendingProducts);
+// ✅ Approve a product
+router.post("/products/:id/approve", approveProduct);
+// ✅ Reject a product
+router.post("/products/:id/reject", rejectProduct);
+// ✅ Bulk approve products
+router.post("/products/bulk-approve", bulkApproveProducts);
 
 export default router;

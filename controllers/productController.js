@@ -1,12 +1,14 @@
+// controllers/productController.js
 import pool from "../db/connect.js";
 
-// ✅ PUBLIC: LIST PRODUCTS
+// ✅ PUBLIC: LIST ONLY APPROVED PRODUCTS
 export const listProducts = async (req, res) => {
   try {
     const q = `
       SELECT p.*, v.legal_name AS vendor_name, v.company_name
       FROM products p
       LEFT JOIN vendors v ON p.vendor_id = v.id
+      WHERE p.status = 'approved'  -- ONLY SHOW APPROVED PRODUCTS
       ORDER BY p.created_at DESC
       LIMIT 200
     `;
@@ -19,7 +21,7 @@ export const listProducts = async (req, res) => {
   }
 };
 
-// ✅ PUBLIC: GET PRODUCT BY ID (WITH VENDOR)
+// ✅ PUBLIC: GET PRODUCT BY ID (ONLY IF APPROVED)
 export const getProductById = async (req, res) => {
   try {
     const id = Number(req.params.id);
@@ -37,14 +39,14 @@ export const getProductById = async (req, res) => {
         COALESCE(v.shipping_rate, 0) AS shipping_rate
       FROM products p
       LEFT JOIN vendors v ON p.vendor_id = v.id
-      WHERE p.id = $1
+      WHERE p.id = $1 AND p.status = 'approved'  -- ONLY IF APPROVED
       LIMIT 1
     `;
 
     const { rows } = await pool.query(q, [id]);
 
     if (!rows.length) {
-      return res.status(404).json({ error: "Product not found" });
+      return res.status(404).json({ error: "Product not found or not available" });
     }
 
     res.json(rows[0]);
@@ -54,32 +56,37 @@ export const getProductById = async (req, res) => {
   }
 };
 
-
-// ✅ PUBLIC: SEARCH & FILTER
+// ✅ PUBLIC: SEARCH & FILTER - ONLY APPROVED
 export const searchAndFilterProducts = async (req, res) => {
   const { name, category, minPrice, maxPrice } = req.query;
 
-  let query = "SELECT * FROM products WHERE 1=1";
+  let query = `
+    SELECT p.*, v.legal_name AS vendor_name 
+    FROM products p
+    LEFT JOIN vendors v ON p.vendor_id = v.id
+    WHERE p.status = 'approved'  -- ONLY APPROVED
+  `;
+  
   const values = [];
   let count = 1;
 
   if (name) {
-    query += ` AND LOWER(name) LIKE $${count++}`;
+    query += ` AND LOWER(p.name) LIKE $${count++}`;
     values.push(`%${name.toLowerCase()}%`);
   }
 
   if (category) {
-    query += ` AND LOWER(category) = $${count++}`;
+    query += ` AND LOWER(p.category) = $${count++}`;
     values.push(category.toLowerCase());
   }
 
   if (minPrice) {
-    query += ` AND price >= $${count++}`;
+    query += ` AND p.price >= $${count++}`;
     values.push(minPrice);
   }
 
   if (maxPrice) {
-    query += ` AND price <= $${count++}`;
+    query += ` AND p.price <= $${count++}`;
     values.push(maxPrice);
   }
 

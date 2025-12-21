@@ -432,10 +432,12 @@ ALTER SEQUENCE public.orders_id_seq OWNED BY public.orders.id;
 
 CREATE TABLE public.password_reset_tokens (
     id integer NOT NULL,
-    vendor_id integer NOT NULL,
     token character varying(128) NOT NULL,
     expires_at bigint NOT NULL,
-    created_at timestamp without time zone DEFAULT now()
+    created_at timestamp without time zone DEFAULT now(),
+    user_id integer NOT NULL,
+    user_type character varying(20) NOT NULL,
+    CONSTRAINT password_reset_tokens_user_type_check CHECK (((user_type)::text = ANY ((ARRAY['user'::character varying, 'vendor'::character varying])::text[])))
 );
 
 
@@ -665,6 +667,43 @@ ALTER SEQUENCE public.support_messages_id_seq OWNED BY public.support_messages.i
 
 
 --
+-- Name: user_sessions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.user_sessions (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    session_token character varying(255) NOT NULL,
+    created_at timestamp without time zone DEFAULT now(),
+    expires_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.user_sessions OWNER TO postgres;
+
+--
+-- Name: user_sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.user_sessions_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.user_sessions_id_seq OWNER TO postgres;
+
+--
+-- Name: user_sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.user_sessions_id_seq OWNED BY public.user_sessions.id;
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -703,6 +742,43 @@ ALTER SEQUENCE public.users_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- Name: vendor_categories; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.vendor_categories (
+    id integer NOT NULL,
+    vendor_id integer,
+    category_name character varying(100) NOT NULL,
+    is_active boolean DEFAULT true,
+    created_at timestamp without time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.vendor_categories OWNER TO postgres;
+
+--
+-- Name: vendor_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.vendor_categories_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.vendor_categories_id_seq OWNER TO postgres;
+
+--
+-- Name: vendor_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.vendor_categories_id_seq OWNED BY public.vendor_categories.id;
 
 
 --
@@ -776,6 +852,45 @@ ALTER SEQUENCE public.vendor_payout_accounts_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.vendor_payout_accounts_id_seq OWNED BY public.vendor_payout_accounts.id;
+
+
+--
+-- Name: vendor_product_defaults; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.vendor_product_defaults (
+    id integer NOT NULL,
+    vendor_id integer,
+    default_shipping_cost numeric(10,2),
+    default_free_shipping_threshold numeric(10,2),
+    default_category character varying(100),
+    auto_submit_for_approval boolean DEFAULT false,
+    created_at timestamp without time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.vendor_product_defaults OWNER TO postgres;
+
+--
+-- Name: vendor_product_defaults_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.vendor_product_defaults_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.vendor_product_defaults_id_seq OWNER TO postgres;
+
+--
+-- Name: vendor_product_defaults_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.vendor_product_defaults_id_seq OWNED BY public.vendor_product_defaults.id;
 
 
 --
@@ -977,10 +1092,24 @@ ALTER TABLE ONLY public.support_messages ALTER COLUMN id SET DEFAULT nextval('pu
 
 
 --
+-- Name: user_sessions id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_sessions ALTER COLUMN id SET DEFAULT nextval('public.user_sessions_id_seq'::regclass);
+
+
+--
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- Name: vendor_categories id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vendor_categories ALTER COLUMN id SET DEFAULT nextval('public.vendor_categories_id_seq'::regclass);
 
 
 --
@@ -995,6 +1124,13 @@ ALTER TABLE ONLY public.vendor_members ALTER COLUMN id SET DEFAULT nextval('publ
 --
 
 ALTER TABLE ONLY public.vendor_payout_accounts ALTER COLUMN id SET DEFAULT nextval('public.vendor_payout_accounts_id_seq'::regclass);
+
+
+--
+-- Name: vendor_product_defaults id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vendor_product_defaults ALTER COLUMN id SET DEFAULT nextval('public.vendor_product_defaults_id_seq'::regclass);
 
 
 --
@@ -1096,7 +1232,7 @@ COPY public.orders (id, user_id, total_price, status, created_at, total_amount, 
 -- Data for Name: password_reset_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.password_reset_tokens (id, vendor_id, token, expires_at, created_at) FROM stdin;
+COPY public.password_reset_tokens (id, token, expires_at, created_at, user_id, user_type) FROM stdin;
 \.
 
 
@@ -1141,6 +1277,14 @@ COPY public.support_messages (id, name, email, subject, message, status, created
 
 
 --
+-- Data for Name: user_sessions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.user_sessions (id, user_id, session_token, created_at, expires_at) FROM stdin;
+\.
+
+
+--
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1149,6 +1293,14 @@ COPY public.users (id, name, email, password, created_at, is_admin, last_ip, las
 4	Admin User	admin@example.com	$2b$10$6WbO/EYOxqlDwd6Z90.kIe3zUARM1D8.YntE854msr0d6pkGJhMpq	2025-07-27 13:54:50.436222	t	\N	\N	t
 5	Admin User	fidellanga67@gmail.com	$2b$10$umIrOicOALby3lpn.YpybuC1suc1Z8y0sIn0s5iZ5we8VBE2sWeci	2025-07-27 19:39:13.500069	t	\N	\N	t
 7	Test User	testuser@example.com	$2b$10$LNCwOhHDTVyK2381qEOb/.Uv4AUJGK/Q5uzNKLpTkJiXLOZwlXuDy	2025-10-15 15:39:53.832293	f	\N	\N	t
+\.
+
+
+--
+-- Data for Name: vendor_categories; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.vendor_categories (id, vendor_id, category_name, is_active, created_at) FROM stdin;
 \.
 
 
@@ -1165,6 +1317,14 @@ COPY public.vendor_members (id, vendor_id, user_id, role) FROM stdin;
 --
 
 COPY public.vendor_payout_accounts (id, vendor_id, provider, account_ref, created_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: vendor_product_defaults; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.vendor_product_defaults (id, vendor_id, default_shipping_cost, default_free_shipping_threshold, default_category, auto_submit_for_approval, created_at) FROM stdin;
 \.
 
 
@@ -1302,10 +1462,24 @@ SELECT pg_catalog.setval('public.support_messages_id_seq', 1, false);
 
 
 --
+-- Name: user_sessions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.user_sessions_id_seq', 1, false);
+
+
+--
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.users_id_seq', 7, true);
+
+
+--
+-- Name: vendor_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.vendor_categories_id_seq', 1, false);
 
 
 --
@@ -1320,6 +1494,13 @@ SELECT pg_catalog.setval('public.vendor_members_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.vendor_payout_accounts_id_seq', 1, false);
+
+
+--
+-- Name: vendor_product_defaults_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.vendor_product_defaults_id_seq', 1, false);
 
 
 --
@@ -1489,6 +1670,14 @@ ALTER TABLE ONLY public.support_messages
 
 
 --
+-- Name: user_sessions user_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_sessions
+    ADD CONSTRAINT user_sessions_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1502,6 +1691,14 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vendor_categories vendor_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vendor_categories
+    ADD CONSTRAINT vendor_categories_pkey PRIMARY KEY (id);
 
 
 --
@@ -1534,6 +1731,22 @@ ALTER TABLE ONLY public.vendor_payout_accounts
 
 ALTER TABLE ONLY public.vendor_payout_accounts
     ADD CONSTRAINT vendor_payout_accounts_vendor_id_provider_key UNIQUE (vendor_id, provider);
+
+
+--
+-- Name: vendor_product_defaults vendor_product_defaults_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vendor_product_defaults
+    ADD CONSTRAINT vendor_product_defaults_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vendor_product_defaults vendor_product_defaults_vendor_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vendor_product_defaults
+    ADD CONSTRAINT vendor_product_defaults_vendor_id_key UNIQUE (vendor_id);
 
 
 --
@@ -1587,20 +1800,6 @@ CREATE INDEX idx_order_items_vendor_id ON public.order_items USING btree (vendor
 --
 
 CREATE INDEX idx_password_reset_expires ON public.password_reset_tokens USING btree (expires_at);
-
-
---
--- Name: idx_password_reset_token; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_password_reset_token ON public.password_reset_tokens USING btree (token);
-
-
---
--- Name: idx_password_reset_vendor; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_password_reset_vendor ON public.password_reset_tokens USING btree (vendor_id);
 
 
 --
@@ -1701,14 +1900,6 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- Name: password_reset_tokens password_reset_tokens_vendor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.password_reset_tokens
-    ADD CONSTRAINT password_reset_tokens_vendor_id_fkey FOREIGN KEY (vendor_id) REFERENCES public.vendors(id) ON DELETE CASCADE;
-
-
---
 -- Name: payments payments_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1741,6 +1932,22 @@ ALTER TABLE ONLY public.reviews
 
 
 --
+-- Name: user_sessions user_sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_sessions
+    ADD CONSTRAINT user_sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vendor_categories vendor_categories_vendor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vendor_categories
+    ADD CONSTRAINT vendor_categories_vendor_id_fkey FOREIGN KEY (vendor_id) REFERENCES public.vendors(id) ON DELETE CASCADE;
+
+
+--
 -- Name: vendor_members vendor_members_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1762,6 +1969,14 @@ ALTER TABLE ONLY public.vendor_members
 
 ALTER TABLE ONLY public.vendor_payout_accounts
     ADD CONSTRAINT vendor_payout_accounts_vendor_id_fkey FOREIGN KEY (vendor_id) REFERENCES public.vendors(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vendor_product_defaults vendor_product_defaults_vendor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.vendor_product_defaults
+    ADD CONSTRAINT vendor_product_defaults_vendor_id_fkey FOREIGN KEY (vendor_id) REFERENCES public.vendors(id) ON DELETE CASCADE;
 
 
 --

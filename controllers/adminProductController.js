@@ -1,3 +1,4 @@
+// controllers/adminProductController.js
 import pool from "../db/connect.js";
 import cloudinary from "../config/cloudinary.js";
 import multer from "multer";
@@ -196,7 +197,9 @@ export const adminCreateProduct = async (req, res) => {
       free_shipping_threshold ? parseFloat(free_shipping_threshold) : null,
       product_type || 'simple',
       attributes ? JSON.parse(attributes) : null,
-      galleryUrls.length > 0 ? galleryUrls : null
+      galleryUrls.length > 0 ? galleryUrls : null,
+      'approved', // Auto-approve admin-created products
+      'admin'  // Created by admin
     ];
 
     const productResult = await connection.query(productQuery, productValues);
