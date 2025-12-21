@@ -20,7 +20,8 @@ import {
   Sparkles,
   Users,
   Globe,
-  Award
+  Award,
+  Star
 } from "lucide-react";
 import VendorInfoLayout from "@/components/vendor/VendorInfoLayout";
 
@@ -134,6 +135,8 @@ export default function VendorAppPage() {
     return () => clearInterval(interval);
   }, []);
 
+  const ActiveFeatureIcon = appFeatures[activeFeature]?.icon;
+
   return (
     <VendorInfoLayout
       title="Vendor Mobile App"
@@ -213,31 +216,34 @@ export default function VendorAppPage() {
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Features List */}
             <div className="space-y-4">
-              {appFeatures.map((feature, index) => (
-                <motion.button
-                  key={index}
-                  onClick={() => setActiveFeature(index)}
-                  whileHover={{ x: 5 }}
-                  className={`w-full p-5 rounded-xl border text-left transition-all ${
-                    activeFeature === index
-                      ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-cyan-50 shadow-md'
-                      : 'border-gray-200 hover:border-blue-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-lg bg-gradient-to-r ${feature.color}`}>
-                      <feature.icon className="h-5 w-5 text-white" />
+              {appFeatures.map((feature, index) => {
+                const FeatureIcon = feature.icon;
+                return (
+                  <motion.button
+                    key={index}
+                    onClick={() => setActiveFeature(index)}
+                    whileHover={{ x: 5 }}
+                    className={`w-full p-5 rounded-xl border text-left transition-all ${
+                      activeFeature === index
+                        ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-cyan-50 shadow-md'
+                        : 'border-gray-200 hover:border-blue-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`p-3 rounded-lg bg-gradient-to-r ${feature.color}`}>
+                        <FeatureIcon className="h-5 w-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-gray-900">{feature.title}</h3>
+                        <p className="text-sm text-gray-600">{feature.description}</p>
+                      </div>
+                      <ChevronRight className={`h-5 w-5 ${
+                        activeFeature === index ? 'text-blue-600' : 'text-gray-400'
+                      }`} />
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-bold text-gray-900">{feature.title}</h3>
-                      <p className="text-sm text-gray-600">{feature.description}</p>
-                    </div>
-                    <ChevronRight className={`h-5 w-5 ${
-                      activeFeature === index ? 'text-blue-600' : 'text-gray-400'
-                    }`} />
-                  </div>
-                </motion.button>
-              ))}
+                  </motion.button>
+                );
+              })}
             </div>
 
             {/* Feature Preview */}
@@ -247,14 +253,14 @@ export default function VendorAppPage() {
               <div className="relative z-10">
                 <div className="flex items-center gap-2 mb-6">
                   <div className="p-2 bg-white/10 rounded-lg">
-                    <appFeaturesactiveFeature.icon className="h-5 w-5 text-white" />
+                    {ActiveFeatureIcon && <ActiveFeatureIcon className="h-5 w-5 text-white" />}
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-white">
-                      {appFeatures[activeFeature].title}
+                      {appFeatures[activeFeature]?.title}
                     </h3>
                     <p className="text-blue-100 text-sm">
-                      {appFeatures[activeFeature].description}
+                      {appFeatures[activeFeature]?.description}
                     </p>
                   </div>
                 </div>
@@ -498,10 +504,3 @@ export default function VendorAppPage() {
     </VendorInfoLayout>
   );
 }
-
-// Missing Star icon component
-const Star = ({ className }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 20 20">
-    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-  </svg>
-);
