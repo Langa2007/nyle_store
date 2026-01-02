@@ -4,7 +4,7 @@ import cloudinary from "../config/cloudinary.js";
 import multer from "multer";
 import streamifier from "streamifier";
 
-// ✅ Same multer setup as admin
+//  Same multer setup as admin
 const storage = multer.memoryStorage();
 export const upload = multer({
   storage,
@@ -14,7 +14,7 @@ export const upload = multer({
   { name: 'gallery_images', maxCount: 10 }
 ]);
 
-// ✅ Same Cloudinary uploader
+//  Same Cloudinary uploader
 const uploadToCloudinary = (fileBuffer, folder = "nyle-vendor-products") => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
@@ -205,7 +205,7 @@ export const addProduct = async (req, res) => {
           ]);
         }
       } catch (variantErr) {
-        console.warn("⚠ Variant creation skipped:", variantErr.message);
+        console.warn("Variant creation skipped:", variantErr.message);
       }
     }
 
@@ -233,7 +233,7 @@ export const addProduct = async (req, res) => {
 
   } catch (err) {
     await connection.query('ROLLBACK');
-    console.error("❌ Vendor create product error:", err.message);
+    console.error(" Vendor create product error:", err.message);
     res.status(500).json({ error: "Failed to create product", details: err.message });
   } finally {
     connection.release();
@@ -430,7 +430,7 @@ export const updateProduct = async (req, res) => {
           ]);
         }
       } catch (variantErr) {
-        console.warn("⚠ Variant update error:", variantErr.message);
+        console.warn("Variant update error:", variantErr.message);
       }
     }
 
@@ -444,7 +444,7 @@ export const updateProduct = async (req, res) => {
 
   } catch (err) {
     await connection.query('ROLLBACK');
-    console.error("❌ Vendor update product error:", err.message);
+    console.error(" Vendor update product error:", err.message);
     res.status(500).json({ error: "Failed to update product", details: err.message });
   } finally {
     connection.release();
@@ -518,7 +518,7 @@ export const getVendorProducts = async (req, res) => {
     });
     
   } catch (err) {
-    console.error("❌ Vendor getVendorProducts error:", err.message);
+    console.error(" Vendor getVendorProducts error:", err.message);
     return res.status(500).json({ error: "Failed to fetch products" });
   }
 };
@@ -572,7 +572,7 @@ export const submitForApproval = async (req, res) => {
     });
     
   } catch (err) {
-    console.error("❌ Submit for approval error:", err.message);
+    console.error(" Submit for approval error:", err.message);
     return res.status(500).json({ error: "Failed to submit product for approval" });
   }
 };
@@ -604,7 +604,7 @@ export const deleteProduct = async (req, res) => {
 
     return res.json({ message: "Product deleted", product: result.rows[0] });
   } catch (err) {
-    console.error("❌ Vendor deleteProduct error:", err.message);
+    console.error(" Vendor deleteProduct error:", err.message);
     return res.status(500).json({ error: "Failed to delete product" });
   }
 };
@@ -746,7 +746,7 @@ export const duplicateProduct = async (req, res) => {
     
   } catch (err) {
     await connection.query('ROLLBACK');
-    console.error("❌ Duplicate product error:", err.message);
+    console.error(" Duplicate product error:", err.message);
     return res.status(500).json({ error: "Failed to duplicate product" });
   } finally {
     connection.release();

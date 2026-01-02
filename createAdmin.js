@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const createAdmin = async () => {
-  const name = "Admin User"; // ✅ required column
+  const name = "Admin User"; //  required column
   const email = "fidellanga67@gmail.com";
   const password = "Stephanie@2007";
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -17,9 +17,9 @@ const createAdmin = async () => {
        VALUES ($1, $2, $3, $4)`,
       [name, email, hashedPassword, true]
     );
-    console.log("✅ Admin user created");
+    console.log(" Admin user created");
   } catch (err) {
-    console.error("❌ Error creating admin:", err.message);
+    console.error(" Error creating admin:", err.message);
   } finally {
     pool.end();
   }

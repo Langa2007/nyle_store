@@ -1,36 +1,36 @@
 // controllers/adminCategoryController.js
 import { pool } from "../db/connect.js";
 
-// ✅ Create category
+//  Create category
 export const createCategory = async (req, res) => {
   const { name } = req.body;
   try {
-     console.log("🟢 Creating category with name:", name);
+     console.log("Creating category with name:", name);
     const result = await pool.query(
       "INSERT INTO categories (name) VALUES ($1) RETURNING *",
       [name]
     );
-     console.log("🟢 Creating category with name:", name);
+     console.log(" Creating category with name:", name);
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error("❌ Error creating category:", err.message);
+    console.error(" Error creating category:", err.message);
     next(err);// pass to error handler
   }
 };
 
 
-// ✅ Get all categories
+//  Get all categories
 export const getAllCategories = async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM categories ORDER BY id ASC");
     res.json(result.rows);
   } catch (err) {
-    console.error("❌ Error fetching categories:", err.message);
+    console.error(" Error fetching categories:", err.message);
     res.status(500).json({ error: "Failed to fetch categories" });
   }
 };
 
-// ✅ Update category
+//  Update category
 export const updateCategory = async (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
@@ -44,12 +44,12 @@ export const updateCategory = async (req, res) => {
     }
     res.json(result.rows[0]);
   } catch (err) {
-    console.error("❌ Error updating category:", err.message);
+    console.error(" Error updating category:", err.message);
     res.status(500).json({ error: "Failed to update category" });
   }
 };
 
-// ✅ Delete category
+//  Delete category
 export const deleteCategory = async (req, res) => {
   const { id } = req.params;
   try {
@@ -62,7 +62,7 @@ export const deleteCategory = async (req, res) => {
     }
     res.json({ message: "Category deleted successfully" });
   } catch (err) {
-    console.error("❌ Error deleting category:", err.message);
+    console.error(" Error deleting category:", err.message);
     res.status(500).json({ error: "Failed to delete category" });
   }
 };

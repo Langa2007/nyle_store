@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { createUser, getUserByEmail } from '../models/usersModel.js';
 
-// ✅ Register User
+//  Register User
 export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
   try {
@@ -20,12 +20,12 @@ export const registerUser = async (req, res) => {
       user: { id: newUser.id, email: newUser.email },
     });
   } catch (err) {
-    console.error('❌ Register error:', err.message);
+    console.error(' Register error:', err.message);
     res.status(500).json({ error: 'Server error' });
   }
 };
 
-// ✅ Login User
+//  Login User
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -47,7 +47,7 @@ export const loginUser = async (req, res) => {
 
     res.json({ message: 'Login successful', token });
   } catch (err) {
-    console.error('❌ Login error:', err.message);
+    console.error('Login error:', err.message);
     res.status(500).json({ error: 'Server error' });
   }
 };

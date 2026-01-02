@@ -9,13 +9,13 @@ import {
 
 const router = express.Router();
 
-// ✅ Get all users (admin only)
+//  Get all users (admin only)
 router.get("/users", verifyAdmin, getAllUsers);
 
-// ✅ Get user by ID (admin only)
+//  Get user by ID (admin only)
 router.get("/users/:id", verifyAdmin, getUserById);
 
-// ✅ Delete user (admin only)
+//  Delete user (admin only)
 router.delete("/users/:id", verifyAdmin, deleteUser);
 
 export default router;

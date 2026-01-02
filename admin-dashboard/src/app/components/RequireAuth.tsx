@@ -20,7 +20,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
       }
 
       try {
-        // ✅ VERIFY TOKEN (CORRECT ENDPOINT)
+        //  VERIFY TOKEN (CORRECT ENDPOINT)
         const res = await fetch(
           `${API_URL}/api/admin/auth/verify-token`,
           {
@@ -35,7 +35,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
           return;
         }
 
-        // ✅ REFRESH TOKEN (CORRECT ENDPOINT)
+        //  REFRESH TOKEN (CORRECT ENDPOINT)
         const refreshRes = await fetch(
           `${API_URL}/api/admin/auth/refresh-token`,
           {

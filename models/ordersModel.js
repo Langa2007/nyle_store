@@ -1,7 +1,7 @@
 // models/ordersModel.js
 import pool from '../db/connect.js';
 
-// ✅ Ensure tables exist
+//  Ensure tables exist
 const createOrderTables = async () => {
   try {
     await pool.query(`
@@ -25,13 +25,13 @@ const createOrderTables = async () => {
     `);
 
   } catch (err) {
-    console.error('❌ Failed to create orders tables:', err.message);
+    console.error(' Failed to create orders tables:', err.message);
   }
 };
 
 createOrderTables();
 
-// ✅ Create a new order and its items
+//  Create a new order and its items
 export const createOrder = async (user_id, items) => {
   const client = await pool.connect();
   try {
@@ -95,7 +95,7 @@ export const createOrder = async (user_id, items) => {
   }
 };
 
-// ✅ Get all orders with their items
+//  Get all orders with their items
 export const getAllOrders = async () => {
   const client = await pool.connect();
   try {
@@ -116,7 +116,7 @@ export const getAllOrders = async () => {
   }
 };
 
-// ✅ Get all orders for a specific user
+//  Get all orders for a specific user
 export const getOrdersByUser = async (userId) => {
   const client = await pool.connect();
   try {
@@ -140,7 +140,7 @@ export const getOrdersByUser = async (userId) => {
   }
 };
 
-// ✅ Update the status of an order
+//  Update the status of an order
 export const updateStatus = async (orderId, status) => {
   await pool.query(
     'UPDATE orders SET status = $1 WHERE id = $2',
@@ -148,7 +148,7 @@ export const updateStatus = async (orderId, status) => {
   );
 };
 
-// ✅ Get all orders with details (joins)
+//  Get all orders with details (joins)
 export const getAllOrdersWithDetails = async () => {
   const result = await pool.query(`
     SELECT

@@ -7,7 +7,7 @@ export const getAllUsers = async (req, res) => {
     const result = await pool.query("SELECT id, name, email, role, created_at FROM users ORDER BY id DESC");
     res.json(result.rows);
   } catch (err) {
-    console.error("❌ Error fetching users:", err.message);
+    console.error(" Error fetching users:", err.message);
     res.status(500).json({ error: "Failed to fetch users" });
   }
 };
@@ -20,7 +20,7 @@ export const deleteUser = async (req, res) => {
     if (result.rows.length === 0) return res.status(404).json({ error: "User not found" });
     res.json({ message: "User deleted successfully", user: result.rows[0] });
   } catch (err) {
-    console.error("❌ Error deleting user:", err.message);
+    console.error(" Error deleting user:", err.message);
     res.status(500).json({ error: "Failed to delete user" });
   }
 };
@@ -36,12 +36,12 @@ export const promoteUser = async (req, res) => {
     if (result.rows.length === 0) return res.status(404).json({ error: "User not found" });
     res.json({ message: "User promoted to admin", user: result.rows[0] });
   } catch (err) {
-    console.error("❌ Error promoting user:", err.message);
+    console.error(" Error promoting user:", err.message);
     res.status(500).json({ error: "Failed to promote user" });
   }
 };
 
-// ✅ Admin-only: Dashboard stats
+// Admin-only: Dashboard stats
 export const getDashboardStats = async (req, res) => {
   try {
     const userCount = await pool.query("SELECT COUNT(*) FROM users");
@@ -58,7 +58,7 @@ export const getDashboardStats = async (req, res) => {
       revenue: parseFloat(revenueResult.rows[0].total_revenue),
     });
   } catch (err) {
-    console.error("❌ Dashboard stats error:", err); // ✅ SHOW FULL ERROR
+    console.error(" Dashboard stats error:", err); //  SHOW FULL ERROR
     res.status(500).json({ error: "Failed to fetch dashboard stats" });
   }
 };

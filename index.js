@@ -78,7 +78,7 @@ app.options("*", (req, res) => {
   
   res.status(204).send(); // No content for OPTIONS
 });
-// ✅ Body parsers (always after CORS)
+//  Body parsers (always after CORS)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -156,13 +156,13 @@ app.get("/api", (req, res) => {
 
 // Default route
 app.get("/", (req, res) => {
-  res.send("Welcome to Nyle Store API 🚀");
+  res.send("Welcome to Nyle Store API ");
 });
 
 
 // --- Error Logger (for debugging database or route errors) ---
 app.use((err, req, res, next) => {
-  console.error("🔥 SERVER ERROR:", {
+  console.error(" SERVER ERROR:", {
     message: err.message,
     stack: err.stack,
     query: err.query || null,
@@ -176,10 +176,10 @@ const startServer = async () => {
   try {
     await connectDB();
     app.listen(PORT, () => {
-      console.log(`✅ Server running on port ${PORT}`);
+      console.log(` Server running on port ${PORT}`);
     });
   } catch (err) {
-    console.error("❌ Failed to connect to DB:", err);
+    console.error(" Failed to connect to DB:", err);
     process.exit(1);
   }
 };

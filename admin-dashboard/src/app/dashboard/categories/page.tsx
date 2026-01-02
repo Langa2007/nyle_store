@@ -20,7 +20,7 @@ export default function AdminCategoryPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // ✅ Fetch categories
+  //  Fetch categories
   const fetchCategories = async () => {
     try {
       const res = await fetch(`${baseurl}/api/admin/categories`);
@@ -39,7 +39,7 @@ export default function AdminCategoryPage() {
     fetchCategories();
   }, []);
 
-  // ✅ Create category
+  //  Create category
   const handleCreate = async (name: string) => {
     try {
       const res = await fetch(`${baseurl}/api/admin/categories`, {
@@ -59,7 +59,7 @@ export default function AdminCategoryPage() {
     }
   };
 
-  // ✅ Delete category
+  //  Delete category
   const handleDelete = async (id: number) => {
     try {
       const res = await fetch(`${baseurl}/api/admin/categories/${id}`, {

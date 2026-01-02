@@ -13,7 +13,7 @@ async function sendVendorStatusEmail(email, status) {
     const frontendUrl = process.env.FRONTEND_URL || "https://nyle-luxe.vercel.app";
 
     if (status === "approved") {
-      subject = "Your Nyle Store Vendor Account Has Been Approved 🎉";
+      subject = "Your Nyle Store Vendor Account Has Been Approved ";
       html = `
         <h2>Congratulations!</h2>
         <p>Your vendor account has been approved. You can now log in to your Nyle Store vendor dashboard and start listing products.</p>

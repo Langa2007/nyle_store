@@ -23,7 +23,7 @@ export default function AdminVendorsPage() {
       const data = await res.json();
       if (Array.isArray(data)) setVendors(data);
     } catch (err) {
-      console.error("❌ Error fetching vendors:", err);
+      console.error(" Error fetching vendors:", err);
     } finally {
       setLoading(false);
     }
@@ -55,7 +55,7 @@ export default function AdminVendorsPage() {
                 <td className="p-2">{v.company_name}</td>
                 <td className="p-2">{v.email}</td>
                 <td className="p-2">{v.status}</td>
-                <td className="p-2">{v.is_verified ? "✅" : "❌"}</td>
+                <td className="p-2">{v.is_verified ? "Yes" : "No"}</td>
                 <td className="p-2 text-center space-x-2">
                   <button className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700">
                     Approve

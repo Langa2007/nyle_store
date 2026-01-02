@@ -1,6 +1,6 @@
 import pool from "../db/connect.js";
 
-// ✅ Get all orders with user & items
+// Get all orders with user & items
 export const getAllOrders = async (req, res) => {
   try {
     const result = await pool.query(`
@@ -30,12 +30,12 @@ export const getAllOrders = async (req, res) => {
 
     res.json(result.rows);
   } catch (err) {
-    console.error("❌ Error fetching orders:", err.message);
+    console.error(" Error fetching orders:", err.message);
     res.status(500).json({ error: "Failed to fetch orders" });
   }
 };
 
-// ✅ Update order status
+//  Update order status
 export const updateOrderStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -47,7 +47,7 @@ export const updateOrderStatus = async (req, res) => {
     if (result.rows.length === 0) return res.status(404).json({ error: "Order not found" });
     res.json({ message: "Order status updated", order: result.rows[0] });
   } catch (err) {
-    console.error("❌ Error updating order:", err.message);
+    console.error(" Error updating order:", err.message);
     res.status(500).json({ error: "Failed to update order" });
   }
 };

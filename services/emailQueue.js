@@ -30,11 +30,11 @@ const worker = new Worker(
       html,
     });
 
-    console.log(`✅ Email sent to ${to}`);
+    console.log(` Email sent to ${to}`);
   },
   { connection }
 );
 
 worker.on("failed", (job, err) => {
-  console.error(`❌ Job failed ${job.id}:`, err.message);
+  console.error(` Job failed ${job.id}:`, err.message);
 });

@@ -1,7 +1,7 @@
 // controllers/productController.js
 import pool from "../db/connect.js";
 
-// ✅ PUBLIC: LIST ONLY APPROVED PRODUCTS
+//  PUBLIC: LIST ONLY APPROVED PRODUCTS
 export const listProducts = async (req, res) => {
   try {
     const q = `
@@ -16,12 +16,12 @@ export const listProducts = async (req, res) => {
     const { rows } = await pool.query(q);
     res.json(rows);
   } catch (err) {
-    console.error("❌ List products error:", err.message);
+    console.error(" List products error:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 };
 
-// ✅ PUBLIC: GET PRODUCT BY ID (ONLY IF APPROVED)
+//  PUBLIC: GET PRODUCT BY ID (ONLY IF APPROVED)
 export const getProductById = async (req, res) => {
   try {
     const id = Number(req.params.id);
@@ -51,12 +51,12 @@ export const getProductById = async (req, res) => {
 
     res.json(rows[0]);
   } catch (err) {
-    console.error("❌ Fetch product error FULL:", err);
+    console.error(" Fetch product error FULL:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
 
-// ✅ PUBLIC: SEARCH & FILTER - ONLY APPROVED
+//  PUBLIC: SEARCH & FILTER - ONLY APPROVED
 export const searchAndFilterProducts = async (req, res) => {
   const { name, category, minPrice, maxPrice } = req.query;
 
@@ -94,7 +94,7 @@ export const searchAndFilterProducts = async (req, res) => {
     const { rows } = await pool.query(query, values);
     res.json(rows);
   } catch (err) {
-    console.error("❌ Search error:", err.message);
+    console.error(" Search error:", err.message);
     res.status(500).json({ error: "Failed to search/filter" });
   }
 };

@@ -7,8 +7,8 @@ import {
   approveVendor,
   rejectVendor,
 } from "../controllers/vendorController.js";
-import { verifyAdmin } from "../middleware/adminAuth.js"; // if you have admin middleware
-import { verifyVendor } from "../middleware/vendorAuth.js"; // if you have vendor middleware
+import { verifyAdmin } from "../middleware/adminAuth.js"; 
+import { verifyVendor } from "../middleware/vendorAuth.js"; 
 
 const router = express.Router();
 

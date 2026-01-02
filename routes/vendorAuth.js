@@ -8,11 +8,12 @@ import {
   resendVerificationCode
 } from "../controllers/vendorAuthController.js";
 
-// Import password reset functions from passwordResetController
+// Import updated password reset functions
 import {
   forgotPassword,
-  validateResetToken,
-  resetPassword
+  verifyResetCode,
+  resetPassword,
+  resendResetCode
 } from "../controllers/passwordResetController.js";
 
 const router = express.Router();
@@ -32,27 +33,30 @@ router.post("/magic-login", magicLogin);
 // Resend verification code - POST { email }
 router.post("/resend-code", resendVerificationCode);
 
-// 🔐 PASSWORD RESET ENDPOINTS
+// 🔐 PASSWORD RESET ENDPOINTS (USING CODES)
 
-// Forgot password - POST { email, user_type: 'vendor' }
+// Forgot password - sends 6-digit code
 router.post("/forgot-password", (req, res) => {
-  // Force user_type to be 'vendor' for vendor password reset
   req.body.user_type = 'vendor';
   return forgotPassword(req, res);
 });
 
-// Validate reset token - GET /api/vendor/auth/validate-reset-token?token=xxx&user_type=vendor
-router.get("/validate-reset-token", (req, res) => {
-  // Force user_type to be 'vendor'
-  req.query.user_type = 'vendor';
-  return validateResetToken(req, res);
+// Verify reset code - POST { email, code, user_type: 'vendor' }
+router.post("/verify-reset-code", (req, res) => {
+  req.body.user_type = 'vendor';
+  return verifyResetCode(req, res);
 });
 
-// Reset password - POST { token, newPassword, user_type: 'vendor' }
+// Reset password after code verification - POST { reset_token, newPassword, user_type: 'vendor' }
 router.post("/reset-password", (req, res) => {
-  // Force user_type to be 'vendor'
   req.body.user_type = 'vendor';
   return resetPassword(req, res);
+});
+
+// Resend reset code - POST { email, user_type: 'vendor' }
+router.post("/resend-reset-code", (req, res) => {
+  req.body.user_type = 'vendor';
+  return resendResetCode(req, res);
 });
 
 export default router;

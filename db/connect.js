@@ -10,7 +10,7 @@ const connectionString =
   process.env.DATABASE_URL;
 
 if (!connectionString) {
-  console.error("❌ Missing all database URLs in environment");
+  console.error(" Missing all database URLs in environment");
   process.exit(1);
 }
 
@@ -22,27 +22,27 @@ const pool = new Pool({
   },
 });
 
-// ✅ Ensure 'public' schema is always used
+// Ensure 'public' schema is always used
 pool.on("connect", (client) => {
   client.query('SET search_path TO public');
-  console.log("🧭 Default schema set to 'public'");
+  console.log(" Default schema set to 'public'");
 });
 
 pool.query("SELECT current_database()", (err, res) => {
   if (err) {
-    console.error("❌ DB Connection Error:", err.message);
+    console.error(" DB Connection Error:", err.message);
   } else {
-    console.log("🧠 Connected to DB:", res?.rows?.[0]);
+    console.log(" Connected to DB:", res?.rows?.[0]);
   }
 });
 
 export const connectDB = async () => {
   try {
     const client = await pool.connect();
-    console.log("✅ PostgreSQL connection successful!");
+    console.log(" PostgreSQL connection successful!");
     client.release();
   } catch (err) {
-    console.error("❌ Database connection error:", err.message);
+    console.error(" Database connection error:", err.message);
     process.exit(1);
   }
 };

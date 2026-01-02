@@ -4,14 +4,14 @@ import cloudinary from "../config/cloudinary.js";
 import multer from "multer";
 import streamifier from "streamifier";
 
-// ✅ Multer setup for multiple images
+//  Multer setup for multiple images
 const storage = multer.memoryStorage();
 export const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
-// ✅ Cloudinary uploader
+// Cloudinary uploader
 const uploadToCloudinary = (fileBuffer, folder = "nyle-products") => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
@@ -26,7 +26,7 @@ const uploadToCloudinary = (fileBuffer, folder = "nyle-products") => {
   });
 };
 
-// ✅ ADMIN CREATE OR SELECT VENDOR
+//  ADMIN CREATE OR SELECT VENDOR
 export const createOrSelectVendor = async (req, res) => {
   try {
     const {
@@ -106,12 +106,12 @@ export const createOrSelectVendor = async (req, res) => {
       vendor_name: vendorResult.rows[0].legal_name
     });
   } catch (err) {
-    console.error("❌ Vendor creation error:", err.message);
+    console.error(" Vendor creation error:", err.message);
     res.status(500).json({ error: "Failed to create/select vendor" });
   }
 };
 
-// ✅ ADMIN CREATE PRODUCT WITH VENDOR & SHIPPING
+//  ADMIN CREATE PRODUCT WITH VENDOR & SHIPPING
 export const adminCreateProduct = async (req, res) => {
   const connection = await pool.connect();
 
@@ -261,14 +261,14 @@ export const adminCreateProduct = async (req, res) => {
 
   } catch (err) {
     await connection.query('ROLLBACK');
-    console.error("❌ Admin create product error:", err.message);
+    console.error(" Admin create product error:", err.message);
     res.status(500).json({ error: "Failed to create product" });
   } finally {
     connection.release();
   }
 };
 
-// ✅ GET ALL VENDORS FOR DROPDOWN
+//  GET ALL VENDORS FOR DROPDOWN
 export const getAllVendors = async (req, res) => {
   try {
     const query = `
@@ -282,12 +282,12 @@ export const getAllVendors = async (req, res) => {
     const { rows } = await pool.query(query);
     res.json(rows);
   } catch (err) {
-    console.error("❌ Error fetching vendors:", err.message);
+    console.error(" Error fetching vendors:", err.message);
     res.status(500).json({ error: "Failed to fetch vendors" });
   }
 };
 
-// ✅ GET VENDOR DETAILS
+//  GET VENDOR DETAILS
 export const getVendorDetails = async (req, res) => {
   try {
     const { id } = req.params;
@@ -311,12 +311,12 @@ export const getVendorDetails = async (req, res) => {
 
     res.json(rows[0]);
   } catch (err) {
-    console.error("❌ Error fetching vendor:", err.message);
+    console.error(" Error fetching vendor:", err.message);
     res.status(500).json({ error: "Failed to fetch vendor details" });
   }
 };
 
-// ✅ ADMIN GET ALL PRODUCTS WITH VENDOR INFO
+//  ADMIN GET ALL PRODUCTS WITH VENDOR INFO
 export const adminGetAllProducts = async (req, res) => {
   try {
     const q = `
@@ -337,12 +337,12 @@ export const adminGetAllProducts = async (req, res) => {
     const { rows } = await pool.query(q);
     res.json(rows);
   } catch (err) {
-    console.error("❌ Error fetching products:", err.message);
+    console.error(" Error fetching products:", err.message);
     res.status(500).json({ error: "Failed to fetch products" });
   }
 };
 
-// ✅ ADMIN UPDATE PRODUCT WITH VENDOR VALIDATION
+//  ADMIN UPDATE PRODUCT WITH VENDOR VALIDATION
 export const adminUpdateProduct = async (req, res) => {
   const { id } = req.params;
   const connection = await pool.connect();
@@ -414,14 +414,14 @@ export const adminUpdateProduct = async (req, res) => {
     res.json(rows[0]);
   } catch (err) {
     await connection.query('ROLLBACK');
-    console.error("❌ Error updating product:", err.message);
+    console.error(" Error updating product:", err.message);
     res.status(500).json({ error: "Failed to update product" });
   } finally {
     connection.release();
   }
 };
 
-// ✅ ADMIN DELETE PRODUCT (with cascade handling)
+//  ADMIN DELETE PRODUCT (with cascade handling)
 export const adminDeleteProduct = async (req, res) => {
   const { id } = req.params;
   const connection = await pool.connect();
@@ -457,14 +457,14 @@ export const adminDeleteProduct = async (req, res) => {
     });
   } catch (err) {
     await connection.query('ROLLBACK');
-    console.error("❌ Error deleting product:", err.message);
+    console.error(" Error deleting product:", err.message);
     res.status(500).json({ error: "Failed to delete product" });
   } finally {
     connection.release();
   }
 };
 
-// ✅ GET PRODUCTS BY VENDOR
+//  GET PRODUCTS BY VENDOR
 export const getProductsByVendor = async (req, res) => {
   try {
     const { vendor_id } = req.params;
@@ -481,12 +481,12 @@ export const getProductsByVendor = async (req, res) => {
     const { rows } = await pool.query(q, [vendor_id]);
     res.json(rows);
   } catch (err) {
-    console.error("❌ Error fetching vendor products:", err.message);
+    console.error("Error fetching vendor products:", err.message);
     res.status(500).json({ error: "Failed to fetch vendor products" });
   }
 };
 
-// ✅ ADMIN UPDATE STOCK
+//  ADMIN UPDATE STOCK
 export const adminUpdateStock = async (req, res) => {
   const { id } = req.params;
   const { stock } = req.body;
@@ -507,7 +507,7 @@ export const adminUpdateStock = async (req, res) => {
 
     res.json(rows[0]);
   } catch (err) {
-    console.error("❌ Error updating stock:", err.message);
+    console.error("Error updating stock:", err.message);
     res.status(500).json({ error: "Failed to update stock" });
   }
 };

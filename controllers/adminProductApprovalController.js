@@ -1,7 +1,7 @@
 // controllers/adminProductApprovalController.js
 import pool from "../db/connect.js";
 
-// ✅ GET ALL PENDING PRODUCTS
+//  GET ALL PENDING PRODUCTS
 export const getPendingProducts = async (req, res) => {
   try {
     const q = `
@@ -21,12 +21,12 @@ export const getPendingProducts = async (req, res) => {
     const { rows } = await pool.query(q);
     res.json(rows);
   } catch (err) {
-    console.error("❌ Get pending products error:", err.message);
+    console.error(" Get pending products error:", err.message);
     res.status(500).json({ error: "Failed to fetch pending products" });
   }
 };
 
-// ✅ APPROVE PRODUCT
+//  APPROVE PRODUCT
 export const approveProduct = async (req, res) => {
   const connection = await pool.connect();
   
@@ -97,7 +97,7 @@ export const approveProduct = async (req, res) => {
     
   } catch (err) {
     await connection.query('ROLLBACK');
-    console.error("❌ Approve product error:", err.message);
+    console.error(" Approve product error:", err.message);
     res.status(500).json({ error: "Failed to approve product" });
   } finally {
     connection.release();
@@ -138,12 +138,12 @@ export const rejectProduct = async (req, res) => {
     });
     
   } catch (err) {
-    console.error("❌ Reject product error:", err.message);
+    console.error(" Reject product error:", err.message);
     res.status(500).json({ error: "Failed to reject product" });
   }
 };
 
-// ✅ BULK APPROVE PRODUCTS
+//  BULK APPROVE PRODUCTS
 export const bulkApproveProducts = async (req, res) => {
   const connection = await pool.connect();
   
@@ -235,7 +235,7 @@ export const bulkApproveProducts = async (req, res) => {
     
   } catch (err) {
     await connection.query('ROLLBACK');
-    console.error("❌ Bulk approve error:", err.message);
+    console.error(" Bulk approve error:", err.message);
     res.status(500).json({ error: "Failed to bulk approve products" });
   } finally {
     connection.release();

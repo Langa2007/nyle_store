@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "@/app/components/ui/button";
 
-// 🧩 Define the type for your subscriber object
+//  Define the type for your subscriber object
 interface Subscriber {
   email: string;
 }
@@ -14,7 +14,7 @@ export default function NewsletterPage() {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
 
-  // ✅ Fetch subscribed emails
+  //  Fetch subscribed emails
   useEffect(() => {
     const fetchEmails = async () => {
       try {
@@ -27,7 +27,7 @@ export default function NewsletterPage() {
     fetchEmails();
   }, []);
 
-  // ✅ Send a newsletter to all subscribers
+  //  Send a newsletter to all subscribers
   const handleSendNewsletter = async () => {
     try {
       await axios.post("https://nyle-store.onrender.com/api/newsletter/send", {

@@ -1,7 +1,7 @@
 // models/categoryModel.js
 import pool from '../db/connect.js';
 
-// ✅ Create categories table if not exists
+//  Create categories table if not exists
 const createCategoryTable = async () => {
   const query = `
     CREATE TABLE IF NOT EXISTS categories (
@@ -12,14 +12,14 @@ const createCategoryTable = async () => {
   `;
   try {
     await pool.query(query);
-    console.log("✅ Categories table ready");
+    console.log(" Categories table ready");
   } catch (err) {
-    console.error("❌ Failed to create categories table:", err.message);
+    console.error(" Failed to create categories table:", err.message);
   }
 };
 createCategoryTable();
 
-// ✅ Create category
+// Create category
 export const createCategory = async (name) => {
   const result = await pool.query(
     "INSERT INTO categories (name) VALUES ($1) RETURNING *",
@@ -28,13 +28,13 @@ export const createCategory = async (name) => {
   return result.rows[0];
 };
 
-// ✅ Get all categories
+//  Get all categories
 export const getAllCategories = async () => {
   const result = await pool.query("SELECT * FROM categories ORDER BY id DESC");
   return result.rows;
 };
 
-// ✅ Update category
+//  Update category
 export const updateCategory = async (id, name) => {
   const result = await pool.query(
     "UPDATE categories SET name=$1 WHERE id=$2 RETURNING *",
@@ -43,7 +43,7 @@ export const updateCategory = async (id, name) => {
   return result.rows[0];
 };
 
-// ✅ Delete category
+// Delete category
 export const deleteCategory = async (id) => {
   const result = await pool.query(
     "DELETE FROM categories WHERE id=$1 RETURNING *",

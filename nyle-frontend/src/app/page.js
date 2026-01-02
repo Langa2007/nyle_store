@@ -194,7 +194,7 @@ function HomeContent() {
             >
               <div className="inline-flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
                 <FaFire className="text-orange-400 mr-2" />
-                <span className="text-sm font-medium">🚀 Kenya's Fastest Growing Marketplace</span>
+                <span className="text-sm font-medium"> Kenya's Fastest Growing Marketplace</span>
               </div>
               
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6">
@@ -689,7 +689,7 @@ function HomeContent() {
       <footer id="footer" className="mt-24 bg-gradient-to-br from-gray-900 to-blue-900 text-white">
         <div className="container mx-auto px-6 py-16">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10">
-            {/* Sell on Nyle Section - RESTORED */}
+            {/* Sell on Nyle Section -  */}
             <div>
               <h3 className="font-bold text-lg mb-4 flex items-center">
                 <FaStore className="mr-2 text-blue-400" />
@@ -705,7 +705,7 @@ function HomeContent() {
               </ul>
             </div>
 
-            {/* More About Us Section - RESTORED */}
+            {/* More About Us Section */}
             <div>
               <h3 className="font-bold text-lg mb-4 flex items-center">
                 <FaGlobe className="mr-2 text-blue-400" />
@@ -719,7 +719,7 @@ function HomeContent() {
               </ul>
             </div>
 
-            {/* Support Section - RESTORED */}
+            {/* Support Section -*/}
             <div>
               <h3 className="font-bold text-lg mb-4 flex items-center">
                 <FaHeadphones className="mr-2 text-blue-400" />
@@ -733,7 +733,7 @@ function HomeContent() {
               </ul>
             </div>
 
-            {/* Nyle Payments Section - RESTORED */}
+            {/* Nyle Payments Section - */}
             <div>
               <h3 className="font-bold text-lg mb-4 flex items-center">
                 <FaCcVisa className="mr-2 text-blue-400" />
@@ -747,7 +747,7 @@ function HomeContent() {
               </ul>
             </div>
 
-            {/* Source On Nyle Section - RESTORED */}
+            {/* Source On Nyle Section -  */}
             <div>
               <h3 className="font-bold text-lg mb-4 flex items-center">
                 <FaTag className="mr-2 text-blue-400" />

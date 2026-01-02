@@ -1,6 +1,6 @@
 import pool from '../db/connect.js';
 
-// ✅ Ensure the products table exists with category + image_url
+//  Ensure the products table exists with category + image_url
 const createProductTable = async () => {
   const query = `
     CREATE TABLE IF NOT EXISTS products (
@@ -9,16 +9,16 @@ const createProductTable = async () => {
       description TEXT,
       price NUMERIC(10, 2) NOT NULL,
       stock INTEGER DEFAULT 0,
-      category TEXT,        -- ✅ Added
-      image_url TEXT,       -- ✅ Cloudinary URL
+      category TEXT,        -- Added
+      image_url TEXT,       -- Cloudinary URL
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `;
   try {
     await pool.query(query);
-    console.log("✅ products table verified/created successfully");
+    console.log(" products table verified/created successfully");
   } catch (err) {
-    console.error('❌ Failed to create products table:', err.message);
+    console.error(" Failed to create products table:", err.message);
   }
 };
 

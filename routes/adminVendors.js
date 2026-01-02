@@ -19,29 +19,29 @@ import {
 
 const router = express.Router();
 
-// ✅ Get all vendors (any status)
+//  Get all vendors (any status)
 router.get("/",  getAllVendors);
 
-// ✅ Get only pending vendors
+//  Get only pending vendors
 router.get("/pending",  getPendingVendors);
 
-// ✅ Approve vendor
+//  Approve vendor
 router.patch("/:id/approve",  approveVendor);
 
-// ✅ Reject vendor
+//  Reject vendor
 router.patch("/:id/reject",  rejectVendor);
 
-// ✅ Delete vendor
+//  Delete vendor
 router.delete("/:id", deleteVendor);
 // ================= PRODUCT APPROVAL ROUTES ================= //
 
-// ✅ Get all pending products
+//  Get all pending products
 router.get("/products/pending", getPendingProducts);
-// ✅ Approve a product
+//  Approve a product
 router.post("/products/:id/approve", approveProduct);
-// ✅ Reject a product
+//  Reject a product
 router.post("/products/:id/reject", rejectProduct);
-// ✅ Bulk approve products
+//  Bulk approve products
 router.post("/products/bulk-approve", bulkApproveProducts);
 
 export default router;

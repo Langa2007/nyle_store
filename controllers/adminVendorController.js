@@ -1,7 +1,7 @@
 // controllers/adminVendorController.js
 import  pool  from "../db/connect.js";
 
-// ✅ Get all vendors (any status)
+//  Get all vendors (any status)
 export const getAllVendors = async (req, res) => {
   try {
     const result = await pool.query(
@@ -14,7 +14,7 @@ export const getAllVendors = async (req, res) => {
   }
 };
 
-// ✅ Get only pending vendors
+//  Get only pending vendors
 export const getPendingVendors = async (req, res) => {
   try {
     const result = await pool.query(
@@ -27,7 +27,7 @@ export const getPendingVendors = async (req, res) => {
   }
 };
 
-// ✅ Approve vendor
+//  Approve vendor
 export const approveVendor = async (req, res) => {
   try {
     const { id } = req.params;
@@ -39,7 +39,7 @@ export const approveVendor = async (req, res) => {
   }
 };
 
-// ✅ Reject vendor
+//  Reject vendor
 export const rejectVendor = async (req, res) => {
   try {
     const { id } = req.params;

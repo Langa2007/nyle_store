@@ -73,7 +73,7 @@ export const createOrder = async (req, res) => {
     });
   } catch (err) {
     await client.query("ROLLBACK");
-    console.error("❌ Checkout Error:", err.message);
+    console.error(" Checkout Error:", err.message);
     res.status(500).json({ error: err.message });
   } finally {
     client.release();
