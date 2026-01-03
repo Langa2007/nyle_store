@@ -137,7 +137,7 @@ export default function Navbar() {
       {/* Announcement Bar */}
       <div className="bg-gradient-to-r from-blue-800 to-indigo-900 text-white py-2 px-4">
         <div className="container mx-auto text-center text-sm">
-          <span className="font-medium">🎉 Black Friday Sale: Up to 60% OFF!</span>
+          <span className="font-medium"> Happy New Year Sale!: Up to 60% OFF!</span>
           <span className="mx-4 hidden md:inline">|</span>
           <span className="hidden md:inline">🚚 Free Delivery on Orders Over Ksh 3,000</span>
         </div>
