@@ -720,12 +720,12 @@ function HomeContent() {
                 Sell on Nyle
               </h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/vendor/why-sell" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Why Sell on Nyle</Link></li>
-                <li><Link href="/vendor/signup" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Become a Seller</Link></li>
-                <li><Link href="/vendor/quotations" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Get Seller Quotations</Link></li>
-                <li><Link href="/vendor/policies" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Seller Policies</Link></li>
-                <li><Link href="/vendor/app" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Get Our App</Link></li>
-                <li><Link href="/vendor/shipping-logistics" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Shipping Logistics</Link></li>
+                <li><Link href="/vendor/why-sell" className="text-gray-300 hover:text-white transition hover:underline">Why Sell on Nyle</Link></li>
+                <li><Link href="/vendor/signup" className="text-gray-300 hover:text-white transition hover:underline">Become a Seller</Link></li>
+                <li><Link href="/vendor/quotations" className="text-gray-300 hover:text-white transition hover:underline">Get Seller Quotations</Link></li>
+                <li><Link href="/vendor/policies" className="text-gray-300 hover:text-white transition hover:underline">Seller Policies</Link></li>
+                <li><Link href="/vendor/app" className="text-gray-300 hover:text-white transition hover:underline">Get Our App</Link></li>
+                <li><Link href="/vendor/shipping-logistics" className="text-gray-300 hover:text-white transition hover:underline">Shipping Logistics</Link></li>
               </ul>
             </div>
 
@@ -736,10 +736,10 @@ function HomeContent() {
                 More About Us
               </h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/about/know-nyle" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Know Nyle</Link></li>
-                <li><Link href="/about/careers" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Careers</Link></li>
-                <li><Link href="/about/partners" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Partners</Link></li>
-                <li><Link href="/about/newsletter" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Newsletter</Link></li>
+                <li><Link href="/about/know-nyle" className="text-gray-300 hover:text-white transition hover:underline">Know Nyle</Link></li>
+                <li><Link href="/about/careers" className="text-gray-300 hover:text-white transition hover:underline">Careers</Link></li>
+                <li><Link href="/about/partner" className="text-gray-300 hover:text-white transition hover:underline">Partners</Link></li>
+                <li><Link href="/about/newsletter" className="text-gray-300 hover:text-white transition hover:underline">Newsletter</Link></li>
               </ul>
             </div>
 
@@ -750,10 +750,10 @@ function HomeContent() {
                 Support
               </h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/support/help-center" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Help Center</Link></li>
-                <li><Link href="/support/contact" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Contact Us</Link></li>
-                <li><Link href="/support/faqs" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">FAQs</Link></li>
-                <li><Link href="/support/report-issue" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Report An Issue</Link></li>
+                <li><Link href="/support/help-center" className="text-gray-300 hover:text-white transition hover:underline">Help Center</Link></li>
+                <li><Link href="/support/contact" className="text-gray-300 hover:text-white transition hover:underline">Contact Us</Link></li>
+                <li><Link href="/support/faqs" className="text-gray-300 hover:text-white transition hover:underline">FAQs</Link></li>
+                <li><Link href="/support/report-issue" className="text-gray-300 hover:text-white transition hover:underline">Report An Issue</Link></li>
               </ul>
             </div>
 
@@ -764,10 +764,10 @@ function HomeContent() {
                 Nyle Payments
               </h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/payments/methods" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Accepted Payment Methods</Link></li>
-                <li><Link href="/payments/returns" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Returns & Refunds</Link></li>
-                <li><Link href="/payments/policies" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Shipping & Delivery</Link></li>
-                <li><Link href="/payments/protection" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Customer Protection</Link></li>
+                <li><Link href="/payments/methods" className="text-gray-300 hover:text-white transition hover:underline">Accepted Payment Methods</Link></li>
+                <li><Link href="/payments/returns" className="text-gray-300 hover:text-white transition hover:underline">Returns & Refunds</Link></li>
+                <li><Link href="/payments/policies" className="text-gray-300 hover:text-white transition hover:underline">Shipping & Delivery</Link></li>
+                <li><Link href="/payments/protection" className="text-gray-300 hover:text-white transition hover:underline">Customer Protection</Link></li>
               </ul>
             </div>
 
@@ -778,11 +778,11 @@ function HomeContent() {
                 Source On Nyle
               </h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/source/suppliers" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Nyle Verified Suppliers</Link></li>
-                <li><Link href="/source/logistics" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Get Logistics</Link></li>
-                <li><Link href="/source/quotation" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Get Quotation</Link></li>
-                <li><Link href="/source/trade-assurance" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Trade Assurance</Link></li>
-                <li><Link href="/source/shipping-policies" scroll={false} className="text-gray-300 hover:text-white transition hover:underline">Shipping Policies & Rates</Link></li>
+                <li><Link href="/source/suppliers"  className="text-gray-300 hover:text-white transition hover:underline">Nyle Verified Suppliers</Link></li>
+                <li><Link href="/source/logistics" className="text-gray-300 hover:text-white transition hover:underline">Get Logistics</Link></li>
+                <li><Link href="/source/quotation" className="text-gray-300 hover:text-white transition hover:underline">Get Quotation</Link></li>
+                <li><Link href="/source/trade-assurance" className="text-gray-300 hover:text-white transition hover:underline">Trade Assurance</Link></li>
+                <li><Link href="/source/shipping-policies" className="text-gray-300 hover:text-white transition hover:underline">Shipping Policies & Rates</Link></li>
               </ul>
             </div>
           </div>
@@ -831,11 +831,11 @@ function HomeContent() {
                 © {new Date().getFullYear()} Nyle Store. All rights reserved.
               </p>
               <div className="mt-4 flex flex-wrap justify-center gap-6 text-xs text-gray-400">
-                <Link href="others/privacy" scroll={false} className="hover:text-white transition">Privacy Policy</Link>
-                <Link href="others/terms" scroll={false} className="hover:text-white transition">Terms of Service</Link>
-                <Link href="others/cookies" scroll={false} className="hover:text-white transition">Cookie Policy</Link>
-                <Link href="others/sitemap" scroll={false} className="hover:text-white transition">Sitemap</Link>
-                <Link href="others/accessibility" scroll={false} className="hover:text-white transition">Accessibility</Link>
+                <Link href="others/privacy" className="hover:text-white transition">Privacy Policy</Link>
+                <Link href="others/terms" className="hover:text-white transition">Terms of Service</Link>
+                <Link href="others/cookies" className="hover:text-white transition">Cookie Policy</Link>
+                <Link href="others/sitemap" className="hover:text-white transition">Sitemap</Link>
+                <Link href="others/accessibility" className="hover:text-white transition">Accessibility</Link>
               </div>
             </div>
           </div>
@@ -849,23 +849,17 @@ function HomeContent() {
         whileHover={{ scale: 1.1 }}
          onClick={() => {
           const scrollRoot = document.getElementById("scroll-root");
-          if (scrollRoot) {
-            scrollRoot.scrollTo({
-              top: 0,
-              behavior: "smooth",
-            });
-          } else {
-            window.scrollTo({
-              top: 0,
-              behavior: "smooth",
-            });
-          }
+          if (!scrollRoot) return;
+          scrollRoot.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
         }}
-        className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full shadow-2xl flex items-center justify-center z-50 group"
-        arial-label="Scroll to Top"
+        className="fixed bottom-8 right-8 bg-blue-600 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-blue-700 transition"
+        aria-label="Back to Top"
       >
-        <FaArrowRight className="text-white text-2xl group-hover:animate-bounce rotate-90" />
-      </motion.button>
+        <FaArrowUp />
+      </motion.button>  
     </div>
   );
 }
