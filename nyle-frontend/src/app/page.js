@@ -87,13 +87,37 @@ function HomeContent() {
       .catch(() => setCurrency("KES"));
   }, []);
 
-  // Scroll effect
+  // Scroll position restoration - ADDED SCROLL POSITION FUNCTIONALITY
   useEffect(() => {
+    // Restore scroll position
+    const savedScroll = sessionStorage.getItem("home-scroll");
+
+    if (savedScroll) {
+      requestAnimationFrame(() => {
+        window.scrollTo(0, Number(savedScroll));
+      });
+    }
+
+    // Save scroll position on leave
+    const saveScroll = () => {
+      sessionStorage.setItem("home-scroll", String(window.scrollY));
+    };
+
+    window.addEventListener("beforeunload", saveScroll);
+    window.addEventListener("pagehide", saveScroll);
+
+    // Scroll effect for navbar
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    
+    return () => {
+      saveScroll();
+      window.removeEventListener("beforeunload", saveScroll);
+      window.removeEventListener("pagehide", saveScroll);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   const convertPrice = (price) => (price * exchangeRate).toFixed(2);
@@ -133,7 +157,7 @@ function HomeContent() {
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-center md:justify-between gap-2">
           <div className="flex items-center space-x-2">
             <FaGift className="text-yellow-300" />
-            <span className="font-medium">🎉 Black Friday Sale: Up to 60% OFF on Selected Items!</span>
+            <span className="font-medium">🎉 January Offers: Up to 60% OFF on Selected Items!</span>
           </div>
           <div className="flex items-center space-x-4 text-sm">
             <div className="flex items-center space-x-1">
@@ -824,21 +848,23 @@ function HomeContent() {
         animate={{ opacity: 1, scale: 1 }}
         whileHover={{ scale: 1.1 }}
          onClick={() => {
-          // Smooth scroll to top
-          window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          });
-          // Alternative method that works better in some browsers
-          document.documentElement.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          });
+          const scrollRoot = document.getElementById("scroll-root");
+          if (scrollRoot) {
+            scrollRoot.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            });
+          } else {
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            });
+          }
         }}
         className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full shadow-2xl flex items-center justify-center z-50 group"
-        aria-label="Back to top"
+        arial-label="Scroll to Top"
       >
-        <FaArrowRight className="text-white transform -rotate-90" size={20} />
+        <FaArrowRight className="text-white text-2xl group-hover:animate-bounce rotate-90" />
       </motion.button>
     </div>
   );

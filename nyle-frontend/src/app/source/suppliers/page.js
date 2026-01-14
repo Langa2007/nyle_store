@@ -1,7 +1,9 @@
+// src/app/source/suppliers/page.js
 "use client";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import BuyerInfoLayout from "@/components/source/BuyerInfoLayout";
+import Link from "next/link";
 import { 
   Shield, 
   CheckCircle, 
@@ -202,24 +204,35 @@ export default function SuppliersPage() {
       stats={supplierStats}
     >
       <div className="space-y-8">
-        {/* Hero Section */}
+        {/* Hero Section with Join Us Button */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-100"
         >
-          <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl">
-              <Shield className="h-6 w-6 text-white" />
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl">
+                <Shield className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Trade with Confidence
+                </h2>
+                <p className="text-gray-600">
+                  Every supplier undergoes rigorous verification and quality screening
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">
-                Trade with Confidence
-              </h2>
-              <p className="text-gray-600">
-                Every supplier undergoes rigorous verification and quality screening
-              </p>
-            </div>
+            
+            {/* Join Us as a Supplier Button */}
+            <Link 
+              href="/vendors/signup"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
+            >
+              <Users className="h-5 w-5" />
+              Join Us as a Supplier
+            </Link>
           </div>
           
           <div className="bg-white rounded-xl p-6 border border-blue-100">
@@ -501,7 +514,7 @@ export default function SuppliersPage() {
           )}
         </div>
 
-        {/* Key Benefits */}
+        {/* Key Benefits with Join Us Section */}
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
             <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
@@ -527,41 +540,43 @@ export default function SuppliersPage() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl p-6 text-white">
+          <div className="bg-gradient-to-r from-green-600 to-emerald-500 rounded-2xl p-6 text-white">
             <div className="flex items-center gap-3 mb-6">
-              <Award className="h-6 w-6 text-white" />
+              <Users className="h-6 w-6 text-white" />
               <div>
-                <h3 className="text-lg font-bold text-white">Partnership Focused</h3>
-                <p className="text-blue-100">Long-term relationships over quick sales</p>
+                <h3 className="text-lg font-bold text-white">Become a Supplier</h3>
+                <p className="text-green-100">Join our trusted network of verified suppliers</p>
               </div>
             </div>
             
             <div className="space-y-4">
-              <p className="text-blue-100">
-                Discover suppliers committed to quality, reliability, and building 
-                lasting partnerships. Our verified network prioritizes your success 
-                through consistent performance and transparent operations.
+              <p className="text-green-100">
+                Expand your business reach and connect with thousands of verified buyers.
+                Join Nyle's network to access premium features and grow your customer base.
               </p>
               
               <div className="p-4 bg-white/20 rounded-xl backdrop-blur-sm">
                 <div className="flex items-center gap-2 mb-2">
                   <TrendingUp className="h-5 w-5 text-white" />
-                  <span className="font-semibold">Trust Score Impact</span>
+                  <span className="font-semibold">Supplier Benefits</span>
                 </div>
-                <p className="text-sm text-blue-100">
-                  Verified suppliers maintain an average 98% satisfaction rate
+                <p className="text-sm text-green-100">
+                  Verified suppliers experience 40% faster growth on average
                 </p>
               </div>
               
-              <button className="w-full py-3 bg-white text-blue-600 font-semibold rounded-xl hover:shadow-lg transition-shadow">
+              <Link
+                href="/vendors/signup"
+                className="block w-full py-3 bg-white text-green-600 font-semibold rounded-xl hover:shadow-lg transition-shadow text-center"
+              >
                 Apply to Become a Verified Supplier
-              </button>
+              </Link>
             </div>
           </div>
         </div>
 
-        {/* Premium Suppliers CTA */}
-        <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 text-white text-center">
+        {/* Premium Suppliers CTA with Join Us */}
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 text-white">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="text-left">
               <h3 className="text-xl font-bold text-white mb-2">Premium Suppliers Network</h3>
@@ -569,13 +584,16 @@ export default function SuppliersPage() {
                 Access our exclusive network of top-rated, premium verified suppliers
               </p>
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <button className="px-6 py-3 bg-white text-purple-600 font-semibold rounded-xl hover:shadow-lg transition-shadow">
                 View Premium Suppliers
               </button>
-              <button className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-xl backdrop-blur-sm transition-colors">
-                Request Access
-              </button>
+              <Link
+                href="/vendors/signup"
+                className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-xl backdrop-blur-sm transition-colors text-center"
+              >
+                Join as Supplier
+              </Link>
             </div>
           </div>
         </div>

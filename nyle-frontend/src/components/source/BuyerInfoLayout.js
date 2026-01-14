@@ -23,7 +23,10 @@ import {
   Home,
   Calendar,
   Wallet,
-  Gift
+  Gift,
+  Building,
+  Award,
+  Users
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -156,8 +159,8 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [],
                 <User className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold">Welcome back, Alex!</h2>
-                <p className="text-blue-100 text-sm">Buyer since March 2024</p>
+                <h2 className="text-lg font-semibold">Welcome to Supplier Interface</h2>
+                <p className="text-blue-100 text-sm">View all of our Suppliers</p>
               </div>
             </div>
 
@@ -227,20 +230,20 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [],
               <div className="p-6 bg-gradient-to-r from-blue-50 to-cyan-50 border-b border-gray-100">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="relative">
-                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                      A
+                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                      <User className="h-8 w-8" />
                     </div>
                     <div className="absolute bottom-0 right-0 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></div>
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900">Alex Morgan</h3>
-                    <p className="text-sm text-gray-600">Premium Buyer</p>
+                    <h3 className="font-bold text-gray-900">Your Account</h3>
+                    <p className="text-sm text-gray-600">Supplier Dashboard</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                  <span className="font-semibold">4.8</span>
-                  <span className="text-gray-500">(128 reviews)</span>
+                  <span className="font-semibold">Premium Member</span>
+                  <span className="text-gray-500">Verified</span>
                 </div>
               </div>
 
@@ -379,8 +382,8 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [],
                         <Sparkles className="h-5 w-5 text-white" />
                       </div>
                       <div>
-                        <h2 className="text-xl font-bold text-gray-900">Your Dashboard</h2>
-                        <p className="text-gray-600 text-sm">Manage your purchases and preferences</p>
+                        <h2 className="text-xl font-bold text-gray-900">Dashboard Overview</h2>
+                        <p className="text-gray-600 text-sm">Take a look at nyle suppliers</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -480,11 +483,49 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [],
       {/* Enhanced Footer */}
       <footer className="mt-auto bg-gradient-to-r from-gray-900 to-gray-800 text-gray-300 py-10 relative z-20">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col lg:flex-row justify-between items-center gap-8">
-            <div className="text-center lg:text-left">
-              <h4 className="font-bold text-white text-lg mb-3">Need Buyer Support?</h4>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <Building className="h-8 w-8 text-blue-400" />
+                <h4 className="font-bold text-white text-lg">Nyle Marketplace</h4>
+              </div>
               <p className="text-blue-100/80 mb-4 max-w-md">
-                Our dedicated buyer support team is here to help with orders, returns, or any questions.
+                Your trusted B2B marketplace connecting businesses with verified suppliers worldwide.
+              </p>
+              <div className="flex items-center gap-4">
+                <Award className="h-5 w-5 text-yellow-400" />
+                <span className="text-sm">Trusted by 50,000+ businesses</span>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-bold text-white text-lg mb-4">Quick Links</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <Link href="/about" className="text-blue-100/80 hover:text-white transition-colors">
+                  About Us
+                </Link>
+                <Link href="/contact" className="text-blue-100/80 hover:text-white transition-colors">
+                  Contact
+                </Link>
+                <Link href="/privacy" className="text-blue-100/80 hover:text-white transition-colors">
+                  Privacy Policy
+                </Link>
+                <Link href="/terms" className="text-blue-100/80 hover:text-white transition-colors">
+                  Terms of Service
+                </Link>
+                <Link href="/sitemap" className="text-blue-100/80 hover:text-white transition-colors">
+                  Sitemap
+                </Link>
+                <Link href="/careers" className="text-blue-100/80 hover:text-white transition-colors">
+                  Careers
+                </Link>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-bold text-white text-lg mb-4">Need Support?</h4>
+              <p className="text-blue-100/80 mb-4">
+                Our dedicated support team is here to help with orders, returns, or any questions.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Link
@@ -495,22 +536,24 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [],
                   Contact Support
                 </Link>
                 <Link
-                  href="/buyer/help"
+                  href="/help"
                   className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-lg transition-colors"
                 >
-                  Buyer Guides
+                  Help Center
                 </Link>
               </div>
             </div>
-            
-            <div className="flex flex-col items-center lg:items-end gap-4">
+          </div>
+          
+          <div className="mt-8 pt-8 border-t border-gray-700">
+            <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
               <div className="text-sm text-gray-400">
-                Secure shopping experience
+                Secure shopping experience with 256-bit encryption
               </div>
               <div className="flex items-center gap-4 text-xs opacity-70">
-                <span>© {new Date().getFullYear()} Nyle Marketplace</span>
+                <span>© {new Date().getFullYear()} Nyle Marketplace. All rights reserved.</span>
                 <span>•</span>
-                <span>All rights reserved</span>
+                <span>Version 2.0.1</span>
               </div>
             </div>
           </div>

@@ -7,7 +7,12 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="overflow-x-hidden">
         <Navbar />
-        <main className="container mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/*  Explicit scroll container */}
+        <main
+          id="scroll-root"
+          className="container mx-auto px-4 sm:px-6 lg:px-8 min-h-screen"
+        >
           {children}
         </main>
       </body>
