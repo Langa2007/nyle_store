@@ -831,11 +831,11 @@ function HomeContent() {
                 © {new Date().getFullYear()} Nyle Store. All rights reserved.
               </p>
               <div className="mt-4 flex flex-wrap justify-center gap-6 text-xs text-gray-400">
-                <Link href="/privacy" scroll={false} className="hover:text-white transition">Privacy Policy</Link>
-                <Link href="/terms" scroll={false} className="hover:text-white transition">Terms of Service</Link>
-                <Link href="/cookies" scroll={false} className="hover:text-white transition">Cookie Policy</Link>
-                <Link href="/sitemap" scroll={false} className="hover:text-white transition">Sitemap</Link>
-                <Link href="/accessibility" scroll={false} className="hover:text-white transition">Accessibility</Link>
+                <Link href="others/privacy" scroll={false} className="hover:text-white transition">Privacy Policy</Link>
+                <Link href="others/terms" scroll={false} className="hover:text-white transition">Terms of Service</Link>
+                <Link href="others/cookies" scroll={false} className="hover:text-white transition">Cookie Policy</Link>
+                <Link href="others/sitemap" scroll={false} className="hover:text-white transition">Sitemap</Link>
+                <Link href="others/accessibility" scroll={false} className="hover:text-white transition">Accessibility</Link>
               </div>
             </div>
           </div>
