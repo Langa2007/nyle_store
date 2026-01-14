@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
         {/* Explicit scroll container */}
         <main
           id="scroll-root"
-          className="container mx-auto px-4 sm:px-6 lg:px-8 min-h-screen overflow-y-auto"
+          className="container mx-auto px-4 sm:px-6 lg:px-8 h-[100dvh] overflow-y-auto"
         >
           {children}
           <ScrollToTop />
