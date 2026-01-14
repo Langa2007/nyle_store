@@ -327,14 +327,6 @@ export default function Navbar() {
               </span>
             </button>
 
-            {/* Become Seller Button */}
-            <Link href="/vendor/signup" className="hidden md:block">
-              <button className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-lg font-medium hover:from-yellow-600 hover:to-orange-600 transition shadow-lg flex items-center">
-                <FaStore className="mr-2" />
-                Sell on Nyle
-              </button>
-            </Link>
-
             {/* Mobile menu toggle */}
             <button 
               className={`p-2 md:hidden transition ${getTextColor()}`}
@@ -445,14 +437,6 @@ export default function Navbar() {
             className="py-3 text-lg font-medium text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-3 transition"
           >
             Hot Deals
-          </Link>
-          <Link 
-            href="/vendor/signup" 
-            onClick={toggleMenu} 
-            className="py-3 text-lg font-medium text-gray-800 hover:text-orange-600 hover:bg-orange-50 rounded-lg px-3 transition flex items-center"
-          >
-            <FaStore className="mr-2" />
-            Become a Seller
           </Link>
           
           {/* Account Links */}
