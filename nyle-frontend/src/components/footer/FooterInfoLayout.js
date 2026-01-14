@@ -38,28 +38,28 @@ export default function FooterInfoLayout({
   // Navigation for all footer info pages
   const footerPages = [
     { 
-      href: "others/privacy", 
+      href: "/privacy", 
       label: "Privacy Policy", 
       icon: <Shield size={18} />,
       color: "from-blue-500 to-cyan-500",
       badge: "Security"
     },
     { 
-      href: "others/terms", 
+      href: "/terms", 
       label: "Terms of Service", 
       icon: <FileText size={18} />,
       color: "from-blue-600 to-indigo-600",
       badge: "Legal"
     },
     { 
-      href: "others/cookies", 
+      href: "/cookies", 
       label: "Cookie Policy", 
       icon: <Settings size={18} />,
       color: "from-indigo-600 to-purple-600",
       badge: "Tracking"
     },
     { 
-      href: "others/accessibility", 
+      href: "/accessibility", 
       label: "Accessibility", 
       icon: <Users size={18} />,
       color: "from-cyan-500 to-blue-500",
