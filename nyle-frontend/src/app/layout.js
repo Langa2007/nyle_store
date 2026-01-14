@@ -1,14 +1,18 @@
 import "./globals.css";
+import { Suspense } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Navbar from "../components/Navbar";
 import ScrollRestorationController from "../components/ScrollRestorationController";
+import ScrollToTop from "../components/ScrollToTop";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="overflow-hidden">
         {/* Scroll restoration logic */}
-        <ScrollRestorationController />
+        <Suspense fallback={null}>
+          <ScrollRestorationController />
+        </Suspense>
 
         <Navbar />
 
@@ -18,6 +22,7 @@ export default function RootLayout({ children }) {
           className="container mx-auto px-4 sm:px-6 lg:px-8 min-h-screen overflow-y-auto"
         >
           {children}
+          <ScrollToTop />
         </main>
       </body>
     </html>

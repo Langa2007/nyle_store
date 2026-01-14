@@ -1,15 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { 
-  Shield, 
-  FileText, 
-  Settings, 
-  Users, 
-  Globe, 
-  HelpCircle, 
-  ArrowLeft, 
-  Home, 
+import {
+  Shield,
+  FileText,
+  Settings,
+  Users,
+  Globe,
+  HelpCircle,
+  ArrowLeft,
+  Home,
   CheckCircle,
   AlertCircle,
   Search
@@ -19,10 +19,10 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 
-export default function FooterInfoLayout({ 
-  title, 
-  subtitle, 
-  children, 
+export default function FooterInfoLayout({
+  title,
+  subtitle,
+  children,
   icon,
   lastUpdated = "January 15, 2024",
   category = "Legal"
@@ -37,30 +37,30 @@ export default function FooterInfoLayout({
 
   // Navigation for all footer info pages
   const footerPages = [
-    { 
-      href: "/privacy", 
-      label: "Privacy Policy", 
+    {
+      href: "/privacy",
+      label: "Privacy Policy",
       icon: <Shield size={18} />,
       color: "from-blue-500 to-cyan-500",
       badge: "Security"
     },
-    { 
-      href: "/terms", 
-      label: "Terms of Service", 
+    {
+      href: "/terms",
+      label: "Terms of Service",
       icon: <FileText size={18} />,
       color: "from-blue-600 to-indigo-600",
       badge: "Legal"
     },
-    { 
-      href: "/cookies", 
-      label: "Cookie Policy", 
+    {
+      href: "/cookies",
+      label: "Cookie Policy",
       icon: <Settings size={18} />,
       color: "from-indigo-600 to-purple-600",
       badge: "Tracking"
     },
-    { 
-      href: "/accessibility", 
-      label: "Accessibility", 
+    {
+      href: "/accessibility",
+      label: "Accessibility",
       icon: <Users size={18} />,
       color: "from-cyan-500 to-blue-500",
       badge: "Inclusive"
@@ -109,7 +109,7 @@ export default function FooterInfoLayout({
                 {title}
               </h1>
             </div>
-            
+
             {subtitle && (
               <motion.p
                 initial={{ y: -10, opacity: 0 }}
@@ -129,15 +129,18 @@ export default function FooterInfoLayout({
 
             {/* Action Buttons */}
             <div className="flex flex-wrap justify-center gap-4">
-              <Link 
+              <Link
                 href="/"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-white/20 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-white/30 transition-all"
               >
                 <ArrowLeft className="h-5 w-5" />
                 Back to Home
               </Link>
-              <button 
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              <button
+                onClick={() => {
+                  const scrollRoot = document.getElementById("scroll-root");
+                  if (scrollRoot) scrollRoot.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-700 font-semibold rounded-xl hover:shadow-lg transition-all"
               >
                 ↑ Scroll to Top
@@ -165,7 +168,7 @@ export default function FooterInfoLayout({
                   </div>
                   <h3 className="text-lg font-bold text-gray-900">Legal & Policies</h3>
                 </div>
-                
+
                 <ul className="space-y-2">
                   {footerPages.map((page) => {
                     const isActive = pathname === page.href;
@@ -173,11 +176,10 @@ export default function FooterInfoLayout({
                       <li key={page.href}>
                         <Link
                           href={page.href}
-                          className={`group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                            isActive
-                              ? `bg-gradient-to-r ${page.color} text-white shadow-lg`
-                              : "hover:bg-blue-50 hover:shadow-md text-gray-700"
-                          }`}
+                          className={`group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${isActive
+                            ? `bg-gradient-to-r ${page.color} text-white shadow-lg`
+                            : "hover:bg-blue-50 hover:shadow-md text-gray-700"
+                            }`}
                         >
                           <div className={`transition-transform ${isActive ? 'text-white' : 'text-blue-500 group-hover:text-blue-600'}`}>
                             {page.icon}
@@ -243,7 +245,7 @@ export default function FooterInfoLayout({
                       <p className="text-gray-600">Important information for all Nyle Store users</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full">
                       Version 2.1
@@ -375,8 +377,8 @@ export default function FooterInfoLayout({
                 </div>
                 <div className="flex flex-wrap justify-center gap-4 text-sm text-blue-300">
                   {footerPages.map((page) => (
-                    <Link 
-                      key={page.href} 
+                    <Link
+                      key={page.href}
                       href={page.href}
                       className="hover:text-white transition"
                     >
@@ -390,18 +392,7 @@ export default function FooterInfoLayout({
         </div>
       </footer>
 
-      {/* 🆙 Floating Action Button */}
-      <motion.button
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full shadow-2xl flex items-center justify-center z-50 group"
-        aria-label="Scroll to top"
-      >
-        <ArrowLeft className="text-white rotate-90 group-hover:animate-bounce" size={22} />
-      </motion.button>
+
     </div>
   );
 }

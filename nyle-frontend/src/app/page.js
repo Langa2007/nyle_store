@@ -16,18 +16,18 @@ import {
   FaCcPaypal,
   FaGooglePay,
   FaApplePay,
-  
+
   // Social media
   FaFacebookF,
   FaTwitter,
   FaInstagram,
   FaLinkedinIn,
   FaYoutube,
-  
+
   // UI Icons
-  FaSearch,FaStar,FaTruck,FaShieldAlt,FaFire,FaBolt,FaRocket,FaShoppingBag,FaGem,FaHeadphones,FaLaptop,FaHome,FaTshirt,
-  FaArrowRight,FaChevronRight,FaHeart,FaShoppingCart,FaAward,FaClock,FaCheckCircle,FaUsers,FaGlobe,FaLeaf,
-  FaCrown,FaStore,FaTag,FaEnvelope,FaExclamationTriangle,FaGift,FaShippingFast,FaSnowflake,FaArrowUp
+  FaSearch, FaStar, FaTruck, FaShieldAlt, FaFire, FaBolt, FaRocket, FaShoppingBag, FaGem, FaHeadphones, FaLaptop, FaHome, FaTshirt,
+  FaArrowRight, FaChevronRight, FaHeart, FaShoppingCart, FaAward, FaClock, FaCheckCircle, FaUsers, FaGlobe, FaLeaf,
+  FaCrown, FaStore, FaTag, FaEnvelope, FaExclamationTriangle, FaGift, FaShippingFast, FaSnowflake, FaArrowUp
 } from "react-icons/fa";
 
 function HomeContent() {
@@ -88,35 +88,30 @@ function HomeContent() {
   }, []);
 
   // Scroll position restoration - ADDED SCROLL POSITION FUNCTIONALITY
+  // Scroll effect for navbar
   useEffect(() => {
-    // Restore scroll position
-    const savedScroll = sessionStorage.getItem("home-scroll");
+    const scrollRoot = document.getElementById("scroll-root");
+    const handleScroll = () => {
+      if (scrollRoot) {
+        setIsScrolled(scrollRoot.scrollTop > 50);
+      } else {
+        setIsScrolled(window.scrollY > 50);
+      }
+    };
 
-    if (savedScroll) {
-      requestAnimationFrame(() => {
-        window.scrollTo(0, Number(savedScroll));
-      });
+    // Attach listener to scroll-root if available, otherwise window (fallback)
+    if (scrollRoot) {
+      scrollRoot.addEventListener("scroll", handleScroll);
+    } else {
+      window.addEventListener("scroll", handleScroll);
     }
 
-    // Save scroll position on leave
-    const saveScroll = () => {
-      sessionStorage.setItem("home-scroll", String(window.scrollY));
-    };
-
-    window.addEventListener("beforeunload", saveScroll);
-    window.addEventListener("pagehide", saveScroll);
-
-    // Scroll effect for navbar
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    
     return () => {
-      saveScroll();
-      window.removeEventListener("beforeunload", saveScroll);
-      window.removeEventListener("pagehide", saveScroll);
-      window.removeEventListener("scroll", handleScroll);
+      if (scrollRoot) {
+        scrollRoot.removeEventListener("scroll", handleScroll);
+      } else {
+        window.removeEventListener("scroll", handleScroll);
+      }
     };
   }, []);
 
@@ -140,13 +135,13 @@ function HomeContent() {
   const filteredProducts = products.filter((product) => {
     const matchesSearch = (product.name || "").toLowerCase().includes(searchTerm.toLowerCase());
     let matchesCategory = true;
-    
+
     if (selectedCategory !== "all") {
-      matchesCategory = product.category === selectedCategory || 
-                       product.category_id === selectedCategory ||
-                       (product.category && product.category.toLowerCase() === selectedCategory.toLowerCase());
+      matchesCategory = product.category === selectedCategory ||
+        product.category_id === selectedCategory ||
+        (product.category && product.category.toLowerCase() === selectedCategory.toLowerCase());
     }
-    
+
     return matchesSearch && matchesCategory;
   });
 
@@ -176,9 +171,8 @@ function HomeContent() {
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? "bg-white/90 backdrop-blur-lg shadow-lg" : "bg-transparent"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white/90 backdrop-blur-lg shadow-lg" : "bg-transparent"
+          }`}
       >
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/" className="flex items-center space-x-3">
@@ -189,7 +183,7 @@ function HomeContent() {
               Nyle Store
             </span>
           </Link>
-          
+
           <div className="hidden md:flex items-center space-x-8">
             <Link href="/" className="font-medium hover:text-blue-600 transition">Home</Link>
             <Link href="#products-section" className="font-medium hover:text-blue-600 transition">Shop</Link>
@@ -200,7 +194,7 @@ function HomeContent() {
           </div>
         </div>
       </motion.nav>
-            {/* UPDATED Hero Section - Combining Store Info with Premium Fridge Image */}
+      {/* UPDATED Hero Section - Combining Store Info with Premium Fridge Image */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white pt-32 pb-20 px-6">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden">
@@ -220,16 +214,16 @@ function HomeContent() {
                 <FaFire className="text-orange-400 mr-2" />
                 <span className="text-sm font-medium"> Kenya's Fastest Growing Marketplace</span>
               </div>
-              
+
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6">
                 Discover Amazing
                 <span className="block bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
                   Products Daily
                 </span>
               </h1>
-              
+
               <p className="text-xl text-blue-100 mb-8 max-w-2xl">
-                Welcome to <span className="font-bold text-white">Nyle Store</span> – 
+                Welcome to <span className="font-bold text-white">Nyle Store</span> –
                 Your premier destination for quality products from trusted vendors across Kenya.
                 Shop smart, live better.
               </p>
@@ -267,7 +261,7 @@ function HomeContent() {
                   Start Shopping Now
                   <FaArrowRight className="ml-3 group-hover:translate-x-2 transition-transform" />
                 </motion.button>
-                
+
                 <Link href="/vendor/signup">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -316,14 +310,14 @@ function HomeContent() {
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-blue-900/50 to-transparent"></div>
-                
+
                 {/* Featured Product Badge */}
                 <div className="absolute top-6 left-6">
                   <span className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
                     🔥 Featured Product
                   </span>
                 </div>
-                
+
                 {/* Floating product card */}
                 <div className="absolute -bottom-6 -right-6 bg-white rounded-2xl p-6 shadow-2xl w-72">
                   <div className="flex items-center space-x-3 mb-4">
@@ -344,7 +338,7 @@ function HomeContent() {
                       <FaTruck className="mr-2 text-green-600" />
                       <span>Free Delivery Nationwide</span>
                     </div>
-                    <button 
+                    <button
                       onClick={scrollToProducts}
                       className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-lg font-bold hover:from-blue-700 hover:to-cyan-700 transition shadow-lg"
                     >
@@ -406,11 +400,10 @@ function HomeContent() {
             <div className="flex overflow-x-auto pb-4 space-x-4 scrollbar-hide">
               <button
                 onClick={() => handleCategoryClick("all")}
-                className={`flex-shrink-0 px-6 py-3 rounded-full font-medium transition-all ${
-                  selectedCategory === "all" 
-                    ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg" 
+                className={`flex-shrink-0 px-6 py-3 rounded-full font-medium transition-all ${selectedCategory === "all"
+                    ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
+                  }`}
               >
                 🌟 All Products
               </button>
@@ -418,11 +411,10 @@ function HomeContent() {
                 <button
                   key={cat.id || cat._id}
                   onClick={() => handleCategoryClick(cat.name)}
-                  className={`flex-shrink-0 px-6 py-3 rounded-full font-medium transition-all ${
-                    selectedCategory === cat.name 
-                      ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg" 
+                  className={`flex-shrink-0 px-6 py-3 rounded-full font-medium transition-all ${selectedCategory === cat.name
+                      ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
+                    }`}
                 >
                   {cat.name}
                 </button>
@@ -432,7 +424,7 @@ function HomeContent() {
               <div className="mt-6 text-center">
                 <p className="text-blue-600 font-medium">
                   Showing products in <span className="font-bold">{selectedCategory}</span> category
-                  <button 
+                  <button
                     onClick={() => handleCategoryClick("all")}
                     className="ml-3 text-sm text-gray-500 hover:text-blue-700"
                   >
@@ -458,8 +450,8 @@ function HomeContent() {
             {selectedCategory === "all" ? "Featured Products" : `Products in ${selectedCategory}`}
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            {selectedCategory === "all" 
-              ? "Carefully selected products from our top-rated vendors" 
+            {selectedCategory === "all"
+              ? "Carefully selected products from our top-rated vendors"
               : `Browse all ${filteredProducts.length} products in this category`}
           </p>
         </div>
@@ -471,7 +463,7 @@ function HomeContent() {
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-3">No products found</h3>
             <p className="text-gray-600 max-w-md mx-auto mb-6">
-              {selectedCategory !== "all" 
+              {selectedCategory !== "all"
                 ? `We couldn't find any products in "${selectedCategory}" category. Try another category or view all products.`
                 : `We couldn't find any products matching "${searchTerm}". Try a different search term or browse our categories.`}
             </p>
@@ -544,14 +536,14 @@ function HomeContent() {
                             </div>
                           </div>
                         )}
-                        
+
                         {/* Product Badges */}
                         <div className="absolute top-4 left-4">
                           <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
                             -20%
                           </span>
                         </div>
-                        
+
                         {/* Category Badge */}
                         <div className="absolute bottom-4 left-4">
                           {product.category && (
@@ -560,7 +552,7 @@ function HomeContent() {
                             </span>
                           )}
                         </div>
-                        
+
                         {/* Quick Actions */}
                         <div className="absolute top-4 right-4 flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow hover:shadow-lg transition">
@@ -590,11 +582,11 @@ function HomeContent() {
                             <span className="ml-1 text-sm font-medium">4.5</span>
                           </div>
                         </div>
-                        
+
                         <p className="text-sm text-gray-500 line-clamp-2 mb-4 min-h-[2.5rem]">
                           {product.description || "Premium quality product with excellent features."}
                         </p>
-                        
+
                         {/* Price Section */}
                         <div className="flex items-center justify-between mb-4">
                           <div>
@@ -609,7 +601,7 @@ function HomeContent() {
                             In Stock
                           </div>
                         </div>
-                        
+
                         {/* Features */}
                         <div className="flex items-center space-x-4 text-sm text-gray-600 pt-4 border-t">
                           <div className="flex items-center">
@@ -654,7 +646,7 @@ function HomeContent() {
               We're committed to providing the best shopping experience in Kenya
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               { icon: <FaShieldAlt />, title: "Secure Payments", desc: "100% secure transaction with multiple payment options" },
@@ -778,7 +770,7 @@ function HomeContent() {
                 Source On Nyle
               </h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/source/suppliers"  className="text-gray-300 hover:text-white transition hover:underline">Nyle Verified Suppliers</Link></li>
+                <li><Link href="/source/suppliers" className="text-gray-300 hover:text-white transition hover:underline">Nyle Verified Suppliers</Link></li>
                 <li><Link href="/source/logistics" className="text-gray-300 hover:text-white transition hover:underline">Get Logistics</Link></li>
                 <li><Link href="/source/quotation" className="text-gray-300 hover:text-white transition hover:underline">Get Quotation</Link></li>
                 <li><Link href="/source/trade-assurance" className="text-gray-300 hover:text-white transition hover:underline">Trade Assurance</Link></li>
@@ -811,7 +803,7 @@ function HomeContent() {
                   </a>
                 </div>
               </div>
-              
+
               {/* Payment Methods */}
               <div className="text-center md:text-right">
                 <h4 className="text-lg font-bold mb-4">We Accept</h4>
@@ -847,7 +839,7 @@ function HomeContent() {
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         whileHover={{ scale: 1.1 }}
-         onClick={() => {
+        onClick={() => {
           const scrollRoot = document.getElementById("scroll-root");
           if (!scrollRoot) return;
           scrollRoot.scrollTo({
@@ -859,7 +851,7 @@ function HomeContent() {
         aria-label="Back to Top"
       >
         <FaArrowUp />
-      </motion.button>  
+      </motion.button>
     </div>
   );
 }
