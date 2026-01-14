@@ -27,7 +27,7 @@ import {
   // UI Icons
   FaSearch,FaStar,FaTruck,FaShieldAlt,FaFire,FaBolt,FaRocket,FaShoppingBag,FaGem,FaHeadphones,FaLaptop,FaHome,FaTshirt,
   FaArrowRight,FaChevronRight,FaHeart,FaShoppingCart,FaAward,FaClock,FaCheckCircle,FaUsers,FaGlobe,FaLeaf,
-  FaCrown,FaStore,FaTag,FaEnvelope,FaExclamationTriangle,FaGift,FaShippingFast,FaSnowflake
+  FaCrown,FaStore,FaTag,FaEnvelope,FaExclamationTriangle,FaGift,FaShippingFast,FaSnowflake,FaArrowUp
 } from "react-icons/fa";
 
 function HomeContent() {
