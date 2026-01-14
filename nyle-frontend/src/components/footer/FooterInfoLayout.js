@@ -71,8 +71,8 @@ export default function FooterInfoLayout({
     { href: "/", label: "Home", icon: <Home size={16} /> },
     { href: "/products", label: "Shop Products", icon: "🛒" },
     { href: "/categories", label: "Browse Categories", icon: "📂" },
-    { href: "/support", label: "Help Center", icon: "❓" },
-    { href: "/contact", label: "Contact Us", icon: "📞" },
+    { href: "/support/help-center", label: "Help Center", icon: "❓" },
+    { href: "/support/contact", label: "Contact Us", icon: "📞" },
   ];
 
   const keyPoints = [
@@ -355,10 +355,10 @@ export default function FooterInfoLayout({
               <div>
                 <h4 className="text-xl font-bold mb-4">Support</h4>
                 <div className="space-y-2">
-                  <Link href="/support" className="block text-blue-300 hover:text-white transition">Help Center</Link>
-                  <Link href="/contact" className="block text-blue-300 hover:text-white transition">Contact Us</Link>
-                  <Link href="/faq" className="block text-blue-300 hover:text-white transition">FAQs</Link>
-                  <Link href="/report" className="block text-blue-300 hover:text-white transition">Report Issue</Link>
+                  <Link href="/support/help-center" className="block text-blue-300 hover:text-white transition">Help Center</Link>
+                  <Link href="/support/contact" className="block text-blue-300 hover:text-white transition">Contact Us</Link>
+                  <Link href="/support/faqs" className="block text-blue-300 hover:text-white transition">FAQs</Link>
+                  <Link href="/support/report-issue" className="block text-blue-300 hover:text-white transition">Report Issue</Link>
                 </div>
               </div>
             </div>
