@@ -1,9 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Map, Home, ShoppingBag, Users, Building, CreditCard, FileText, Settings, Package, Truck, Award, Globe, ArrowLeft, Search, ExternalLink } from "lucide-react";
-import Link from "next/link";
+import { Map, ShoppingBag, Users, Building, Globe, Search, ExternalLink, Home } from "lucide-react";
+import FooterInfoLayout from "@/components/footer/FooterInfoLayout";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function SitemapPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,15 +63,6 @@ export default function SitemapPage() {
     }
   ];
 
-  const quickLinks = [
-    { name: "Privacy Policy", href: "/privacy", icon: <FileText /> },
-    { name: "Terms of Service", href: "/terms", icon: <FileText /> },
-    { name: "Cookie Policy", href: "/cookies", icon: <Settings /> },
-    { name: "Accessibility", href: "/accessibility", icon: <Award /> },
-    { name: "Shipping Info", href: "/shipping", icon: <Truck /> },
-    { name: "Return Policy", href: "/returns", icon: <Package /> }
-  ];
-
   const filteredLinks = siteSections.map(section => ({
     ...section,
     links: section.links.filter(link => 
@@ -81,109 +72,39 @@ export default function SitemapPage() {
   })).filter(section => section.links.length > 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-cyan-50">
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white py-20 overflow-hidden">
-        {/* Map Pattern Background */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMzAgMEMxMy40IDAgMCAxMy40IDAgMzBzMTMuNCAzMCAzMCAzMCAzMC0xMy40IDMwLTMwUzQ2LjYgMCAzMCAwem0wIDU2Yy0xNC4zNiAwLTI2LTExLjY0LTI2LTI2UzE1LjY0IDQgMzAgNHMyNiAxMS42NCAyNiAyNi0xMS42NCAyNi0yNiAyNnptMTAtMjZjMC01LjUyMy00LjQ3Ny0xMC0xMC0xMFMyMCAyNC40NzcgMjAgMzBzNC40NzcgMTAgMTAgMTAgMTAtNC40NzcgMTAtMTB6IiBmaWxsPSIjZmZmIi8+PC9zdmc+')]"></div>
-        </div>
-
-        <div className="container mx-auto px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <div className="inline-flex items-center justify-center gap-3 mb-6">
-              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
-                <Map className="h-8 w-8" />
-              </div>
-              <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
-                Sitemap
-              </h1>
-            </div>
-            
-            <p className="text-xl text-blue-100/90 max-w-3xl mx-auto mb-8">
-              Navigate through all pages and sections of Nyle Store. Find exactly what you're looking for.
-            </p>
-            
-            {/* Search Bar */}
-            <div className="max-w-2xl mx-auto mb-8">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search for pages... (e.g., 'products', 'account', 'help')"
-                  className="w-full pl-12 pr-4 py-3 bg-white/10 backdrop-blur-sm text-white placeholder-blue-200 rounded-xl border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/50"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-200 hover:text-white"
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
-            </div>
-            
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/" className="px-6 py-3 bg-white/20 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-white/30 transition-all">
-                <ArrowLeft className="inline mr-2 h-5 w-5" />
-                Back to Home
-              </Link>
-              <button 
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="px-6 py-3 bg-white text-blue-600 font-semibold rounded-xl hover:shadow-lg transition-all"
+    <FooterInfoLayout
+      title="Sitemap"
+      subtitle="Navigate through all pages and sections of Nyle Store. Find exactly what you're looking for."
+      icon={<Map className="h-8 w-8" />}
+      lastUpdated="January 15, 2024"
+      category="Navigation"
+    >
+      <div className="space-y-12">
+        {/* Search Bar */}
+        <div className="max-w-2xl mx-auto">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search for pages... (e.g., 'products', 'account', 'help')"
+              className="w-full pl-12 pr-4 py-3 bg-white border border-gray-300 text-gray-900 placeholder-gray-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
-                Back to Top
+                ✕
               </button>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="container mx-auto px-6 py-16">
-        {/* Quick Links */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
-        >
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-            <Home className="h-6 w-6 text-blue-600" />
-            Quick Access Links
-          </h2>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-            {quickLinks.map((link, index) => (
-              <Link
-                key={index}
-                href={link.href}
-                className="group bg-white rounded-xl p-4 text-center border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all"
-              >
-                <div className="inline-flex p-3 rounded-lg bg-blue-100 text-blue-600 mb-3 group-hover:scale-110 transition-transform">
-                  {link.icon}
-                </div>
-                <div className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
-                  {link.name}
-                </div>
-              </Link>
-            ))}
+            )}
           </div>
-        </motion.div>
+        </div>
 
         {/* Search Results Info */}
         {searchQuery && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="mb-8 p-4 bg-blue-50 rounded-xl border border-blue-100"
-          >
+          <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Search className="h-5 w-5 text-blue-600" />
@@ -198,17 +119,46 @@ export default function SitemapPage() {
                 Clear search
               </button>
             </div>
-          </motion.div>
+          </div>
         )}
+
+        {/* Quick Links */}
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <Home className="h-6 w-6 text-blue-600" />
+            Quick Access Links
+          </h2>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+            {[
+              { name: "Home", href: "/", icon: "🏠" },
+              { name: "Shop", href: "/products", icon: "🛒" },
+              { name: "Categories", href: "/categories", icon: "📂" },
+              { name: "Deals", href: "/deals", icon: "💰" },
+              { name: "Sell", href: "/vendor/signup", icon: "🚀" },
+              { name: "Support", href: "/help", icon: "❓" }
+            ].map((link, index) => (
+              <Link
+                key={index}
+                href={link.href}
+                className="group bg-white rounded-xl p-4 text-center border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all"
+              >
+                <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">
+                  {link.icon}
+                </div>
+                <div className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+                  {link.name}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
 
         {/* Main Sitemap Sections */}
         <div className="grid lg:grid-cols-2 gap-8">
           {filteredLinks.map((section, sectionIndex) => (
-            <motion.div
+            <div
               key={sectionIndex}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: sectionIndex * 0.1 }}
               className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
             >
               <div className={`bg-gradient-to-r ${section.color} p-6 text-white`}>
@@ -242,25 +192,29 @@ export default function SitemapPage() {
                   ))}
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
-        {/* Back to Top */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mt-12 text-center"
-        >
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
-          >
-            <ArrowLeft className="h-5 w-5 rotate-90" />
-            Back to Top
-          </button>
-        </motion.div>
+        {/* No Results Message */}
+        {searchQuery && filteredLinks.length === 0 && (
+          <div className="text-center py-12">
+            <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Search className="h-12 w-12 text-blue-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">No pages found</h3>
+            <p className="text-gray-600 mb-6">
+              No pages match your search for "{searchQuery}". Try a different search term.
+            </p>
+            <button
+              onClick={() => setSearchQuery("")}
+              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
+            >
+              Clear Search
+            </button>
+          </div>
+        )}
       </div>
-    </div>
+    </FooterInfoLayout>
   );
 }
