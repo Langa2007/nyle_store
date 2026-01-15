@@ -1,7 +1,7 @@
 // services/vendorApi.js
 import axios from 'axios';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://nyle-store.onrender.com/api/v1';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://nyle-store.onrender.com/api';
 
 // Configure axios instance
 const api = axios.create({
@@ -20,6 +20,66 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Add response interceptor to handle 401 errors globally
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Clear invalid token
+      localStorage.removeItem('vendor_token');
+      localStorage.removeItem('vendor_data');
+      sessionStorage.removeItem('vendor_session');
+      
+      // Redirect to sign-in if we're in the browser
+      if (typeof window !== 'undefined') {
+        window.location.href = '/vendor/signin?error=session_expired';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+// New: Session verification function
+export const verifyVendorSession = async () => {
+  try {
+    const token = localStorage.getItem('vendor_token');
+    const vendorData = localStorage.getItem('vendor_data');
+    
+    if (!token) {
+      return { 
+        authenticated: false, 
+        verified: false,
+        message: 'No authentication token found'
+      };
+    }
+
+    // Try to get vendor profile to verify session
+    const response = await api.get('/vendor/profile');
+    
+    return {
+      authenticated: true,
+      verified: response.data?.vendor?.status === 'verified',
+      vendor: response.data?.vendor || JSON.parse(vendorData || '{}')
+    };
+  } catch (error) {
+    console.error('Session verification error:', error);
+    
+    // Clear invalid session data
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      localStorage.removeItem('vendor_token');
+      localStorage.removeItem('vendor_data');
+      sessionStorage.removeItem('vendor_session');
+    }
+    
+    return { 
+      authenticated: false, 
+      verified: false,
+      message: error.response?.data?.message || 'Session verification failed'
+    };
+  }
+};
+
+// Existing functions
 export const getVendorProducts = async () => {
   try {
     const response = await api.get('/vendor/products');
@@ -99,5 +159,67 @@ export const submitForApproval = async (productId) => {
   } catch (error) {
     console.error('Error submitting for approval:', error);
     throw error;
+  }
+};
+
+// New: Get vendor profile
+export const getVendorProfile = async () => {
+  try {
+    const response = await api.get('/vendor/profile');
+    return response.data?.vendor || {};
+  } catch (error) {
+    console.error('Error fetching vendor profile:', error);
+    throw error;
+  }
+};
+
+// New: Login function (for your sign-in page)
+export const vendorLogin = async (email, password) => {
+  try {
+    const response = await api.post('/vendor/auth/login', { email, password });
+    
+    if (response.data?.token) {
+      localStorage.setItem('vendor_token', response.data.token);
+      
+      if (response.data?.vendor) {
+        localStorage.setItem('vendor_data', JSON.stringify(response.data.vendor));
+      }
+      
+      return response.data;
+    }
+    
+    throw new Error('No token received');
+  } catch (error) {
+    console.error('Login error:', error);
+    throw error;
+  }
+};
+
+// New: Logout function
+export const vendorLogout = () => {
+  localStorage.removeItem('vendor_token');
+  localStorage.removeItem('vendor_data');
+  sessionStorage.removeItem('vendor_session');
+  
+  // Redirect to sign-in page
+  if (typeof window !== 'undefined') {
+    window.location.href = '/vendor/signin';
+  }
+};
+
+// New: Check if vendor is logged in (quick check)
+export const isVendorLoggedIn = () => {
+  const token = localStorage.getItem('vendor_token');
+  const vendorData = localStorage.getItem('vendor_data');
+  
+  if (!token || !vendorData) {
+    return false;
+  }
+  
+  try {
+    const vendor = JSON.parse(vendorData);
+    return vendor.status === 'verified';
+  } catch (error) {
+    return false;
   }
 };

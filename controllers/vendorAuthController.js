@@ -271,7 +271,29 @@ export const resendVerificationCode = async (req, res) => {
     return res.json({ message: "Verification code resent successfully." });
 
   } catch (err) {
-    console.error("Resend code error:", err);
     res.status(500).json({ message: "Server error while resending code" });
+  }
+};
+
+// ------------------ Verify Session ------------------
+export const verifySession = async (req, res) => {
+  try {
+    // req.user is set by verifyVendor middleware
+    const vendorId = req.user.vendor_id;
+
+    const q = await pool.query(
+      "SELECT id, legal_name, company_name, email, status, is_verified, business_type FROM vendors WHERE id=$1",
+      [vendorId]
+    );
+
+    if (!q.rows.length) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+
+    const vendor = q.rows[0];
+    return res.json({ vendor });
+  } catch (err) {
+    console.error("verifySession error:", err);
+    res.status(500).json({ message: "Server error" });
   }
 };

@@ -5,8 +5,11 @@ import {
   vendorLogin,
   verifyToken,
   magicLogin,
-  resendVerificationCode
+
+  resendVerificationCode,
+  verifySession
 } from "../controllers/vendorAuthController.js";
+import { verifyVendor } from "../middleware/vendorAuth.js";
 
 // Import updated password reset functions
 import {
@@ -32,6 +35,9 @@ router.post("/magic-login", magicLogin);
 
 // Resend verification code - POST { email }
 router.post("/resend-code", resendVerificationCode);
+
+// Verify session - GET (Requires Token)
+router.get("/verify-session", verifyVendor, verifySession);
 
 // 🔐 PASSWORD RESET ENDPOINTS (USING CODES)
 

@@ -1,28 +1,33 @@
-// app/vendor/dashboard/page.jsx
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { 
   Menu, X, ShoppingCart, Package, BarChart3, Settings, 
   Plus, Edit, Trash2, Eye, CheckCircle, Clock, AlertCircle,
   Upload, Image as ImageIcon, Tag, DollarSign, Package2,
-  Filter, Search, ChevronRight, TrendingUp, Users
+  Filter, Search, ChevronRight, TrendingUp, Users,
+  LogOut, Shield, UserCheck, AlertTriangle
 } from "lucide-react";
 import ProductForm from "@/components/vendor/ProductForm";
 import ProductTable from "@/components/vendor/ProductTable";
 import StatsOverview from "@/components/vendor/StatsOverview";
-import { getVendorProducts, getProductStats } from "@/services/VendorApi";
+import { getVendorProducts, getProductStats, verifyVendorSession } from "@/services/VendorApi";
 
 // Disable static generation
 export const dynamic = 'force-dynamic';
 
 export default function VendorDashboard() {
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showProductForm, setShowProductForm] = useState(false);
   const [products, setProducts] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [vendorData, setVendorData] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [isVerified, setIsVerified] = useState(false);
 
   const menuItems = [
     { id: "dashboard", name: "Dashboard", icon: BarChart3 },
@@ -33,12 +38,37 @@ export default function VendorDashboard() {
     { id: "settings", name: "Settings", icon: Settings },
   ];
 
+  // Authentication check
   useEffect(() => {
-    if (activeTab === "products" || activeTab === "dashboard") {
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    if (isVerified && (activeTab === "products" || activeTab === "dashboard")) {
       fetchProducts();
       fetchStats();
     }
-  }, [activeTab]);
+  }, [activeTab, isVerified]);
+
+  const checkAuth = async () => {
+    try {
+      setAuthLoading(true);
+      const response = await verifyVendorSession();
+      
+      if (response?.authenticated && response?.verified) {
+        setVendorData(response.vendor);
+        setIsVerified(true);
+      } else {
+        // Not authenticated or not verified, redirect to sign-in
+        router.push("/vendor/signin?redirect=/vendor/dashboard");
+      }
+    } catch (error) {
+      console.error("Auth check failed:", error);
+      router.push("/vendor/signin?redirect=/vendor/dashboard&error=auth_failed");
+    } finally {
+      setAuthLoading(false);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -47,6 +77,10 @@ export default function VendorDashboard() {
       setProducts(data);
     } catch (error) {
       console.error("Failed to fetch products:", error);
+      if (error.response?.status === 401) {
+        // Token expired, redirect to sign-in
+        router.push("/vendor/signin?redirect=/vendor/dashboard&error=session_expired");
+      }
     } finally {
       setLoading(false);
     }
@@ -64,7 +98,7 @@ export default function VendorDashboard() {
   const handleProductCreated = (newProduct) => {
     setProducts([newProduct, ...products]);
     setShowProductForm(false);
-    fetchStats(); // Refresh stats
+    fetchStats();
   };
 
   const handleProductUpdated = (updatedProduct) => {
@@ -78,11 +112,90 @@ export default function VendorDashboard() {
     fetchStats();
   };
 
+  const handleLogout = () => {
+    // Clear vendor session
+    localStorage.removeItem("vendor_token");
+    localStorage.removeItem("vendor_data");
+    sessionStorage.removeItem("vendor_session");
+    router.push("/vendor/signin");
+  };
+
+  // Loading state
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Verifying your vendor access...</p>
+          <p className="text-sm text-gray-500 mt-2">Please wait while we check your credentials</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Not verified - show verification required message
+  if (!isVerified && !authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-gray-100 p-8 text-center">
+          <div className="w-20 h-20 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Shield className="w-10 h-10 text-white" />
+          </div>
+          
+          <h1 className="text-2xl font-bold text-gray-800 mb-3">Verification Required</h1>
+          
+          <p className="text-gray-600 mb-6">
+            Your vendor account needs verification before accessing the dashboard.
+            Please complete your verification process to continue.
+          </p>
+          
+          <div className="space-y-4">
+            <button
+              onClick={() => router.push("/vendor/verification")}
+              className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 px-6 rounded-lg font-medium hover:shadow-lg transition-all"
+            >
+              <UserCheck className="inline w-5 h-5 mr-2" />
+              Complete Verification
+            </button>
+            
+            <button
+              onClick={() => router.push("/vendor/signin")}
+              className="w-full border border-blue-600 text-blue-600 py-3 px-6 rounded-lg font-medium hover:bg-blue-50 transition"
+            >
+              Sign In Again
+            </button>
+            
+            <button
+              onClick={() => router.push("/")}
+              className="w-full text-gray-600 hover:text-gray-800 py-2 text-sm transition"
+            >
+              Return to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const renderContent = () => {
     switch (activeTab) {
       case "dashboard":
         return (
           <div className="space-y-8">
+            {/* Welcome Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl p-6 text-white">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl font-bold mb-2">Welcome back, {vendorData?.business_name || 'Vendor'}!</h1>
+                  <p className="text-blue-100">Here's what's happening with your store today</p>
+                </div>
+                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+                  <CheckCircle className="w-5 h-5" />
+                  <span className="font-medium">Verified Vendor</span>
+                </div>
+              </div>
+            </div>
+            
             <StatsOverview stats={stats} />
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -116,7 +229,7 @@ export default function VendorDashboard() {
                         )}
                         <div>
                           <h3 className="font-medium text-gray-800">{product.name}</h3>
-                          <p className="text-sm text-gray-500">${product.price}</p>
+                          <p className="text-sm text-gray-500">Ksh {product.price?.toLocaleString()}</p>
                         </div>
                       </div>
                       <StatusBadge status={product.status} />
@@ -143,6 +256,13 @@ export default function VendorDashboard() {
                   <button className="w-full bg-blue-500/20 hover:bg-blue-500/30 py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition">
                     <BarChart3 className="w-5 h-5" />
                     View Analytics Report
+                  </button>
+                  <button 
+                    onClick={handleLogout}
+                    className="w-full bg-red-500/20 hover:bg-red-500/30 py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition"
+                  >
+                    <LogOut className="w-5 h-5" />
+                    Logout
                   </button>
                 </div>
               </div>
@@ -199,7 +319,6 @@ export default function VendorDashboard() {
               loading={loading}
               onRefresh={fetchProducts}
               onEdit={(product) => {
-                // Set edit mode in form
                 setShowProductForm(product);
               }}
               onDelete={handleProductDeleted}
@@ -226,8 +345,15 @@ export default function VendorDashboard() {
         } md:translate-x-0 transition-transform duration-300 shadow-xl`}
       >
         <div className="p-6 border-b border-blue-600/30">
-          <div className="font-bold text-2xl text-white mb-1">Nyle</div>
-          <div className="text-blue-200 text-sm">Vendor Platform</div>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+              <span className="text-blue-700 font-bold text-xl">N</span>
+            </div>
+            <div>
+              <div className="font-bold text-xl text-white mb-1">Nyle Vendor</div>
+              <div className="text-blue-200 text-sm">Business Portal</div>
+            </div>
+          </div>
         </div>
         
         <nav className="p-4 space-y-1">
@@ -250,9 +376,24 @@ export default function VendorDashboard() {
           ))}
         </nav>
 
-        {/* Vendor Stats */}
+        {/* Vendor Profile Section */}
         <div className="p-4 mt-auto border-t border-blue-600/30">
           <div className="bg-blue-900/30 rounded-lg p-4">
+            <div className="flex items-center gap-3 mb-3">
+              <img
+                src={vendorData?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(vendorData?.business_name || 'Vendor')}&background=3B82F6&color=ffffff`}
+                alt="Vendor Logo"
+                className="w-10 h-10 rounded-lg border-2 border-blue-200"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="text-white font-semibold truncate">{vendorData?.business_name}</div>
+                <div className="text-blue-300 text-xs truncate">
+                  {vendorData?.email}
+                </div>
+              </div>
+              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+            </div>
+            
             <div className="text-blue-200 text-sm mb-2">Plan Status</div>
             <div className="flex items-center justify-between">
               <div>
@@ -261,9 +402,17 @@ export default function VendorDashboard() {
                   {stats?.limit ? `${stats.limit.used}/${stats.limit.max} products` : 'Loading...'}
                 </div>
               </div>
-              <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse"></div>
+              <Shield className="w-5 h-5 text-green-400" />
             </div>
           </div>
+          
+          <button
+            onClick={handleLogout}
+            className="w-full mt-3 flex items-center justify-center gap-2 text-blue-200 hover:text-white hover:bg-red-500/20 py-2 px-4 rounded-lg transition"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="font-medium">Logout</span>
+          </button>
         </div>
       </div>
 
@@ -303,13 +452,18 @@ export default function VendorDashboard() {
               {/* Vendor Profile */}
               <div className="flex items-center gap-3">
                 <div className="text-right hidden sm:block">
-                  <div className="font-medium text-gray-800">John Vendor</div>
-                  <div className="text-sm text-gray-500">Premium Account</div>
+                  <div className="font-medium text-gray-800">{vendorData?.contact_person || 'Admin'}</div>
+                  <div className="text-sm text-gray-500">
+                    <span className="inline-flex items-center gap-1 bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs">
+                      <CheckCircle className="w-3 h-3" />
+                      Verified
+                    </span>
+                  </div>
                 </div>
                 <div className="relative">
                   <img
-                    src="https://ui-avatars.com/api/?name=John+Vendor&background=3B82F6&color=ffffff"
-                    alt="profile"
+                    src={vendorData?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(vendorData?.business_name || 'Vendor')}&background=3B82F6&color=ffffff`}
+                    alt="vendor logo"
                     className="w-10 h-10 rounded-full border-2 border-blue-100"
                   />
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
@@ -333,6 +487,7 @@ export default function VendorDashboard() {
               product={typeof showProductForm === 'object' ? showProductForm : null}
               onClose={() => setShowProductForm(false)}
               onSuccess={typeof showProductForm === 'object' ? handleProductUpdated : handleProductCreated}
+              vendorId={vendorData?.id}
             />
           </div>
         </div>
