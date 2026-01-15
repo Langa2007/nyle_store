@@ -60,11 +60,11 @@ export default function VendorDashboard() {
         setIsVerified(true);
       } else {
         // Not authenticated or not verified, redirect to sign-in
-        router.push("/vendor/signin?redirect=/vendor/dashboard");
+        router.push("/vendor/login?redirect=/vendor/dashboard");
       }
     } catch (error) {
       console.error("Auth check failed:", error);
-      router.push("/vendor/signin?redirect=/vendor/dashboard&error=auth_failed");
+      router.push("/vendor/login?redirect=/vendor/dashboard&error=auth_failed");
     } finally {
       setAuthLoading(false);
     }
@@ -79,7 +79,7 @@ export default function VendorDashboard() {
       console.error("Failed to fetch products:", error);
       if (error.response?.status === 401) {
         // Token expired, redirect to sign-in
-        router.push("/vendor/signin?redirect=/vendor/dashboard&error=session_expired");
+        router.push("/vendor/login?redirect=/vendor/dashboard&error=session_expired");
       }
     } finally {
       setLoading(false);
@@ -117,7 +117,7 @@ export default function VendorDashboard() {
     localStorage.removeItem("vendor_token");
     localStorage.removeItem("vendor_data");
     sessionStorage.removeItem("vendor_session");
-    router.push("/vendor/signin");
+    router.push("/vendor/login");
   };
 
   // Loading state
