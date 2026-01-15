@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { 
-  Eye, 
-  EyeOff, 
-  Lock, 
-  Mail, 
-  Store, 
+import {
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  Store,
   ArrowLeft,
   Home,
   AlertCircle,
@@ -23,7 +23,7 @@ import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
-export default function VendorLogin() {
+function VendorLoginContent() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [resetRequested, setResetRequested] = useState(false);
@@ -33,7 +33,7 @@ export default function VendorLogin() {
   const [loginError, setLoginError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [loginAttempts, setLoginAttempts] = useState(0);
-  
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/vendor/dashboard';
@@ -44,7 +44,7 @@ export default function VendorLogin() {
   // Show error from URL parameter if exists
   useState(() => {
     if (errorParam) {
-      switch(errorParam) {
+      switch (errorParam) {
         case 'session_expired':
           setLoginError('Your session has expired. Please log in again.');
           break;
@@ -81,10 +81,10 @@ export default function VendorLogin() {
 
     try {
       console.log("DEBUG: Attempting login for:", form.email);
-      
+
       const res = await fetch(`${API_URL}/api/v1/vendor/auth/login`, {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(form),
@@ -96,8 +96,8 @@ export default function VendorLogin() {
       if (!res.ok) {
         // Handle different error scenarios
         setLoginAttempts(prev => prev + 1);
-        
-        switch(res.status) {
+
+        switch (res.status) {
           case 401:
             setLoginError('Invalid email or password. Please check your credentials.');
             break;
@@ -129,7 +129,7 @@ export default function VendorLogin() {
       // Success - store token and redirect
       if (data.token) {
         localStorage.setItem('vendor_token', data.token);
-        
+
         if (data.vendor) {
           localStorage.setItem('vendor_data', JSON.stringify(data.vendor));
           setSuccessMessage(`Welcome back, ${data.vendor.business_name || data.vendor.contact_person}!`);
@@ -189,7 +189,7 @@ export default function VendorLogin() {
 
       // Always show success message for security
       setSuccessMessage(`If an account exists with ${resetEmail}, you will receive a password reset link shortly.`);
-      
+
       // Reset the email field
       setResetEmail("");
 
@@ -229,8 +229,8 @@ export default function VendorLogin() {
 
       <div className="relative w-full max-w-md">
         {/* Back to Home Button */}
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="absolute -top-16 left-0 flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -490,14 +490,14 @@ export default function VendorLogin() {
             {/* Quick Links */}
             <div className="mt-6 pt-6 border-t border-gray-100">
               <div className="grid grid-cols-2 gap-3 text-sm">
-                <a 
-                  href="/support/help-center" 
+                <a
+                  href="/support/help-center"
                   className="text-gray-600 hover:text-blue-600 hover:underline text-center py-2"
                 >
                   Need Help?
                 </a>
-                <a 
-                  href="/vendor/support" 
+                <a
+                  href="/vendor/support"
                   className="text-gray-600 hover:text-blue-600 hover:underline text-center py-2"
                 >
                   Contact Support
@@ -550,5 +550,17 @@ export default function VendorLogin() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VendorLogin() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-blue-600" />
+      </div>
+    }>
+      <VendorLoginContent />
+    </Suspense>
   );
 }
