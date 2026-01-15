@@ -52,14 +52,14 @@ export default function FooterInfoLayout({
       badge: "Legal"
     },
     {
-      href: "others/cookies",
+      href: "/cookies",
       label: "Cookie Policy",
       icon: <Settings size={18} />,
       color: "from-indigo-600 to-purple-600",
       badge: "Tracking"
     },
     {
-      href: "others/accessibility",
+      href: "/accessibility",
       label: "Accessibility",
       icon: <Users size={18} />,
       color: "from-cyan-500 to-blue-500",
