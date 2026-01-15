@@ -148,15 +148,15 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
               <div className="bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-xl border border-blue-100 p-6">
                 <h4 className="font-bold text-gray-900 mb-4">Quick Links</h4>
                 <div className="space-y-3">
-                  <Link href="/support" className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition group">
+                  <Link href="/support/help-center" className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition group">
                     <Shield size={16} />
                     <span className="text-sm">Support Center</span>
                   </Link>
-                  <Link href="/contact" className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition group">
+                  <Link href="/support/contact" className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition group">
                     <HelpCircle size={16} />
                     <span className="text-sm">Contact Us</span>
                   </Link>
-                  <Link href="/careers" className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition group">
+                  <Link href="/about/careers" className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition group">
                     <Briefcase size={16} />
                     <span className="text-sm">Join Our Team</span>
                   </Link>
