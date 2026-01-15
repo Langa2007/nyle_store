@@ -342,9 +342,9 @@ export default function PaymentLayout({ title, subtitle = "Your secure and relia
                   </p>
                 </div>
                 <div className="flex gap-6 text-sm text-blue-300">
-                  <Link href="/privacy" scroll={false} className="hover:text-white transition">Privacy Policy</Link>
-                  <Link href="/terms" scroll={false} className="hover:text-white transition">Terms of Service</Link>
-                  <Link href="/cookies" scroll={false} className="hover:text-white transition">Cookie Policy</Link>
+                  <Link href="/others/privacy" scroll={false} className="hover:text-white transition">Privacy Policy</Link>
+                  <Link href="/others/terms" scroll={false} className="hover:text-white transition">Terms of Service</Link>
+                  <Link href="/others/cookies" scroll={false} className="hover:text-white transition">Cookie Policy</Link>
                 </div>
               </div>
             </div>

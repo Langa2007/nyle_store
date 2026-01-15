@@ -317,9 +317,9 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
                   </p>
                 </div>
                 <div className="flex gap-6 text-sm text-blue-300">
-                  <Link href="/privacy" className="hover:text-white transition">Privacy Policy</Link>
-                  <Link href="/terms" className="hover:text-white transition">Terms of Service</Link>
-                  <Link href="/cookies" className="hover:text-white transition">Cookie Policy</Link>
+                  <Link href="/others/privacy" className="hover:text-white transition">Privacy Policy</Link>
+                  <Link href="/others/terms" className="hover:text-white transition">Terms of Service</Link>
+                  <Link href="/others/cookies" className="hover:text-white transition">Cookie Policy</Link>
                 </div>
               </div>
             </div>

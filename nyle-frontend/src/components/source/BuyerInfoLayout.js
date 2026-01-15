@@ -501,22 +501,22 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [],
             <div>
               <h4 className="font-bold text-white text-lg mb-4">Quick Links</h4>
               <div className="grid grid-cols-2 gap-3">
-                <Link href="/about" className="text-blue-100/80 hover:text-white transition-colors">
+                <Link href="/about/know-nyle" className="text-blue-100/80 hover:text-white transition-colors">
                   About Us
                 </Link>
-                <Link href="/contact" className="text-blue-100/80 hover:text-white transition-colors">
+                <Link href="/support/contact" className="text-blue-100/80 hover:text-white transition-colors">
                   Contact
                 </Link>
-                <Link href="/privacy" className="text-blue-100/80 hover:text-white transition-colors">
+                <Link href="/others/privacy" className="text-blue-100/80 hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
-                <Link href="/terms" className="text-blue-100/80 hover:text-white transition-colors">
+                <Link href="/others/terms" className="text-blue-100/80 hover:text-white transition-colors">
                   Terms of Service
                 </Link>
-                <Link href="/sitemap" className="text-blue-100/80 hover:text-white transition-colors">
+                <Link href="/others/sitemap" className="text-blue-100/80 hover:text-white transition-colors">
                   Sitemap
                 </Link>
-                <Link href="/careers" className="text-blue-100/80 hover:text-white transition-colors">
+                <Link href="/about/careers" className="text-blue-100/80 hover:text-white transition-colors">
                   Careers
                 </Link>
               </div>
