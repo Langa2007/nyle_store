@@ -24,7 +24,7 @@ export default function FooterInfoLayout({
   subtitle,
   children,
   icon,
-  lastUpdated = "January 15, 2024",
+  lastUpdated = "January 1, 2025",
   category = "Legal"
 }) {
   const [mounted, setMounted] = useState(false);
@@ -38,14 +38,14 @@ export default function FooterInfoLayout({
   // Navigation for all footer info pages
   const footerPages = [
     {
-      href: "others/privacy",
+      href: "/privacy",
       label: "Privacy Policy",
       icon: <Shield size={18} />,
       color: "from-blue-500 to-cyan-500",
       badge: "Security"
     },
     {
-      href: "others/terms",
+      href: "/terms",
       label: "Terms of Service",
       icon: <FileText size={18} />,
       color: "from-blue-600 to-indigo-600",
