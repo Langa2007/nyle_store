@@ -53,12 +53,12 @@ export default function SitemapPage() {
       icon: <Globe />,
       color: "from-cyan-500 to-blue-500",
       links: [
-        { name: "About Us", href: "/about", icon: "🏢" },
-        { name: "Contact Us", href: "/contact", icon: "📞" },
-        { name: "Help Center", href: "/help", icon: "❓" },
-        { name: "FAQs", href: "/faqs", icon: "💬" },
-        { name: "Careers", href: "/careers", icon: "💼" },
-        { name: "Blog", href: "/blog", icon: "📝" }
+        { name: "About Us", href: "/about/know-nyle", icon: "🏢" },
+        { name: "Contact Us", href: "support/contact", icon: "📞" },
+        { name: "Help Center", href: "support/help-center", icon: "❓" },
+        { name: "FAQs", href: "support/faqs", icon: "💬" },
+        { name: "Careers", href: "about/careers", icon: "💼" },
+        { name: "Blog", href: "support/newsletter", icon: "📝" }
       ]
     }
   ];
@@ -136,7 +136,7 @@ export default function SitemapPage() {
               { name: "Categories", href: "/categories", icon: "📂" },
               { name: "Deals", href: "/deals", icon: "💰" },
               { name: "Sell", href: "/vendor/signup", icon: "🚀" },
-              { name: "Support", href: "/help", icon: "❓" }
+              { name: "Support", href: "support/help-center", icon: "❓" }
             ].map((link, index) => (
               <Link
                 key={index}
