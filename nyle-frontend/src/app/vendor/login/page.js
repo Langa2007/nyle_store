@@ -82,7 +82,7 @@ function VendorLoginContent() {
     try {
       console.log("DEBUG: Attempting login for:", form.email);
 
-      const res = await fetch(`${API_URL}/api/v1/vendor/auth/login`, {
+      const res = await fetch(`${API_URL}/api/vendor/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -173,7 +173,7 @@ function VendorLoginContent() {
     try {
       console.log("DEBUG: Requesting password reset for:", resetEmail);
 
-      const res = await fetch(`${API_URL}/api/v1/vendor/auth/forgot-password`, {
+      const res = await fetch(`${API_URL}/api/vendor/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: resetEmail }),
