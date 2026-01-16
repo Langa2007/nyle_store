@@ -28,7 +28,8 @@ import {
   FaSearch, FaStar, FaTruck, FaShieldAlt, FaFire, FaBolt, FaRocket, FaShoppingBag, FaGem, FaHeadphones, FaLaptop, FaHome, FaTshirt,
   FaArrowRight, FaChevronRight, FaHeart, FaShoppingCart, FaAward, FaClock, FaCheckCircle, FaUsers, FaGlobe, FaLeaf,
   FaCrown, FaStore, FaTag, FaEnvelope, FaExclamationTriangle, FaGift, FaShippingFast, FaSnowflake, FaArrowUp,
-  FaChevronLeft, FaChevronRight as FaChevronRightIcon
+  FaChevronLeft, FaChevronRight as FaChevronRightIcon,
+  FaBriefcase, FaCar, FaTractor, FaCouch, FaBaby, FaCut, FaHammer, FaAppleAlt, FaMale, FaChild, FaFemale, FaRunning
 } from "react-icons/fa";
 
 function HomeContent() {
@@ -62,6 +63,29 @@ function HomeContent() {
     { id: "automotive", name: "Automotive", icon: <FaRocket />, color: "from-gray-500 to-blue-500" },
     { id: "garden", name: "Garden & Outdoor", icon: <FaGlobe />, color: "from-lime-500 to-green-500" },
   ];
+
+  // Helper to get category config (icon & color)
+  const getCategoryConfig = (catName) => {
+    const name = catName?.toLowerCase() || "";
+
+    if (name.includes("computer") || name.includes("electronics")) return { icon: <FaLaptop />, color: "from-blue-600 to-cyan-500" };
+    if (name.includes("home") || name.includes("garden")) return { icon: <FaHome />, color: "from-green-600 to-emerald-500" };
+    if (name.includes("cutleries") || name.includes("kitchen")) return { icon: <FaExclamationTriangle />, color: "from-orange-500 to-amber-500" }; // fallback icon
+    if (name.includes("beauty")) return { icon: <FaGem />, color: "from-pink-500 to-rose-500" };
+    if (name.includes("construction") || name.includes("machinery")) return { icon: <FaRocket />, color: "from-slate-600 to-gray-500" };
+    if (name.includes("grocer")) return { icon: <FaApplePay />, color: "from-green-500 to-lime-500" };
+    if (name.includes("office")) return { icon: <FaBriefcase />, color: "from-indigo-600 to-blue-500" };
+    if (name.includes("luggage") || name.includes("bag")) return { icon: <FaShoppingBag />, color: "from-violet-600 to-purple-500" };
+    if (name.includes("men")) return { icon: <FaTshirt />, color: "from-blue-700 to-indigo-800" };
+    if (name.includes("women")) return { icon: <FaFemale />, color: "from-pink-600 to-rose-500" };
+    if (name.includes("child") || name.includes("baby")) return { icon: <FaChild />, color: "from-yellow-400 to-orange-400" };
+    if (name.includes("sport")) return { icon: <FaBolt />, color: "from-orange-600 to-red-500" };
+    if (name.includes("farm")) return { icon: <FaTractor />, color: "from-green-700 to-emerald-600" };
+    if (name.includes("house")) return { icon: <FaCouch />, color: "from-teal-600 to-cyan-600" };
+    if (name.includes("auto") || name.includes("spare")) return { icon: <FaCar />, color: "from-red-600 to-orange-600" };
+
+    return { icon: <FaTag />, color: "from-blue-500 to-indigo-500" };
+  };
 
   // Stats data
   const stats = [
@@ -148,7 +172,7 @@ function HomeContent() {
   // Mouse drag functionality for categories slider
   const handleMouseDown = (e) => {
     if (!sliderRef.current) return;
-    
+
     setIsDragging(true);
     setStartX(e.pageX - sliderRef.current.offsetLeft);
     setScrollLeft(sliderRef.current.scrollLeft);
@@ -229,10 +253,10 @@ function HomeContent() {
   // Scroll categories slider
   const scrollCategories = (direction) => {
     if (!sliderRef.current) return;
-    
+
     const container = sliderRef.current;
     const scrollAmount = 300;
-    
+
     if (direction === 'left') {
       container.scrollLeft -= scrollAmount;
     } else {
@@ -505,8 +529,8 @@ function HomeContent() {
               <button
                 onClick={() => handleCategoryClick("all")}
                 className={`flex flex-col items-center justify-center w-48 h-48 rounded-2xl font-medium transition-all transform hover:scale-105 ${selectedCategory === "all"
-                    ? "bg-gradient-to-br from-blue-600 to-cyan-600 text-white shadow-xl ring-4 ring-blue-300 ring-opacity-50"
-                    : "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800 hover:shadow-lg"
+                  ? "bg-gradient-to-br from-blue-600 to-cyan-600 text-white shadow-xl ring-4 ring-blue-300 ring-opacity-50"
+                  : "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800 hover:shadow-lg"
                   }`}
               >
                 <div className="text-4xl mb-4 transform hover:scale-110 transition-transform">
@@ -520,25 +544,39 @@ function HomeContent() {
             </div>
 
             {/* Dynamic Categories from API */}
-            {categories.slice(0, 15).map((cat) => (
-              <div key={cat.id || cat._id} className="flex-shrink-0">
-                <button
-                  onClick={() => handleCategoryClick(cat.name)}
-                  className={`flex flex-col items-center justify-center w-48 h-48 rounded-2xl font-medium transition-all transform hover:scale-105 ${selectedCategory === cat.name
-                      ? "bg-gradient-to-br from-blue-600 to-cyan-600 text-white shadow-xl ring-4 ring-blue-300 ring-opacity-50"
-                      : "bg-gradient-to-br from-blue-100 to-cyan-100 text-gray-800 hover:shadow-lg"
-                    }`}
-                >
-                  <div className="text-4xl mb-4 transform hover:scale-110 transition-transform">
-                    {cat.icon || <FaTag />}
-                  </div>
-                  <h3 className="text-xl font-bold mb-2">{cat.name}</h3>
-                  <div className="text-sm opacity-80">
-                    {selectedCategory === cat.name ? '✓ Viewing Now' : 'Click to Explore'}
-                  </div>
-                </button>
-              </div>
-            ))}
+            {categories.slice(0, 15).map((cat) => {
+              const { icon, color } = getCategoryConfig(cat.name);
+              const isSelected = selectedCategory === cat.name;
+
+              return (
+                <div key={cat.id || cat._id} className="flex-shrink-0">
+                  <button
+                    onClick={() => handleCategoryClick(cat.name)}
+                    className={`group relative flex flex-col items-center justify-center w-40 h-40 rounded-3xl transition-all duration-300 transform hover:scale-105 ${isSelected
+                      ? `bg-gradient-to-br ${color} text-white shadow-xl ring-4 ring-blue-200`
+                      : "bg-white text-gray-700 hover:shadow-xl border border-gray-100"
+                      }`}
+                  >
+                    {/* Icon Container */}
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mb-3 shadow-sm transition-transform group-hover:scale-110 ${isSelected ? "bg-white/20 text-white" : `bg-gray-50 ${color.replace('from-', 'text-').split(' ')[0]}`
+                      }`}>
+                      {icon}
+                    </div>
+
+                    {/* Category Name */}
+                    <h3 className={`text-sm font-bold text-center px-2 leading-tight ${isSelected ? "text-white" : "text-gray-800"
+                      }`}>
+                      {cat.name}
+                    </h3>
+
+                    {/* Active Dot */}
+                    {isSelected && (
+                      <div className="absolute top-3 right-3 w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    )}
+                  </button>
+                </div>
+              );
+            })}
 
             {/* Additional Featured Categories (if API doesn't have enough) */}
             {categories.length < 8 && featuredCategories.map((category) => (
@@ -546,8 +584,8 @@ function HomeContent() {
                 <button
                   onClick={() => handleCategoryClick(category.id)}
                   className={`flex flex-col items-center justify-center w-48 h-48 rounded-2xl font-medium transition-all transform hover:scale-105 ${selectedCategory === category.id
-                      ? "bg-gradient-to-br " + category.color + " text-white shadow-xl ring-4 ring-blue-300 ring-opacity-50"
-                      : "bg-gradient-to-br " + category.color.replace('500', '100') + " text-gray-800 hover:shadow-lg"
+                    ? "bg-gradient-to-br " + category.color + " text-white shadow-xl ring-4 ring-blue-300 ring-opacity-50"
+                    : "bg-gradient-to-br " + category.color.replace('500', '100') + " text-gray-800 hover:shadow-lg"
                     }`}
                 >
                   <div className="text-4xl mb-4 transform hover:scale-110 transition-transform">
@@ -599,8 +637,8 @@ function HomeContent() {
             <button
               onClick={() => handleCategoryClick("all")}
               className={`flex-shrink-0 px-4 py-2 rounded-full font-medium transition-all ${selectedCategory === "all"
-                  ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
             >
               🌟 All
@@ -610,8 +648,8 @@ function HomeContent() {
                 key={cat.id || cat._id}
                 onClick={() => handleCategoryClick(cat.name)}
                 className={`flex-shrink-0 px-4 py-2 rounded-full font-medium transition-all ${selectedCategory === cat.name
-                    ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
               >
                 {cat.name}
