@@ -64,27 +64,32 @@ function HomeContent() {
     { id: "garden", name: "Garden & Outdoor", icon: <FaGlobe />, color: "from-lime-500 to-green-500" },
   ];
 
-  // Helper to get category config (icon & color)
+  // Helper to get category config (image & color)
   const getCategoryConfig = (catName) => {
     const name = catName?.toLowerCase() || "";
 
-    if (name.includes("computer") || name.includes("electronics")) return { icon: <FaLaptop />, color: "from-blue-600 to-cyan-500" };
-    if (name.includes("home") || name.includes("garden")) return { icon: <FaHome />, color: "from-green-600 to-emerald-500" };
-    if (name.includes("cutleries") || name.includes("kitchen")) return { icon: <FaExclamationTriangle />, color: "from-orange-500 to-amber-500" }; // fallback icon
-    if (name.includes("beauty")) return { icon: <FaGem />, color: "from-pink-500 to-rose-500" };
-    if (name.includes("construction") || name.includes("machinery")) return { icon: <FaRocket />, color: "from-slate-600 to-gray-500" };
-    if (name.includes("grocer")) return { icon: <FaApplePay />, color: "from-green-500 to-lime-500" };
-    if (name.includes("office")) return { icon: <FaBriefcase />, color: "from-indigo-600 to-blue-500" };
-    if (name.includes("luggage") || name.includes("bag")) return { icon: <FaShoppingBag />, color: "from-violet-600 to-purple-500" };
-    if (name.includes("men")) return { icon: <FaTshirt />, color: "from-blue-700 to-indigo-800" };
-    if (name.includes("women")) return { icon: <FaFemale />, color: "from-pink-600 to-rose-500" };
-    if (name.includes("child") || name.includes("baby")) return { icon: <FaChild />, color: "from-yellow-400 to-orange-400" };
-    if (name.includes("sport")) return { icon: <FaBolt />, color: "from-orange-600 to-red-500" };
-    if (name.includes("farm")) return { icon: <FaTractor />, color: "from-green-700 to-emerald-600" };
-    if (name.includes("house")) return { icon: <FaCouch />, color: "from-teal-600 to-cyan-600" };
-    if (name.includes("auto") || name.includes("spare")) return { icon: <FaCar />, color: "from-red-600 to-orange-600" };
+    // Default fallback
+    let image = "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80"; // Tech/Work abstract
 
-    return { icon: <FaTag />, color: "from-blue-500 to-indigo-500" };
+    if (name.includes("computer") || name.includes("electronics")) image = "https://images.unsplash.com/photo-1498049381929-7232985a9003?auto=format&fit=crop&w=400&q=80";
+    else if (name.includes("fashion") || name.includes("cloth") || name.includes("wear") || name.includes("outfit")) image = "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=400&q=80";
+    else if (name.includes("home") || name.includes("living") || name.includes("house")) image = "https://images.unsplash.com/photo-1484154218962-a1c00207bf9a?auto=format&fit=crop&w=400&q=80";
+    else if (name.includes("beauty") || name.includes("cosmetic")) image = "https://images.unsplash.com/photo-1596462502278-27bfdd403348?auto=format&fit=crop&w=400&q=80";
+    else if (name.includes("sports") || name.includes("gym")) image = "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=400&q=80";
+    else if (name.includes("book")) image = "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&w=400&q=80";
+    else if (name.includes("toy") || name.includes("game")) image = "https://images.unsplash.com/photo-1566576912902-1d6db6b8d5cb?auto=format&fit=crop&w=400&q=80";
+    else if (name.includes("health") || name.includes("fitness")) image = "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=400&q=80";
+    else if (name.includes("auto") || name.includes("car") || name.includes("spare")) image = "https://images.unsplash.com/photo-1486262715619-01b80250e0dc?auto=format&fit=crop&w=400&q=80";
+    else if (name.includes("garden") || name.includes("farm") || name.includes("tractor")) image = "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=400&q=80";
+    else if (name.includes("construction") || name.includes("build") || name.includes("machinery")) image = "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=400&q=80";
+    else if (name.includes("cutler") || name.includes("kitchen") || name.includes("cook")) image = "https://images.unsplash.com/photo-1556910103-1c02745a30bf?auto=format&fit=crop&w=400&q=80";
+    else if (name.includes("grocer") || name.includes("food")) image = "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=400&q=80";
+    else if (name.includes("office") || name.includes("suppl")) image = "https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=400&q=80";
+    else if (name.includes("bag") || name.includes("luggage")) image = "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=400&q=80";
+    else if (name.includes("shoe") || name.includes("sneaker")) image = "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=400&q=80";
+    else if (name.includes("watch") || name.includes("jewelry")) image = "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=400&q=80";
+
+    return { image };
   };
 
   // Stats data
@@ -543,35 +548,46 @@ function HomeContent() {
               </button>
             </div>
 
-            {/* Dynamic Categories from API */}
+            {/* Dynamic Categories from API with Images */}
             {categories.slice(0, 15).map((cat) => {
-              const { icon, color } = getCategoryConfig(cat.name);
+              const { image } = getCategoryConfig(cat.name);
               const isSelected = selectedCategory === cat.name;
 
               return (
                 <div key={cat.id || cat._id} className="flex-shrink-0">
                   <button
                     onClick={() => handleCategoryClick(cat.name)}
-                    className={`group relative flex flex-col items-center justify-center w-40 h-40 rounded-3xl transition-all duration-300 transform hover:scale-105 ${isSelected
-                      ? `bg-gradient-to-br ${color} text-white shadow-xl ring-4 ring-blue-200`
-                      : "bg-white text-gray-700 hover:shadow-xl border border-gray-100"
+                    className={`group relative w-48 h-64 rounded-3xl overflow-hidden transition-all duration-300 transform hover:scale-105 ${isSelected ? "ring-4 ring-blue-500 shadow-2xl scale-105" : "hover:shadow-xl"
                       }`}
                   >
-                    {/* Icon Container */}
-                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mb-3 shadow-sm transition-transform group-hover:scale-110 ${isSelected ? "bg-white/20 text-white" : `bg-gray-50 ${color.replace('from-', 'text-').split(' ')[0]}`
-                      }`}>
-                      {icon}
+                    {/* Background Image */}
+                    <div className="absolute inset-0">
+                      <img
+                        src={image}
+                        alt={cat.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      {/* Gradient Overlay */}
+                      <div className={`absolute inset-0 bg-gradient-to-t ${isSelected ? "from-blue-900/90 via-blue-800/40" : "from-black/80 via-black/20"
+                        } to-transparent`}></div>
                     </div>
 
-                    {/* Category Name */}
-                    <h3 className={`text-sm font-bold text-center px-2 leading-tight ${isSelected ? "text-white" : "text-gray-800"
-                      }`}>
-                      {cat.name}
-                    </h3>
+                    {/* Content */}
+                    <div className="absolute bottom-0 left-0 right-0 p-5 text-left">
+                      <h3 className="text-white font-bold text-lg leading-tight mb-1 group-hover:text-blue-200 transition-colors">
+                        {cat.name}
+                      </h3>
+                      <div className="flex items-center text-xs text-gray-300 font-medium opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                        <span>Explore Collection</span>
+                        <FaArrowRight className="ml-2 w-3 h-3" />
+                      </div>
+                    </div>
 
-                    {/* Active Dot */}
+                    {/* Selection Indicator */}
                     {isSelected && (
-                      <div className="absolute top-3 right-3 w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                      <div className="absolute top-4 right-4 bg-blue-500 text-white p-1.5 rounded-full shadow-lg">
+                        <FaCheckCircle className="w-4 h-4" />
+                      </div>
                     )}
                   </button>
                 </div>
