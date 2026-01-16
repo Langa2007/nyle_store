@@ -27,7 +27,8 @@ import {
   // UI Icons
   FaSearch, FaStar, FaTruck, FaShieldAlt, FaFire, FaBolt, FaRocket, FaShoppingBag, FaGem, FaHeadphones, FaLaptop, FaHome, FaTshirt,
   FaArrowRight, FaChevronRight, FaHeart, FaShoppingCart, FaAward, FaClock, FaCheckCircle, FaUsers, FaGlobe, FaLeaf,
-  FaCrown, FaStore, FaTag, FaEnvelope, FaExclamationTriangle, FaGift, FaShippingFast, FaSnowflake, FaArrowUp
+  FaCrown, FaStore, FaTag, FaEnvelope, FaExclamationTriangle, FaGift, FaShippingFast, FaSnowflake, FaArrowUp,
+  FaChevronLeft, FaChevronRight as FaChevronRightIcon
 } from "react-icons/fa";
 
 function HomeContent() {
@@ -42,6 +43,11 @@ function HomeContent() {
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const categoriesContainerRef = useRef(null);
+  const sliderRef = useRef(null);
 
   // Enhanced featured categories with icons
   const featuredCategories = [
@@ -50,6 +56,11 @@ function HomeContent() {
     { id: "home", name: "Home & Living", icon: <FaHome />, color: "from-green-500 to-emerald-500" },
     { id: "beauty", name: "Beauty", icon: <FaGem />, color: "from-rose-500 to-red-500" },
     { id: "sports", name: "Sports", icon: <FaBolt />, color: "from-orange-500 to-yellow-500" },
+    { id: "books", name: "Books & Media", icon: <FaHeadphones />, color: "from-indigo-500 to-purple-500" },
+    { id: "toys", name: "Toys & Games", icon: <FaShoppingBag />, color: "from-red-500 to-pink-500" },
+    { id: "health", name: "Health & Fitness", icon: <FaLeaf />, color: "from-teal-500 to-green-500" },
+    { id: "automotive", name: "Automotive", icon: <FaRocket />, color: "from-gray-500 to-blue-500" },
+    { id: "garden", name: "Garden & Outdoor", icon: <FaGlobe />, color: "from-lime-500 to-green-500" },
   ];
 
   // Stats data
@@ -87,7 +98,78 @@ function HomeContent() {
       .catch(() => setCurrency("KES"));
   }, []);
 
-  // Scroll position restoration - ADDED SCROLL POSITION FUNCTIONALITY
+  // Auto-scroll categories slider
+  useEffect(() => {
+    if (!sliderRef.current) return;
+
+    const slider = sliderRef.current;
+    let animationId;
+    let direction = 1; // 1 for right, -1 for left
+    let scrollSpeed = 1;
+
+    const autoScroll = () => {
+      if (slider.scrollLeft >= (slider.scrollWidth - slider.clientWidth - 10)) {
+        direction = -1;
+        scrollSpeed = 2;
+      } else if (slider.scrollLeft <= 10) {
+        direction = 1;
+        scrollSpeed = 1;
+      }
+
+      slider.scrollLeft += direction * scrollSpeed;
+      animationId = requestAnimationFrame(autoScroll);
+    };
+
+    // Start auto-scroll after a delay
+    const startDelay = setTimeout(() => {
+      animationId = requestAnimationFrame(autoScroll);
+    }, 2000);
+
+    // Pause on hover
+    const handleMouseEnter = () => {
+      cancelAnimationFrame(animationId);
+    };
+
+    const handleMouseLeave = () => {
+      animationId = requestAnimationFrame(autoScroll);
+    };
+
+    slider.addEventListener('mouseenter', handleMouseEnter);
+    slider.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      clearTimeout(startDelay);
+      cancelAnimationFrame(animationId);
+      slider.removeEventListener('mouseenter', handleMouseEnter);
+      slider.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [categories]);
+
+  // Mouse drag functionality for categories slider
+  const handleMouseDown = (e) => {
+    if (!sliderRef.current) return;
+    
+    setIsDragging(true);
+    setStartX(e.pageX - sliderRef.current.offsetLeft);
+    setScrollLeft(sliderRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging || !sliderRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - sliderRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Scroll speed multiplier
+    sliderRef.current.scrollLeft = scrollLeft - walk;
+  };
+
   // Scroll effect for navbar
   useEffect(() => {
     const scrollRoot = document.getElementById("scroll-root");
@@ -99,7 +181,6 @@ function HomeContent() {
       }
     };
 
-    // Attach listener to scroll-root if available, otherwise window (fallback)
     if (scrollRoot) {
       scrollRoot.addEventListener("scroll", handleScroll);
     } else {
@@ -122,7 +203,7 @@ function HomeContent() {
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Handle category click - FIXED FUNCTION
+  // Handle category click
   const handleCategoryClick = (categoryId) => {
     setSelectedCategory(categoryId);
     setTimeout(() => {
@@ -131,7 +212,7 @@ function HomeContent() {
     }, 100);
   };
 
-  // Enhanced filtering logic - FIXED
+  // Enhanced filtering logic
   const filteredProducts = products.filter((product) => {
     const matchesSearch = (product.name || "").toLowerCase().includes(searchTerm.toLowerCase());
     let matchesCategory = true;
@@ -144,6 +225,20 @@ function HomeContent() {
 
     return matchesSearch && matchesCategory;
   });
+
+  // Scroll categories slider
+  const scrollCategories = (direction) => {
+    if (!sliderRef.current) return;
+    
+    const container = sliderRef.current;
+    const scrollAmount = 300;
+    
+    if (direction === 'left') {
+      container.scrollLeft -= scrollAmount;
+    } else {
+      container.scrollLeft += scrollAmount;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -194,6 +289,7 @@ function HomeContent() {
           </div>
         </div>
       </motion.nav>
+
       {/* UPDATED Hero Section - Combining Store Info with Premium Fridge Image */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white pt-32 pb-20 px-6">
         {/* Animated background elements */}
@@ -204,7 +300,7 @@ function HomeContent() {
 
         <div className="container mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* LEFT SIDE: Store Information (ORIGINAL - KEEPING THIS) */}
+            {/* LEFT SIDE: Store Information */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
@@ -275,7 +371,7 @@ function HomeContent() {
               </div>
 
               {/* Quick Stats */}
-              <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap.4">
                 {stats.map((stat, index) => (
                   <motion.div
                     key={index}
@@ -305,7 +401,6 @@ function HomeContent() {
                   alt="Premium Smart Refrigerator - Featured Product"
                   className="w-full h-[500px] object-cover"
                   onError={(e) => {
-                    // Fallback image if Unsplash fails
                     e.target.src = "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
                   }}
                 />
@@ -352,7 +447,7 @@ function HomeContent() {
         </div>
       </section>
 
-      {/* Categories Section - UPDATED WITH CLICK FUNCTIONALITY */}
+      {/* ENHANCED Categories Section - AUTO-SCROLLING SLIDER */}
       <section id="categories" className="container mx-auto px-6 mt-20">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -363,78 +458,167 @@ function HomeContent() {
           </p>
         </div>
 
-        {/* Category Cards Grid - MADE CLICKABLE */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-12">
-          {featuredCategories.map((category, index) => (
-            <motion.div
-              key={category.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ y: -10 }}
-              className="group cursor-pointer"
-              onClick={() => handleCategoryClick(category.id)}
-            >
-              <div className={`bg-gradient-to-br ${category.color} rounded-2xl p-8 text-center text-white shadow-xl transform group-hover:scale-105 transition-all duration-300 ${selectedCategory === category.id ? 'ring-4 ring-blue-300 ring-opacity-50' : ''}`}>
-                <div className="text-4xl mb-4 transform group-hover:scale-110 transition-transform">
-                  {category.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-2">{category.name}</h3>
-                <div className="text-sm opacity-80">
-                  {selectedCategory === category.id ? '✓ Viewing Now' : 'Click to Explore →'}
-                </div>
-              </div>
-            </motion.div>
-          ))}
+        {/* Slider Controls */}
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-2xl font-bold text-gray-800">Browse All Categories</h3>
+          <div className="flex items-center space-x-4">
+            <div className="text-sm text-gray-500 hidden md:block">
+              {selectedCategory !== "all" ? `Showing: ${selectedCategory}` : "Showing: All Products"}
+            </div>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => scrollCategories('left')}
+                className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition"
+                aria-label="Scroll left"
+              >
+                <FaChevronLeft className="text-gray-600" />
+              </button>
+              <button
+                onClick={() => scrollCategories('right')}
+                className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition"
+                aria-label="Scroll right"
+              >
+                <FaChevronRightIcon className="text-gray-600" />
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* All Categories Scroll - UPDATED */}
-        {categories.length > 0 && (
-          <div className="mb-16">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-bold text-gray-800">Browse All Categories</h3>
-              <div className="text-sm text-gray-500">
-                {selectedCategory !== "all" ? `Showing: ${selectedCategory}` : "Showing: All Products"}
-              </div>
-            </div>
-            <div className="flex overflow-x-auto pb-4 space-x-4 scrollbar-hide">
+        {/* Auto-scrolling Categories Slider */}
+        <div className="relative group">
+          {/* Gradient overlays for better UX */}
+          <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
+
+          {/* Main Slider Container */}
+          <div
+            ref={sliderRef}
+            className="flex overflow-x-auto pb-6 space-x-6 scrollbar-hide"
+            onMouseDown={handleMouseDown}
+            onMouseLeave={handleMouseLeave}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
+            style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+          >
+            {/* All Products Button */}
+            <div className="flex-shrink-0">
               <button
                 onClick={() => handleCategoryClick("all")}
-                className={`flex-shrink-0 px-6 py-3 rounded-full font-medium transition-all ${selectedCategory === "all"
+                className={`flex flex-col items-center justify-center w-48 h-48 rounded-2xl font-medium transition-all transform hover:scale-105 ${selectedCategory === "all"
+                    ? "bg-gradient-to-br from-blue-600 to-cyan-600 text-white shadow-xl ring-4 ring-blue-300 ring-opacity-50"
+                    : "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800 hover:shadow-lg"
+                  }`}
+              >
+                <div className="text-4xl mb-4 transform hover:scale-110 transition-transform">
+                  🌟
+                </div>
+                <h3 className="text-xl font-bold mb-2">All Products</h3>
+                <div className="text-sm opacity-80">
+                  {selectedCategory === "all" ? '✓ Viewing Now' : 'Click to Explore'}
+                </div>
+              </button>
+            </div>
+
+            {/* Dynamic Categories from API */}
+            {categories.slice(0, 15).map((cat) => (
+              <div key={cat.id || cat._id} className="flex-shrink-0">
+                <button
+                  onClick={() => handleCategoryClick(cat.name)}
+                  className={`flex flex-col items-center justify-center w-48 h-48 rounded-2xl font-medium transition-all transform hover:scale-105 ${selectedCategory === cat.name
+                      ? "bg-gradient-to-br from-blue-600 to-cyan-600 text-white shadow-xl ring-4 ring-blue-300 ring-opacity-50"
+                      : "bg-gradient-to-br from-blue-100 to-cyan-100 text-gray-800 hover:shadow-lg"
+                    }`}
+                >
+                  <div className="text-4xl mb-4 transform hover:scale-110 transition-transform">
+                    {cat.icon || <FaTag />}
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">{cat.name}</h3>
+                  <div className="text-sm opacity-80">
+                    {selectedCategory === cat.name ? '✓ Viewing Now' : 'Click to Explore'}
+                  </div>
+                </button>
+              </div>
+            ))}
+
+            {/* Additional Featured Categories (if API doesn't have enough) */}
+            {categories.length < 8 && featuredCategories.map((category) => (
+              <div key={category.id} className="flex-shrink-0">
+                <button
+                  onClick={() => handleCategoryClick(category.id)}
+                  className={`flex flex-col items-center justify-center w-48 h-48 rounded-2xl font-medium transition-all transform hover:scale-105 ${selectedCategory === category.id
+                      ? "bg-gradient-to-br " + category.color + " text-white shadow-xl ring-4 ring-blue-300 ring-opacity-50"
+                      : "bg-gradient-to-br " + category.color.replace('500', '100') + " text-gray-800 hover:shadow-lg"
+                    }`}
+                >
+                  <div className="text-4xl mb-4 transform hover:scale-110 transition-transform">
+                    {category.icon}
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">{category.name}</h3>
+                  <div className="text-sm opacity-80">
+                    {selectedCategory === category.id ? '✓ Viewing Now' : 'Click to Explore'}
+                  </div>
+                </button>
+              </div>
+            ))}
+
+            {/* "View All" Button */}
+            <div className="flex-shrink-0">
+              <Link href="/categories">
+                <div className="flex flex-col items-center justify-center w-48 h-48 rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 text-gray-800 hover:shadow-lg transition-all transform hover:scale-105">
+                  <div className="text-4xl mb-4 transform hover:scale-110 transition-transform">
+                    <FaChevronRightIcon />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">View All</h3>
+                  <div className="text-sm opacity-80">
+                    See all categories →
+                  </div>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Selected Category Indicator */}
+        {selectedCategory !== "all" && (
+          <div className="mt-8 text-center">
+            <p className="text-blue-600 font-medium">
+              Showing products in <span className="font-bold">{selectedCategory}</span> category
+              <button
+                onClick={() => handleCategoryClick("all")}
+                className="ml-3 text-sm text-gray-500 hover:text-blue-700"
+              >
+                (Clear filter)
+              </button>
+            </p>
+          </div>
+        )}
+
+        {/* Mobile Quick Categories */}
+        <div className="mt-8 md:hidden">
+          <div className="flex overflow-x-auto pb-4 space-x-3 scrollbar-hide">
+            <button
+              onClick={() => handleCategoryClick("all")}
+              className={`flex-shrink-0 px-4 py-2 rounded-full font-medium transition-all ${selectedCategory === "all"
+                  ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+            >
+              🌟 All
+            </button>
+            {categories.slice(0, 8).map((cat) => (
+              <button
+                key={cat.id || cat._id}
+                onClick={() => handleCategoryClick(cat.name)}
+                className={`flex-shrink-0 px-4 py-2 rounded-full font-medium transition-all ${selectedCategory === cat.name
                     ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
               >
-                🌟 All Products
+                {cat.name}
               </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat.id || cat._id}
-                  onClick={() => handleCategoryClick(cat.name)}
-                  className={`flex-shrink-0 px-6 py-3 rounded-full font-medium transition-all ${selectedCategory === cat.name
-                      ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
-                >
-                  {cat.name}
-                </button>
-              ))}
-            </div>
-            {selectedCategory !== "all" && (
-              <div className="mt-6 text-center">
-                <p className="text-blue-600 font-medium">
-                  Showing products in <span className="font-bold">{selectedCategory}</span> category
-                  <button
-                    onClick={() => handleCategoryClick("all")}
-                    className="ml-3 text-sm text-gray-500 hover:text-blue-700"
-                  >
-                    (Clear filter)
-                  </button>
-                </p>
-              </div>
-            )}
+            ))}
           </div>
-        )}
+        </div>
       </section>
 
       {/* Featured Products - NOW FILTERED BY CATEGORY */}
@@ -705,7 +889,7 @@ function HomeContent() {
       <footer id="footer" className="mt-24 bg-gradient-to-br from-gray-900 to-blue-900 text-white">
         <div className="container mx-auto px-6 py-16">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10">
-            {/* Sell on Nyle Section -  */}
+            {/* Sell on Nyle Section */}
             <div>
               <h3 className="font-bold text-lg mb-4 flex items-center">
                 <FaStore className="mr-2 text-blue-400" />
@@ -735,7 +919,7 @@ function HomeContent() {
               </ul>
             </div>
 
-            {/* Support Section -*/}
+            {/* Support Section */}
             <div>
               <h3 className="font-bold text-lg mb-4 flex items-center">
                 <FaHeadphones className="mr-2 text-blue-400" />
@@ -749,7 +933,7 @@ function HomeContent() {
               </ul>
             </div>
 
-            {/* Nyle Payments Section - */}
+            {/* Nyle Payments Section */}
             <div>
               <h3 className="font-bold text-lg mb-4 flex items-center">
                 <FaCcVisa className="mr-2 text-blue-400" />
@@ -763,7 +947,7 @@ function HomeContent() {
               </ul>
             </div>
 
-            {/* Source On Nyle Section -  */}
+            {/* Source On Nyle Section */}
             <div>
               <h3 className="font-bold text-lg mb-4 flex items-center">
                 <FaTag className="mr-2 text-blue-400" />
