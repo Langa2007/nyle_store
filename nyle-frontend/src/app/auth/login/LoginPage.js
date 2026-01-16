@@ -4,11 +4,11 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { login } from "../../../services/authService";
-import { 
-  FaEnvelope, 
-  FaLock, 
-  FaArrowRight, 
-  FaEye, 
+import {
+  FaEnvelope,
+  FaLock,
+  FaArrowRight,
+  FaEye,
   FaEyeSlash,
   FaExclamationTriangle,
   FaCheckCircle
@@ -36,7 +36,7 @@ export default function LoginPage() {
     e.preventDefault();
     setMsg("");
     setLoading(true);
-    
+
     try {
       const data = await login({ email, password });
       if (data.token) {
@@ -156,11 +156,10 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={resetLoading}
-                    className={`w-full py-3 px-4 rounded-lg font-semibold transition ${
-                      resetLoading
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg"
-                    }`}
+                    className={`w-full py-3 px-4 rounded-lg font-semibold transition ${resetLoading
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg"
+                      }`}
                   >
                     {resetLoading ? "Sending..." : "Send Reset Link"}
                   </button>
@@ -247,11 +246,10 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`w-full py-3 px-4 rounded-lg font-semibold transition flex items-center justify-center ${
-                      loading
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg hover:shadow-xl"
-                    }`}
+                    className={`w-full py-3 px-4 rounded-lg font-semibold transition flex items-center justify-center ${loading
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg hover:shadow-xl"
+                      }`}
                   >
                     {loading ? (
                       <>
@@ -271,20 +269,20 @@ export default function LoginPage() {
                   <div className="text-center">
                     <p className="text-gray-600">
                       Don't have an account?{" "}
-                      <Link 
-                        href="/auth/signup" 
+                      <Link
+                        href="/auth/signup"
                         className="text-blue-600 font-semibold hover:text-blue-800 hover:underline"
                       >
                         Sign up here
                       </Link>
                     </p>
                   </div>
-                  
+
                   <div className="mt-6 text-center">
                     <p className="text-sm text-gray-500">
                       Are you a vendor?{" "}
-                      <Link 
-                        href="/vendor/login" 
+                      <Link
+                        href="/vendor/login"
                         className="text-orange-600 font-medium hover:text-orange-800 hover:underline"
                       >
                         Vendor Login
@@ -305,6 +303,20 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+
+      {/* Back to Home Button (Bottom) */}
+      <div className="mt-8 text-center">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm text-blue-600 font-medium rounded-full hover:bg-white hover:shadow-md transition-all group"
+        >
+          <div className="transform rotate-180">
+            <FaArrowRight className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          </div>
+          Back to Home
+        </Link>
+      </div>
     </div>
+
   );
 }

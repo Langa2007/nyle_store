@@ -225,18 +225,9 @@ function VendorLoginContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center p-4">
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB4PSIwIiB5PSIwIiB3aWR0aD0iODAiIGhlaWdodD0iODAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmF5bX9mb3JtPSJyb3RhdGUoNDUpIj48cGF0aCBkPSJNLTEuMTE4MDMzODMsODAuMjU0ODI3MTcgTDgwLjI1NDgyNzE3LC0xLjExODAzMzgzIE03OS4xMzY3OTMzNSw4MC4yNTQ4MjcxNyBMMTYwLjUwODgyNzIsLTEuMTE4MDMzODMiIHN0cm9rZT0iIzNiODJmNiIgc3Ryb2tlLXdpZHRoPSIwLjUiIHN0cm9rZS1vcGFjaXR5PSIwLjA1Ii8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3BhdHRlcm4pIi8+PC9zdmc+')] opacity-30"></div>
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy5wMy5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB4PSIwIiB5PSIwIiB3aWR0aD0iODAiIGhlaWdodD0iODAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmF5bX9mb3JtPSJyb3RhdGUoNDUpIj48cGF0aCBkPSJNLTEuMTE4MDMzODMsODAuMjU0ODI3MTcgTDgwLjI1NDgyNzE3LC0xLjExODAzMzgzIE03OS4xMzY3OTMzNSw4MC4yNTQ4MjcxNyBMMTYwLjUwODgyNzIsLTEuMTE4MDMzODMiIHN0cm9rZT0iIzNiODJmNiIgc3Ryb2tlLXdpZHRoPSIwLjUiIHN0cm9rZS1vcGFjaXR5PSIwLjA1Ii8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3BhdHRlcm4pIi8+PC9zdmc+')] opacity-30"></div>
 
       <div className="relative w-full max-w-md">
-        {/* Back to Home Button */}
-        <Link
-          href="/"
-          className="absolute -top-16 left-0 flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors group"
-        >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          <span className="font-medium">Back to Home</span>
-        </Link>
-
         {/* Main Card */}
         <div className="bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden">
           {/* Header */}
@@ -547,6 +538,22 @@ function VendorLoginContent() {
             <a href="/vendor/faq" className="hover:text-blue-600 hover:underline">FAQ</a>
             <a href="/vendor/about" className="hover:text-blue-600 hover:underline">About</a>
           </div>
+          <div className="flex justify-center gap-4 text-xs text-gray-500">
+            <a href="/vendor/security" className="hover:text-blue-600 hover:underline">Security</a>
+            <a href="/vendor/faq" className="hover:text-blue-600 hover:underline">FAQ</a>
+            <a href="/vendor/about" className="hover:text-blue-600 hover:underline">About</a>
+          </div>
+        </div>
+
+        {/* Back to Home Button (Bottom) */}
+        <div className="mt-8 text-center">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm text-blue-600 font-medium rounded-full hover:bg-white hover:shadow-md transition-all group"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            Back to Home
+          </Link>
         </div>
       </div>
     </div>
