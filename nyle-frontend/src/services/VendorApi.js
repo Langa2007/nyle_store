@@ -29,7 +29,7 @@ api.interceptors.response.use(
       localStorage.removeItem('vendor_token');
       localStorage.removeItem('vendor_data');
       sessionStorage.removeItem('vendor_session');
-      
+
       // Redirect to sign-in if we're in the browser
       if (typeof window !== 'undefined') {
         window.location.href = '/vendor/signin?error=session_expired';
@@ -44,35 +44,35 @@ export const verifyVendorSession = async () => {
   try {
     const token = localStorage.getItem('vendor_token');
     const vendorData = localStorage.getItem('vendor_data');
-    
+
     if (!token) {
-      return { 
-        authenticated: false, 
+      return {
+        authenticated: false,
         verified: false,
         message: 'No authentication token found'
       };
     }
 
     // Try to get vendor profile to verify session
-    const response = await api.get('/vendor/profile');
-    
+    const response = await api.get('/vendor/auth/verify-session');
+
     return {
       authenticated: true,
-      verified: response.data?.vendor?.status === 'verified',
+      verified: response.data?.vendor?.status === 'approved' || response.data?.vendor?.status === 'verified',
       vendor: response.data?.vendor || JSON.parse(vendorData || '{}')
     };
   } catch (error) {
     console.error('Session verification error:', error);
-    
+
     // Clear invalid session data
     if (error.response?.status === 401 || error.response?.status === 403) {
       localStorage.removeItem('vendor_token');
       localStorage.removeItem('vendor_data');
       sessionStorage.removeItem('vendor_session');
     }
-    
-    return { 
-      authenticated: false, 
+
+    return {
+      authenticated: false,
       verified: false,
       message: error.response?.data?.message || 'Session verification failed'
     };
@@ -103,7 +103,7 @@ export const getProductStats = async () => {
 export const createVendorProduct = async (productData) => {
   try {
     const formData = new FormData();
-    
+
     // Append all product data
     Object.keys(productData).forEach(key => {
       if (key === 'gallery_images' && Array.isArray(productData[key])) {
@@ -177,17 +177,17 @@ export const getVendorProfile = async () => {
 export const vendorLogin = async (email, password) => {
   try {
     const response = await api.post('/vendor/auth/login', { email, password });
-    
+
     if (response.data?.token) {
       localStorage.setItem('vendor_token', response.data.token);
-      
+
       if (response.data?.vendor) {
         localStorage.setItem('vendor_data', JSON.stringify(response.data.vendor));
       }
-      
+
       return response.data;
     }
-    
+
     throw new Error('No token received');
   } catch (error) {
     console.error('Login error:', error);
@@ -200,7 +200,7 @@ export const vendorLogout = () => {
   localStorage.removeItem('vendor_token');
   localStorage.removeItem('vendor_data');
   sessionStorage.removeItem('vendor_session');
-  
+
   // Redirect to sign-in page
   if (typeof window !== 'undefined') {
     window.location.href = '/vendor/signin';
@@ -211,11 +211,11 @@ export const vendorLogout = () => {
 export const isVendorLoggedIn = () => {
   const token = localStorage.getItem('vendor_token');
   const vendorData = localStorage.getItem('vendor_data');
-  
+
   if (!token || !vendorData) {
     return false;
   }
-  
+
   try {
     const vendor = JSON.parse(vendorData);
     return vendor.status === 'verified';

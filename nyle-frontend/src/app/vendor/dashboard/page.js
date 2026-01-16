@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { 
-  Menu, X, ShoppingCart, Package, BarChart3, Settings, 
+import {
+  Menu, X, ShoppingCart, Package, BarChart3, Settings,
   Plus, Edit, Trash2, Eye, CheckCircle, Clock, AlertCircle,
   Upload, Image as ImageIcon, Tag, DollarSign, Package2,
   Filter, Search, ChevronRight, TrendingUp, Users,
@@ -54,7 +54,7 @@ export default function VendorDashboard() {
     try {
       setAuthLoading(true);
       const response = await verifyVendorSession();
-      
+
       if (response?.authenticated && response?.verified) {
         setVendorData(response.vendor);
         setIsVerified(true);
@@ -102,7 +102,7 @@ export default function VendorDashboard() {
   };
 
   const handleProductUpdated = (updatedProduct) => {
-    setProducts(products.map(p => 
+    setProducts(products.map(p =>
       p.id === updatedProduct.id ? updatedProduct : p
     ));
   };
@@ -141,14 +141,14 @@ export default function VendorDashboard() {
           <div className="w-20 h-20 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
             <Shield className="w-10 h-10 text-white" />
           </div>
-          
+
           <h1 className="text-2xl font-bold text-gray-800 mb-3">Verification Required</h1>
-          
+
           <p className="text-gray-600 mb-6">
             Your vendor account needs verification before accessing the dashboard.
             Please complete your verification process to continue.
           </p>
-          
+
           <div className="space-y-4">
             <button
               onClick={() => router.push("/vendor/verification")}
@@ -157,14 +157,14 @@ export default function VendorDashboard() {
               <UserCheck className="inline w-5 h-5 mr-2" />
               Complete Verification
             </button>
-            
+
             <button
               onClick={() => router.push("/vendor/signin")}
               className="w-full border border-blue-600 text-blue-600 py-3 px-6 rounded-lg font-medium hover:bg-blue-50 transition"
             >
               Sign In Again
             </button>
-            
+
             <button
               onClick={() => router.push("/")}
               className="w-full text-gray-600 hover:text-gray-800 py-2 text-sm transition"
@@ -186,7 +186,7 @@ export default function VendorDashboard() {
             <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl p-6 text-white">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl font-bold mb-2">Welcome back, {vendorData?.business_name || 'Vendor'}!</h1>
+                  <h1 className="text-2xl font-bold mb-2">Welcome back, {vendorData?.company_name || vendorData?.business_name || 'Vendor'}!</h1>
                   <p className="text-blue-100">Here's what's happening with your store today</p>
                 </div>
                 <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
@@ -195,16 +195,16 @@ export default function VendorDashboard() {
                 </div>
               </div>
             </div>
-            
+
             <StatsOverview stats={stats} />
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Recent Products */}
               <div className="bg-white shadow rounded-xl border border-gray-100">
                 <div className="p-6 border-b border-gray-100">
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold text-gray-800">Recent Products</h2>
-                    <button 
+                    <button
                       onClick={() => setActiveTab("products")}
                       className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
                     >
@@ -217,8 +217,8 @@ export default function VendorDashboard() {
                     <div key={product.id} className="flex items-center justify-between p-3 hover:bg-blue-50 rounded-lg transition">
                       <div className="flex items-center gap-3">
                         {product.image_url ? (
-                          <img 
-                            src={product.image_url} 
+                          <img
+                            src={product.image_url}
                             alt={product.name}
                             className="w-12 h-12 rounded-lg object-cover"
                           />
@@ -242,7 +242,7 @@ export default function VendorDashboard() {
               <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-xl shadow-lg p-6">
                 <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
                 <div className="space-y-3">
-                  <button 
+                  <button
                     onClick={() => setShowProductForm(true)}
                     className="w-full bg-white text-blue-700 hover:bg-blue-50 py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition"
                   >
@@ -257,7 +257,7 @@ export default function VendorDashboard() {
                     <BarChart3 className="w-5 h-5" />
                     View Analytics Report
                   </button>
-                  <button 
+                  <button
                     onClick={handleLogout}
                     className="w-full bg-red-500/20 hover:bg-red-500/30 py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 transition"
                   >
@@ -314,7 +314,7 @@ export default function VendorDashboard() {
               </div>
             )}
 
-            <ProductTable 
+            <ProductTable
               products={products}
               loading={loading}
               onRefresh={fetchProducts}
@@ -340,9 +340,8 @@ export default function VendorDashboard() {
     <div className="min-h-screen flex bg-gray-50">
       {/* Sidebar */}
       <div
-        className={`fixed md:static inset-y-0 left-0 z-40 w-64 bg-gradient-to-b from-blue-700 to-blue-800 text-white transform ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 transition-transform duration-300 shadow-xl`}
+        className={`fixed md:static inset-y-0 left-0 z-40 w-64 bg-gradient-to-b from-blue-700 to-blue-800 text-white transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 transition-transform duration-300 shadow-xl`}
       >
         <div className="p-6 border-b border-blue-600/30">
           <div className="flex items-center gap-3">
@@ -355,7 +354,7 @@ export default function VendorDashboard() {
             </div>
           </div>
         </div>
-        
+
         <nav className="p-4 space-y-1">
           {menuItems.map(({ id, name, icon: Icon }) => (
             <button
@@ -364,11 +363,10 @@ export default function VendorDashboard() {
                 setActiveTab(id);
                 setSidebarOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                activeTab === id 
-                  ? "bg-white/10 text-white shadow-inner" 
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeTab === id
+                  ? "bg-white/10 text-white shadow-inner"
                   : "text-blue-100 hover:bg-white/5 hover:text-white"
-              }`}
+                }`}
             >
               <Icon className="w-5 h-5" />
               <span className="font-medium">{name}</span>
@@ -393,7 +391,7 @@ export default function VendorDashboard() {
               </div>
               <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
             </div>
-            
+
             <div className="text-blue-200 text-sm mb-2">Plan Status</div>
             <div className="flex items-center justify-between">
               <div>
@@ -405,7 +403,7 @@ export default function VendorDashboard() {
               <Shield className="w-5 h-5 text-green-400" />
             </div>
           </div>
-          
+
           <button
             onClick={handleLogout}
             className="w-full mt-3 flex items-center justify-center gap-2 text-blue-200 hover:text-white hover:bg-red-500/20 py-2 px-4 rounded-lg transition"
@@ -428,7 +426,7 @@ export default function VendorDashboard() {
               >
                 {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
-              
+
               {/* Search Bar */}
               <div className="hidden md:flex items-center bg-gray-100 rounded-lg px-4 py-2">
                 <Search className="w-5 h-5 text-gray-400" />
@@ -483,7 +481,7 @@ export default function VendorDashboard() {
       {showProductForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-            <ProductForm 
+            <ProductForm
               product={typeof showProductForm === 'object' ? showProductForm : null}
               onClose={() => setShowProductForm(false)}
               onSuccess={typeof showProductForm === 'object' ? handleProductUpdated : handleProductCreated}
