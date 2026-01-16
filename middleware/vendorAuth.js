@@ -16,6 +16,7 @@ export const verifyVendor = (req, res, next) => {
     }
 
     req.user = decoded; // attach decoded vendor info
+    req.vendorId = decoded.vendor_id; // attach vendorId for controllers
     next();
   } catch (err) {
     res.status(400).json({ error: "Invalid token" });
