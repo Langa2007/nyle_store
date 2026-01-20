@@ -16,15 +16,33 @@ export default function LoginPage() {
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
+  // Get client IP (matches useAdminAuth implementation)
+  const getClientIp = async () => {
+    try {
+      const response = await fetch('https://api.ipify.org?format=json');
+      const data = await response.json();
+      return data.ip;
+    } catch (error) {
+      console.warn('Could not fetch IP, using fallback');
+      return 'unknown';
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
+      // Fetch IP first to send with login request if needed, or just to store
+      const currentIp = await getClientIp();
+
       const res = await fetch(`${API_URL}/api/admin/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Client-IP": currentIp // Pass IP to backend for initial verification if supported
+        },
         body: JSON.stringify({ email, password }),
       });
 
@@ -39,9 +57,23 @@ export default function LoginPage() {
       if (!res.ok)
         throw new Error(data.error || data.message || "Login failed");
 
-      // Save both tokens
+      // Clear any existing session data to ensure a clean start
+      localStorage.removeItem("adminAccessToken");
+      localStorage.removeItem("adminRefreshToken");
+      localStorage.removeItem("adminLastActive");
+      localStorage.removeItem("adminInitialIp");
+      localStorage.removeItem("adminLoggedIn");
+      localStorage.removeItem("adminLogoutEvent");
+      localStorage.removeItem("adminTabHidden");
+
+      // Save tokens
       localStorage.setItem("adminAccessToken", data.accessToken);
       localStorage.setItem("adminRefreshToken", data.refreshToken);
+
+      // Initialize security checks
+      localStorage.setItem("adminInitialIp", currentIp);
+      localStorage.setItem("adminLastActive", Date.now().toString());
+      localStorage.setItem("adminLoggedIn", "true");
 
       router.push("/dashboard");
     } catch (err: unknown) {

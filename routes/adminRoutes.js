@@ -19,6 +19,7 @@ import {
   getAllCategories,
   updateCategory,
   deleteCategory,
+  upload as categoryUpload
 } from "../controllers/adminCategoryController.js";
 
 import {
@@ -65,9 +66,9 @@ router.put("/vendors/:id/approve", approveVendor);
 router.put("/vendors/:id/reject", rejectVendor);
 
 //  CATEGORIES
-router.post("/categories", createCategory);
+router.post("/categories", categoryUpload, createCategory);
 router.get("/categories", getAllCategories);
-router.put("/categories/:id", updateCategory);
+router.put("/categories/:id", categoryUpload, updateCategory);
 router.delete("/categories/:id", deleteCategory);
 
 //  ORDERS

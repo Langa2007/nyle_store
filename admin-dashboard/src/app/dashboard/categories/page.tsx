@@ -40,12 +40,17 @@ export default function AdminCategoryPage() {
   }, []);
 
   //  Create category
-  const handleCreate = async (name: string) => {
+  const handleCreate = async (name: string, file: File | null) => {
     try {
+      const formData = new FormData();
+      formData.append("name", name);
+      if (file) {
+        formData.append("image", file);
+      }
+
       const res = await fetch(`${baseurl}/api/admin/categories`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
+        body: formData, // Send FormData (browser handles Content-Type)
       });
       const data = await res.json();
       if (res.ok) {
