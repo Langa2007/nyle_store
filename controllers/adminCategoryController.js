@@ -84,13 +84,27 @@ export const updateCategory = async (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
 
+  console.log(`[UpdateCategory] ID: ${id}, Name: ${name}, File: ${req.file ? 'Yes' : 'No'}`);
+
+  if (!name) {
+    console.error("[UpdateCategory] Error: Category name is required");
+    return res.status(400).json({ error: "Category name is required" });
+  }
+
   try {
     let imageUrl = null;
     let query, values;
 
     if (req.file) {
-      const uploadResult = await uploadToCloudinary(req.file.buffer);
-      imageUrl = uploadResult.secure_url;
+      try {
+        console.log("[UpdateCategory] Uploading image to Cloudinary...");
+        const uploadResult = await uploadToCloudinary(req.file.buffer);
+        imageUrl = uploadResult.secure_url;
+        console.log("[UpdateCategory] Image uploaded:", imageUrl);
+      } catch (uploadError) {
+        console.error("[UpdateCategory] Cloudinary upload failed:", uploadError);
+        return res.status(500).json({ error: "Failed to upload image" });
+      }
     }
 
     if (imageUrl) {
@@ -101,15 +115,19 @@ export const updateCategory = async (req, res) => {
       values = [name, id];
     }
 
+    console.log("[UpdateCategory] Executing query:", query, values);
     const result = await pool.query(query, values);
 
     if (result.rows.length === 0) {
+      console.warn("[UpdateCategory] Category not found with ID:", id);
       return res.status(404).json({ error: "Category not found" });
     }
+
+    console.log("[UpdateCategory] Success:", result.rows[0]);
     res.json(result.rows[0]);
   } catch (err) {
-    console.error(" Error updating category:", err.message);
-    res.status(500).json({ error: "Failed to update category" });
+    console.error(`[UpdateCategory] Database Error updating category ${id}:`, err.message);
+    res.status(500).json({ error: "Failed to update category", details: err.message });
   }
 };
 
