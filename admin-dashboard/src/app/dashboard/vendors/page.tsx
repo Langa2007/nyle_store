@@ -40,11 +40,11 @@ interface Vendor {
   id: number;
   company_name: string;
   email: string;
-  status: "pending" | "active" | "suspended" | "rejected";
+  status: "pending" | "approved" | "rejected" | "active"; // Add approved, keep active for safety
   is_verified: boolean;
   phone?: string;
   website?: string;
-  registration_date?: string;
+  created_at?: string; // Backend uses created_at
   product_count?: number;
   total_sales?: number;
   rating?: number;
@@ -66,85 +66,6 @@ export default function AdminVendorsPage() {
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
-  // Mock data for demonstration
-  const mockVendors: Vendor[] = [
-    {
-      id: 1,
-      company_name: "TechGadgets Inc.",
-      email: "contact@techgadgets.com",
-      status: "active",
-      is_verified: true,
-      phone: "+1 (555) 123-4567",
-      website: "www.techgadgets.com",
-      registration_date: "2024-01-15",
-      product_count: 142,
-      total_sales: 24500,
-      rating: 4.8,
-      address: "123 Tech Street, San Francisco, CA",
-      contact_person: "John Smith"
-    },
-    {
-      id: 2,
-      company_name: "EcoFashion Co.",
-      email: "info@ecofashion.co",
-      status: "pending",
-      is_verified: false,
-      phone: "+1 (555) 987-6543",
-      website: "www.ecofashion.co",
-      registration_date: "2024-02-20",
-      product_count: 89,
-      total_sales: 0,
-      rating: 0,
-      address: "456 Green Ave, Portland, OR",
-      contact_person: "Sarah Johnson"
-    },
-    {
-      id: 3,
-      company_name: "HomeDecor Pro",
-      email: "sales@homedecorpro.com",
-      status: "active",
-      is_verified: true,
-      phone: "+1 (555) 456-7890",
-      website: "www.homedecorpro.com",
-      registration_date: "2023-11-05",
-      product_count: 256,
-      total_sales: 56700,
-      rating: 4.9,
-      address: "789 Design Blvd, Miami, FL",
-      contact_person: "Michael Chen"
-    },
-    {
-      id: 4,
-      company_name: "Sports Equipment LLC",
-      email: "support@sportsequip.com",
-      status: "suspended",
-      is_verified: true,
-      phone: "+1 (555) 321-0987",
-      website: "www.sportsequip.com",
-      registration_date: "2023-09-12",
-      product_count: 78,
-      total_sales: 12000,
-      rating: 3.5,
-      address: "321 Fitness Way, Denver, CO",
-      contact_person: "Robert Wilson"
-    },
-    {
-      id: 5,
-      company_name: "Organic Foods Market",
-      email: "hello@organicfoods.com",
-      status: "active",
-      is_verified: true,
-      phone: "+1 (555) 654-3210",
-      website: "www.organicfoods.com",
-      registration_date: "2024-03-01",
-      product_count: 213,
-      total_sales: 38900,
-      rating: 4.7,
-      address: "654 Farm Rd, Austin, TX",
-      contact_person: "Emma Davis"
-    }
-  ];
-
   const fetchVendors = async () => {
     try {
       setLoading(true);
@@ -152,23 +73,19 @@ export default function AdminVendorsPage() {
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data)) {
-          // Enhance with mock data for demonstration
-          const enhancedData = data.map((vendor: any, index: number) => ({
-            ...vendor,
-            ...mockVendors[index % mockVendors.length]
-          }));
-          setVendors(enhancedData);
+          setVendors(data);
         } else {
-          setVendors(mockVendors); // Fallback to mock data
+          setVendors([]);
         }
       } else {
-        setVendors(mockVendors); // Fallback to mock data
+        toast.error("Failed to fetch vendors");
+        setVendors([]);
       }
     } catch (err) {
       console.error("Error fetching vendors:", err);
-      setVendors(mockVendors); // Fallback to mock data
+      setVendors([]);
       toast.error("Failed to load vendors", {
-        description: "Showing demo data instead",
+        description: "Please check your network connection",
         icon: <AlertTriangle className="w-5 h-5 text-amber-500" />
       });
     } finally {
@@ -210,23 +127,26 @@ export default function AdminVendorsPage() {
         : (bValue || 0) - (aValue || 0);
     });
 
-  const handleStatusUpdate = async (vendorId: number, newStatus: Vendor["status"]) => {
+  const handleStatusUpdate = async (vendorId: number, targetStatus: "approve" | "reject") => {
     try {
-      const res = await fetch(`${API_URL}/api/admin/vendors/${vendorId}/status`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus })
+      const endpoint = targetStatus === "approve" ? "approve" : "reject";
+      const res = await fetch(`${API_URL}/api/admin/vendors/${vendorId}/${endpoint}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" }
       });
 
       if (res.ok) {
+        const finalStatus = targetStatus === "approve" ? "approved" : "rejected";
         setVendors(prev => prev.map(v =>
-          v.id === vendorId ? { ...v, status: newStatus } : v
+          v.id === vendorId ? { ...v, status: finalStatus } : v
         ));
 
-        toast.success(`Vendor ${newStatus}`, {
+        toast.success(`Vendor ${finalStatus}`, {
           description: `Status updated successfully`,
           icon: <CheckCircle className="w-5 h-5 text-emerald-500" />
         });
+      } else {
+        throw new Error("Action failed");
       }
     } catch (err) {
       toast.error("Update failed", {
@@ -275,9 +195,10 @@ export default function AdminVendorsPage() {
 
   const getStatusColor = (status: Vendor["status"]) => {
     switch (status) {
-      case "active": return { bg: "bg-emerald-100", text: "text-emerald-800", dot: "bg-emerald-500" };
+      case "active":
+      case "approved": return { bg: "bg-emerald-100", text: "text-emerald-800", dot: "bg-emerald-500" };
       case "pending": return { bg: "bg-amber-100", text: "text-amber-800", dot: "bg-amber-500" };
-      case "suspended": return { bg: "bg-red-100", text: "text-red-800", dot: "bg-red-500" };
+
       case "rejected": return { bg: "bg-gray-100", text: "text-gray-800", dot: "bg-gray-500" };
       default: return { bg: "bg-blue-100", text: "text-blue-800", dot: "bg-blue-500" };
     }
@@ -285,7 +206,7 @@ export default function AdminVendorsPage() {
 
   const stats = {
     total: vendors.length,
-    active: vendors.filter(v => v.status === "active").length,
+    active: vendors.filter(v => v.status === "active" || v.status === "approved").length,
     pending: vendors.filter(v => v.status === "pending").length,
     verified: vendors.filter(v => v.is_verified).length,
     totalSales: vendors.reduce((sum, v) => sum + (v.total_sales || 0), 0),
@@ -296,14 +217,14 @@ export default function AdminVendorsPage() {
     {
       label: "Approve Selected",
       icon: <CheckCircle className="w-4 h-4" />,
-      onClick: () => selectedVendors.forEach(id => handleStatusUpdate(id, "active")),
+      onClick: () => selectedVendors.forEach(id => handleStatusUpdate(id, "approve")),
       color: "bg-gradient-to-r from-emerald-600 to-emerald-700 text-white",
       disabled: selectedVendors.length === 0
     },
     {
       label: "Reject Selected",
       icon: <XCircle className="w-4 h-4" />,
-      onClick: () => selectedVendors.forEach(id => handleStatusUpdate(id, "rejected")),
+      onClick: () => selectedVendors.forEach(id => handleStatusUpdate(id, "reject")),
       color: "bg-gradient-to-r from-red-600 to-red-700 text-white",
       disabled: selectedVendors.length === 0
     },
@@ -487,7 +408,6 @@ export default function AdminVendorsPage() {
                             <option value="all">All Status</option>
                             <option value="active">Active</option>
                             <option value="pending">Pending</option>
-                            <option value="suspended">Suspended</option>
                             <option value="rejected">Rejected</option>
                           </select>
                         </div>
@@ -499,7 +419,7 @@ export default function AdminVendorsPage() {
                             className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                           >
                             <option value="company_name">Company Name</option>
-                            <option value="registration_date">Registration Date</option>
+                            <option value="created_at">Registration Date</option>
                             <option value="total_sales">Total Sales</option>
                             <option value="product_count">Product Count</option>
                             <option value="rating">Rating</option>
@@ -733,17 +653,17 @@ export default function AdminVendorsPage() {
                             </div>
                             <div>
                               <h4 className="text-sm font-semibold text-gray-700 mb-2">Registration Date</h4>
-                              <p className="text-sm text-gray-600">{vendor.registration_date || 'N/A'}</p>
+                              <p className="text-sm text-gray-600">{vendor.created_at ? new Date(vendor.created_at).toLocaleDateString() : 'N/A'}</p>
                             </div>
                             <div className="flex items-center gap-2">
                               <button
-                                onClick={() => handleStatusUpdate(vendor.id, "active")}
+                                onClick={() => handleStatusUpdate(vendor.id, "approve")}
                                 className="flex-1 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-colors"
                               >
                                 Approve
                               </button>
                               <button
-                                onClick={() => handleStatusUpdate(vendor.id, "rejected")}
+                                onClick={() => handleStatusUpdate(vendor.id, "reject")}
                                 className="flex-1 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors"
                               >
                                 Reject
@@ -828,7 +748,7 @@ export default function AdminVendorsPage() {
                         <td className="p-4">
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => handleStatusUpdate(vendor.id, "active")}
+                              onClick={() => handleStatusUpdate(vendor.id, "approve")}
                               className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-colors"
                             >
                               Approve
