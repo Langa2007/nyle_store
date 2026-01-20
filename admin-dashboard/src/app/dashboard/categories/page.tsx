@@ -10,6 +10,7 @@ import CategoryTable from "./CategoryTable";
 interface Category {
   id: number;
   name: string;
+  image_url?: string;
 }
 
 // ✅ Base URL
@@ -19,6 +20,7 @@ export const baseurl =
 export default function AdminCategoryPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
   //  Fetch categories
   const fetchCategories = async () => {
@@ -50,7 +52,7 @@ export default function AdminCategoryPage() {
 
       const res = await fetch(`${baseurl}/api/admin/categories`, {
         method: "POST",
-        body: formData, // Send FormData (browser handles Content-Type)
+        body: formData,
       });
       const data = await res.json();
       if (res.ok) {
@@ -64,8 +66,44 @@ export default function AdminCategoryPage() {
     }
   };
 
+  // Update category
+  const handleUpdate = async (name: string, file: File | null) => {
+    if (!editingCategory) return;
+    try {
+      const formData = new FormData();
+      formData.append("name", name);
+      if (file) {
+        formData.append("image", file);
+      }
+
+      const res = await fetch(`${baseurl}/api/admin/categories/${editingCategory.id}`, {
+        method: "PUT",
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCategories((prev) => prev.map(cat => cat.id === editingCategory.id ? data : cat));
+        toast.success("Category updated successfully");
+        setEditingCategory(null);
+      } else {
+        toast.error(data.error || "Failed to update category");
+      }
+    } catch {
+      toast.error("Error updating category");
+    }
+  };
+
+  const handleFormSubmit = async (name: string, file: File | null) => {
+    if (editingCategory) {
+      await handleUpdate(name, file);
+    } else {
+      await handleCreate(name, file);
+    }
+  };
+
   //  Delete category
   const handleDelete = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this category?")) return;
     try {
       const res = await fetch(`${baseurl}/api/admin/categories/${id}`, {
         method: "DELETE",
@@ -94,9 +132,14 @@ export default function AdminCategoryPage() {
           Category Management
         </motion.h1>
 
-        <CategoryForm onCreate={handleCreate} />
+        <CategoryForm
+          initialData={editingCategory}
+          onSubmit={handleFormSubmit}
+          onCancel={() => setEditingCategory(null)}
+        />
         <CategoryTable
           categories={categories}
+          onEdit={setEditingCategory}
           onDelete={handleDelete}
           loading={loading}
         />
