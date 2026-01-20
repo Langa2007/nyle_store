@@ -2,11 +2,11 @@
 
 import { useState, FormEvent, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Plus, 
-  Save, 
-  X, 
-  Upload, 
+import {
+  Plus,
+  Save,
+  X,
+  Upload,
   Image as ImageIcon,
   AlertCircle,
   CheckCircle,
@@ -58,12 +58,12 @@ export default function CategoryForm({ initialData, onSubmit, onCancel }: Catego
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    
+
     setLoading(true);
     try {
       await onSubmit(name, file);
       setSuccess(true);
-      
+
       // Reset form if not editing
       if (!initialData) {
         setName("");
@@ -73,7 +73,7 @@ export default function CategoryForm({ initialData, onSubmit, onCancel }: Catego
           fileInputRef.current.value = "";
         }
       }
-      
+
       // Show success message briefly
       setTimeout(() => setSuccess(false), 2000);
     } finally {
@@ -93,7 +93,7 @@ export default function CategoryForm({ initialData, onSubmit, onCancel }: Catego
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
-    
+
     const droppedFile = e.dataTransfer.files[0];
     if (droppedFile && droppedFile.type.startsWith('image/')) {
       setFile(droppedFile);
@@ -109,8 +109,8 @@ export default function CategoryForm({ initialData, onSubmit, onCancel }: Catego
   const isEditing = !!initialData;
   const characterCount = name.length;
   const isValid = name.trim().length >= 2;
-  const hasChanges = initialData ? 
-    (name !== initialData.name || file !== null) : 
+  const hasChanges = initialData ?
+    (name !== initialData.name || file !== null) :
     (name.trim() !== "" || file !== null);
 
   return (
@@ -126,14 +126,14 @@ export default function CategoryForm({ initialData, onSubmit, onCancel }: Catego
               {isEditing ? 'Update Category' : 'Create New Category'}
             </h2>
             <p className="text-sm text-gray-500">
-              {isEditing 
-                ? 'Modify category details and image' 
+              {isEditing
+                ? 'Modify category details and image'
                 : 'Add a new product category to organize your inventory'
               }
             </p>
           </div>
         </div>
-        
+
         {isEditing && (
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -178,8 +178,8 @@ export default function CategoryForm({ initialData, onSubmit, onCancel }: Catego
                     Category {isEditing ? 'updated' : 'created'} successfully!
                   </p>
                   <p className="text-sm text-emerald-600">
-                    {isEditing 
-                      ? 'Your changes have been saved.' 
+                    {isEditing
+                      ? 'Your changes have been saved.'
                       : 'New category has been added to your inventory.'
                     }
                   </p>
@@ -188,7 +188,7 @@ export default function CategoryForm({ initialData, onSubmit, onCancel }: Catego
             )}
           </AnimatePresence>
 
-          <div className="grid lg:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-6">
             {/* Left Column - Category Details */}
             <div className="space-y-6">
               {/* Category Name */}
@@ -210,7 +210,7 @@ export default function CategoryForm({ initialData, onSubmit, onCancel }: Catego
                     <Layers className="w-5 h-5" />
                   </div>
                 </div>
-                
+
                 {/* Character Counter & Validation */}
                 <div className="flex items-center justify-between mt-3">
                   <div className="flex items-center gap-2">
@@ -271,15 +271,14 @@ export default function CategoryForm({ initialData, onSubmit, onCancel }: Catego
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                className={`relative cursor-pointer transition-all duration-300 rounded-2xl border-2 border-dashed ${
-                  dragOver 
-                    ? 'border-blue-500 bg-blue-50 scale-[1.02]' 
-                    : imagePreview 
-                      ? 'border-gray-300 hover:border-blue-400' 
+                className={`relative cursor-pointer transition-all duration-300 rounded-2xl border-2 border-dashed ${dragOver
+                    ? 'border-blue-500 bg-blue-50 scale-[1.02]'
+                    : imagePreview
+                      ? 'border-gray-300 hover:border-blue-400'
                       : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50/50'
-                }`}
+                  }`}
               >
-                <input title= "Upload Category Image"
+                <input title="Upload Category Image"
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"
@@ -343,13 +342,13 @@ export default function CategoryForm({ initialData, onSubmit, onCancel }: Catego
             <div className="flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-gray-400" />
               <span className="text-xs text-gray-500">
-                {isEditing 
-                  ? 'Changes will be applied immediately' 
+                {isEditing
+                  ? 'Changes will be applied immediately'
                   : 'Category will be visible after creation'
                 }
               </span>
             </div>
-            
+
             <div className="flex items-center gap-3">
               {isEditing && onCancel && (
                 <motion.button
@@ -364,19 +363,18 @@ export default function CategoryForm({ initialData, onSubmit, onCancel }: Catego
                   Discard Changes
                 </motion.button>
               )}
-              
+
               <motion.button
                 type="submit"
                 disabled={loading || !isValid || (!hasChanges && isEditing)}
                 whileHover={{ scale: !loading && hasChanges ? 1.05 : 1 }}
                 whileTap={{ scale: !loading && hasChanges ? 0.95 : 1 }}
-                className={`px-8 py-3 text-sm font-medium rounded-xl transition-all duration-300 flex items-center gap-3 ${
-                  loading
+                className={`px-8 py-3 text-sm font-medium rounded-xl transition-all duration-300 flex items-center gap-3 ${loading
                     ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
                     : !isValid || (!hasChanges && isEditing)
-                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg hover:shadow-blue-500/25'
-                }`}
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg hover:shadow-blue-500/25'
+                  }`}
               >
                 {loading ? (
                   <>

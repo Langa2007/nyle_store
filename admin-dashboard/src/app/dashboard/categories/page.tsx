@@ -6,12 +6,12 @@ import { toast } from "sonner";
 import AdminLayout from "@/app/components/AdminLayout";
 import CategoryForm from "./CategoryForm";
 import CategoryTable, { Category } from "./CategoryTable";
-import { 
-  Layers, 
-  TrendingUp, 
-  Package, 
-  Filter, 
-  Download, 
+import {
+  Layers,
+  TrendingUp,
+  Package,
+  Filter,
+  Download,
   RefreshCw,
   Plus,
   AlertTriangle,
@@ -43,7 +43,7 @@ export default function AdminCategoryPage() {
   const calculateStats = useCallback((data: Category[]) => {
     const now = new Date();
     const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30));
-    
+
     const total = data.length;
     const active = data.filter(cat => cat.status === 'active').length;
     const withProducts = data.filter(cat => (cat.productCount || 0) > 0).length;
@@ -62,7 +62,7 @@ export default function AdminCategoryPage() {
       const res = await fetch(`${baseurl}/api/admin/categories`);
       if (!res.ok) throw new Error("Failed to fetch categories");
       const data = await res.json();
-      
+
       // Transform data to match enhanced interface
       const enhancedData: Category[] = data.map((cat: any, index: number) => ({
         ...cat,
@@ -71,7 +71,7 @@ export default function AdminCategoryPage() {
         createdAt: new Date(Date.now() - index * 86400000).toLocaleDateString(),
         updatedAt: new Date(Date.now() - index * 43200000).toLocaleDateString()
       }));
-      
+
       setCategories(enhancedData);
       setStats(calculateStats(enhancedData));
     } catch (err) {
@@ -101,7 +101,7 @@ export default function AdminCategoryPage() {
         body: formData,
       });
       const data = await res.json();
-      
+
       if (res.ok) {
         const newCategory: Category = {
           ...data,
@@ -110,7 +110,7 @@ export default function AdminCategoryPage() {
           createdAt: new Date().toLocaleDateString(),
           updatedAt: new Date().toLocaleDateString()
         };
-        
+
         setCategories((prev) => [newCategory, ...prev]);
         setStats(calculateStats([newCategory, ...categories]));
         toast.success("Category created successfully", {
@@ -145,7 +145,7 @@ export default function AdminCategoryPage() {
         body: formData,
       });
       const data = await res.json();
-      
+
       if (res.ok) {
         const updatedCategory: Category = {
           ...data,
@@ -154,11 +154,11 @@ export default function AdminCategoryPage() {
           createdAt: editingCategory.createdAt,
           updatedAt: new Date().toLocaleDateString()
         };
-        
-        setCategories((prev) => prev.map(cat => 
+
+        setCategories((prev) => prev.map(cat =>
           cat.id === editingCategory.id ? updatedCategory : cat
         ));
-        
+
         toast.success("Category updated successfully", {
           description: `${name} has been updated.`,
           icon: <Sparkles className="w-5 h-5 text-emerald-500" />
@@ -192,12 +192,12 @@ export default function AdminCategoryPage() {
         method: "DELETE",
       });
       const data = await res.json();
-      
+
       if (res.ok) {
         const deletedCategory = categories.find(cat => cat.id === id);
         setCategories((prev) => prev.filter((cat) => cat.id !== id));
         setStats(calculateStats(categories.filter(cat => cat.id !== id)));
-        
+
         toast.success("Category deleted successfully", {
           description: `${deletedCategory?.name} has been removed.`,
           icon: <Sparkles className="w-5 h-5 text-emerald-500" />
@@ -221,13 +221,13 @@ export default function AdminCategoryPage() {
       setExportLoading(true);
       // Simulate export process
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const csvContent = "data:text/csv;charset=utf-8," 
+
+      const csvContent = "data:text/csv;charset=utf-8,"
         + ["ID,Name,Products,Status,Created"].join("\n")
-        + categories.map(cat => 
-            `${cat.id},${cat.name},${cat.productCount || 0},${cat.status || 'active'},${cat.createdAt}`
-          ).join("\n");
-      
+        + categories.map(cat =>
+          `${cat.id},${cat.name},${cat.productCount || 0},${cat.status || 'active'},${cat.createdAt}`
+        ).join("\n");
+
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
@@ -235,7 +235,7 @@ export default function AdminCategoryPage() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       toast.success("Export completed", {
         description: "Category data has been exported as CSV.",
         icon: <Download className="w-5 h-5 text-emerald-500" />
@@ -274,7 +274,7 @@ export default function AdminCategoryPage() {
   ];
 
   return (
-    <AdminLayout 
+    <AdminLayout
       title="Categories"
       breadcrumbs={[
         { label: "Inventory", href: "/dashboard/products" },
@@ -297,7 +297,7 @@ export default function AdminCategoryPage() {
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 p-6 text-white shadow-xl">
           <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full"></div>
           <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-white/5 rounded-full"></div>
-          
+
           <div className="relative z-10">
             <div className="flex items-center justify-between">
               <div>
@@ -377,7 +377,7 @@ export default function AdminCategoryPage() {
                 </div>
               </div>
               <div className="mt-4 h-1 w-full bg-gray-100 rounded-full overflow-hidden">
-                <div 
+                <div
                   className={`h-full bg-gradient-to-r ${stat.color} rounded-full`}
                   style={{ width: `${(stat.value / Math.max(stats.total, 1)) * 100}%` }}
                 ></div>
@@ -412,9 +412,9 @@ export default function AdminCategoryPage() {
         </div>
 
         {/* Main Content */}
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid xl:grid-cols-3 gap-8">
           {/* Left Column - Form */}
-          <div className="lg:col-span-1">
+          <div className="xl:col-span-1">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -428,12 +428,12 @@ export default function AdminCategoryPage() {
                     {editingCategory ? 'Edit Category' : 'Create Category'}
                   </h3>
                   <p className="text-sm text-gray-600 mb-6">
-                    {editingCategory 
-                      ? 'Update your category details' 
+                    {editingCategory
+                      ? 'Update your category details'
                       : 'Add a new category to organize products'
                     }
                   </p>
-                  
+
                   <CategoryForm
                     initialData={editingCategory}
                     onSubmit={handleFormSubmit}
@@ -445,7 +445,7 @@ export default function AdminCategoryPage() {
           </div>
 
           {/* Right Column - Table */}
-          <div className="lg:col-span-2">
+          <div className="xl:col-span-2">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
