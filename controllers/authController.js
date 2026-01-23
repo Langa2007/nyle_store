@@ -80,11 +80,11 @@ export const login = async (req, res) => {
 
     const normalizedEmail = email.trim().toLowerCase();
     const q = await pool.query("SELECT * FROM users WHERE email = $1", [normalizedEmail]);
-    if (q.rows.length === 0) return res.status(400).json({ message: "Invalid credentials." });
+    if (q.rows.length === 0) return res.status(404).json({ message: "User not found." });
 
     const user = q.rows[0];
     const ok = await bcrypt.compare(password, user.password);
-    if (!ok) return res.status(400).json({ message: "Invalid credentials." });
+    if (!ok) return res.status(401).json({ message: "Invalid password." });
 
     const token = jwt.sign({ id: user.id, email: user.email, role: "user" }, process.env.JWT_SECRET, {
       expiresIn: JWT_EXPIRES,

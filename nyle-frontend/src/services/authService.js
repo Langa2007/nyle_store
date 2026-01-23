@@ -1,5 +1,6 @@
 // services/authService.js
-const API = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com/api";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
+const API = BASE_URL.endsWith("/api") ? BASE_URL : `${BASE_URL}/api`;
 
 export const signup = async ({ name, email, password }) => {
   const res = await fetch(`${API}/auth/register`, {

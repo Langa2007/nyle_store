@@ -1,6 +1,6 @@
 "use client";
 
-import { useCart } from '@/context/CartContext';
+import { useCart } from '@/context/CartContext/page';
 import Link from 'next/link';
 import { FiTrash2, FiPlus, FiMinus, FiArrowLeft } from 'react-icons/fi';
 
@@ -38,7 +38,7 @@ export default function CartPage() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2">
@@ -64,7 +64,7 @@ export default function CartPage() {
                         className="w-20 h-20 object-cover rounded"
                       />
                     </div>
-                    
+
                     <div className="flex-1">
                       <div className="flex justify-between">
                         <div>
@@ -83,7 +83,7 @@ export default function CartPage() {
                           </button>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between mt-4">
                         <div className="flex items-center border rounded-lg">
                           <button
@@ -101,7 +101,7 @@ export default function CartPage() {
                             <FiPlus />
                           </button>
                         </div>
-                        
+
                         <div className="text-sm text-gray-600">
                           Stock: Available
                         </div>
@@ -117,7 +117,7 @@ export default function CartPage() {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow p-6 sticky top-8">
               <h2 className="text-xl font-bold mb-6">Order Summary</h2>
-              
+
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Subtotal ({totals.itemCount} items)</span>
@@ -170,7 +170,7 @@ export default function CartPage() {
                 >
                   {isLoggedIn ? 'Proceed to Checkout' : 'Login to Checkout'}
                 </Link>
-                
+
                 <Link
                   href="/"
                   className="block w-full border border-gray-300 hover:bg-gray-50 text-gray-700 text-center py-3 rounded-lg font-medium"
@@ -187,7 +187,7 @@ export default function CartPage() {
                   <div className="w-12 h-8 bg-blue-100 rounded flex items-center justify-center">MC</div>
                   <div className="w-12 h-8 bg-blue-100 rounded flex items-center justify-center">PP</div>
                 </div>
-                
+
                 <p className="text-xs text-gray-500 mt-4">
                   Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our privacy policy.
                 </p>

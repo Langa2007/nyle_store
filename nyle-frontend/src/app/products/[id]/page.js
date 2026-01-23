@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { useCart } from '@/context/CartContext';
+import { useCart } from '@/context/CartContext/page';
 import {
   FaStar,
   FaTruck,
@@ -43,11 +43,11 @@ export default function ProductDetailPage() {
     const fetchProduct = async () => {
       try {
         const res = await fetch(`${API_URL}/api/products/${id}`);
-        
+
         if (!res.ok) {
           throw new Error(`HTTP ${res.status}`);
         }
-        
+
         const data = await res.json();
         console.log("Product data:", data);
         setProduct(data);
@@ -64,9 +64,9 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = async () => {
     if (!product) return;
-    
+
     const result = await addToCart(product, quantity);
-    
+
     if (result.requiresAuth) {
       setAuthAction('login');
       setShowAuthModal(true);
@@ -92,9 +92,9 @@ export default function ProductDetailPage() {
 
   const handleBuyNow = async () => {
     if (!product) return;
-    
+
     const result = await addToCart(product, quantity);
-    
+
     if (result.requiresAuth) {
       setAuthAction('login');
       setShowAuthModal(true);
@@ -139,28 +139,28 @@ export default function ProductDetailPage() {
   };
 
   const discountPercentage = calculateDiscount();
-  
+
   // Handle images (array or single)
-  const productImages = product.image_url 
+  const productImages = product.image_url
     ? (Array.isArray(product.image_url) ? product.image_url : [product.image_url])
     : [];
-  
+
   // Handle gallery images
   const galleryImages = product.gallery_images || [];
   const allImages = [...productImages, ...galleryImages];
-  
+
   // Parse features if it's a string
-  const features = product.features 
+  const features = product.features
     ? (typeof product.features === 'string' ? JSON.parse(product.features) : product.features)
     : [];
-  
+
   // Parse specifications if it's a string
-  const specifications = product.specifications 
+  const specifications = product.specifications
     ? (typeof product.specifications === 'string' ? JSON.parse(product.specifications) : product.specifications)
     : {};
-  
+
   // Parse tags if it's a string
-  const tags = product.tags 
+  const tags = product.tags
     ? (typeof product.tags === 'string' ? JSON.parse(product.tags) : product.tags)
     : [];
 
@@ -195,26 +195,26 @@ export default function ProductDetailPage() {
                     {discountPercentage}% OFF
                   </div>
                 )}
-                
+
                 {product.is_featured && (
                   <div className="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-bold z-10">
                     Featured
                   </div>
                 )}
-                
+
                 {product.is_bestseller && (
                   <div className="absolute top-16 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold z-10">
                     Best Seller
                   </div>
                 )}
-                
+
                 <img
                   src={allImages[selectedImage] || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=600&fit=crop"}
                   alt={product.name}
                   className="w-full h-96 object-contain p-4"
                 />
               </div>
-              
+
               {/* Image Thumbnails */}
               {allImages.length > 1 && (
                 <div className="flex space-x-2 overflow-x-auto pb-2">
@@ -222,18 +222,17 @@ export default function ProductDetailPage() {
                     <button
                       key={idx}
                       onClick={() => setSelectedImage(idx)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                        selectedImage === idx 
-                          ? 'border-blue-600 ring-2 ring-blue-200' 
+                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === idx
+                          ? 'border-blue-600 ring-2 ring-blue-200'
                           : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                        }`}
                     >
                       <img src={img} alt={`View ${idx + 1}`} className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
               )}
-              
+
               {/* Badges */}
               <div className="flex flex-wrap gap-2 mt-4">
                 {product.brand && (
@@ -262,7 +261,7 @@ export default function ProductDetailPage() {
             {/* Product Details */}
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.name}</h1>
-              
+
               {/* Rating */}
               <div className="flex items-center space-x-4 mb-6">
                 <div className="flex items-center">
@@ -274,11 +273,10 @@ export default function ProductDetailPage() {
                     {product.rating || 4.2} ({product.review_count || 128} reviews)
                   </span>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  product.stock > 0 
-                    ? 'bg-green-100 text-green-800' 
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${product.stock > 0
+                    ? 'bg-green-100 text-green-800'
                     : 'bg-red-100 text-red-800'
-                }`}>
+                  }`}>
                   {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
                 </span>
               </div>
@@ -331,21 +329,21 @@ export default function ProductDetailPage() {
                     <span>Weight: {product.weight} kg</span>
                   </div>
                 )}
-                
+
                 {product.dimensions && (
                   <div className="flex items-center space-x-2 text-gray-700">
                     <FaRuler className="text-blue-600" />
                     <span>Dimensions: {product.dimensions}</span>
                   </div>
                 )}
-                
+
                 {product.sku && (
                   <div className="flex items-center space-x-2 text-gray-700">
                     <FaHashtag className="text-blue-600" />
                     <span>SKU: {product.sku}</span>
                   </div>
                 )}
-                
+
                 {product.estimated_delivery_days && (
                   <div className="flex items-center space-x-2 text-gray-700">
                     <FaCalendarAlt className="text-blue-600" />
@@ -359,14 +357,14 @@ export default function ProductDetailPage() {
                 <h3 className="text-lg font-semibold mb-3">Quantity</h3>
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center border border-gray-300 rounded-lg">
-                    <button 
+                    <button
                       onClick={() => setQuantity(q => Math.max(1, q - 1))}
                       className="px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition-colors"
                     >
                       -
                     </button>
                     <span className="px-4 py-3 border-x border-gray-300 w-16 text-center">{quantity}</span>
-                    <button 
+                    <button
                       onClick={() => setQuantity(q => q + 1)}
                       className="px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition-colors"
                     >
@@ -384,22 +382,20 @@ export default function ProductDetailPage() {
                 <button
                   onClick={handleAddToCart}
                   disabled={product.stock <= 0}
-                  className={`flex-1 py-4 rounded-lg font-semibold text-lg transition-colors ${
-                    product.stock > 0
+                  className={`flex-1 py-4 rounded-lg font-semibold text-lg transition-colors ${product.stock > 0
                       ? 'bg-blue-600 hover:bg-blue-700 text-white'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  }`}
+                    }`}
                 >
                   {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
                 </button>
                 <button
                   onClick={handleBuyNow}
                   disabled={product.stock <= 0}
-                  className={`flex-1 py-4 rounded-lg font-semibold text-lg transition-colors ${
-                    product.stock > 0
+                  className={`flex-1 py-4 rounded-lg font-semibold text-lg transition-colors ${product.stock > 0
                       ? 'bg-green-600 hover:bg-green-700 text-white'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  }`}
+                    }`}
                 >
                   Buy Now
                 </button>
@@ -432,18 +428,17 @@ export default function ProductDetailPage() {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`py-4 px-6 font-medium text-lg border-b-2 transition-colors ${
-                    activeTab === tab
+                  className={`py-4 px-6 font-medium text-lg border-b-2 transition-colors ${activeTab === tab
                       ? "border-blue-600 text-blue-600"
                       : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                  }`}
+                    }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </button>
               ))}
             </nav>
           </div>
-          
+
           <div className="p-8">
             {activeTab === "description" && (
               <div>
@@ -455,7 +450,7 @@ export default function ProductDetailPage() {
                 </div>
               </div>
             )}
-            
+
             {activeTab === "specifications" && (
               <div>
                 <h3 className="text-xl font-bold mb-6">Specifications</h3>
@@ -469,7 +464,7 @@ export default function ProductDetailPage() {
                 </div>
               </div>
             )}
-            
+
             {activeTab === "shipping" && (
               <div>
                 <h3 className="text-xl font-bold mb-6">Shipping Information</h3>
@@ -482,7 +477,7 @@ export default function ProductDetailPage() {
                     <ul className="space-y-2 text-gray-600">
                       <li>• Cost: Ksh {product.shipping_cost || 0}</li>
                       <li>• Free shipping on orders over Ksh {product.free_shipping_threshold || 5000}</li>
-                      <li>• Estimated delivery: {product.estimated_delivery_days || 3-5} business days</li>
+                      <li>• Estimated delivery: {product.estimated_delivery_days || 3 - 5} business days</li>
                       <li>• Nairobi: 1-2 days</li>
                       <li>• Major Cities: 2-3 days</li>
                       <li>• Countrywide: 3-5 days</li>
@@ -491,7 +486,7 @@ export default function ProductDetailPage() {
                 </div>
               </div>
             )}
-            
+
             {activeTab === "warranty" && (
               <div>
                 <h3 className="text-xl font-bold mb-6">Warranty & Returns</h3>

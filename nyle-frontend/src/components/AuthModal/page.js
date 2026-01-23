@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { useCart } from '@/context/CartContext';
+import { useCart } from '@/context/CartContext/page';
 
 export default function AuthModal() {
   const { showAuthModal, setShowAuthModal, authAction, syncCartAfterLogin } = useCart();
@@ -19,7 +19,7 @@ export default function AuthModal() {
 
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-      const payload = isLogin 
+      const payload = isLogin
         ? { email: formData.email, password: formData.password }
         : { email: formData.email, password: formData.password, name: formData.name };
 
@@ -38,7 +38,7 @@ export default function AuthModal() {
       // Store auth data
       localStorage.setItem('accessToken', data.token || data.accessToken);
       localStorage.setItem('user', JSON.stringify(data.user));
-      
+
       // Sync cart after login
       if (data.user?.id) {
         await syncCartAfterLogin(data.user.id);
@@ -46,10 +46,10 @@ export default function AuthModal() {
 
       setShowAuthModal(false);
       setFormData({ email: '', password: '', name: '' });
-      
+
       // Show success message
       alert(`Successfully ${isLogin ? 'logged in' : 'registered'}!`);
-      
+
     } catch (err) {
       setError(err.message);
     } finally {
@@ -90,7 +90,7 @@ export default function AuthModal() {
                 type="text"
                 required
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="John Doe"
               />
@@ -105,7 +105,7 @@ export default function AuthModal() {
               type="email"
               required
               value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="you@example.com"
             />
@@ -119,7 +119,7 @@ export default function AuthModal() {
               type="password"
               required
               value={formData.password}
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="••••••••"
               minLength="6"

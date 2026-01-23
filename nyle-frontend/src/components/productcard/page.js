@@ -1,14 +1,14 @@
 "use client";
 
 import Link from 'next/link';
-import { useCart } from '@/context/CartContext';
+import { useCart } from '@/context/CartContext/page';
 
 const ProductCard = ({ product, currency, convertPrice }) => {
   const { addToCart, setShowAuthModal, setAuthAction } = useCart();
 
   const handleAddToCart = async () => {
     const result = await addToCart(product, 1);
-    
+
     if (result.requiresAuth) {
       setAuthAction('login');
       setShowAuthModal(true);
@@ -51,7 +51,7 @@ const ProductCard = ({ product, currency, convertPrice }) => {
               </div>
             </div>
           )}
-          
+
           {/* Quick View Overlay */}
           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
             <span className="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium">
@@ -65,11 +65,11 @@ const ProductCard = ({ product, currency, convertPrice }) => {
           <h3 className="text-lg font-semibold text-gray-800 line-clamp-2 min-h-[3.5rem]">
             {product.name}
           </h3>
-          
+
           <p className="text-sm text-gray-500 line-clamp-2 min-h-[2.5rem]">
             {product.description || "No description available."}
           </p>
-          
+
           <div className="flex items-center justify-between pt-2">
             <div>
               <p className="text-xl font-bold text-blue-700">
@@ -79,7 +79,7 @@ const ProductCard = ({ product, currency, convertPrice }) => {
                 ✓ Ships from seller
               </p>
             </div>
-            
+
             <div className="text-right">
               <div className="text-yellow-500 text-sm">
                 {'★'.repeat(4)}☆ (128)
@@ -91,10 +91,10 @@ const ProductCard = ({ product, currency, convertPrice }) => {
           </div>
         </div>
       </Link>
-      
+
       {/* Quick Actions */}
       <div className="mt-4 flex gap-2">
-        <button 
+        <button
           onClick={handleAddToCart}
           className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium transition-colors text-sm"
         >

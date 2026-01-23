@@ -30,7 +30,8 @@ export default function LoginPage() {
   const [resetLoading, setResetLoading] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
+  const RAW_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
+  const API_URL = RAW_URL.endsWith("/api") ? RAW_URL.slice(0, -4) : RAW_URL;
 
   const handleLogin = async (e) => {
     e.preventDefault();

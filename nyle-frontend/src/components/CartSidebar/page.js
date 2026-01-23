@@ -1,18 +1,18 @@
 "use client";
 
-import { useCart } from '@/context/CartContext';
+import { useCart } from '@/context/CartContext/page';
 import Link from 'next/link';
 import { FiShoppingCart, FiX, FiTrash2, FiPlus, FiMinus } from 'react-icons/fi';
 
 export default function CartSidebar() {
-  const { 
-    cart, 
-    showCart, 
-    setShowCart, 
-    updateQuantity, 
-    removeItem, 
+  const {
+    cart,
+    showCart,
+    setShowCart,
+    updateQuantity,
+    removeItem,
     getCartTotals,
-    clearCart 
+    clearCart
   } = useCart();
 
   const totals = getCartTotals();
@@ -23,11 +23,11 @@ export default function CartSidebar() {
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black bg-opacity-50"
         onClick={() => setShowCart(false)}
       />
-      
+
       {/* Cart Panel */}
       <div className="absolute inset-y-0 right-0 flex max-w-full">
         <div className="relative w-screen max-w-md">
@@ -83,7 +83,7 @@ export default function CartSidebar() {
                             </button>
                           </div>
                           <p className="text-gray-600 text-sm mb-2">Ksh {Number(item.price).toLocaleString()}</p>
-                          
+
                           <div className="flex items-center justify-between">
                             <div className="flex items-center border rounded-lg">
                               <button
@@ -161,7 +161,7 @@ export default function CartSidebar() {
                   >
                     Proceed to Checkout
                   </Link>
-                  
+
                   <button
                     onClick={() => setShowCart(false)}
                     className="block w-full border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 rounded-lg font-medium"
