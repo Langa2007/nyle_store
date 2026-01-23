@@ -1,9 +1,34 @@
-
 "use client";
 
 import Link from 'next/link';
+import { useCart } from '@/context/CartContext';
 
 const ProductCard = ({ product, currency, convertPrice }) => {
+  const { addToCart, setShowAuthModal, setAuthAction } = useCart();
+
+  const handleAddToCart = async () => {
+    const result = await addToCart(product, 1);
+    
+    if (result.requiresAuth) {
+      setAuthAction('login');
+      setShowAuthModal(true);
+    } else if (result.success) {
+      // Show success notification
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-in';
+      notification.innerHTML = `
+        <div class="flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          Added to cart!
+        </div>
+      `;
+      document.body.appendChild(notification);
+      setTimeout(() => notification.remove(), 3000);
+    }
+  };
+
   return (
     <div className="group bg-white p-5 rounded-xl shadow hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
       <Link href={`/products/${product.id}`}>
@@ -69,7 +94,10 @@ const ProductCard = ({ product, currency, convertPrice }) => {
       
       {/* Quick Actions */}
       <div className="mt-4 flex gap-2">
-        <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium transition-colors text-sm">
+        <button 
+          onClick={handleAddToCart}
+          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium transition-colors text-sm"
+        >
           Add to Cart
         </button>
         <button className="px-3 border border-gray-300 hover:border-blue-600 hover:text-blue-600 rounded-lg transition-colors">

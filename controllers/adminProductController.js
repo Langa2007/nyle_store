@@ -1,4 +1,3 @@
-// controllers/adminProductController.js
 import pool from "../db/connect.js";
 import cloudinary from "../config/cloudinary.js";
 import multer from "multer";
@@ -111,7 +110,7 @@ export const createOrSelectVendor = async (req, res) => {
   }
 };
 
-//  ADMIN CREATE PRODUCT WITH VENDOR & SHIPPING
+//  ADMIN CREATE PRODUCT WITH VENDOR & SHIPPING & UNIQUE FIELDS
 export const adminCreateProduct = async (req, res) => {
   const connection = await pool.connect();
 
@@ -132,7 +131,25 @@ export const adminCreateProduct = async (req, res) => {
       free_shipping_threshold,
       product_type,
       attributes,
-      variant_data
+      variant_data,
+      // NEW FIELDS FOR UNIQUE PRODUCTS
+      original_price,
+      features,
+      warranty_info,
+      shipping_info,
+      return_policy,
+      specifications,
+      tags,
+      brand,
+      color,
+      material,
+      estimated_delivery_days,
+      is_featured,
+      is_bestseller,
+      rating,
+      review_count,
+      meta_title,
+      meta_description
     } = req.body;
 
     // Validate required fields
@@ -172,13 +189,19 @@ export const adminCreateProduct = async (req, res) => {
       }
     }
 
-    // Create product
+    // Create product with all fields
     const productQuery = `
       INSERT INTO products 
       (name, description, price, stock, category, image_url, vendor_id,
        sku, weight, dimensions, shipping_cost, free_shipping_threshold, 
-       product_type, attributes, gallery_images)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+       product_type, attributes, gallery_images,
+       original_price, features, warranty_info, shipping_info, 
+       return_policy, specifications, tags, brand, color, material,
+       estimated_delivery_days, is_featured, is_bestseller, rating,
+       review_count, meta_title, meta_description, status, created_by)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
+              $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28,
+              $29, $30, $31, $32, $33, $34)
       RETURNING *
     `;
 
@@ -198,6 +221,24 @@ export const adminCreateProduct = async (req, res) => {
       product_type || 'simple',
       attributes ? JSON.parse(attributes) : null,
       galleryUrls.length > 0 ? galleryUrls : null,
+      // NEW FIELDS
+      original_price ? parseFloat(original_price) : null,
+      features ? JSON.parse(features) : null,
+      warranty_info,
+      shipping_info,
+      return_policy,
+      specifications ? JSON.parse(specifications) : null,
+      tags ? JSON.parse(tags) : null,
+      brand,
+      color,
+      material,
+      estimated_delivery_days ? parseInt(estimated_delivery_days) : 3,
+      is_featured === 'true',
+      is_bestseller === 'true',
+      rating ? parseFloat(rating) : 0,
+      review_count ? parseInt(review_count) : 0,
+      meta_title,
+      meta_description,
       'approved', // Auto-approve admin-created products
       'admin'  // Created by admin
     ];
@@ -243,7 +284,7 @@ export const adminCreateProduct = async (req, res) => {
         productId,
         shipping_cost || 0,
         free_shipping_threshold || null,
-        3 // Default estimated days
+        estimated_delivery_days || 3
       ]);
     }
 
@@ -342,7 +383,7 @@ export const adminGetAllProducts = async (req, res) => {
   }
 };
 
-//  ADMIN UPDATE PRODUCT WITH VENDOR VALIDATION
+//  ADMIN UPDATE PRODUCT WITH VENDOR VALIDATION & UNIQUE FIELDS
 export const adminUpdateProduct = async (req, res) => {
   const { id } = req.params;
   const connection = await pool.connect();
@@ -352,7 +393,11 @@ export const adminUpdateProduct = async (req, res) => {
 
     const {
       name, description, price, stock, category, vendor_id,
-      sku, weight, dimensions, shipping_cost
+      sku, weight, dimensions, shipping_cost,
+      // NEW FIELDS
+      original_price, features, warranty_info, shipping_info,
+      return_policy, specifications, tags, brand, color, material,
+      estimated_delivery_days, is_featured, is_bestseller
     } = req.body;
 
     // Check if product exists and belongs to vendor if vendor_id is changed
@@ -373,6 +418,7 @@ export const adminUpdateProduct = async (req, res) => {
     const values = [];
     let paramCount = 1;
 
+    // Basic fields
     if (name) { updates.push(`name = $${paramCount}`); values.push(name); paramCount++; }
     if (description !== undefined) { updates.push(`description = $${paramCount}`); values.push(description); paramCount++; }
     if (price) { updates.push(`price = $${paramCount}`); values.push(parseFloat(price)); paramCount++; }
@@ -383,6 +429,21 @@ export const adminUpdateProduct = async (req, res) => {
     if (weight) { updates.push(`weight = $${paramCount}`); values.push(weight); paramCount++; }
     if (dimensions) { updates.push(`dimensions = $${paramCount}`); values.push(dimensions); paramCount++; }
     if (shipping_cost !== undefined) { updates.push(`shipping_cost = $${paramCount}`); values.push(parseFloat(shipping_cost)); paramCount++; }
+
+    // New unique fields
+    if (original_price !== undefined) { updates.push(`original_price = $${paramCount}`); values.push(original_price ? parseFloat(original_price) : null); paramCount++; }
+    if (features !== undefined) { updates.push(`features = $${paramCount}`); values.push(features ? JSON.parse(features) : null); paramCount++; }
+    if (warranty_info !== undefined) { updates.push(`warranty_info = $${paramCount}`); values.push(warranty_info); paramCount++; }
+    if (shipping_info !== undefined) { updates.push(`shipping_info = $${paramCount}`); values.push(shipping_info); paramCount++; }
+    if (return_policy !== undefined) { updates.push(`return_policy = $${paramCount}`); values.push(return_policy); paramCount++; }
+    if (specifications !== undefined) { updates.push(`specifications = $${paramCount}`); values.push(specifications ? JSON.parse(specifications) : null); paramCount++; }
+    if (tags !== undefined) { updates.push(`tags = $${paramCount}`); values.push(tags ? JSON.parse(tags) : null); paramCount++; }
+    if (brand !== undefined) { updates.push(`brand = $${paramCount}`); values.push(brand); paramCount++; }
+    if (color !== undefined) { updates.push(`color = $${paramCount}`); values.push(color); paramCount++; }
+    if (material !== undefined) { updates.push(`material = $${paramCount}`); values.push(material); paramCount++; }
+    if (estimated_delivery_days !== undefined) { updates.push(`estimated_delivery_days = $${paramCount}`); values.push(parseInt(estimated_delivery_days)); paramCount++; }
+    if (is_featured !== undefined) { updates.push(`is_featured = $${paramCount}`); values.push(is_featured === 'true'); paramCount++; }
+    if (is_bestseller !== undefined) { updates.push(`is_bestseller = $${paramCount}`); values.push(is_bestseller === 'true'); paramCount++; }
 
     // Handle image update if provided
     let imageUrl = null;
@@ -509,5 +570,50 @@ export const adminUpdateStock = async (req, res) => {
   } catch (err) {
     console.error("Error updating stock:", err.message);
     res.status(500).json({ error: "Failed to update stock" });
+  }
+};
+
+//  GET PRODUCT BY ID WITH ALL DETAILS
+export const getProductWithDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const query = `
+      SELECT 
+        p.*,
+        v.legal_name as vendor_name,
+        v.business_email,
+        v.phone,
+        v.business_address,
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'id', pv.id,
+              'sku', pv.sku,
+              'price', pv.price,
+              'stock', pv.stock,
+              'attributes', pv.attributes,
+              'image_url', pv.image_url
+            )
+          ) FILTER (WHERE pv.id IS NOT NULL),
+          '[]'
+        ) as variants
+      FROM products p
+      LEFT JOIN vendors v ON p.vendor_id = v.id
+      LEFT JOIN product_variants pv ON p.id = pv.product_id
+      WHERE p.id = $1
+      GROUP BY p.id, v.id
+    `;
+
+    const { rows } = await pool.query(query, [id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error("Error fetching product details:", err.message);
+    res.status(500).json({ error: "Failed to fetch product details" });
   }
 };

@@ -1,7 +1,7 @@
 // src/app/dashboard/layout.tsx
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -53,6 +53,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [adminName, setAdminName] = useState("Admin User");
+
+  useEffect(() => {
+    const storedName = localStorage.getItem("adminName");
+    if (storedName) setAdminName(storedName);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("adminAccessToken");
@@ -457,7 +463,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     className="flex items-center gap-3 p-1 pl-3 rounded-lg transition-colors group"
                   >
                     <div className="text-right hidden sm:block">
-                      <p className="text-sm font-medium">Admin User</p>
+                      <p className="text-sm font-medium">{adminName}</p>
                       <p className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Super Admin</p>
                     </div>
                     <div className="relative">

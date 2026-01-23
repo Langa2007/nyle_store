@@ -52,7 +52,7 @@ export const adminLogin = async (req, res) => {
       message: "Login successful",
       accessToken,
       refreshToken,
-      admin: { id: admin.id, email: admin.email, last_ip: ip },
+      admin: { id: admin.id, email: admin.email, name: admin.name, last_ip: ip },
     });
   } catch (err) {
     console.error("Admin login error:", err.message);
@@ -73,7 +73,7 @@ export const verifyAdminToken = async (req, res, next) => {
 
     // Check last IP
     const result = await pool.query("SELECT last_ip FROM users WHERE id=$1", [decoded.id]);
-    const lastIP = req.headers[ 'x-client-ip' ] || req.ip;
+    const lastIP = req.headers['x-client-ip'] || req.ip;
     if (lastIP && lastIP !== req.ip)
       return res.status(401).json({ message: "IP changed, please log in again" });
 

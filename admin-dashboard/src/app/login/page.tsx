@@ -74,6 +74,9 @@ export default function LoginPage() {
       localStorage.setItem("adminInitialIp", currentIp);
       localStorage.setItem("adminLastActive", Date.now().toString());
       localStorage.setItem("adminLoggedIn", "true");
+      if (data.admin?.name) {
+        localStorage.setItem("adminName", data.admin.name);
+      }
 
       router.push("/dashboard");
     } catch (err: unknown) {

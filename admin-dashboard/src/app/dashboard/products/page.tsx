@@ -1,4 +1,3 @@
-// admin-dashboard/src/app/dashboard/products/page.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -9,7 +8,11 @@ import {
   FaPlus, FaTrash, FaImage, FaTruck, 
   FaBox, FaTag, FaWarehouse, FaBuilding,
   FaChevronDown, FaChevronUp, FaSave,
-  FaPalette, FaRuler, FaWeightHanging
+  FaPalette, FaRuler, FaWeightHanging,
+  FaStar, FaAward, FaShippingFast,
+  FaClipboardList, FaTags, FaInfoCircle,
+  FaShieldAlt, FaUndo, FaBolt,
+  FaPercent, FaCalendarAlt, FaHashtag
 } from "react-icons/fa";
 
 interface Product {
@@ -26,6 +29,22 @@ interface Product {
   weight?: number;
   dimensions?: string;
   shipping_cost?: number;
+  // New fields
+  original_price?: number;
+  features?: string[];
+  warranty_info?: string;
+  shipping_info?: string;
+  return_policy?: string;
+  specifications?: Record<string, string>;
+  tags?: string[];
+  brand?: string;
+  color?: string;
+  material?: string;
+  estimated_delivery_days?: number;
+  is_featured?: boolean;
+  is_bestseller?: boolean;
+  rating?: number;
+  review_count?: number;
 }
 
 interface Vendor {
@@ -49,6 +68,7 @@ interface ProductVariant {
     size?: string;
     color?: string;
     material?: string;
+    [key: string]: string | undefined;
   };
   image_url?: string;
 }
@@ -65,11 +85,16 @@ export default function AdminProductsPage() {
   const [previews, setPreviews] = useState<string[]>([]);
   const [showVendorForm, setShowVendorForm] = useState<boolean>(false);
   const [showVariants, setShowVariants] = useState<boolean>(false);
+  const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
   const [variants, setVariants] = useState<ProductVariant[]>([
-    { sku: `SKU-${Date.now()}-1`, price: "", stock: "", attributes: {} }
+    { sku: `VAR-${Date.now()}-1`, price: "", stock: "", attributes: {} }
   ]);
+  const [features, setFeatures] = useState<string[]>([""]);
+  const [specs, setSpecs] = useState<Array<{key: string, value: string}>>([{key: "", value: ""}]);
+  const [tags, setTags] = useState<string[]>([""]);
 
   const [formData, setFormData] = useState({
+    // Basic Info
     name: "",
     description: "",
     price: "",
@@ -77,11 +102,37 @@ export default function AdminProductsPage() {
     category: "",
     vendor_id: "",
     sku: `PROD-${Date.now()}`,
+    
+    // Product Details
     weight: "",
     dimensions: "",
+    brand: "",
+    color: "",
+    material: "",
+    
+    // Shipping
     shipping_cost: "",
     free_shipping_threshold: "",
-    product_type: "simple"
+    estimated_delivery_days: "3",
+    shipping_info: "",
+    
+    // Policies
+    warranty_info: "",
+    return_policy: "",
+    
+    // Pricing
+    original_price: "",
+    
+    // SEO & Meta
+    meta_title: "",
+    meta_description: "",
+    
+    // Flags
+    product_type: "simple",
+    is_featured: "false",
+    is_bestseller: "false",
+    rating: "0",
+    review_count: "0"
   });
 
   const [vendorForm, setVendorForm] = useState({
@@ -97,66 +148,58 @@ export default function AdminProductsPage() {
 
   // Fetch products, vendors, categories
   useEffect(() => {
-  const fetchInitialData = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch products and categories first
-      const [prodRes, catRes] = await Promise.all([
-        fetch(`${baseurl}/api/admin/products`, { credentials: "include" }),
-        fetch(`${baseurl}/api/admin/categories`, { credentials: "include" })
-      ]);
-
-      const [prodData, catData] = await Promise.all([
-        prodRes.ok ? prodRes.json() : [],
-        catRes.ok ? catRes.json() : []
-      ]);
-
-      setProducts(prodData);
-      setCategories(catData);
-
-      // Then fetch vendors separately (important for forms)
-      fetchVendors();
-      
-    } catch (err) {
-      toast.error("Failed to load products and categories");
-      setProducts([]);
-      setCategories([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchVendors = async () => {
-    try {
-      const res = await fetch(`${baseurl}/api/admin/vendors`, {
-        credentials: "include",
-        headers: { 'Cache-Control': 'no-cache' }
-      });
-      
-      if (res.ok) {
-        const vendorData = await res.json();
-        setVendors(vendorData);
+    const fetchInitialData = async () => {
+      try {
+        setLoading(true);
         
-        // Show success message
-        if (vendorData.length > 0) {
-          toast.success(`Loaded ${vendorData.length} vendors`);
-        }
-      }
-    } catch (err) {
-      console.error("Vendor fetch error:", err);
-      toast.warning("Could not load vendor list");
-    }
-  };
+        const [prodRes, catRes] = await Promise.all([
+          fetch(`${baseurl}/api/admin/products`, { credentials: "include" }),
+          fetch(`${baseurl}/api/admin/categories`, { credentials: "include" })
+        ]);
 
-  fetchInitialData();
-}, [baseurl]);
+        const [prodData, catData] = await Promise.all([
+          prodRes.ok ? prodRes.json() : [],
+          catRes.ok ? catRes.json() : []
+        ]);
+
+        setProducts(prodData);
+        setCategories(catData);
+        fetchVendors();
+        
+      } catch (err) {
+        toast.error("Failed to load products and categories");
+        setProducts([]);
+        setCategories([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchVendors = async () => {
+      try {
+        const res = await fetch(`${baseurl}/api/admin/vendors`, {
+          credentials: "include",
+          headers: { 'Cache-Control': 'no-cache' }
+        });
+        
+        if (res.ok) {
+          const vendorData = await res.json();
+          setVendors(vendorData);
+        }
+      } catch (err) {
+        console.error("Vendor fetch error:", err);
+        toast.warning("Could not load vendor list");
+      }
+    };
+
+    fetchInitialData();
+  }, [baseurl]);
 
   // Handle image uploads
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    if (files.length + selectedFiles.length > 5) {
-      toast.error("Maximum 5 images allowed");
+    if (files.length + selectedFiles.length > 10) {
+      toast.error("Maximum 10 images allowed");
       return;
     }
 
@@ -197,6 +240,45 @@ export default function AdminProductsPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     setVendorForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  // Features management
+  const addFeature = () => {
+    setFeatures(prev => [...prev, ""]);
+  };
+
+  const updateFeature = (index: number, value: string) => {
+    setFeatures(prev => prev.map((feature, i) => i === index ? value : feature));
+  };
+
+  const removeFeature = (index: number) => {
+    setFeatures(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Specifications management
+  const addSpec = () => {
+    setSpecs(prev => [...prev, {key: "", value: ""}]);
+  };
+
+  const updateSpec = (index: number, field: 'key' | 'value', value: string) => {
+    setSpecs(prev => prev.map((spec, i) => i === index ? {...spec, [field]: value} : spec));
+  };
+
+  const removeSpec = (index: number) => {
+    setSpecs(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Tags management
+  const addTag = () => {
+    setTags(prev => [...prev, ""]);
+  };
+
+  const updateTag = (index: number, value: string) => {
+    setTags(prev => prev.map((tag, i) => i === index ? value : tag));
+  };
+
+  const removeTag = (index: number) => {
+    setTags(prev => prev.filter((_, i) => i !== index));
   };
 
   // Vendor management
@@ -275,7 +357,7 @@ export default function AdminProductsPage() {
     }));
   };
 
-  // CREATE product with vendor and variants
+  // CREATE product with all fields
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -291,6 +373,26 @@ export default function AdminProductsPage() {
     Object.entries(formData).forEach(([key, value]) => {
       if (value) form.append(key, value);
     });
+
+    // Add arrays and objects
+    const validFeatures = features.filter(f => f.trim());
+    if (validFeatures.length > 0) {
+      form.append("features", JSON.stringify(validFeatures));
+    }
+
+    const validSpecs = specs.filter(s => s.key.trim() && s.value.trim());
+    if (validSpecs.length > 0) {
+      const specsObj = validSpecs.reduce((acc, spec) => {
+        acc[spec.key] = spec.value;
+        return acc;
+      }, {} as Record<string, string>);
+      form.append("specifications", JSON.stringify(specsObj));
+    }
+
+    const validTags = tags.filter(t => t.trim());
+    if (validTags.length > 0) {
+      form.append("tags", JSON.stringify(validTags));
+    }
 
     // Add main image
     if (selectedFiles[0]) {
@@ -324,24 +426,7 @@ export default function AdminProductsPage() {
         toast.success("Product created successfully!");
 
         // Reset form
-        setFormData({
-          name: "",
-          description: "",
-          price: "",
-          stock: "0",
-          category: "",
-          vendor_id: "",
-          sku: `PROD-${Date.now()}`,
-          weight: "",
-          dimensions: "",
-          shipping_cost: "",
-          free_shipping_threshold: "",
-          product_type: "simple"
-        });
-        setSelectedFiles([]);
-        setPreviews([]);
-        setVariants([{ sku: `SKU-${Date.now()}-1`, price: "", stock: "", attributes: {} }]);
-        setShowVariants(false);
+        resetForm();
       } else {
         toast.error(data.error || "Failed to create product");
       }
@@ -350,6 +435,45 @@ export default function AdminProductsPage() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      description: "",
+      price: "",
+      stock: "0",
+      category: "",
+      vendor_id: "",
+      sku: `PROD-${Date.now()}`,
+      weight: "",
+      dimensions: "",
+      brand: "",
+      color: "",
+      material: "",
+      shipping_cost: "",
+      free_shipping_threshold: "",
+      estimated_delivery_days: "3",
+      shipping_info: "",
+      warranty_info: "",
+      return_policy: "",
+      original_price: "",
+      meta_title: "",
+      meta_description: "",
+      product_type: "simple",
+      is_featured: "false",
+      is_bestseller: "false",
+      rating: "0",
+      review_count: "0"
+    });
+    setSelectedFiles([]);
+    setPreviews([]);
+    setVariants([{ sku: `VAR-${Date.now()}-1`, price: "", stock: "", attributes: {} }]);
+    setFeatures([""]);
+    setSpecs([{key: "", value: ""}]);
+    setTags([""]);
+    setShowVariants(false);
+    setShowAdvanced(false);
   };
 
   // DELETE product
@@ -393,7 +517,7 @@ export default function AdminProductsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Product Management</h1>
-          <p className="text-gray-600 mt-2">Add and manage products with vendor associations</p>
+          <p className="text-gray-600 mt-2">Create unique products with detailed specifications</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -403,11 +527,25 @@ export default function AdminProductsPage() {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold flex items-center">
                   <FaPlus className="mr-2 text-blue-600" />
-                  Create New Product
+                  Create Unique Product
                 </h2>
-                <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                  Auto-save SKU: {formData.sku}
-                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                  className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+                >
+                  {showAdvanced ? (
+                    <>
+                      <FaChevronUp className="mr-1" />
+                      Hide Advanced
+                    </>
+                  ) : (
+                    <>
+                      <FaChevronDown className="mr-1" />
+                      Show Advanced
+                    </>
+                  )}
+                </button>
               </div>
 
               <form onSubmit={handleCreate}>
@@ -415,7 +553,7 @@ export default function AdminProductsPage() {
                 <div className="mb-8">
                   <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
                     <FaTag className="mr-2 text-blue-600" />
-                    Product Basics
+                    Basic Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -455,10 +593,29 @@ export default function AdminProductsPage() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Original Price (KES)
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">Ksh</span>
+                        <input
+                          type="number"
+                          name="original_price"
+                          value={formData.original_price}
+                          onChange={handleChange}
+                          className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="For discounts"
+                          min="0"
+                          step="0.01"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Category
                       </label>
-                      <select
-                        name="category" title="Product Category"
+                      <select title= "Select Category"
+                        name="category"
                         value={formData.category}
                         onChange={handleChange}
                         className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -474,16 +631,29 @@ export default function AdminProductsPage() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Initial Stock
+                        Brand
                       </label>
                       <input
-                        type="number"
-                        name="stock"
-                        value={formData.stock}
+                        type="text"
+                        name="brand"
+                        value={formData.brand}
                         onChange={handleChange}
                         className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="0"
-                        min="0"
+                        placeholder="Brand name"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        SKU
+                      </label>
+                      <input
+                        type="text"
+                        name="sku"
+                        value={formData.sku}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Auto-generated"
                       />
                     </div>
                   </div>
@@ -496,133 +666,11 @@ export default function AdminProductsPage() {
                       name="description"
                       value={formData.description}
                       onChange={handleChange}
-                      rows={3}
+                      rows={4}
                       className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Detailed product description..."
                     />
                   </div>
-                </div>
-
-                {/* Vendor Selection Section */}
-                <div className="mb-8">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium text-gray-900 flex items-center">
-                      <FaBuilding className="mr-2 text-green-600" />
-                      Vendor Information
-                    </h3>
-                    <button
-                      type="button"
-                      onClick={() => setShowVendorForm(!showVendorForm)}
-                      className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
-                    >
-                      {showVendorForm ? (
-                        <>
-                          <FaChevronUp className="mr-1" />
-                          Hide New Vendor Form
-                        </>
-                      ) : (
-                        <>
-                          <FaPlus className="mr-1" />
-                          Create New Vendor
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Select Vendor *
-                    </label>
-                    <select
-                      name="vendor_id" title="Select Vendor"
-                      value={formData.vendor_id}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
-                    >
-                      <option value="">Choose a vendor...</option>
-                      {vendors.map((vendor) => (
-                        <option key={vendor.id} value={vendor.id}>
-                          {vendor.legal_name} ({vendor.business_email})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <AnimatePresence>
-                    {showVendorForm && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="bg-gray-50 p-6 rounded-lg border border-gray-200"
-                      >
-                        <h4 className="font-medium text-gray-900 mb-4">New Vendor Details</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <input
-                            type="text"
-                            name="legal_name"
-                            placeholder="Legal Business Name *"
-                            value={vendorForm.legal_name}
-                            onChange={handleVendorFormChange}
-                            className="px-4 py-2 border rounded"
-                            required
-                          />
-                          <input
-                            type="email"
-                            name="business_email"
-                            placeholder="Business Email *"
-                            value={vendorForm.business_email}
-                            onChange={handleVendorFormChange}
-                            className="px-4 py-2 border rounded"
-                            required
-                          />
-                          <input
-                            type="tel"
-                            name="phone"
-                            placeholder="Phone Number"
-                            value={vendorForm.phone}
-                            onChange={handleVendorFormChange}
-                            className="px-4 py-2 border rounded"
-                          />
-                          <input
-                            type="text"
-                            name="tax_id"
-                            placeholder="Tax ID/VAT Number"
-                            value={vendorForm.tax_id}
-                            onChange={handleVendorFormChange}
-                            className="px-4 py-2 border rounded"
-                          />
-                          <select
-                            name="business_type" title="seller business type"
-                            value={vendorForm.business_type}
-                            onChange={handleVendorFormChange}
-                            className="px-4 py-2 border rounded"
-                          >
-                            <option value="individual">Individual</option>
-                            <option value="llc">LLC</option>
-                            <option value="corporation">Corporation</option>
-                            <option value="partnership">Partnership</option>
-                          </select>
-                          <textarea
-                            name="business_address"
-                            placeholder="Business Address"
-                            value={vendorForm.business_address}
-                            onChange={handleVendorFormChange}
-                            rows={2}
-                            className="px-4 py-2 border rounded md:col-span-2"
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={handleCreateVendor}
-                          className="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
-                        >
-                          Create Vendor
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </div>
 
                 {/* Product Details Section */}
@@ -667,21 +715,187 @@ export default function AdminProductsPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Product Type
                       </label>
-                      <select
-                        name="product_type" title="Product Type"
+                      <select title= "Select Product Type"
+                        name="product_type"
                         value={formData.product_type}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        onChangeCapture={(e) => {
-                          const value = (e.target as HTMLSelectElement).value;
-                          setShowVariants(value === 'variable');
+                        onChange={(e) => {
+                          handleChange(e);
+                          setShowVariants(e.target.value === 'variable');
                         }}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       >
                         <option value="simple">Simple Product</option>
                         <option value="variable">Variable Product (with variants)</option>
                         <option value="digital">Digital Product</option>
                       </select>
                     </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Color
+                      </label>
+                      <input
+                        type="text"
+                        name="color"
+                        value={formData.color}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="e.g., Black, Red, Blue"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Material
+                      </label>
+                      <input
+                        type="text"
+                        name="material"
+                        value={formData.material}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="e.g., Cotton, Leather, Plastic"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Initial Stock
+                      </label>
+                      <input
+                        type="number"
+                        name="stock"
+                        value={formData.stock}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="0"
+                        min="0"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Features Section */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                    <FaBolt className="mr-2 text-yellow-600" />
+                    Key Features
+                  </h3>
+                  <div className="space-y-3">
+                    {features.map((feature, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={feature}
+                          onChange={(e) => updateFeature(index, e.target.value)}
+                          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg"
+                          placeholder={`Feature ${index + 1}`}
+                        />
+                        {features.length > 1 && (
+                          <button title= "remove feature"
+                            type="button"
+                            onClick={() => removeFeature(index)}
+                            className="text-red-600 hover:text-red-800 p-2"
+                          >
+                            <FaTrash />
+                          </button>
+                        )}
+                        {index === features.length - 1 && (
+                          <button title= "addFeature"
+                            type="button"
+                            onClick={addFeature}
+                            className="text-green-600 hover:text-green-800 p-2"
+                          >
+                            <FaPlus />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Specifications Section */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                    <FaClipboardList className="mr-2 text-green-600" />
+                    Specifications
+                  </h3>
+                  <div className="space-y-3">
+                    {specs.map((spec, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={spec.key}
+                          onChange={(e) => updateSpec(index, 'key', e.target.value)}
+                          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg"
+                          placeholder="Key (e.g., Processor)"
+                        />
+                        <input
+                          type="text"
+                          value={spec.value}
+                          onChange={(e) => updateSpec(index, 'value', e.target.value)}
+                          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg"
+                          placeholder="Value (e.g., Intel i7)"
+                        />
+                        {specs.length > 1 && (
+                          <button title= "remove specifications"
+                            type="button"
+                            onClick={() => removeSpec(index)}
+                            className="text-red-600 hover:text-red-800 p-2"
+                          >
+                            <FaTrash />
+                          </button>
+                        )}
+                        {index === specs.length - 1 && (
+                          <button title= "Add Specification"
+                            type="button"
+                            onClick={addSpec}
+                            className="text-green-600 hover:text-green-800 p-2"
+                          >
+                            <FaPlus />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tags Section */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                    <FaTags className="mr-2 text-purple-600" />
+                    Tags
+                  </h3>
+                  <div className="space-y-3">
+                    {tags.map((tag, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={tag}
+                          onChange={(e) => updateTag(index, e.target.value)}
+                          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg"
+                          placeholder={`Tag ${index + 1}`}
+                        />
+                        {tags.length > 1 && (
+                          <button title= "Remove Tag"
+                            type="button"
+                            onClick={() => removeTag(index)}
+                            className="text-red-600 hover:text-red-800 p-2"
+                          >
+                            <FaTrash />
+                          </button>
+                        )}
+                        {index === tags.length - 1 && (
+                          <button title= "Add Tag"
+                            type="button"
+                            onClick={addTag}
+                            className="text-green-600 hover:text-green-800 p-2"
+                          >
+                            <FaPlus />
+                          </button>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -717,9 +931,9 @@ export default function AdminProductsPage() {
                                 Variant #{index + 1}
                               </span>
                               {variants.length > 1 && (
-                                <button
+                                <button title= "Remove Variant"
                                   type="button"
-                                  onClick={() => removeVariant(index)} title="Remove Variant"
+                                  onClick={() => removeVariant(index)}
                                   className="text-red-600 hover:text-red-800"
                                 >
                                   <FaTrash />
@@ -793,9 +1007,6 @@ export default function AdminProductsPage() {
                         placeholder="0"
                         min="0"
                       />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Leave as 0 for free shipping
-                      </p>
                     </div>
                     
                     <div>
@@ -811,12 +1022,315 @@ export default function AdminProductsPage() {
                         placeholder="5000"
                         min="0"
                       />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Order amount to qualify for free shipping
-                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <FaCalendarAlt className="mr-2 text-gray-400" />
+                        Estimated Delivery (Days)
+                      </label>
+                      <input
+                        type="number"
+                        name="estimated_delivery_days"
+                        value={formData.estimated_delivery_days}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="3"
+                        min="1"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <FaShippingFast className="mr-2 text-gray-400" />
+                        Shipping Info
+                      </label>
+                      <input
+                        type="text"
+                        name="shipping_info"
+                        value={formData.shipping_info}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="e.g., Free shipping nationwide"
+                      />
                     </div>
                   </div>
                 </div>
+
+                {/* Policies Section */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                    <FaShieldAlt className="mr-2 text-blue-600" />
+                    Policies & Warranty
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <FaShieldAlt className="mr-2 text-gray-400" />
+                        Warranty Information
+                      </label>
+                      <input
+                        type="text"
+                        name="warranty_info"
+                        value={formData.warranty_info}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="e.g., 1-year warranty"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <FaUndo className="mr-2 text-gray-400" />
+                        Return Policy
+                      </label>
+                      <input
+                        type="text"
+                        name="return_policy"
+                        value={formData.return_policy}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="e.g., 30-day return policy"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Vendor Selection Section */}
+                <div className="mb-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-medium text-gray-900 flex items-center">
+                      <FaBuilding className="mr-2 text-green-600" />
+                      Vendor Information *
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => setShowVendorForm(!showVendorForm)}
+                      className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+                    >
+                      {showVendorForm ? (
+                        <>
+                          <FaChevronUp className="mr-1" />
+                          Hide New Vendor Form
+                        </>
+                      ) : (
+                        <>
+                          <FaPlus className="mr-1" />
+                          Create New Vendor
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Select Vendor *
+                    </label>
+                    <select title= "Select existing vendor"
+                      name="vendor_id"
+                      value={formData.vendor_id}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    >
+                      <option value="">Choose a vendor...</option>
+                      {vendors.map((vendor) => (
+                        <option key={vendor.id} value={vendor.id}>
+                          {vendor.legal_name} ({vendor.business_email})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <AnimatePresence>
+                    {showVendorForm && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="bg-gray-50 p-6 rounded-lg border border-gray-200"
+                      >
+                        <h4 className="font-medium text-gray-900 mb-4">New Vendor Details</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <input
+                            type="text"
+                            name="legal_name"
+                            placeholder="Legal Business Name *"
+                            value={vendorForm.legal_name}
+                            onChange={handleVendorFormChange}
+                            className="px-4 py-2 border rounded"
+                            required
+                          />
+                          <input
+                            type="email"
+                            name="business_email"
+                            placeholder="Business Email *"
+                            value={vendorForm.business_email}
+                            onChange={handleVendorFormChange}
+                            className="px-4 py-2 border rounded"
+                            required
+                          />
+                          <input
+                            type="tel"
+                            name="phone"
+                            placeholder="Phone Number"
+                            value={vendorForm.phone}
+                            onChange={handleVendorFormChange}
+                            className="px-4 py-2 border rounded"
+                          />
+                          <input
+                            type="text"
+                            name="tax_id"
+                            placeholder="Tax ID/VAT Number"
+                            value={vendorForm.tax_id}
+                            onChange={handleVendorFormChange}
+                            className="px-4 py-2 border rounded"
+                          />
+                          <select title= "Business type"
+                            name="business_type"
+                            value={vendorForm.business_type}
+                            onChange={handleVendorFormChange}
+                            className="px-4 py-2 border rounded"
+                          >
+                            <option value="individual">Individual</option>
+                            <option value="llc">LLC</option>
+                            <option value="corporation">Corporation</option>
+                            <option value="partnership">Partnership</option>
+                          </select>
+                          <textarea
+                            name="business_address"
+                            placeholder="Business Address"
+                            value={vendorForm.business_address}
+                            onChange={handleVendorFormChange}
+                            rows={2}
+                            className="px-4 py-2 border rounded md:col-span-2"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleCreateVendor}
+                          className="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
+                        >
+                          Create Vendor
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Advanced Options */}
+                <AnimatePresence>
+                  {showAdvanced && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mb-8"
+                    >
+                      <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                        <FaInfoCircle className="mr-2 text-gray-600" />
+                        Advanced Options
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <label className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              name="is_featured"
+                              checked={formData.is_featured === 'true'}
+                              onChange={(e) => setFormData(prev => ({
+                                ...prev,
+                                is_featured: e.target.checked ? 'true' : 'false'
+                              }))}
+                              className="rounded"
+                            />
+                            <span className="text-gray-700 flex items-center">
+                              <FaStar className="mr-2 text-yellow-500" />
+                              Featured Product
+                            </span>
+                          </label>
+                        </div>
+                        
+                        <div>
+                          <label className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              name="is_bestseller"
+                              checked={formData.is_bestseller === 'true'}
+                              onChange={(e) => setFormData(prev => ({
+                                ...prev,
+                                is_bestseller: e.target.checked ? 'true' : 'false'
+                              }))}
+                              className="rounded"
+                            />
+                            <span className="text-gray-700 flex items-center">
+                              <FaAward className="mr-2 text-green-500" />
+                              Best Seller
+                            </span>
+                          </label>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Rating (0-5)
+                          </label>
+                          <input title= "Average product rating"
+                            type="number"
+                            name="rating"
+                            value={formData.rating}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg"
+                            min="0"
+                            max="5"
+                            step="0.1"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Review Count
+                          </label>
+                          <input title= "Number of reviews"
+                            type="number"
+                            name="review_count"
+                            value={formData.review_count}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg"
+                            min="0"
+                          />
+                        </div>
+
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Meta Title (SEO)
+                          </label>
+                          <input
+                            type="text"
+                            name="meta_title"
+                            value={formData.meta_title}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg"
+                            placeholder="For search engines"
+                          />
+                        </div>
+
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Meta Description (SEO)
+                          </label>
+                          <textarea
+                            name="meta_description"
+                            value={formData.meta_description}
+                            onChange={handleChange}
+                            rows={2}
+                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg"
+                            placeholder="For search engines"
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {/* Images Section */}
                 <div className="mb-8">
@@ -841,7 +1355,7 @@ export default function AdminProductsPage() {
                         Click to upload product images
                       </p>
                       <p className="text-sm text-gray-500">
-                        Upload up to 5 images. First image will be the main product image.
+                        Upload up to 10 images. First image will be the main product image.
                       </p>
                     </label>
                     
@@ -859,9 +1373,9 @@ export default function AdminProductsPage() {
                                 Main
                               </span>
                             )}
-                            <button
+                            <button title= "Remove image"
                               type="button"
-                              onClick={() => removeImage(index)} title="Remove Image"
+                              onClick={() => removeImage(index)}
                               className="absolute top-2 right-2 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
                             >
                               <FaTrash size={12} />
@@ -892,7 +1406,7 @@ export default function AdminProductsPage() {
                     ) : (
                       <>
                         <FaSave className="mr-3" />
-                        Create Product
+                        Create Unique Product
                       </>
                     )}
                   </button>
@@ -909,9 +1423,12 @@ export default function AdminProductsPage() {
                   <FaWarehouse className="mr-2 text-gray-600" />
                   Products ({products.length})
                 </h2>
-                <span className="text-sm text-gray-500">
-                  Total: {products.length}
-                </span>
+                <button
+                  onClick={resetForm}
+                  className="text-sm text-blue-600 hover:text-blue-800"
+                >
+                  Reset Form
+                </button>
               </div>
 
               <div className="space-y-4 max-h-[calc(100vh-300px)] overflow-y-auto pr-2">
@@ -948,6 +1465,11 @@ export default function AdminProductsPage() {
                           </h3>
                           <p className="text-sm text-gray-600">
                             Ksh {product.price.toLocaleString()}
+                            {product.original_price && (
+                              <span className="ml-2 text-xs text-gray-400 line-through">
+                                Ksh {product.original_price.toLocaleString()}
+                              </span>
+                            )}
                           </p>
                           <div className="flex items-center justify-between mt-2">
                             <span className="text-xs text-gray-500">
@@ -956,6 +1478,23 @@ export default function AdminProductsPage() {
                             <span className="text-xs text-gray-500">
                               {product.vendor_name || 'No vendor'}
                             </span>
+                          </div>
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {product.is_featured && (
+                              <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                                Featured
+                              </span>
+                            )}
+                            {product.is_bestseller && (
+                              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                                Best Seller
+                              </span>
+                            )}
+                            {product.brand && (
+                              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                {product.brand}
+                              </span>
+                            )}
                           </div>
                         </div>
                         

@@ -15,7 +15,7 @@ async function getOrCreateCart({ user_id, session_id }) {
     return r.rows[0];
   } else {
     // create anonymous cart with random session id
-    const sid = `s_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
+    const sid = `s_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     const r = await pool.query('INSERT INTO carts(session_id) VALUES($1) RETURNING *', [sid]);
     return r.rows[0];
   }
@@ -56,7 +56,7 @@ export const addToCart = async (req, res) => {
     }
 
     const { rows } = await pool.query(
-      `SELECT ci.id, ci.product_id, ci.quantity, p.name, p.price, p.image
+      `SELECT ci.id, ci.product_id, ci.quantity, p.name, p.price, p.image_url
        FROM cart_items ci LEFT JOIN products p ON p.id = ci.product_id
        WHERE ci.cart_id=$1`,
       [cart.id]
@@ -109,7 +109,7 @@ export const syncCart = async (req, res) => {
     await pool.query('UPDATE carts SET updated_at = now() WHERE id=$1', [cart.id]);
 
     const { rows } = await pool.query(
-      `SELECT ci.id, ci.product_id, ci.quantity, p.name, p.price, p.image
+      `SELECT ci.id, ci.product_id, ci.quantity, p.name, p.price, p.image_url
        FROM cart_items ci LEFT JOIN products p ON p.id = ci.product_id
        WHERE ci.cart_id = $1`,
       [cart.id]

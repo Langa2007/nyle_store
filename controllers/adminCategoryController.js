@@ -68,10 +68,17 @@ export const createCategory = async (req, res) => {
 };
 
 
-//  Get all categories
+//  Get all categories with product count
 export const getAllCategories = async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM categories ORDER BY id ASC");
+    const query = `
+      SELECT c.*, COUNT(p.id)::int as product_count
+      FROM categories c
+      LEFT JOIN products p ON c.name = p.category
+      GROUP BY c.id
+      ORDER BY c.id ASC
+    `;
+    const result = await pool.query(query);
     res.json(result.rows);
   } catch (err) {
     console.error(" Error fetching categories:", err.message);

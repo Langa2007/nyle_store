@@ -65,7 +65,7 @@ export default function AdminCategoryPage() {
       // Transform data to match enhanced interface
       const enhancedData: Category[] = data.map((cat: any, index: number) => ({
         ...cat,
-        productCount: Math.floor(Math.random() * 100), // Replace with actual data if available
+        productCount: cat.product_count || 0, // Use real data
         status: ['active', 'inactive', 'draft'][index % 3] as 'active' | 'inactive' | 'draft',
         createdAt: new Date(Date.now() - index * 86400000).toLocaleDateString(),
         updatedAt: new Date(Date.now() - index * 43200000).toLocaleDateString()
