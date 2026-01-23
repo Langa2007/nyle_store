@@ -4,19 +4,19 @@ import pool from '../db/connect.js';
 // Helper: getOrCreateCart by user_id or session_id
 async function getOrCreateCart({ user_id, session_id }) {
   if (user_id) {
-    const { rows } = await pool.query('SELECT * FROM carts WHERE user_id=$1 LIMIT 1', [user_id]);
+    const { rows } = await pool.query('SELECT * FROM cart WHERE user_id=$1 LIMIT 1', [user_id]);
     if (rows.length) return rows[0];
-    const r = await pool.query('INSERT INTO carts(user_id) VALUES($1) RETURNING *', [user_id]);
+    const r = await pool.query('INSERT INTO cart(user_id) VALUES($1) RETURNING *', [user_id]);
     return r.rows[0];
   } else if (session_id) {
-    const { rows } = await pool.query('SELECT * FROM carts WHERE session_id=$1 LIMIT 1', [session_id]);
+    const { rows } = await pool.query('SELECT * FROM cart WHERE session_id=$1 LIMIT 1', [session_id]);
     if (rows.length) return rows[0];
-    const r = await pool.query('INSERT INTO carts(session_id) VALUES($1) RETURNING *', [session_id]);
+    const r = await pool.query('INSERT INTO cart(session_id) VALUES($1) RETURNING *', [session_id]);
     return r.rows[0];
   } else {
     // create anonymous cart with random session id
     const sid = `s_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    const r = await pool.query('INSERT INTO carts(session_id) VALUES($1) RETURNING *', [sid]);
+    const r = await pool.query('INSERT INTO cart(session_id) VALUES($1) RETURNING *', [sid]);
     return r.rows[0];
   }
 }
@@ -62,7 +62,7 @@ export const addToCart = async (req, res) => {
       [cart.id]
     );
 
-    await pool.query('UPDATE carts SET updated_at = now() WHERE id=$1', [cart.id]);
+    await pool.query('UPDATE cart SET updated_at = now() WHERE id=$1', [cart.id]);
 
     res.json({ cart_id: cart.id, items: rows });
   } catch (err) {
@@ -106,7 +106,7 @@ export const syncCart = async (req, res) => {
       pool.query('INSERT INTO cart_items(cart_id, product_id, quantity) VALUES($1,$2,$3)', [cart.id, it.product_id, it.quantity])
     );
     await Promise.all(insertPromises);
-    await pool.query('UPDATE carts SET updated_at = now() WHERE id=$1', [cart.id]);
+    await pool.query('UPDATE cart SET updated_at = now() WHERE id=$1', [cart.id]);
 
     const { rows } = await pool.query(
       `SELECT ci.id, ci.product_id, ci.quantity, p.name, p.price, p.image_url
