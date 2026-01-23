@@ -538,7 +538,7 @@ export default function VendorInfoLayout({
                   Contact Support
                 </Link>
                 <Link
-                  href="/vendor/help"
+                  href="/support/help-center"
                   className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-lg transition-colors"
                 >
                   Vendor Guides

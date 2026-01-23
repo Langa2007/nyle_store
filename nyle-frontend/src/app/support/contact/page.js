@@ -104,8 +104,8 @@ export default function ContactPage() {
       title: "Call Us", 
       icon: Phone, 
       color: "from-green-500 to-emerald-500",
-      description: "+1 (555) 123-4567",
-      action: "tel:+15551234567"
+      description: "+254 704521408",
+      action: "tel:+254704521408"
     },
     { 
       id: "chat", 
