@@ -26,19 +26,20 @@ const isValidEmail = (email) => {
 //  1. FORGOT PASSWORD REQUEST - SEND VERIFICATION CODE
 export const forgotPassword = async (req, res) => {
   try {
-    const { email, user_type = 'user' } = req.body;
-    
+    const { email: rawEmail, user_type = 'user' } = req.body;
+    const email = rawEmail.trim().toLowerCase();
+
     // Validate email
     if (!email || !isValidEmail(email)) {
-      return res.status(400).json({ 
-        error: "Valid email address is required" 
+      return res.status(400).json({
+        error: "Valid email address is required"
       });
     }
 
     // Validate user_type
     if (!['user', 'vendor'].includes(user_type)) {
-      return res.status(400).json({ 
-        error: "Invalid user type. Must be 'user' or 'vendor'" 
+      return res.status(400).json({
+        error: "Invalid user type. Must be 'user' or 'vendor'"
       });
     }
 
@@ -51,45 +52,45 @@ export const forgotPassword = async (req, res) => {
       `SELECT id, email, ${nameColumn} as name FROM ${tableName} WHERE email = $1`,
       [email]
     );
-    
+
     // Security: always return success even if email doesn't exist
     if (userCheck.rows.length === 0) {
-      return res.status(200).json({ 
+      return res.status(200).json({
         success: true,
         message: "If an account exists with this email, you will receive a verification code shortly.",
         code_sent: true
       });
     }
-    
+
     const user = userCheck.rows[0];
-    
+
     // Delete any existing reset tokens for this user/vendor
     await pool.query(
       `DELETE FROM password_reset_tokens 
        WHERE user_id = $1 AND user_type = $2`,
       [user.id, user_type]
     );
-    
+
     // Generate 6-digit verification code
     const verificationCode = generateVerificationCode();
     const hashedCode = hashToken(verificationCode);
     const expiresAt = Date.now() + 900000; // 15 minutes from now
-    
+
     // Store hashed code in database
     await pool.query(
       `INSERT INTO password_reset_tokens (user_id, token, expires_at, user_type) 
        VALUES ($1, $2, $3, $4)`,
       [user.id, hashedCode, expiresAt, user_type]
     );
-    
+
     // Send email with verification code via Resend
     try {
-      const subject = user_type === 'vendor' 
+      const subject = user_type === 'vendor'
         ? 'Your Nyle Store Vendor Password Reset Code'
         : 'Your Nyle Store Account Password Reset Code';
-      
+
       const portalName = user_type === 'vendor' ? 'Vendor Portal' : 'Customer Account';
-      
+
       await resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL || 'Nyle Store <onboarding@resend.dev>',
         to: [email],
@@ -167,27 +168,27 @@ export const forgotPassword = async (req, res) => {
         `,
         text: `Password Reset Verification for Nyle Store ${user_type === 'vendor' ? 'Vendor' : 'Customer'} Account\n\nHello ${user.name},\n\nYour password reset verification code is: ${verificationCode}\n\nThis code expires in 15 minutes.\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nNyle Store Team`
       });
-      
+
       console.log(` Password reset verification code sent to ${user_type}:`, email);
-      
+
     } catch (emailError) {
       console.error(' Resend email error:', emailError);
-      return res.status(500).json({ 
-        error: "Failed to send verification code. Please try again later." 
+      return res.status(500).json({
+        error: "Failed to send verification code. Please try again later."
       });
     }
-    
-    res.status(200).json({ 
+
+    res.status(200).json({
       success: true,
       message: "Verification code sent to your email.",
       code_sent: true,
       expires_in: "15 minutes"
     });
-    
+
   } catch (err) {
     console.error(" Forgot password error:", err.message);
-    res.status(500).json({ 
-      error: "An error occurred while processing your request" 
+    res.status(500).json({
+      error: "An error occurred while processing your request"
     });
   }
 };
@@ -195,24 +196,25 @@ export const forgotPassword = async (req, res) => {
 //  2. VERIFY RESET CODE
 export const verifyResetCode = async (req, res) => {
   try {
-    const { email, code, user_type = 'user' } = req.body;
-    
+    const { email: rawEmail, code, user_type = 'user' } = req.body;
+    const email = rawEmail.trim().toLowerCase();
+
     if (!email || !code) {
-      return res.status(400).json({ 
-        error: "Email and verification code are required" 
+      return res.status(400).json({
+        error: "Email and verification code are required"
       });
     }
-    
+
     if (!['user', 'vendor'].includes(user_type)) {
-      return res.status(400).json({ 
-        error: "Invalid user type" 
+      return res.status(400).json({
+        error: "Invalid user type"
       });
     }
-    
+
     // Hash the provided code
     const hashedCode = hashToken(code);
     const currentTime = Date.now();
-    
+
     // Find valid token
     const tokenResult = await pool.query(
       `SELECT prt.*, 
@@ -236,19 +238,19 @@ export const verifyResetCode = async (req, res) => {
          )`,
       [hashedCode, currentTime, user_type, email, email]
     );
-    
+
     if (tokenResult.rows.length === 0) {
-      return res.status(400).json({ 
-        error: "Invalid or expired verification code" 
+      return res.status(400).json({
+        error: "Invalid or expired verification code"
       });
     }
-    
+
     const token = tokenResult.rows[0];
-    
+
     // Generate a one-time reset token for the next step
     const resetToken = crypto.randomBytes(32).toString('hex');
     const hashedResetToken = hashToken(resetToken);
-    
+
     // Update the token to mark it as verified
     await pool.query(
       `UPDATE password_reset_tokens 
@@ -256,19 +258,19 @@ export const verifyResetCode = async (req, res) => {
        WHERE id = $3`,
       [hashedResetToken, Date.now() + 600000, token.id] // 10 minutes for reset
     );
-    
-    res.status(200).json({ 
+
+    res.status(200).json({
       success: true,
       message: "Verification code accepted. You can now reset your password.",
       reset_token: resetToken,
       user_type: user_type,
       expires_in: "10 minutes"
     });
-    
+
   } catch (err) {
     console.error(" Verify reset code error:", err.message);
-    res.status(500).json({ 
-      error: "Failed to verify code" 
+    res.status(500).json({
+      error: "Failed to verify code"
     });
   }
 };
@@ -276,16 +278,16 @@ export const verifyResetCode = async (req, res) => {
 //  3. RESET PASSWORD WITH TOKEN (after code verification)
 export const resetPassword = async (req, res) => {
   const connection = await pool.connect();
-  
+
   try {
     const { reset_token, newPassword, user_type = 'user' } = req.body;
-    
+
     if (!reset_token || !newPassword) {
-      return res.status(400).json({ 
-        error: "Reset token and new password are required" 
+      return res.status(400).json({
+        error: "Reset token and new password are required"
       });
     }
-    
+
     // Validate password strength
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!passwordRegex.test(newPassword)) {
@@ -293,12 +295,12 @@ export const resetPassword = async (req, res) => {
         error: "Password must be at least 8 characters, contain letters, numbers, and one special character (@$!%*?&)"
       });
     }
-    
+
     await connection.query('BEGIN');
-    
+
     const hashedToken = hashToken(reset_token);
     const currentTime = Date.now();
-    
+
     // Find valid reset token (must be within 10 minutes)
     const tokenResult = await connection.query(
       `SELECT prt.* 
@@ -308,42 +310,42 @@ export const resetPassword = async (req, res) => {
          AND prt.user_type = $3`,
       [hashedToken, currentTime, user_type]
     );
-    
+
     if (tokenResult.rows.length === 0) {
       await connection.query('ROLLBACK');
-      return res.status(400).json({ 
-        error: "Invalid or expired reset token" 
+      return res.status(400).json({
+        error: "Invalid or expired reset token"
       });
     }
-    
+
     const { user_id, user_type: tokenUserType } = tokenResult.rows[0];
-    
+
     // Hash new password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
-    
+
     // Update password in correct table
     const tableName = tokenUserType === 'vendor' ? 'vendors' : 'users';
     await connection.query(
       `UPDATE ${tableName} SET password = $1, updated_at = NOW() WHERE id = $2`,
       [hashedPassword, user_id]
     );
-    
+
     // Delete used token
     await connection.query(
       `DELETE FROM password_reset_tokens WHERE user_id = $1 AND user_type = $2`,
       [user_id, tokenUserType]
     );
-    
+
     // Invalidate all existing sessions/tokens
     const sessionTable = tokenUserType === 'vendor' ? 'vendor_sessions' : 'user_sessions';
     await connection.query(
       `DELETE FROM ${sessionTable} WHERE ${tokenUserType}_id = $1`,
       [user_id]
     );
-    
+
     await connection.query('COMMIT');
-    
+
     // Get user details for confirmation email
     const userResult = await connection.query(
       `SELECT email, 
@@ -354,16 +356,16 @@ export const resetPassword = async (req, res) => {
        FROM ${tableName} WHERE id = $1`,
       [user_id, tokenUserType]
     );
-    
+
     if (userResult.rows.length > 0) {
       const user = userResult.rows[0];
-      
+
       // Send confirmation email
       try {
-        const subject = tokenUserType === 'vendor' 
+        const subject = tokenUserType === 'vendor'
           ? 'Your Nyle Store Vendor Password Has Been Reset'
           : 'Your Nyle Store Account Password Has Been Reset';
-        
+
         await resend.emails.send({
           from: process.env.RESEND_FROM_EMAIL || 'Nyle Store <onboarding@resend.dev>',
           to: [user.email],
@@ -402,18 +404,18 @@ export const resetPassword = async (req, res) => {
         console.warn(' Password reset confirmation email failed:', emailError);
       }
     }
-    
-    res.status(200).json({ 
+
+    res.status(200).json({
       success: true,
       message: "Password reset successful. You can now login with your new password.",
       user_type: tokenUserType
     });
-    
+
   } catch (err) {
     await connection.query('ROLLBACK');
     console.error(" Reset password error:", err.message);
-    res.status(500).json({ 
-      error: "Failed to reset password" 
+    res.status(500).json({
+      error: "Failed to reset password"
     });
   } finally {
     connection.release();
@@ -423,11 +425,12 @@ export const resetPassword = async (req, res) => {
 //  4. RESEND VERIFICATION CODE
 export const resendResetCode = async (req, res) => {
   try {
-    const { email, user_type = 'user' } = req.body;
-    
+    const { email: rawEmail, user_type = 'user' } = req.body;
+    const email = rawEmail.trim().toLowerCase();
+
     if (!email || !isValidEmail(email)) {
-      return res.status(400).json({ 
-        error: "Valid email address is required" 
+      return res.status(400).json({
+        error: "Valid email address is required"
       });
     }
 
@@ -440,41 +443,41 @@ export const resendResetCode = async (req, res) => {
       `SELECT id, email, ${nameColumn} as name FROM ${tableName} WHERE email = $1`,
       [email]
     );
-    
+
     if (userCheck.rows.length === 0) {
-      return res.status(200).json({ 
+      return res.status(200).json({
         success: true,
         message: "If an account exists with this email, you will receive a new verification code shortly."
       });
     }
-    
+
     const user = userCheck.rows[0];
-    
+
     // Delete existing token
     await pool.query(
       `DELETE FROM password_reset_tokens 
        WHERE user_id = $1 AND user_type = $2`,
       [user.id, user_type]
     );
-    
+
     // Generate new 6-digit verification code
     const verificationCode = generateVerificationCode();
     const hashedCode = hashToken(verificationCode);
     const expiresAt = Date.now() + 900000; // 15 minutes from now
-    
+
     // Store hashed code in database
     await pool.query(
       `INSERT INTO password_reset_tokens (user_id, token, expires_at, user_type) 
        VALUES ($1, $2, $3, $4)`,
       [user.id, hashedCode, expiresAt, user_type]
     );
-    
+
     // Send email with new verification code
     try {
-      const subject = user_type === 'vendor' 
+      const subject = user_type === 'vendor'
         ? 'New Password Reset Code - Nyle Store Vendor'
         : 'New Password Reset Code - Nyle Store';
-      
+
       await resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL || 'Nyle Store <onboarding@resend.dev>',
         to: [email],
@@ -507,24 +510,24 @@ export const resendResetCode = async (req, res) => {
           </div>
         `
       });
-      
+
     } catch (emailError) {
       console.error(' Resend code email error:', emailError);
-      return res.status(500).json({ 
-        error: "Failed to send new verification code" 
+      return res.status(500).json({
+        error: "Failed to send new verification code"
       });
     }
-    
-    res.status(200).json({ 
+
+    res.status(200).json({
       success: true,
       message: "New verification code sent to your email.",
       expires_in: "15 minutes"
     });
-    
+
   } catch (err) {
     console.error(" Resend reset code error:", err.message);
-    res.status(500).json({ 
-      error: "Failed to resend verification code" 
+    res.status(500).json({
+      error: "Failed to resend verification code"
     });
   }
 };

@@ -62,7 +62,8 @@ export const vendorSignup = async (req, res) => {
     if (!legal_name || !company_name || !email || !password)
       return res.status(400).json({ message: "Missing required fields" });
 
-    const existing = await pool.query("SELECT id FROM vendors WHERE email=$1", [email]);
+    const normalizedEmail = email.trim().toLowerCase();
+    const existing = await pool.query("SELECT id FROM vendors WHERE email=$1", [normalizedEmail]);
     if (existing.rows.length)
       return res.status(400).json({ message: "Vendor already exists" });
 
@@ -77,7 +78,7 @@ export const vendorSignup = async (req, res) => {
        RETURNING id, email`,
       [
         legal_name, company_name, contact_person,
-        email, phone, address, country, business_type, hashed,
+        normalizedEmail, phone, address, country, business_type, hashed,
       ]
     );
 
@@ -93,7 +94,7 @@ export const vendorSignup = async (req, res) => {
     );
 
     // Send via Resend
-    await sendVerificationCodeEmail(email, code);
+    await sendVerificationCodeEmail(normalizedEmail, code);
 
     return res.status(201).json({
       message: "Signup successful. Check your email for a verification code.",
@@ -160,9 +161,10 @@ export const vendorLogin = async (req, res) => {
     if (!email || !password)
       return res.status(400).json({ message: "Email and password are required" });
 
+    const normalizedEmail = email.trim().toLowerCase();
     const q = await pool.query(
       "SELECT id, password, is_verified, status FROM vendors WHERE email=$1",
-      [email]
+      [normalizedEmail]
     );
 
     if (!q.rows.length)
