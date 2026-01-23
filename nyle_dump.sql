@@ -162,6 +162,45 @@ ALTER SEQUENCE public.cart_id_seq OWNED BY public.cart.id;
 
 
 --
+-- Name: cart_items; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.cart_items (
+    id integer NOT NULL,
+    cart_id integer NOT NULL,
+    product_id integer NOT NULL,
+    quantity integer DEFAULT 1 NOT NULL,
+    created_at timestamp without time zone DEFAULT now(),
+    updated_at timestamp without time zone DEFAULT now(),
+    CONSTRAINT cart_items_quantity_check CHECK ((quantity > 0))
+);
+
+
+ALTER TABLE public.cart_items OWNER TO postgres;
+
+--
+-- Name: cart_items_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.cart_items_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.cart_items_id_seq OWNER TO postgres;
+
+--
+-- Name: cart_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.cart_items_id_seq OWNED BY public.cart_items.id;
+
+
+--
 -- Name: categories; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -518,7 +557,25 @@ CREATE TABLE public.products (
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     stock integer DEFAULT 0,
     vendor_id integer,
-    category text NOT NULL
+    category text NOT NULL,
+    original_price numeric(10,2),
+    features jsonb,
+    warranty_info text,
+    shipping_info text,
+    return_policy text,
+    specifications jsonb,
+    tags jsonb,
+    brand character varying(100),
+    color character varying(50),
+    material character varying(100),
+    estimated_delivery_days integer DEFAULT 3,
+    is_featured boolean DEFAULT false,
+    is_bestseller boolean DEFAULT false,
+    rating numeric(3,2) DEFAULT 0.00,
+    review_count integer DEFAULT 0,
+    meta_title character varying(255),
+    meta_description text,
+    gallery_images jsonb
 );
 
 
@@ -1001,6 +1058,13 @@ ALTER TABLE ONLY public.cart ALTER COLUMN id SET DEFAULT nextval('public.cart_id
 
 
 --
+-- Name: cart_items id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cart_items ALTER COLUMN id SET DEFAULT nextval('public.cart_items_id_seq'::regclass);
+
+
+--
 -- Name: categories id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1172,6 +1236,14 @@ COPY public.cart (id, user_id, session_id, product_id, quantity, created_at, upd
 
 
 --
+-- Data for Name: cart_items; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cart_items (id, cart_id, product_id, quantity, created_at, updated_at) FROM stdin;
+\.
+
+
+--
 -- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1248,7 +1320,7 @@ COPY public.payments (id, order_id, provider, provider_ref, amount, currency, st
 -- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.products (id, name, description, price, image_url, created_at, stock, vendor_id, category) FROM stdin;
+COPY public.products (id, name, description, price, image_url, created_at, stock, vendor_id, category, original_price, features, warranty_info, shipping_info, return_policy, specifications, tags, brand, color, material, estimated_delivery_days, is_featured, is_bestseller, rating, review_count, meta_title, meta_description, gallery_images) FROM stdin;
 \.
 
 
@@ -1368,6 +1440,13 @@ SELECT pg_catalog.setval('public.announcements_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.cart_id_seq', 1, false);
+
+
+--
+-- Name: cart_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.cart_items_id_seq', 1, false);
 
 
 --
@@ -1531,6 +1610,22 @@ ALTER TABLE ONLY public.activity_logs
 
 ALTER TABLE ONLY public.announcements
     ADD CONSTRAINT announcements_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cart_items cart_items_cart_id_product_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cart_items
+    ADD CONSTRAINT cart_items_cart_id_product_id_key UNIQUE (cart_id, product_id);
+
+
+--
+-- Name: cart_items cart_items_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cart_items
+    ADD CONSTRAINT cart_items_pkey PRIMARY KEY (id);
 
 
 --
@@ -1782,6 +1877,20 @@ ALTER TABLE ONLY public.vendors
 
 
 --
+-- Name: idx_cart_items_cart_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_cart_items_cart_id ON public.cart_items USING btree (cart_id);
+
+
+--
+-- Name: idx_cart_items_product_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_cart_items_product_id ON public.cart_items USING btree (product_id);
+
+
+--
 -- Name: idx_newsletter_email; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1800,6 +1909,55 @@ CREATE INDEX idx_order_items_vendor_id ON public.order_items USING btree (vendor
 --
 
 CREATE INDEX idx_password_reset_expires ON public.password_reset_tokens USING btree (expires_at);
+
+
+--
+-- Name: idx_products_bestseller; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_products_bestseller ON public.products USING btree (is_bestseller) WHERE (is_bestseller = true);
+
+
+--
+-- Name: idx_products_brand; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_products_brand ON public.products USING btree (brand);
+
+
+--
+-- Name: idx_products_category; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_products_category ON public.products USING btree (category);
+
+
+--
+-- Name: idx_products_featured; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_products_featured ON public.products USING btree (is_featured) WHERE (is_featured = true);
+
+
+--
+-- Name: idx_products_original_price; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_products_original_price ON public.products USING btree (original_price) WHERE (original_price IS NOT NULL);
+
+
+--
+-- Name: idx_products_price; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_products_price ON public.products USING btree (price);
+
+
+--
+-- Name: idx_products_vendor; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_products_vendor ON public.products USING btree (vendor_id);
 
 
 --
@@ -1849,6 +2007,22 @@ CREATE INDEX idx_vendor_sessions_vendor ON public.vendor_sessions USING btree (v
 --
 
 CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON public.products FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+--
+-- Name: cart_items cart_items_cart_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cart_items
+    ADD CONSTRAINT cart_items_cart_id_fkey FOREIGN KEY (cart_id) REFERENCES public.cart(id) ON DELETE CASCADE;
+
+
+--
+-- Name: cart_items cart_items_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cart_items
+    ADD CONSTRAINT cart_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE;
 
 
 --
