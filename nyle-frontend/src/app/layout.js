@@ -5,6 +5,8 @@ import Navbar from "../components/Navbar";
 import ScrollRestorationController from "../components/ScrollRestorationController";
 import ScrollToTop from "../components/ScrollToTop";
 import ClientProviders from "../components/ClientProviders";
+import AuthModal from "../components/AuthModal/page";
+import CartSidebar from "../components/CartSidebar/page";
 
 export default function RootLayout({ children }) {
   return (
@@ -26,6 +28,10 @@ export default function RootLayout({ children }) {
             {children}
             <ScrollToTop />
           </main>
+
+          {/* Global modals and sidebars */}
+          <AuthModal />
+          <CartSidebar />
         </ClientProviders>
       </body>
     </html>
