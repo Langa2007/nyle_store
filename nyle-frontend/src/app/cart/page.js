@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext/page';
 import Link from 'next/link';
 import { FiTrash2, FiPlus, FiMinus, FiArrowLeft } from 'react-icons/fi';
@@ -7,7 +8,13 @@ import { FiTrash2, FiPlus, FiMinus, FiArrowLeft } from 'react-icons/fi';
 export default function CartPage() {
   const { cart, updateQuantity, removeItem, clearCart, getCartTotals } = useCart();
   const totals = getCartTotals();
-  const isLoggedIn = localStorage.getItem('accessToken') || localStorage.getItem('userAccessToken');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check login status on client side only
+    const accessToken = localStorage.getItem('accessToken') || localStorage.getItem('userAccessToken');
+    setIsLoggedIn(!!accessToken);
+  }, []);
 
   if (cart.items.length === 0) {
     return (

@@ -15,6 +15,7 @@ export function CartProvider({ children }) {
 
   // Get or create session ID
   const getSessionId = () => {
+    if (typeof window === 'undefined') return null;
     let sessionId = localStorage.getItem('cart_session_id');
     if (!sessionId) {
       sessionId = `s_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
@@ -25,6 +26,7 @@ export function CartProvider({ children }) {
 
   // Get current user ID if logged in
   const getUserId = () => {
+    if (typeof window === 'undefined') return null;
     const token = localStorage.getItem('accessToken') || localStorage.getItem('userAccessToken');
     const userData = localStorage.getItem('user');
     if (token && userData) {
@@ -43,21 +45,21 @@ export function CartProvider({ children }) {
     try {
       const userId = getUserId();
       const sessionId = userId ? null : getSessionId();
-      
+
       const params = new URLSearchParams();
       if (userId) params.append('user_id', userId);
       if (sessionId) params.append('session_id', sessionId);
 
       const res = await fetch(`${API_URL}/api/cart?${params}`);
       if (!res.ok) throw new Error('Failed to fetch cart');
-      
+
       const data = await res.json();
       setCart(data);
       return data;
     } catch (error) {
       console.error('Error fetching cart:', error);
       // Fallback to localStorage for guest
-      if (!getUserId()) {
+      if (!getUserId() && typeof window !== 'undefined') {
         const localCart = JSON.parse(localStorage.getItem('local_cart') || '[]');
         setCart({ items: localCart, cart_id: null });
       }
@@ -68,16 +70,16 @@ export function CartProvider({ children }) {
   const addToCart = async (product, quantity = 1) => {
     const userId = getUserId();
     const sessionId = userId ? null : getSessionId();
-    
+
     // If user is not logged in, show auth modal
     if (!userId) {
       setAuthAction('login');
       setShowAuthModal(true);
-      
+
       // Store in localStorage temporarily
       const localCart = JSON.parse(localStorage.getItem('local_cart') || '[]');
       const existingIndex = localCart.findIndex(item => item.product_id === product.id);
-      
+
       if (existingIndex >= 0) {
         localCart[existingIndex].quantity += quantity;
       } else {
@@ -92,7 +94,7 @@ export function CartProvider({ children }) {
           }
         });
       }
-      
+
       localStorage.setItem('local_cart', JSON.stringify(localCart));
       setCart({ ...cart, items: localCart });
       return { success: true, requiresAuth: true };
@@ -112,7 +114,7 @@ export function CartProvider({ children }) {
       });
 
       if (!res.ok) throw new Error('Failed to add to cart');
-      
+
       const data = await res.json();
       setCart(data);
       return { success: true, requiresAuth: false };
@@ -127,16 +129,16 @@ export function CartProvider({ children }) {
   // Update item quantity
   const updateQuantity = async (itemId, quantity) => {
     if (quantity < 1) return;
-    
+
     const userId = getUserId();
-    
+
     if (!userId) {
       // Update in localStorage
       const localCart = JSON.parse(localStorage.getItem('local_cart') || '[]');
-      const updatedCart = localCart.map(item => 
+      const updatedCart = localCart.map(item =>
         item.product_id === itemId ? { ...item, quantity } : item
       ).filter(item => item.quantity > 0);
-      
+
       localStorage.setItem('local_cart', JSON.stringify(updatedCart));
       setCart({ ...cart, items: updatedCart });
       return;
@@ -160,7 +162,7 @@ export function CartProvider({ children }) {
   // Remove item from cart
   const removeItem = async (itemId) => {
     const userId = getUserId();
-    
+
     if (!userId) {
       // Remove from localStorage
       const localCart = JSON.parse(localStorage.getItem('local_cart') || '[]');
@@ -186,7 +188,7 @@ export function CartProvider({ children }) {
   // Sync local cart with backend after login
   const syncCartAfterLogin = async (userId) => {
     const localCart = JSON.parse(localStorage.getItem('local_cart') || '[]');
-    
+
     if (localCart.length > 0) {
       try {
         const res = await fetch(`${API_URL}/api/cart/sync`, {
@@ -214,7 +216,7 @@ export function CartProvider({ children }) {
   // Clear cart
   const clearCart = async () => {
     const userId = getUserId();
-    
+
     if (!userId) {
       localStorage.removeItem('local_cart');
       setCart({ items: [], cart_id: null });
@@ -234,11 +236,11 @@ export function CartProvider({ children }) {
     const subtotal = cart.items.reduce((sum, item) => {
       return sum + (Number(item.price) * item.quantity);
     }, 0);
-    
+
     const shipping = subtotal > 5000 ? 0 : 300; // Free shipping over 5000
     const tax = subtotal * 0.16; // 16% VAT
     const total = subtotal + shipping + tax;
-    
+
     return {
       subtotal: subtotal.toFixed(2),
       shipping: shipping.toFixed(2),
