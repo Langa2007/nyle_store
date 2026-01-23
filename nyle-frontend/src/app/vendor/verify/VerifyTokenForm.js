@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 
- export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 
 export default function VendorVerifyPage() {
   const router = useRouter();
@@ -23,7 +23,7 @@ export default function VendorVerifyPage() {
   useEffect(() => {
     const paramEmail = searchParams.get("email");
     if (paramEmail) setEmail(paramEmail);
-    else {
+    else if (typeof window !== 'undefined') {
       const storedEmail = localStorage.getItem("vendorSignupEmail");
       if (storedEmail) setEmail(storedEmail);
     }
@@ -132,8 +132,8 @@ export default function VendorVerifyPage() {
             {resending
               ? "Resending..."
               : cooldown > 0
-              ? `Resend available in ${cooldown}s`
-              : "Didn't receive a code? Resend"}
+                ? `Resend available in ${cooldown}s`
+                : "Didn't receive a code? Resend"}
           </button>
         </div>
 

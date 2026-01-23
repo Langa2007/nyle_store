@@ -14,9 +14,11 @@ const api = axios.create({
 
 // Add auth token to requests
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('vendor_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('vendor_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
   return config;
 });
@@ -27,9 +29,11 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Clear invalid token
-      localStorage.removeItem('vendor_token');
-      localStorage.removeItem('vendor_data');
-      sessionStorage.removeItem('vendor_session');
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('vendor_token');
+        localStorage.removeItem('vendor_data');
+        sessionStorage.removeItem('vendor_session');
+      }
 
       // Redirect to sign-in if we're in the browser
       if (typeof window !== 'undefined') {
@@ -43,6 +47,9 @@ api.interceptors.response.use(
 // New: Session verification function
 export const verifyVendorSession = async () => {
   try {
+    if (typeof window === 'undefined') {
+      return { authenticated: false, verified: false, message: 'SSR' };
+    }
     const token = localStorage.getItem('vendor_token');
     const vendorData = localStorage.getItem('vendor_data');
 
@@ -66,7 +73,7 @@ export const verifyVendorSession = async () => {
     console.error('Session verification error:', error);
 
     // Clear invalid session data
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    if ((error.response?.status === 401 || error.response?.status === 403) && typeof window !== 'undefined') {
       localStorage.removeItem('vendor_token');
       localStorage.removeItem('vendor_data');
       sessionStorage.removeItem('vendor_session');

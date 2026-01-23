@@ -1,5 +1,5 @@
 "use client";
-
+import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext/page';
 import Link from 'next/link';
 import { FiShoppingCart, FiX, FiTrash2, FiPlus, FiMinus } from 'react-icons/fi';
@@ -16,7 +16,12 @@ export default function CartSidebar() {
   } = useCart();
 
   const totals = getCartTotals();
-  const isLoggedIn = localStorage.getItem('accessToken') || localStorage.getItem('userAccessToken');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken') || localStorage.getItem('userAccessToken');
+    setIsLoggedIn(!!token);
+  }, []);
 
   if (!showCart) return null;
 
