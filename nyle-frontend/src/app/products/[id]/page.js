@@ -99,7 +99,7 @@ export default function ProductDetailPage() {
       setAuthAction('login');
       setShowAuthModal(true);
     } else if (result.success) {
-      setShowCart(true);
+      router.push('/cart');
     }
   };
 
@@ -223,8 +223,8 @@ export default function ProductDetailPage() {
                       key={idx}
                       onClick={() => setSelectedImage(idx)}
                       className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === idx
-                          ? 'border-blue-600 ring-2 ring-blue-200'
-                          : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-blue-600 ring-2 ring-blue-200'
+                        : 'border-gray-200 hover:border-gray-300'
                         }`}
                     >
                       <img src={img} alt={`View ${idx + 1}`} className="w-full h-full object-cover" />
@@ -274,8 +274,8 @@ export default function ProductDetailPage() {
                   </span>
                 </div>
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${product.stock > 0
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800'
                   }`}>
                   {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
                 </span>
@@ -383,8 +383,8 @@ export default function ProductDetailPage() {
                   onClick={handleAddToCart}
                   disabled={product.stock <= 0}
                   className={`flex-1 py-4 rounded-lg font-semibold text-lg transition-colors ${product.stock > 0
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
                 >
                   {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
@@ -393,8 +393,8 @@ export default function ProductDetailPage() {
                   onClick={handleBuyNow}
                   disabled={product.stock <= 0}
                   className={`flex-1 py-4 rounded-lg font-semibold text-lg transition-colors ${product.stock > 0
-                      ? 'bg-green-600 hover:bg-green-700 text-white'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    ? 'bg-green-600 hover:bg-green-700 text-white'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
                 >
                   Buy Now
@@ -429,8 +429,8 @@ export default function ProductDetailPage() {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`py-4 px-6 font-medium text-lg border-b-2 transition-colors ${activeTab === tab
-                      ? "border-blue-600 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    ? "border-blue-600 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                     }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
