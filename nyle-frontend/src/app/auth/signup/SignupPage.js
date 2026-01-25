@@ -333,11 +333,11 @@ export default function SignupPage() {
                 />
                 <div className="text-sm text-gray-700">
                   I agree to the{" "}
-                  <a className="text-blue-600 hover:text-blue-800 underline transition-colors" href="/terms">
+                  <a className="text-blue-600 hover:text-blue-800 underline transition-colors" href="auth/terms">
                     Terms of Service
                   </a>{" "}
                   and{" "}
-                  <a className="text-blue-600 hover:text-blue-800 underline transition-colors" href="/privacy">
+                  <a className="text-blue-600 hover:text-blue-800 underline transition-colors" href="auth/privacy">
                     Privacy Policy
                   </a>
                   . I understand that Nyle Store may use my information in accordance with these documents.

@@ -43,6 +43,7 @@ function HomeContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isAllCategoriesVisible, setIsAllCategoriesVisible] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -622,19 +623,29 @@ function HomeContent() {
               </div>
             ))}
 
-            {/* "View All" Button */}
+            {/* "View All" Toggle Button */}
             <div className="flex-shrink-0">
-              <Link href="/categories">
-                <div className="flex flex-col items-center justify-center w-48 h-48 rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 text-gray-800 hover:shadow-lg transition-all transform hover:scale-105">
-                  <div className="text-4xl mb-4 transform hover:scale-110 transition-transform">
-                    <FaChevronRightIcon />
-                  </div>
-                  <h3 className="text-xl font-bold mb-2">View All</h3>
-                  <div className="text-sm opacity-80">
-                    See all categories →
-                  </div>
+              <button
+                onClick={() => {
+                  setIsAllCategoriesVisible(!isAllCategoriesVisible);
+                  if (!isAllCategoriesVisible) {
+                    setTimeout(() => {
+                      document.getElementById("full-catalog-section")?.scrollIntoView({ behavior: "smooth" });
+                    }, 100);
+                  }
+                }}
+                className="flex flex-col items-center justify-center w-48 h-48 rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 text-gray-800 hover:shadow-lg transition-all transform hover:scale-105"
+              >
+                <div className="text-4xl mb-4 transform hover:scale-110 transition-transform">
+                  {isAllCategoriesVisible ? <FaArrowUp /> : <FaChevronRightIcon />}
                 </div>
-              </Link>
+                <h3 className="text-xl font-bold mb-2">
+                  {isAllCategoriesVisible ? "Close All" : "View All"}
+                </h3>
+                <div className="text-sm opacity-80">
+                  {isAllCategoriesVisible ? "Hide category list" : "See all categories ↓"}
+                </div>
+              </button>
             </div>
           </div>
         </div>
@@ -682,67 +693,69 @@ function HomeContent() {
         </div>
 
         {/* FULL CATEGORY GRID - "The Page within the Page" */}
-        <div className="mt-20 py-12 border-t border-gray-100">
-          <div className="flex items-center justify-between mb-10">
-            <div>
-              <h3 className="text-3xl font-extrabold text-gray-900">Explore Our Full Catalog</h3>
-              <p className="text-gray-500 mt-2 text-lg">Browse every category created by our admin team</p>
+        {isAllCategoriesVisible && (
+          <div id="full-catalog-section" className="mt-20 py-12 border-t border-gray-100 animate-in fade-in slide-in-from-top-4 duration-700">
+            <div className="flex items-center justify-between mb-10">
+              <div>
+                <h3 className="text-3xl font-extrabold text-gray-900">Explore Our Full Catalog</h3>
+                <p className="text-gray-500 mt-2 text-lg">Browse every category created by our admin team</p>
+              </div>
+              <div className="hidden md:block">
+                <span className="bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold border border-blue-100">
+                  {categories.length} Categories Available
+                </span>
+              </div>
             </div>
-            <div className="hidden md:block">
-              <span className="bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold border border-blue-100">
-                {categories.length} Categories Available
-              </span>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {categories.map((cat, index) => {
-              const { image: fallbackImage } = getCategoryConfig(cat.name);
-              const image = cat.image_url || fallbackImage;
-              const isSelected = selectedCategory === cat.name;
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+              {categories.map((cat, index) => {
+                const { image: fallbackImage } = getCategoryConfig(cat.name);
+                const image = cat.image_url || fallbackImage;
+                const isSelected = selectedCategory === cat.name;
 
-              return (
-                <motion.div
-                  key={cat.id || cat._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: (index % 5) * 0.1 }}
-                >
-                  <button
-                    onClick={() => handleCategoryClick(cat.name)}
-                    className="group w-full text-left focus:outline-none"
+                return (
+                  <motion.div
+                    key={cat.id || cat._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: (index % 5) * 0.1 }}
                   >
-                    <div className={`relative aspect-square rounded-2xl overflow-hidden mb-4 transition-all duration-300 ${isSelected ? 'ring-4 ring-blue-500 shadow-xl' : 'shadow-md group-hover:shadow-lg group-hover:-translate-y-1'
-                      }`}>
-                      <img
-                        src={image}
-                        alt={cat.name}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
+                    <button
+                      onClick={() => handleCategoryClick(cat.name)}
+                      className="group w-full text-left focus:outline-none"
+                    >
+                      <div className={`relative aspect-square rounded-2xl overflow-hidden mb-4 transition-all duration-300 ${isSelected ? 'ring-4 ring-blue-500 shadow-xl' : 'shadow-md group-hover:shadow-lg group-hover:-translate-y-1'
+                        }`}>
+                        <img
+                          src={image}
+                          alt={cat.name}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
 
-                      {isSelected && (
-                        <div className="absolute inset-0 bg-blue-600/20 flex items-center justify-center">
-                          <div className="bg-white/90 p-2 rounded-full shadow-lg">
-                            <FaCheckCircle className="text-blue-600 w-6 h-6" />
+                        {isSelected && (
+                          <div className="absolute inset-0 bg-blue-600/20 flex items-center justify-center">
+                            <div className="bg-white/90 p-2 rounded-full shadow-lg">
+                              <FaCheckCircle className="text-blue-600 w-6 h-6" />
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                    <h4 className={`font-bold text-lg px-1 transition-colors ${isSelected ? 'text-blue-600' : 'text-gray-800 group-hover:text-blue-600'
-                      }`}>
-                      {cat.name}
-                    </h4>
-                    <p className="text-xs text-gray-500 px-1 mt-1 font-medium transform transition-all group-hover:translate-x-1">
-                      Explore Collection →
-                    </p>
-                  </button>
-                </motion.div>
-              );
-            })}
+                        )}
+                      </div>
+                      <h4 className={`font-bold text-lg px-1 transition-colors ${isSelected ? 'text-blue-600' : 'text-gray-800 group-hover:text-blue-600'
+                        }`}>
+                        {cat.name}
+                      </h4>
+                      <p className="text-xs text-gray-500 px-1 mt-1 font-medium transform transition-all group-hover:translate-x-1">
+                        Explore Collection →
+                      </p>
+                    </button>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </section>
 
       {/* Featured Products - NOW FILTERED BY CATEGORY */}
@@ -1071,18 +1084,37 @@ function HomeContent() {
               </ul>
             </div>
 
-            {/* Source On Nyle Section */}
+            {/* Dynamic Shop by Category Section */}
             <div>
               <h3 className="font-bold text-lg mb-4 flex items-center">
                 <FaTag className="mr-2 text-blue-400" />
-                Source On Nyle
+                Shop by Category
               </h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/source/suppliers" className="text-gray-300 hover:text-white transition hover:underline">Nyle Verified Suppliers</Link></li>
-                <li><Link href="/source/logistics" className="text-gray-300 hover:text-white transition hover:underline">Get Logistics</Link></li>
-                <li><Link href="/source/quotation" className="text-gray-300 hover:text-white transition hover:underline">Get Quotation</Link></li>
-                <li><Link href="/source/trade-assurance" className="text-gray-300 hover:text-white transition hover:underline">Trade Assurance</Link></li>
-                <li><Link href="/source/shipping-policies" className="text-gray-300 hover:text-white transition hover:underline">Shipping Policies & Rates</Link></li>
+                {categories.length > 0 ? (
+                  categories.slice(0, 6).map((cat) => (
+                    <li key={cat.id || cat._id}>
+                      <button
+                        onClick={() => handleCategoryClick(cat.name)}
+                        className="text-gray-300 hover:text-white transition hover:underline text-left w-full"
+                      >
+                        {cat.name}
+                      </button>
+                    </li>
+                  ))
+                ) : (
+                  <>
+                    <li><Link href="/categories" className="text-gray-300 hover:text-white transition hover:underline">Electronics</Link></li>
+                    <li><Link href="/categories" className="text-gray-300 hover:text-white transition hover:underline">Fashion</Link></li>
+                    <li><Link href="/categories" className="text-gray-300 hover:text-white transition hover:underline">Home & Living</Link></li>
+                    <li><Link href="/categories" className="text-gray-300 hover:text-white transition hover:underline">Beauty</Link></li>
+                  </>
+                )}
+                <li className="pt-2 border-t border-gray-800 mt-2">
+                  <Link href="/categories" className="text-blue-400 font-bold hover:text-blue-300 transition">
+                    View All Categories →
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
