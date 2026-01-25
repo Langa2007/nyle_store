@@ -1,3 +1,4 @@
+// src/app/layout.js
 import "./globals.css";
 import { Suspense } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -7,32 +8,38 @@ import ScrollToTop from "../components/ScrollToTop";
 import ClientProviders from "../components/ClientProviders";
 import AuthModal from "../components/AuthModal/page";
 import CartSidebar from "../components/CartSidebar/page";
+import { SessionProviderWrapper } from "../components/SessionProviderWrapper";
+import SessionSync from "../components/SessionSync";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="overflow-hidden">
-        <ClientProviders>
-          {/* Scroll restoration logic */}
-          <Suspense fallback={null}>
-            <ScrollRestorationController />
-          </Suspense>
+        {/* Wrap everything with SessionProviderWrapper which contains SessionProvider */}
+        <SessionProviderWrapper>
+          <SessionSync />
+          <ClientProviders>
+            {/* Scroll restoration logic */}
+            <Suspense fallback={null}>
+              <ScrollRestorationController />
+            </Suspense>
 
-          <Navbar />
+            <Navbar />
 
-          {/* Explicit scroll container */}
-          <main
-            id="scroll-root"
-            className="container mx-auto px-4 sm:px-6 lg:px-8 h-[100dvh] overflow-y-auto"
-          >
-            {children}
-            <ScrollToTop />
-          </main>
+            {/* Explicit scroll container */}
+            <main
+              id="scroll-root"
+              className="container mx-auto px-4 sm:px-6 lg:px-8 h-[100dvh] overflow-y-auto"
+            >
+              {children}
+              <ScrollToTop />
+            </main>
 
-          {/* Global modals and sidebars */}
-          <AuthModal />
-          <CartSidebar />
-        </ClientProviders>
+            {/* Global modals and sidebars */}
+            <AuthModal />
+            <CartSidebar />
+          </ClientProviders>
+        </SessionProviderWrapper>
       </body>
     </html>
   );
