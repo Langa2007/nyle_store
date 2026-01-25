@@ -6,11 +6,9 @@ const prismaClientSingleton = () => {
     const databaseUrl = process.env.DATABASE_URL
 
     if (!databaseUrl) {
-        if (process.env.NODE_ENV === 'production') {
-            console.warn("Prisma: DATABASE_URL is missing in production environment.");
-        }
-        // Return standard client as fallback (won't work for queries, but allows evaluation)
-        return new PrismaClient();
+        // If we are in build time/static generation, we return a mock or null
+        // to avoid crashing the build worker.
+        return null;
     }
 
     // Check if we are using Neon (usually has neon.tech in the URL)
