@@ -698,7 +698,7 @@ function HomeContent() {
             <div className="flex items-center justify-between mb-10">
               <div>
                 <h3 className="text-3xl font-extrabold text-gray-900">Explore Our Full Catalog</h3>
-                <p className="text-gray-500 mt-2 text-lg">Browse every category created by our admin team</p>
+                <p className="text-gray-500 mt-2 text-lg">Browse every curated category in NYLE</p>
               </div>
               <div className="hidden md:block">
                 <span className="bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold border border-blue-100">
