@@ -143,7 +143,7 @@ export default function FooterInfoLayout({
                 }}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-700 font-semibold rounded-xl hover:shadow-lg transition-all"
               >
-                ↑ Scroll to Top
+                Explore Us Below
               </button>
             </div>
           </motion.div>

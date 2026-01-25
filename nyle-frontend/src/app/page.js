@@ -234,7 +234,13 @@ function HomeContent() {
 
   // Handle category click
   const handleCategoryClick = (categoryId) => {
-    setSelectedCategory(categoryId);
+    // If clicking the same category that's already selected, toggle it off (undo)
+    if (selectedCategory === categoryId && categoryId !== "all") {
+      setSelectedCategory("all");
+    } else {
+      setSelectedCategory(categoryId);
+    }
+
     setTimeout(() => {
       const el = document.getElementById("products-section");
       if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -672,6 +678,69 @@ function HomeContent() {
                 {cat.name}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* FULL CATEGORY GRID - "The Page within the Page" */}
+        <div className="mt-20 py-12 border-t border-gray-100">
+          <div className="flex items-center justify-between mb-10">
+            <div>
+              <h3 className="text-3xl font-extrabold text-gray-900">Explore Our Full Catalog</h3>
+              <p className="text-gray-500 mt-2 text-lg">Browse every category created by our admin team</p>
+            </div>
+            <div className="hidden md:block">
+              <span className="bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold border border-blue-100">
+                {categories.length} Categories Available
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {categories.map((cat, index) => {
+              const { image: fallbackImage } = getCategoryConfig(cat.name);
+              const image = cat.image_url || fallbackImage;
+              const isSelected = selectedCategory === cat.name;
+
+              return (
+                <motion.div
+                  key={cat.id || cat._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: (index % 5) * 0.1 }}
+                >
+                  <button
+                    onClick={() => handleCategoryClick(cat.name)}
+                    className="group w-full text-left focus:outline-none"
+                  >
+                    <div className={`relative aspect-square rounded-2xl overflow-hidden mb-4 transition-all duration-300 ${isSelected ? 'ring-4 ring-blue-500 shadow-xl' : 'shadow-md group-hover:shadow-lg group-hover:-translate-y-1'
+                      }`}>
+                      <img
+                        src={image}
+                        alt={cat.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
+
+                      {isSelected && (
+                        <div className="absolute inset-0 bg-blue-600/20 flex items-center justify-center">
+                          <div className="bg-white/90 p-2 rounded-full shadow-lg">
+                            <FaCheckCircle className="text-blue-600 w-6 h-6" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <h4 className={`font-bold text-lg px-1 transition-colors ${isSelected ? 'text-blue-600' : 'text-gray-800 group-hover:text-blue-600'
+                      }`}>
+                      {cat.name}
+                    </h4>
+                    <p className="text-xs text-gray-500 px-1 mt-1 font-medium transform transition-all group-hover:translate-x-1">
+                      Explore Collection →
+                    </p>
+                  </button>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
