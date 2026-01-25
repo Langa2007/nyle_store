@@ -2,8 +2,11 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 import NextAuth from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getAuthOptions } from '@/lib/auth';
 
-const handler = NextAuth(authOptions);
+const handler = async (req, res) => {
+    const options = await getAuthOptions();
+    return await NextAuth(req, res, options);
+};
 
 export { handler as GET, handler as POST };

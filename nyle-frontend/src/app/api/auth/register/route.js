@@ -2,8 +2,7 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
-import bcrypt from 'bcryptjs'
+import getPrisma from '@/lib/prisma'
 
 export async function POST(request) {
   try {
@@ -24,8 +23,16 @@ export async function POST(request) {
       )
     }
 
+    const db = await getPrisma();
+    if (!db) {
+      return NextResponse.json(
+        { message: 'Internal server error: Database not available' },
+        { status: 500 }
+      )
+    }
+
     // Check if user exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await db.user.findUnique({
       where: { email }
     })
 
@@ -36,11 +43,14 @@ export async function POST(request) {
       )
     }
 
+    // Handle bcrypt lazily
+    const bcrypt = (await import('bcryptjs')).default;
+
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10)
 
     // Create user
-    const user = await prisma.user.create({
+    const user = await db.user.create({
       data: {
         name,
         email,
