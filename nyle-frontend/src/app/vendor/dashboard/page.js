@@ -232,7 +232,19 @@ export default function VendorDashboard() {
                           <p className="text-sm text-gray-500">Ksh {product.price?.toLocaleString()}</p>
                         </div>
                       </div>
-                      <StatusBadge status={product.status} />
+                      <div className="flex items-center gap-2">
+                        <StatusBadge status={product.status} />
+                        <button
+                          onClick={() => {
+                            setActiveTab("products");
+                            setShowProductForm(product);
+                          }}
+                          className="p-2 text-gray-400 hover:text-blue-600 transition"
+                          title="Edit Product"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -364,8 +376,8 @@ export default function VendorDashboard() {
                 setSidebarOpen(false);
               }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeTab === id
-                  ? "bg-white/10 text-white shadow-inner"
-                  : "text-blue-100 hover:bg-white/5 hover:text-white"
+                ? "bg-white/10 text-white shadow-inner"
+                : "text-blue-100 hover:bg-white/5 hover:text-white"
                 }`}
             >
               <Icon className="w-5 h-5" />

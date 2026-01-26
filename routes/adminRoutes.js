@@ -40,6 +40,13 @@ import {
   updateOrderStatus,
 } from "../controllers/adminOrderController.js";
 
+import {
+  getPendingProducts,
+  approveProduct,
+  rejectProduct
+} from "../controllers/adminProductApprovalController.js";
+
+
 const router = express.Router();
 
 //  PRODUCTS
@@ -48,6 +55,12 @@ router.get("/products", adminGetAllProducts);
 router.put("/products/:id", productUpload.single("image"), adminUpdateProduct);
 router.put("/products/:id/stock", adminUpdateStock);
 router.delete("/products/:id", adminDeleteProduct);
+
+// VENDOR PRODUCT APPROVALS
+router.get("/products/pending", verifyAdmin, getPendingProducts);
+router.put("/products/:id/approve", verifyAdmin, approveProduct);
+router.put("/products/:id/reject", verifyAdmin, rejectProduct);
+
 
 // PRODUCT VENDOR HELPERS
 router.post("/vendors/create-or-select", productUpload.fields([{ name: 'company_logo', maxCount: 1 }]), createOrSelectVendor);

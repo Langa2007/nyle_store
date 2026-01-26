@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import AdminLayout from "@/app/components/AdminLayout";
-import { 
-  FaPlus, FaTrash, FaImage, FaTruck, 
+import {
+  FaPlus, FaTrash, FaImage, FaTruck,
   FaBox, FaTag, FaWarehouse, FaBuilding,
   FaChevronDown, FaChevronUp, FaSave,
   FaPalette, FaRuler, FaWeightHanging,
@@ -90,8 +90,11 @@ export default function AdminProductsPage() {
     { sku: `VAR-${Date.now()}-1`, price: "", stock: "", attributes: {} }
   ]);
   const [features, setFeatures] = useState<string[]>([""]);
-  const [specs, setSpecs] = useState<Array<{key: string, value: string}>>([{key: "", value: ""}]);
+  const [specs, setSpecs] = useState<Array<{ key: string, value: string }>>([{ key: "", value: "" }]);
   const [tags, setTags] = useState<string[]>([""]);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+
 
   const [formData, setFormData] = useState({
     // Basic Info
@@ -102,31 +105,31 @@ export default function AdminProductsPage() {
     category: "",
     vendor_id: "",
     sku: `PROD-${Date.now()}`,
-    
+
     // Product Details
     weight: "",
     dimensions: "",
     brand: "",
     color: "",
     material: "",
-    
+
     // Shipping
     shipping_cost: "",
     free_shipping_threshold: "",
     estimated_delivery_days: "3",
     shipping_info: "",
-    
+
     // Policies
     warranty_info: "",
     return_policy: "",
-    
+
     // Pricing
     original_price: "",
-    
+
     // SEO & Meta
     meta_title: "",
     meta_description: "",
-    
+
     // Flags
     product_type: "simple",
     is_featured: "false",
@@ -151,7 +154,7 @@ export default function AdminProductsPage() {
     const fetchInitialData = async () => {
       try {
         setLoading(true);
-        
+
         const [prodRes, catRes] = await Promise.all([
           fetch(`${baseurl}/api/admin/products`, { credentials: "include" }),
           fetch(`${baseurl}/api/admin/categories`, { credentials: "include" })
@@ -165,7 +168,7 @@ export default function AdminProductsPage() {
         setProducts(prodData);
         setCategories(catData);
         fetchVendors();
-        
+
       } catch (err) {
         toast.error("Failed to load products and categories");
         setProducts([]);
@@ -181,7 +184,7 @@ export default function AdminProductsPage() {
           credentials: "include",
           headers: { 'Cache-Control': 'no-cache' }
         });
-        
+
         if (res.ok) {
           const vendorData = await res.json();
           setVendors(vendorData);
@@ -223,7 +226,7 @@ export default function AdminProductsPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    
+
     // Auto-generate SKU when name changes
     if (name === 'name' && !formData.sku.startsWith('PROD-')) {
       const skuBase = value.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 8);
@@ -232,7 +235,7 @@ export default function AdminProductsPage() {
         sku: skuBase ? `${skuBase}-${Date.now().toString().slice(-4)}` : `PROD-${Date.now()}`
       }));
     }
-    
+
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -257,11 +260,11 @@ export default function AdminProductsPage() {
 
   // Specifications management
   const addSpec = () => {
-    setSpecs(prev => [...prev, {key: "", value: ""}]);
+    setSpecs(prev => [...prev, { key: "", value: "" }]);
   };
 
   const updateSpec = (index: number, field: 'key' | 'value', value: string) => {
-    setSpecs(prev => prev.map((spec, i) => i === index ? {...spec, [field]: value} : spec));
+    setSpecs(prev => prev.map((spec, i) => i === index ? { ...spec, [field]: value } : spec));
   };
 
   const removeSpec = (index: number) => {
@@ -328,11 +331,11 @@ export default function AdminProductsPage() {
   const addVariant = () => {
     setVariants(prev => [
       ...prev,
-      { 
-        sku: `VAR-${Date.now()}-${prev.length + 1}`, 
-        price: "", 
-        stock: "", 
-        attributes: {} 
+      {
+        sku: `VAR-${Date.now()}-${prev.length + 1}`,
+        price: "",
+        stock: "",
+        attributes: {}
       }
     ]);
   };
@@ -430,12 +433,107 @@ export default function AdminProductsPage() {
       } else {
         toast.error(data.error || "Failed to create product");
       }
-    } catch (err: any) {
-      toast.error("Error creating product: " + err.message);
     } finally {
       setSubmitting(false);
     }
   };
+
+  const handleEditClick = (product: Product) => {
+    setEditingProduct(product);
+    setIsEditing(true);
+
+    // Populate form data
+    setFormData({
+      name: product.name,
+      description: product.description || "",
+      price: product.price.toString(),
+      stock: product.stock.toString(),
+      category: product.category || "",
+      vendor_id: product.vendor_id?.toString() || "",
+      sku: product.sku || `PROD-${Date.now()}`,
+      weight: product.weight?.toString() || "",
+      dimensions: product.dimensions || "",
+      brand: product.brand || "",
+      color: product.color || "",
+      material: product.material || "",
+      shipping_cost: product.shipping_cost?.toString() || "",
+      free_shipping_threshold: "", // Add if needed
+      estimated_delivery_days: product.estimated_delivery_days?.toString() || "3",
+      shipping_info: product.shipping_info || "",
+      warranty_info: product.warranty_info || "",
+      return_policy: product.return_policy || "",
+      original_price: product.original_price?.toString() || "",
+      meta_title: "",
+      meta_description: "",
+      product_type: "simple",
+      is_featured: product.is_featured ? 'true' : 'false',
+      is_bestseller: product.is_bestseller ? 'true' : 'false',
+      rating: product.rating?.toString() || "0",
+      review_count: product.review_count?.toString() || "0"
+    });
+
+    if (product.features) setFeatures(product.features);
+    if (product.tags) setTags(product.tags);
+    if (product.specifications) {
+      const specArray = Object.entries(product.specifications).map(([key, value]) => ({ key, value }));
+      setSpecs(specArray.length > 0 ? specArray : [{ key: "", value: "" }]);
+    }
+
+    // Scroll to top of form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+
+    setSubmitting(true);
+    const form = new FormData();
+
+    // Important: The backend PUT /products/:id uses productUpload.single("image")
+    // We should probably generalize the backend to match the create route eventually,
+    // but for now we follow the existing route's expectation if possible, or update the route.
+
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) form.append(key, value);
+    });
+
+    form.append("features", JSON.stringify(features.filter(f => f.trim())));
+    form.append("tags", JSON.stringify(tags.filter(t => t.trim())));
+
+    const specsObj = specs.filter(s => s.key.trim() && s.value.trim()).reduce((acc, spec) => {
+      acc[spec.key] = spec.value;
+      return acc;
+    }, {} as Record<string, string>);
+    form.append("specifications", JSON.stringify(specsObj));
+
+    if (selectedFiles[0]) {
+      form.append("image", selectedFiles[0]);
+    }
+
+    try {
+      const res = await fetch(`${baseurl}/api/admin/products/${editingProduct.id}`, {
+        method: "PUT",
+        body: form,
+        credentials: "include"
+      });
+
+      if (res.ok) {
+        const updated = await res.json();
+        setProducts(prev => prev.map(p => p.id === editingProduct.id ? updated : p));
+        toast.success("Product updated successfully!");
+        resetForm();
+      } else {
+        const errData = await res.json();
+        toast.error(errData.error || "Failed to update product");
+      }
+    } catch (err: any) {
+      toast.error("Update error: " + err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
 
   const resetForm = () => {
     setFormData({
@@ -470,11 +568,14 @@ export default function AdminProductsPage() {
     setPreviews([]);
     setVariants([{ sku: `VAR-${Date.now()}-1`, price: "", stock: "", attributes: {} }]);
     setFeatures([""]);
-    setSpecs([{key: "", value: ""}]);
+    setSpecs([{ key: "", value: "" }]);
     setTags([""]);
     setShowVariants(false);
     setShowAdvanced(false);
+    setIsEditing(false);
+    setEditingProduct(null);
   };
+
 
   // DELETE product
   const handleDelete = async (id: number) => {
@@ -527,8 +628,9 @@ export default function AdminProductsPage() {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold flex items-center">
                   <FaPlus className="mr-2 text-blue-600" />
-                  Create Unique Product
+                  {isEditing ? `Editing: ${editingProduct?.name}` : "Create Unique Product"}
                 </h2>
+
                 <button
                   type="button"
                   onClick={() => setShowAdvanced(!showAdvanced)}
@@ -548,7 +650,8 @@ export default function AdminProductsPage() {
                 </button>
               </div>
 
-              <form onSubmit={handleCreate}>
+              <form onSubmit={isEditing ? handleUpdate : handleCreate}>
+
                 {/* Product Basics Section */}
                 <div className="mb-8">
                   <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
@@ -570,7 +673,7 @@ export default function AdminProductsPage() {
                         required
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Price (KES) *
@@ -614,7 +717,7 @@ export default function AdminProductsPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Category
                       </label>
-                      <select title= "Select Category"
+                      <select title="Select Category"
                         name="category"
                         value={formData.category}
                         onChange={handleChange}
@@ -695,7 +798,7 @@ export default function AdminProductsPage() {
                         step="0.01"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                         <FaRuler className="mr-2 text-gray-400" />
@@ -715,7 +818,7 @@ export default function AdminProductsPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Product Type
                       </label>
-                      <select title= "Select Product Type"
+                      <select title="Select Product Type"
                         name="product_type"
                         value={formData.product_type}
                         onChange={(e) => {
@@ -792,7 +895,7 @@ export default function AdminProductsPage() {
                           placeholder={`Feature ${index + 1}`}
                         />
                         {features.length > 1 && (
-                          <button title= "remove feature"
+                          <button title="remove feature"
                             type="button"
                             onClick={() => removeFeature(index)}
                             className="text-red-600 hover:text-red-800 p-2"
@@ -801,7 +904,7 @@ export default function AdminProductsPage() {
                           </button>
                         )}
                         {index === features.length - 1 && (
-                          <button title= "addFeature"
+                          <button title="addFeature"
                             type="button"
                             onClick={addFeature}
                             className="text-green-600 hover:text-green-800 p-2"
@@ -838,7 +941,7 @@ export default function AdminProductsPage() {
                           placeholder="Value (e.g., Intel i7)"
                         />
                         {specs.length > 1 && (
-                          <button title= "remove specifications"
+                          <button title="remove specifications"
                             type="button"
                             onClick={() => removeSpec(index)}
                             className="text-red-600 hover:text-red-800 p-2"
@@ -847,7 +950,7 @@ export default function AdminProductsPage() {
                           </button>
                         )}
                         {index === specs.length - 1 && (
-                          <button title= "Add Specification"
+                          <button title="Add Specification"
                             type="button"
                             onClick={addSpec}
                             className="text-green-600 hover:text-green-800 p-2"
@@ -877,7 +980,7 @@ export default function AdminProductsPage() {
                           placeholder={`Tag ${index + 1}`}
                         />
                         {tags.length > 1 && (
-                          <button title= "Remove Tag"
+                          <button title="Remove Tag"
                             type="button"
                             onClick={() => removeTag(index)}
                             className="text-red-600 hover:text-red-800 p-2"
@@ -886,7 +989,7 @@ export default function AdminProductsPage() {
                           </button>
                         )}
                         {index === tags.length - 1 && (
-                          <button title= "Add Tag"
+                          <button title="Add Tag"
                             type="button"
                             onClick={addTag}
                             className="text-green-600 hover:text-green-800 p-2"
@@ -931,7 +1034,7 @@ export default function AdminProductsPage() {
                                 Variant #{index + 1}
                               </span>
                               {variants.length > 1 && (
-                                <button title= "Remove Variant"
+                                <button title="Remove Variant"
                                   type="button"
                                   onClick={() => removeVariant(index)}
                                   className="text-red-600 hover:text-red-800"
@@ -940,7 +1043,7 @@ export default function AdminProductsPage() {
                                 </button>
                               )}
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                               <input
                                 type="text"
@@ -1008,7 +1111,7 @@ export default function AdminProductsPage() {
                         min="0"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Free Shipping Threshold (KES)
@@ -1078,7 +1181,7 @@ export default function AdminProductsPage() {
                         placeholder="e.g., 1-year warranty"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                         <FaUndo className="mr-2 text-gray-400" />
@@ -1126,7 +1229,7 @@ export default function AdminProductsPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Select Vendor *
                     </label>
-                    <select title= "Select existing vendor"
+                    <select title="Select existing vendor"
                       name="vendor_id"
                       value={formData.vendor_id}
                       onChange={handleChange}
@@ -1186,7 +1289,7 @@ export default function AdminProductsPage() {
                             onChange={handleVendorFormChange}
                             className="px-4 py-2 border rounded"
                           />
-                          <select title= "Business type"
+                          <select title="Business type"
                             name="business_type"
                             value={vendorForm.business_type}
                             onChange={handleVendorFormChange}
@@ -1250,7 +1353,7 @@ export default function AdminProductsPage() {
                             </span>
                           </label>
                         </div>
-                        
+
                         <div>
                           <label className="flex items-center space-x-2">
                             <input
@@ -1274,7 +1377,7 @@ export default function AdminProductsPage() {
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Rating (0-5)
                           </label>
-                          <input title= "Average product rating"
+                          <input title="Average product rating"
                             type="number"
                             name="rating"
                             value={formData.rating}
@@ -1290,7 +1393,7 @@ export default function AdminProductsPage() {
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Review Count
                           </label>
-                          <input title= "Number of reviews"
+                          <input title="Number of reviews"
                             type="number"
                             name="review_count"
                             value={formData.review_count}
@@ -1358,7 +1461,7 @@ export default function AdminProductsPage() {
                         Upload up to 10 images. First image will be the main product image.
                       </p>
                     </label>
-                    
+
                     {previews.length > 0 && (
                       <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                         {previews.map((preview, index) => (
@@ -1373,7 +1476,7 @@ export default function AdminProductsPage() {
                                 Main
                               </span>
                             )}
-                            <button title= "Remove image"
+                            <button title="Remove image"
                               type="button"
                               onClick={() => removeImage(index)}
                               className="absolute top-2 right-2 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
@@ -1392,25 +1495,34 @@ export default function AdminProductsPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className={`w-full py-3 px-6 rounded-lg font-semibold text-lg flex items-center justify-center ${
-                      submitting
+                    className={`w-full py-3 px-6 rounded-lg font-semibold text-lg flex items-center justify-center ${submitting
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg"
-                    } transition-all`}
+                      } transition-all`}
                   >
                     {submitting ? (
                       <>
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                        Creating Product...
+                        {isEditing ? "Updating Product..." : "Creating Product..."}
                       </>
                     ) : (
                       <>
                         <FaSave className="mr-3" />
-                        Create Unique Product
+                        {isEditing ? "Update Product" : "Create Unique Product"}
                       </>
                     )}
                   </button>
+                  {isEditing && (
+                    <button
+                      type="button"
+                      onClick={resetForm}
+                      className="w-full mt-3 py-2 text-gray-600 hover:text-gray-800 font-medium"
+                    >
+                      Cancel Edit
+                    </button>
+                  )}
                 </div>
+
               </form>
             </div>
           </div>
@@ -1458,7 +1570,7 @@ export default function AdminProductsPage() {
                             </div>
                           )}
                         </div>
-                        
+
                         <div className="flex-1 min-w-0">
                           <h3 className="font-medium text-gray-900 truncate">
                             {product.name}
@@ -1497,20 +1609,33 @@ export default function AdminProductsPage() {
                             )}
                           </div>
                         </div>
-                        
-                        <button
-                          onClick={() => handleDelete(product.id)}
-                          className="text-red-600 hover:text-red-800 p-1"
-                          title="Delete product"
-                        >
-                          <FaTrash />
-                        </button>
+
+                        <div className="flex flex-col space-y-2">
+                          <button
+                            onClick={() => handleEditClick(product)}
+                            className="text-blue-600 hover:text-blue-800 p-1"
+                            title="Edit product"
+                          >
+                            <FaPlus size={14} className="rotate-45" style={{ display: 'none' }} /> {/* placeholder for icon alignment */}
+                            <FaPlus className="inline mr-1" style={{ display: 'none' }} />
+                            <FaClipboardList className="inline" />
+                          </button>
+
+                          <button
+                            onClick={() => handleDelete(product.id)}
+                            className="text-red-600 hover:text-red-800 p-1"
+                            title="Delete product"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+
                       </div>
                     </div>
                   ))
                 )}
               </div>
-              
+
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600">Recent Activity</span>
