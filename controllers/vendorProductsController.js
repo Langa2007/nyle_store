@@ -28,9 +28,26 @@ const uploadToCloudinary = (fileBuffer, folder = "nyle-vendor-products") => {
   });
 };
 
+// Helper for safe JSON parsing
+const safeJsonParse = (data, fieldName = "unknown") => {
+  if (!data) return null;
+  if (typeof data !== 'string') return data;
+  if (data === '[object Object]') {
+    console.warn(`[safeJsonParse] Warning: Field "${fieldName}" is the string "[object Object]", returning null.`);
+    return null;
+  }
+  try {
+    return JSON.parse(data);
+  } catch (err) {
+    console.error(`[safeJsonParse] Error parsing field "${fieldName}":`, err.message, "Data:", data);
+    throw new Error(`Field "${fieldName}" is not valid JSON`);
+  }
+};
+
 /**
  * Vendor creates product with full features (similar to admin)
  */
+
 export const addProduct = async (req, res) => {
   const connection = await pool.connect();
 
@@ -197,19 +214,20 @@ export const addProduct = async (req, res) => {
       shipping_cost ? parseFloat(shipping_cost) : 0,
       free_shipping_threshold ? parseFloat(free_shipping_threshold) : null,
       product_type || 'simple',
-      attributes ? JSON.parse(attributes) : null,
+      safeJsonParse(attributes, "attributes"),
       galleryUrls.length > 0 ? galleryUrls : null,
       initialStatus,
       submittedAt,
       approvedAt,
       // NEW FIELDS
       original_price ? parseFloat(original_price) : null,
-      features ? (typeof features === 'string' ? JSON.parse(features) : features) : null,
+      safeJsonParse(features, "features"),
       warranty_info,
       shipping_info,
       return_policy,
-      specifications ? (typeof specifications === 'string' ? JSON.parse(specifications) : specifications) : null,
-      tags ? (typeof tags === 'string' ? JSON.parse(tags) : tags) : null,
+      safeJsonParse(specifications, "specifications"),
+      safeJsonParse(tags, "tags"),
+
       brand,
       color,
       material,
@@ -387,16 +405,18 @@ export const updateProduct = async (req, res) => {
       paramCount++;
     }
     if (product_type) { updates.push(`product_type = $${paramCount}`); values.push(product_type); paramCount++; }
-    if (attributes) { updates.push(`attributes = $${paramCount}`); values.push(typeof attributes === 'string' ? JSON.parse(attributes) : attributes); paramCount++; }
+    if (attributes) { updates.push(`attributes = $${paramCount}`); values.push(safeJsonParse(attributes, "attributes")); paramCount++; }
+
 
     // New Fields
     if (original_price !== undefined) { updates.push(`original_price = $${paramCount}`); values.push(original_price ? parseFloat(original_price) : null); paramCount++; }
-    if (features !== undefined) { updates.push(`features = $${paramCount}`); values.push(features ? (typeof features === 'string' ? JSON.parse(features) : features) : null); paramCount++; }
+    if (features !== undefined) { updates.push(`features = $${paramCount}`); values.push(safeJsonParse(features, "features")); paramCount++; }
     if (warranty_info !== undefined) { updates.push(`warranty_info = $${paramCount}`); values.push(warranty_info); paramCount++; }
     if (shipping_info !== undefined) { updates.push(`shipping_info = $${paramCount}`); values.push(shipping_info); paramCount++; }
     if (return_policy !== undefined) { updates.push(`return_policy = $${paramCount}`); values.push(return_policy); paramCount++; }
-    if (specifications !== undefined) { updates.push(`specifications = $${paramCount}`); values.push(specifications ? (typeof specifications === 'string' ? JSON.parse(specifications) : specifications) : null); paramCount++; }
-    if (tags !== undefined) { updates.push(`tags = $${paramCount}`); values.push(tags ? (typeof tags === 'string' ? JSON.parse(tags) : tags) : null); paramCount++; }
+    if (specifications !== undefined) { updates.push(`specifications = $${paramCount}`); values.push(safeJsonParse(specifications, "specifications")); paramCount++; }
+    if (tags !== undefined) { updates.push(`tags = $${paramCount}`); values.push(safeJsonParse(tags, "tags")); paramCount++; }
+
     if (brand !== undefined) { updates.push(`brand = $${paramCount}`); values.push(brand); paramCount++; }
     if (color !== undefined) { updates.push(`color = $${paramCount}`); values.push(color); paramCount++; }
     if (material !== undefined) { updates.push(`material = $${paramCount}`); values.push(material); paramCount++; }

@@ -1084,39 +1084,21 @@ function HomeContent() {
               </ul>
             </div>
 
-            {/* Dynamic Shop by Category Section */}
+            {/* Source on Nyle Section */}
             <div>
               <h3 className="font-bold text-lg mb-4 flex items-center">
-                <FaTag className="mr-2 text-blue-400" />
-                Shop by Category
+                <FaSearch className="mr-2 text-blue-400" />
+                Source on Nyle
               </h3>
               <ul className="space-y-2 text-sm">
-                {categories.length > 0 ? (
-                  categories.slice(0, 6).map((cat) => (
-                    <li key={cat.id || cat._id}>
-                      <button
-                        onClick={() => handleCategoryClick(cat.name)}
-                        className="text-gray-300 hover:text-white transition hover:underline text-left w-full"
-                      >
-                        {cat.name}
-                      </button>
-                    </li>
-                  ))
-                ) : (
-                  <>
-                    <li><Link href="/categories" className="text-gray-300 hover:text-white transition hover:underline">Electronics</Link></li>
-                    <li><Link href="/categories" className="text-gray-300 hover:text-white transition hover:underline">Fashion</Link></li>
-                    <li><Link href="/categories" className="text-gray-300 hover:text-white transition hover:underline">Home & Living</Link></li>
-                    <li><Link href="/categories" className="text-gray-300 hover:text-white transition hover:underline">Beauty</Link></li>
-                  </>
-                )}
-                <li className="pt-2 border-t border-gray-800 mt-2">
-                  <Link href="/categories" className="text-blue-400 font-bold hover:text-blue-300 transition">
-                    View All Categories →
-                  </Link>
-                </li>
+                <li><Link href="/source/quotation" className="text-gray-300 hover:text-white transition hover:underline">Get Quotations</Link></li>
+                <li><Link href="/source/shipping-policies" className="text-gray-300 hover:text-white transition hover:underline">Shipping Policies</Link></li>
+                <li><Link href="/source/suppliers" className="text-gray-300 hover:text-white transition hover:underline">Find Suppliers</Link></li>
+                <li><Link href="/source/trade-assurance" className="text-gray-300 hover:text-white transition hover:underline">Trade Assurance</Link></li>
+                <li><Link href="/source/logistics" className="text-gray-300 hover:text-white transition hover:underline">Logistics Services</Link></li>
               </ul>
             </div>
+
           </div>
 
           {/* Social Media & Payment Methods */}
