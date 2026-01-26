@@ -7,10 +7,10 @@ import {
   updateProduct,
   deleteProduct,
   submitForApproval,
-  submitForApproval,
   getProductStats,
   upload
 } from "../controllers/vendorProductsController.js";
+
 
 import { checkProductLimit } from "../middleware/productLimitMiddleware.js";
 
