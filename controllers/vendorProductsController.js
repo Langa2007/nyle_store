@@ -44,6 +44,21 @@ const safeJsonParse = (data, fieldName = "unknown") => {
   }
 };
 
+// Helper for safe Float parsing
+const safeFloat = (value, defaultValue = null) => {
+  if (value === null || value === undefined || value === "") return defaultValue;
+  const parsed = parseFloat(value);
+  return isNaN(parsed) ? defaultValue : parsed;
+};
+
+// Helper for safe Int parsing
+const safeInt = (value, defaultValue = 0) => {
+  if (value === null || value === undefined || value === "") return defaultValue;
+  const parsed = parseInt(value);
+  return isNaN(parsed) ? defaultValue : parsed;
+};
+
+
 /**
  * Vendor creates product with full features (similar to admin)
  */
@@ -203,16 +218,16 @@ export const addProduct = async (req, res) => {
     const productValues = [
       name,
       description,
-      parseFloat(price),
-      parseInt(stock) || 0,
+      safeFloat(price),
+      safeInt(stock, 0),
       category,
       imageUrl,
       vendorId,
       sku || `VENDOR-${vendorId}-${Date.now()}`,
-      weight,
+      safeFloat(weight), // Using safeFloat for weight
       dimensions,
-      shipping_cost ? parseFloat(shipping_cost) : 0,
-      free_shipping_threshold ? parseFloat(free_shipping_threshold) : null,
+      safeFloat(shipping_cost, 0),
+      safeFloat(free_shipping_threshold),
       product_type || 'simple',
       safeJsonParse(attributes, "attributes"),
       galleryUrls.length > 0 ? galleryUrls : null,
@@ -220,18 +235,17 @@ export const addProduct = async (req, res) => {
       submittedAt,
       approvedAt,
       // NEW FIELDS
-      original_price ? parseFloat(original_price) : null,
+      safeFloat(original_price),
       safeJsonParse(features, "features"),
       warranty_info,
       shipping_info,
       return_policy,
       safeJsonParse(specifications, "specifications"),
       safeJsonParse(tags, "tags"),
-
       brand,
       color,
       material,
-      estimated_delivery_days ? parseInt(estimated_delivery_days) : 3,
+      safeInt(estimated_delivery_days, 3),
       meta_title,
       meta_description,
       is_featured === true || is_featured === 'true',
@@ -392,24 +406,24 @@ export const updateProduct = async (req, res) => {
 
     if (name) { updates.push(`name = $${paramCount}`); values.push(name); paramCount++; }
     if (description !== undefined) { updates.push(`description = $${paramCount}`); values.push(description); paramCount++; }
-    if (price) { updates.push(`price = $${paramCount}`); values.push(parseFloat(price)); paramCount++; }
-    if (stock !== undefined) { updates.push(`stock = $${paramCount}`); values.push(parseInt(stock)); paramCount++; }
+    if (price !== undefined) { updates.push(`price = $${paramCount}`); values.push(safeFloat(price)); paramCount++; }
+    if (stock !== undefined) { updates.push(`stock = $${paramCount}`); values.push(safeInt(stock)); paramCount++; }
     if (category) { updates.push(`category = $${paramCount}`); values.push(category); paramCount++; }
     if (sku) { updates.push(`sku = $${paramCount}`); values.push(sku); paramCount++; }
-    if (weight) { updates.push(`weight = $${paramCount}`); values.push(weight); paramCount++; }
-    if (dimensions) { updates.push(`dimensions = $${paramCount}`); values.push(dimensions); paramCount++; }
-    if (shipping_cost !== undefined) { updates.push(`shipping_cost = $${paramCount}`); values.push(parseFloat(shipping_cost)); paramCount++; }
+    if (weight !== undefined) { updates.push(`weight = $${paramCount}`); values.push(safeFloat(weight)); paramCount++; }
+    if (dimensions !== undefined) { updates.push(`dimensions = $${paramCount}`); values.push(dimensions); paramCount++; }
+    if (shipping_cost !== undefined) { updates.push(`shipping_cost = $${paramCount}`); values.push(safeFloat(shipping_cost, 0)); paramCount++; }
     if (free_shipping_threshold !== undefined) {
       updates.push(`free_shipping_threshold = $${paramCount}`);
-      values.push(free_shipping_threshold ? parseFloat(free_shipping_threshold) : null);
+      values.push(safeFloat(free_shipping_threshold));
       paramCount++;
     }
     if (product_type) { updates.push(`product_type = $${paramCount}`); values.push(product_type); paramCount++; }
-    if (attributes) { updates.push(`attributes = $${paramCount}`); values.push(safeJsonParse(attributes, "attributes")); paramCount++; }
+    if (attributes !== undefined) { updates.push(`attributes = $${paramCount}`); values.push(safeJsonParse(attributes, "attributes")); paramCount++; }
 
 
     // New Fields
-    if (original_price !== undefined) { updates.push(`original_price = $${paramCount}`); values.push(original_price ? parseFloat(original_price) : null); paramCount++; }
+    if (original_price !== undefined) { updates.push(`original_price = $${paramCount}`); values.push(safeFloat(original_price)); paramCount++; }
     if (features !== undefined) { updates.push(`features = $${paramCount}`); values.push(safeJsonParse(features, "features")); paramCount++; }
     if (warranty_info !== undefined) { updates.push(`warranty_info = $${paramCount}`); values.push(warranty_info); paramCount++; }
     if (shipping_info !== undefined) { updates.push(`shipping_info = $${paramCount}`); values.push(shipping_info); paramCount++; }
@@ -420,7 +434,7 @@ export const updateProduct = async (req, res) => {
     if (brand !== undefined) { updates.push(`brand = $${paramCount}`); values.push(brand); paramCount++; }
     if (color !== undefined) { updates.push(`color = $${paramCount}`); values.push(color); paramCount++; }
     if (material !== undefined) { updates.push(`material = $${paramCount}`); values.push(material); paramCount++; }
-    if (estimated_delivery_days !== undefined) { updates.push(`estimated_delivery_days = $${paramCount}`); values.push(estimated_delivery_days ? parseInt(estimated_delivery_days) : 3); paramCount++; }
+    if (estimated_delivery_days !== undefined) { updates.push(`estimated_delivery_days = $${paramCount}`); values.push(safeInt(estimated_delivery_days, 3)); paramCount++; }
     if (meta_title !== undefined) { updates.push(`meta_title = $${paramCount}`); values.push(meta_title); paramCount++; }
     if (meta_description !== undefined) { updates.push(`meta_description = $${paramCount}`); values.push(meta_description); paramCount++; }
     if (is_featured !== undefined) { updates.push(`is_featured = $${paramCount}`); values.push(is_featured === true || is_featured === 'true'); paramCount++; }
