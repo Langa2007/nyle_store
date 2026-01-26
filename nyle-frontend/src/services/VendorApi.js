@@ -88,7 +88,18 @@ export const verifyVendorSession = async () => {
 };
 
 // Existing functions
+export const getCategories = async () => {
+  try {
+    const response = await api.get('/admin/categories');
+    return response.data || [];
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return []; // Return empty list on error to prevent crashes
+  }
+};
+
 export const getVendorProducts = async () => {
+
   try {
     const response = await api.get('/vendor/products');
     return response.data.products || [];

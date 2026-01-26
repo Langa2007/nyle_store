@@ -71,8 +71,11 @@ export const addProduct = async (req, res) => {
       material,
       estimated_delivery_days,
       meta_title,
-      meta_description
+      meta_description,
+      is_featured,
+      is_bestseller
     } = req.body;
+
 
 
     // Validate required fields
@@ -170,11 +173,13 @@ export const addProduct = async (req, res) => {
        submitted_at, approved_at,
        original_price, features, warranty_info, shipping_info, 
        return_policy, specifications, tags, brand, color, material,
-       estimated_delivery_days, meta_title, meta_description)
+       estimated_delivery_days, meta_title, meta_description,
+       is_featured, is_bestseller)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, 'vendor', $17, $18,
-              $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31)
+              $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33)
       RETURNING *
     `;
+
 
 
 
@@ -210,8 +215,11 @@ export const addProduct = async (req, res) => {
       material,
       estimated_delivery_days ? parseInt(estimated_delivery_days) : 3,
       meta_title,
-      meta_description
+      meta_description,
+      is_featured === true || is_featured === 'true',
+      is_bestseller === true || is_bestseller === 'true'
     ];
+
 
 
     const productResult = await connection.query(productQuery, productValues);
@@ -352,8 +360,11 @@ export const updateProduct = async (req, res) => {
       material,
       estimated_delivery_days,
       meta_title,
-      meta_description
+      meta_description,
+      is_featured,
+      is_bestseller
     } = req.body;
+
 
 
     // Build dynamic update query
@@ -392,6 +403,9 @@ export const updateProduct = async (req, res) => {
     if (estimated_delivery_days !== undefined) { updates.push(`estimated_delivery_days = $${paramCount}`); values.push(estimated_delivery_days ? parseInt(estimated_delivery_days) : 3); paramCount++; }
     if (meta_title !== undefined) { updates.push(`meta_title = $${paramCount}`); values.push(meta_title); paramCount++; }
     if (meta_description !== undefined) { updates.push(`meta_description = $${paramCount}`); values.push(meta_description); paramCount++; }
+    if (is_featured !== undefined) { updates.push(`is_featured = $${paramCount}`); values.push(is_featured === true || is_featured === 'true'); paramCount++; }
+    if (is_bestseller !== undefined) { updates.push(`is_bestseller = $${paramCount}`); values.push(is_bestseller === true || is_bestseller === 'true'); paramCount++; }
+
 
 
     // Handle image updates

@@ -2,8 +2,8 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  Edit, Trash2, Eye, MoreVertical, Filter, 
+import {
+  Edit, Trash2, Eye, MoreVertical, Filter,
   Search, ChevronDown, CheckCircle, Clock, AlertCircle
 } from "lucide-react";
 import { deleteVendorProduct, submitForApproval } from "@/services/VendorApi";
@@ -15,14 +15,14 @@ export default function ProductTable({ products, loading, onRefresh, onEdit, onD
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase()) ||
-                         product.sku?.toLowerCase().includes(search.toLowerCase());
+      product.sku?.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === "all" || product.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   const handleDelete = async (productId) => {
     if (!confirm("Are you sure you want to delete this product?")) return;
-    
+
     try {
       await deleteVendorProduct(productId);
       onDelete(productId);
@@ -54,13 +54,22 @@ export default function ProductTable({ products, loading, onRefresh, onEdit, onD
 
     const { color, icon: Icon } = config[status] || config.draft;
 
+    const labels = {
+      draft: "Draft (Hidden)",
+      pending: "Pending Approval",
+      approved: "Approved (Listed)",
+      rejected: "Rejected",
+      active: "Active",
+    };
+
     return (
-      <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${color}`}>
+      <span className={`px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 uppercase tracking-wider ${color}`}>
         <Icon className="w-3 h-3" />
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+        {labels[status] || status.toUpperCase()}
       </span>
     );
   };
+
 
   if (loading) {
     return (
@@ -88,7 +97,7 @@ export default function ProductTable({ products, loading, onRefresh, onEdit, onD
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
               />
             </div>
-            
+
             <div className="relative">
               <select
                 value={statusFilter}
@@ -112,7 +121,7 @@ export default function ProductTable({ products, loading, onRefresh, onEdit, onD
             >
               Refresh
             </button>
-            
+
             {selected.length > 0 && (
               <button
                 onClick={() => {
@@ -219,11 +228,10 @@ export default function ProductTable({ products, loading, onRefresh, onEdit, onD
                     <div className="text-gray-900 font-medium">${product.price}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className={`px-2 py-1 rounded-full text-xs font-medium inline-block ${
-                      product.stock > 10 ? 'bg-green-100 text-green-800' :
-                      product.stock > 0 ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
+                    <div className={`px-2 py-1 rounded-full text-xs font-medium inline-block ${product.stock > 10 ? 'bg-green-100 text-green-800' :
+                        product.stock > 0 ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-red-100 text-red-800'
+                      }`}>
                       {product.stock} in stock
                     </div>
                   </td>
@@ -239,7 +247,7 @@ export default function ProductTable({ products, loading, onRefresh, onEdit, onD
                       >
                         <Edit className="w-4 h-4" />
                       </button>
-                      
+
                       {product.status === 'draft' && (
                         <button
                           onClick={() => handleSubmitForApproval(product.id)}
@@ -249,7 +257,7 @@ export default function ProductTable({ products, loading, onRefresh, onEdit, onD
                           <CheckCircle className="w-4 h-4" />
                         </button>
                       )}
-                      
+
                       <button
                         onClick={() => handleDelete(product.id)}
                         className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition"

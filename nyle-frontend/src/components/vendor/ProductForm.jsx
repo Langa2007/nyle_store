@@ -1,16 +1,23 @@
 // components/vendor/ProductForm.jsx
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
   X, Upload, Image as ImageIcon, Package, DollarSign,
   Tag, Weight, Ruler, Truck, Hash, AlertCircle,
-  Check, Loader2, Search, Plus
+  Check, Loader2, Search, Plus, TrendingUp
 } from "lucide-react";
-import { createVendorProduct, updateVendorProduct } from "@/services/VendorApi";
+
+import {
+  createVendorProduct,
+  updateVendorProduct,
+  getCategories
+} from "@/services/VendorApi";
+
 
 
 // Form validation schema
@@ -38,7 +45,10 @@ const productSchema = z.object({
   return_policy: z.string().optional(),
   meta_title: z.string().optional(),
   meta_description: z.string().optional(),
+  is_featured: z.boolean().default(false),
+  is_bestseller: z.boolean().default(false),
   features: z.array(z.string()).optional(),
+
   specifications: z.record(z.string()).optional(),
   tags: z.array(z.string()).optional(),
 });
@@ -52,7 +62,25 @@ export default function ProductForm({ product, onClose, onSuccess }) {
   const [submitting, setSubmitting] = useState(false);
   const [variants, setVariants] = useState([]);
   const [isVariable, setIsVariable] = useState(product?.product_type === 'variable');
+  const [categories, setCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
   const specKeyRef = useRef(null);
+
+  useEffect(() => {
+    const fetchCats = async () => {
+      try {
+        setLoadingCategories(true);
+        const data = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error loading categories:", error);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+    fetchCats();
+  }, []);
+
 
 
   const {
@@ -85,11 +113,14 @@ export default function ProductForm({ product, onClose, onSuccess }) {
       return_policy: "",
       meta_title: "",
       meta_description: "",
+      is_featured: false,
+      is_bestseller: false,
       features: [],
       specifications: {},
       tags: [],
     },
   });
+
 
 
   const handleImageUpload = async (file, type = "main") => {
@@ -144,7 +175,8 @@ export default function ProductForm({ product, onClose, onSuccess }) {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-[85vh] md:h-[90vh]">
+
       {/* Header */}
       <div className="p-6 border-b border-gray-200 flex items-center justify-between">
         <div>
@@ -196,18 +228,20 @@ export default function ProductForm({ product, onClose, onSuccess }) {
                 </label>
                 <select
                   {...register("category")}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                  disabled={loadingCategories}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition disabled:bg-gray-100"
                 >
-                  <option value="">Select category</option>
-                  <option value="electronics">Electronics</option>
-                  <option value="fashion">Fashion</option>
-                  <option value="home">Home & Garden</option>
-                  <option value="sports">Sports</option>
-                  <option value="books">Books</option>
+                  <option value="">{loadingCategories ? "Loading categories..." : "Select category"}</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id || cat.name} value={cat.name}>
+                      {cat.name}
+                    </option>
+                  ))}
                 </select>
                 {errors.category && (
                   <p className="mt-2 text-sm text-red-600">{errors.category.message}</p>
                 )}
+
               </div>
 
               <div>
@@ -649,7 +683,46 @@ export default function ProductForm({ product, onClose, onSuccess }) {
           </section>
 
 
+          {/* Promotion & Ranking */}
+          <section className="bg-gray-50 rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-blue-600" />
+              Promotion & Visibility
+            </h3>
+
+            <div className="flex flex-col sm:flex-row gap-8">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  {...register("is_featured")}
+                  className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                />
+                <div>
+                  <div className="font-medium text-gray-800">Featured Product</div>
+                  <p className="text-xs text-gray-500">Request to show in featured collections</p>
+                </div>
+              </label>
+
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  {...register("is_bestseller")}
+                  className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                />
+                <div>
+                  <div className="font-medium text-gray-800">Bestseller Item</div>
+                  <p className="text-xs text-gray-500">Request bestseller badge for this item</p>
+                </div>
+              </label>
+            </div>
+            <p className="mt-4 text-sm text-amber-600 italic">
+              * Featured and Bestseller status are subject to admin review.
+            </p>
+          </section>
+
+
           {/* Submission Options */}
+
           <section className="bg-gray-50 rounded-xl p-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Submission Options</h3>
 
