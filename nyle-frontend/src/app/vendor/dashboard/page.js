@@ -14,6 +14,10 @@ import ProductTable from "@/components/vendor/ProductTable";
 import StatsOverview from "@/components/vendor/StatsOverview";
 import { getVendorProducts, getProductStats, verifyVendorSession } from "@/services/VendorApi";
 
+// Helper for defensive programming
+const safeArray = (data) => Array.isArray(data) ? data : [];
+
+
 // Disable static generation
 export const dynamic = 'force-dynamic';
 
@@ -74,8 +78,9 @@ export default function VendorDashboard() {
     try {
       setLoading(true);
       const data = await getVendorProducts();
-      setProducts(data);
+      setProducts(safeArray(data));
     } catch (error) {
+
       console.error("Failed to fetch products:", error);
       if (error.response?.status === 401) {
         // Token expired, redirect to sign-in
@@ -96,16 +101,18 @@ export default function VendorDashboard() {
   };
 
   const handleProductCreated = (newProduct) => {
-    setProducts([newProduct, ...products]);
+    setProducts([newProduct, ...safeArray(products)]);
     setShowProductForm(false);
     fetchStats();
   };
 
+
   const handleProductUpdated = (updatedProduct) => {
-    setProducts(products.map(p =>
+    setProducts(safeArray(products).map(p =>
       p.id === updatedProduct.id ? updatedProduct : p
     ));
   };
+
 
   const handleProductDeleted = (productId) => {
     setProducts(products.filter(p => p.id !== productId));
@@ -213,7 +220,8 @@ export default function VendorDashboard() {
                   </div>
                 </div>
                 <div className="p-4">
-                  {products.slice(0, 5).map((product) => (
+                  {safeArray(products).slice(0, 5).map((product) => (
+
                     <div key={product.id} className="flex items-center justify-between p-3 hover:bg-blue-50 rounded-lg transition">
                       <div className="flex items-center gap-3">
                         {product.image_url ? (
@@ -368,7 +376,8 @@ export default function VendorDashboard() {
         </div>
 
         <nav className="p-4 space-y-1">
-          {menuItems.map(({ id, name, icon: Icon }) => (
+          {safeArray(menuItems).map(({ id, name, icon: Icon }) => (
+
             <button
               key={id}
               onClick={() => {

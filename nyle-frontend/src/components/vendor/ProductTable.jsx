@@ -10,14 +10,19 @@ import {
 
 import { deleteVendorProduct, submitForApproval } from "@/services/VendorApi";
 
+const safeArray = (data) => Array.isArray(data) ? data : [];
+
 export default function ProductTable({ products, loading, onRefresh, onEdit, onDelete }) {
+  const safeProducts = safeArray(products);
+
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selected, setSelected] = useState([]);
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase()) ||
+  const filteredProducts = safeProducts.filter(product => {
+    const matchesSearch = product.name?.toLowerCase().includes(search.toLowerCase()) ||
       product.sku?.toLowerCase().includes(search.toLowerCase());
+
     const matchesStatus = statusFilter === "all" || product.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -279,8 +284,9 @@ export default function ProductTable({ products, loading, onRefresh, onEdit, onD
       {/* Table Footer */}
       <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
         <div className="text-sm text-gray-500">
-          Showing {filteredProducts.length} of {products.length} products
+          Showing {filteredProducts.length} of {safeProducts.length} products
         </div>
+
         <div className="flex items-center gap-2">
           <button className="px-3 py-1 rounded-lg border border-gray-300 text-sm hover:bg-gray-50">
             Previous

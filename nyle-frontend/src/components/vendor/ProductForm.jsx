@@ -55,9 +55,25 @@ const productSchema = z.object({
 
 
 
+// Helper to ensure data is an array
+const safeArray = (data) => {
+  if (!data) return [];
+  if (Array.isArray(data)) return data;
+  if (typeof data === 'string') {
+    try {
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+};
+
 export default function ProductForm({ product, onClose, onSuccess }) {
   const [mainImage, setMainImage] = useState(product?.image_url || null);
-  const [galleryImages, setGalleryImages] = useState(product?.gallery_images || []);
+  const [galleryImages, setGalleryImages] = useState(safeArray(product?.gallery_images));
+
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [variants, setVariants] = useState([]);
@@ -115,10 +131,11 @@ export default function ProductForm({ product, onClose, onSuccess }) {
       meta_description: "",
       is_featured: false,
       is_bestseller: false,
-      features: [],
-      specifications: {},
-      tags: [],
+      features: safeArray(product?.features),
+      specifications: product?.specifications || {},
+      tags: safeArray(product?.tags),
     },
+
   });
 
 
@@ -130,9 +147,10 @@ export default function ProductForm({ product, onClose, onSuccess }) {
     } else {
       setGalleryImages(prev => [...prev, URL.createObjectURL(file)]);
       // Get current gallery files and add the new one
-      const currentFiles = watch("gallery_images") || [];
+      const currentFiles = safeArray(watch("gallery_images"));
       setValue("gallery_images", [...currentFiles, file]);
     }
+
   };
 
   const handleRemoveImage = (index, type = "gallery") => {
@@ -144,10 +162,11 @@ export default function ProductForm({ product, onClose, onSuccess }) {
       newPreviews.splice(index, 1);
       setGalleryImages(newPreviews);
 
-      const currentFiles = watch("gallery_images") || [];
+      const currentFiles = safeArray(watch("gallery_images"));
       const newFiles = [...currentFiles];
       newFiles.splice(index, 1);
       setValue("gallery_images", newFiles);
+
     }
   };
 
@@ -356,24 +375,27 @@ export default function ProductForm({ product, onClose, onSuccess }) {
                   Key Features
                 </label>
                 <div className="space-y-2">
-                  {(watch("features") || []).map((feature, index) => (
+                  {safeArray(watch("features")).map((feature, index) => (
+
                     <div key={index} className="flex gap-2">
                       <input
                         className="flex-1 px-4 py-2 rounded-lg border border-gray-300 outline-none"
                         value={feature}
                         onChange={(e) => {
-                          const newFeatures = [...(watch("features") || [])];
+                          const newFeatures = [...safeArray(watch("features"))];
                           newFeatures[index] = e.target.value;
                           setValue("features", newFeatures);
                         }}
+
                         placeholder="Feature description"
                       />
                       <button
                         type="button"
                         onClick={() => {
-                          const newFeatures = (watch("features") || []).filter((_, i) => i !== index);
+                          const newFeatures = safeArray(watch("features")).filter((_, i) => i !== index);
                           setValue("features", newFeatures);
                         }}
+
                         className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
                       >
                         <X className="w-4 h-4" />
@@ -382,8 +404,9 @@ export default function ProductForm({ product, onClose, onSuccess }) {
                   ))}
                   <button
                     type="button"
-                    onClick={() => setValue("features", [...(watch("features") || []), ""])}
+                    onClick={() => setValue("features", [...safeArray(watch("features")), ""])}
                     className="text-sm text-blue-600 font-medium hover:underline flex items-center gap-1"
+
                   >
                     + Add Feature
                   </button>
@@ -513,7 +536,8 @@ export default function ProductForm({ product, onClose, onSuccess }) {
                   Gallery Images
                 </label>
                 <div className="flex flex-wrap gap-4">
-                  {galleryImages.map((img, index) => (
+                  {safeArray(galleryImages).map((img, index) => (
+
                     <div key={index} className="relative group">
                       <img
                         src={img}
