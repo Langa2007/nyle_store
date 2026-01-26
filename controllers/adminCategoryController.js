@@ -51,9 +51,17 @@ export const createCategory = async (req, res) => {
     // First, let's try to see if we can insert with image_url
     // If column doesn't exist, we might want to catch that error, but usually we just assume schema exists.
 
+    // Fix potential sequence out-of-sync issue
+    try {
+      await pool.query("SELECT setval(pg_get_serial_sequence('categories', 'id'), COALESCE(max(id), 0) + 1, false) FROM categories;");
+    } catch (seqErr) {
+      console.warn(" Warning: Could not reset sequence, it might already be correct or table name differs:", seqErr.message);
+    }
+
     const query = imageUrl
       ? "INSERT INTO categories (name, image_url) VALUES ($1, $2) RETURNING *"
       : "INSERT INTO categories (name) VALUES ($1) RETURNING *";
+
 
     const values = imageUrl ? [name, imageUrl] : [name];
 
