@@ -1,16 +1,17 @@
 // components/vendor/ProductForm.jsx
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
   X, Upload, Image as ImageIcon, Package, DollarSign,
   Tag, Weight, Ruler, Truck, Hash, AlertCircle,
-  Check, Loader2
+  Check, Loader2, Search, Plus
 } from "lucide-react";
 import { createVendorProduct, updateVendorProduct } from "@/services/VendorApi";
+
 
 // Form validation schema
 const productSchema = z.object({
@@ -51,6 +52,8 @@ export default function ProductForm({ product, onClose, onSuccess }) {
   const [submitting, setSubmitting] = useState(false);
   const [variants, setVariants] = useState([]);
   const [isVariable, setIsVariable] = useState(product?.product_type === 'variable');
+  const specKeyRef = useRef(null);
+
 
   const {
     register,
@@ -392,26 +395,26 @@ export default function ProductForm({ product, onClose, onSuccess }) {
 
                   <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200">
                     <input
-                      id="new-spec-key"
+                      ref={specKeyRef}
                       className="w-1/3 px-4 py-2 rounded-lg border border-gray-300 outline-none text-sm"
                       placeholder="Property (e.g. RAM)"
                     />
                     <button
                       type="button"
                       onClick={() => {
-                        const input = document.getElementById('new-spec-key');
-                        const key = input.value.trim();
+                        const key = specKeyRef.current?.value.trim();
                         if (key) {
                           const newSpecs = { ...(watch("specifications") || {}) };
                           newSpecs[key] = "";
                           setValue("specifications", newSpecs);
-                          input.value = "";
+                          if (specKeyRef.current) specKeyRef.current.value = "";
                         }
                       }}
                       className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100"
                     >
                       Add Property
                     </button>
+
                   </div>
                 </div>
               </div>
@@ -728,14 +731,5 @@ export default function ProductForm({ product, onClose, onSuccess }) {
         </div>
       </div>
     </div>
-  );
-}
-
-// Add missing Plus icon component
-function Plus(props) {
-  return (
-    <svg {...props} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-    </svg>
   );
 }
