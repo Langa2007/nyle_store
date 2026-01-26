@@ -33,10 +33,10 @@ const uploadToCloudinary = (fileBuffer, folder = "nyle-vendor-products") => {
  */
 export const addProduct = async (req, res) => {
   const connection = await pool.connect();
-  
+
   try {
     await connection.query('BEGIN');
-    
+
     const vendorId = req.vendorId;
     if (!vendorId) {
       await connection.query('ROLLBACK');
@@ -57,8 +57,23 @@ export const addProduct = async (req, res) => {
       product_type,
       attributes,
       variant_data,
-      submit_for_approval = false
+      submit_for_approval = false,
+      // NEW FIELDS
+      original_price,
+      features,
+      warranty_info,
+      shipping_info,
+      return_policy,
+      specifications,
+      tags,
+      brand,
+      color,
+      material,
+      estimated_delivery_days,
+      meta_title,
+      meta_description
     } = req.body;
+
 
     // Validate required fields
     if (!name || !price) {
@@ -83,11 +98,11 @@ export const addProduct = async (req, res) => {
       }
 
       const vendor = vendorCheck.rows[0];
-      
+
       // Check if vendor is approved
       if (vendor.vendor_status !== 'approved') {
         await connection.query('ROLLBACK');
-        return res.status(403).json({ 
+        return res.status(403).json({
           error: "Vendor account not approved",
           message: "Your vendor account needs to be approved before submitting products"
         });
@@ -96,7 +111,7 @@ export const addProduct = async (req, res) => {
       // Check product limit for non-trusted vendors
       if (!vendor.is_trusted_vendor && vendor.current_approved_count >= vendor.max_products) {
         await connection.query('ROLLBACK');
-        return res.status(403).json({ 
+        return res.status(403).json({
           error: "Product limit reached",
           message: `You have reached your limit of ${vendor.max_products} approved products.`,
           current: vendor.current_approved_count,
@@ -152,10 +167,16 @@ export const addProduct = async (req, res) => {
       (name, description, price, stock, category, image_url, vendor_id,
        sku, weight, dimensions, shipping_cost, free_shipping_threshold, 
        product_type, attributes, gallery_images, status, created_by,
-       submitted_at, approved_at)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, 'vendor', $17, $18)
+       submitted_at, approved_at,
+       original_price, features, warranty_info, shipping_info, 
+       return_policy, specifications, tags, brand, color, material,
+       estimated_delivery_days, meta_title, meta_description)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, 'vendor', $17, $18,
+              $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31)
       RETURNING *
     `;
+
+
 
     const productValues = [
       name,
@@ -175,8 +196,23 @@ export const addProduct = async (req, res) => {
       galleryUrls.length > 0 ? galleryUrls : null,
       initialStatus,
       submittedAt,
-      approvedAt
+      approvedAt,
+      // NEW FIELDS
+      original_price ? parseFloat(original_price) : null,
+      features ? (typeof features === 'string' ? JSON.parse(features) : features) : null,
+      warranty_info,
+      shipping_info,
+      return_policy,
+      specifications ? (typeof specifications === 'string' ? JSON.parse(specifications) : specifications) : null,
+      tags ? (typeof tags === 'string' ? JSON.parse(tags) : tags) : null,
+      brand,
+      color,
+      material,
+      estimated_delivery_days ? parseInt(estimated_delivery_days) : 3,
+      meta_title,
+      meta_description
     ];
+
 
     const productResult = await connection.query(productQuery, productValues);
     const productId = productResult.rows[0].id;
@@ -188,7 +224,7 @@ export const addProduct = async (req, res) => {
         for (const variant of variants) {
           // Upload variant image if provided
           let variantImageUrl = variant.image_url;
-          
+
           const variantQuery = `
             INSERT INTO product_variants 
             (product_id, sku, price, stock, attributes, image_url)
@@ -220,15 +256,15 @@ export const addProduct = async (req, res) => {
     await connection.query('COMMIT');
 
     res.status(201).json({
-      message: `Product ${initialStatus === 'approved' ? 'created and approved' : 
-                initialStatus === 'pending' ? 'submitted for approval' : 'saved as draft'}`,
+      message: `Product ${initialStatus === 'approved' ? 'created and approved' :
+        initialStatus === 'pending' ? 'submitted for approval' : 'saved as draft'}`,
       product: productResult.rows[0],
       status: initialStatus,
-      next_steps: initialStatus === 'pending' ? 
-        "Your product is awaiting admin approval" : 
-        initialStatus === 'draft' ? 
-        "Submit for approval when ready" : 
-        "Product is live on the store"
+      next_steps: initialStatus === 'pending' ?
+        "Your product is awaiting admin approval" :
+        initialStatus === 'draft' ?
+          "Submit for approval when ready" :
+          "Product is live on the store"
     });
 
   } catch (err) {
@@ -245,13 +281,13 @@ export const addProduct = async (req, res) => {
  */
 export const updateProduct = async (req, res) => {
   const connection = await pool.connect();
-  
+
   try {
     await connection.query('BEGIN');
-    
+
     const vendorId = req.vendorId;
     const { id } = req.params;
-    
+
     if (!vendorId) {
       await connection.query('ROLLBACK');
       return res.status(401).json({ error: "Vendor authentication failed" });
@@ -266,19 +302,19 @@ export const updateProduct = async (req, res) => {
 
     if (productCheck.rows.length === 0) {
       await connection.query('ROLLBACK');
-      return res.status(404).json({ 
-        error: "Product not found or not owned by you" 
+      return res.status(404).json({
+        error: "Product not found or not owned by you"
       });
     }
 
     const currentProduct = productCheck.rows[0];
-    
+
     // Prevent updates on approved products (or require re-approval)
     if (currentProduct.status === 'approved') {
       // For approved products, changes should create a new pending version
       // or require re-approval. Let's implement re-approval requirement.
       const { require_reapproval } = req.body;
-      
+
       if (!require_reapproval) {
         await connection.query('ROLLBACK');
         return res.status(400).json({
@@ -302,8 +338,23 @@ export const updateProduct = async (req, res) => {
       product_type,
       attributes,
       variant_data,
-      update_status // Optional: 'draft', 'pending'
+      update_status, // Optional: 'draft', 'pending'
+      // NEW FIELDS
+      original_price,
+      features,
+      warranty_info,
+      shipping_info,
+      return_policy,
+      specifications,
+      tags,
+      brand,
+      color,
+      material,
+      estimated_delivery_days,
+      meta_title,
+      meta_description
     } = req.body;
+
 
     // Build dynamic update query
     const updates = [];
@@ -319,13 +370,29 @@ export const updateProduct = async (req, res) => {
     if (weight) { updates.push(`weight = $${paramCount}`); values.push(weight); paramCount++; }
     if (dimensions) { updates.push(`dimensions = $${paramCount}`); values.push(dimensions); paramCount++; }
     if (shipping_cost !== undefined) { updates.push(`shipping_cost = $${paramCount}`); values.push(parseFloat(shipping_cost)); paramCount++; }
-    if (free_shipping_threshold !== undefined) { 
-      updates.push(`free_shipping_threshold = $${paramCount}`); 
-      values.push(free_shipping_threshold ? parseFloat(free_shipping_threshold) : null); 
-      paramCount++; 
+    if (free_shipping_threshold !== undefined) {
+      updates.push(`free_shipping_threshold = $${paramCount}`);
+      values.push(free_shipping_threshold ? parseFloat(free_shipping_threshold) : null);
+      paramCount++;
     }
     if (product_type) { updates.push(`product_type = $${paramCount}`); values.push(product_type); paramCount++; }
-    if (attributes) { updates.push(`attributes = $${paramCount}`); values.push(JSON.parse(attributes)); paramCount++; }
+    if (attributes) { updates.push(`attributes = $${paramCount}`); values.push(typeof attributes === 'string' ? JSON.parse(attributes) : attributes); paramCount++; }
+
+    // New Fields
+    if (original_price !== undefined) { updates.push(`original_price = $${paramCount}`); values.push(original_price ? parseFloat(original_price) : null); paramCount++; }
+    if (features !== undefined) { updates.push(`features = $${paramCount}`); values.push(features ? (typeof features === 'string' ? JSON.parse(features) : features) : null); paramCount++; }
+    if (warranty_info !== undefined) { updates.push(`warranty_info = $${paramCount}`); values.push(warranty_info); paramCount++; }
+    if (shipping_info !== undefined) { updates.push(`shipping_info = $${paramCount}`); values.push(shipping_info); paramCount++; }
+    if (return_policy !== undefined) { updates.push(`return_policy = $${paramCount}`); values.push(return_policy); paramCount++; }
+    if (specifications !== undefined) { updates.push(`specifications = $${paramCount}`); values.push(specifications ? (typeof specifications === 'string' ? JSON.parse(specifications) : specifications) : null); paramCount++; }
+    if (tags !== undefined) { updates.push(`tags = $${paramCount}`); values.push(tags ? (typeof tags === 'string' ? JSON.parse(tags) : tags) : null); paramCount++; }
+    if (brand !== undefined) { updates.push(`brand = $${paramCount}`); values.push(brand); paramCount++; }
+    if (color !== undefined) { updates.push(`color = $${paramCount}`); values.push(color); paramCount++; }
+    if (material !== undefined) { updates.push(`material = $${paramCount}`); values.push(material); paramCount++; }
+    if (estimated_delivery_days !== undefined) { updates.push(`estimated_delivery_days = $${paramCount}`); values.push(estimated_delivery_days ? parseInt(estimated_delivery_days) : 3); paramCount++; }
+    if (meta_title !== undefined) { updates.push(`meta_title = $${paramCount}`); values.push(meta_title); paramCount++; }
+    if (meta_description !== undefined) { updates.push(`meta_description = $${paramCount}`); values.push(meta_description); paramCount++; }
+
 
     // Handle image updates
     if (req.files) {
@@ -337,7 +404,7 @@ export const updateProduct = async (req, res) => {
         values.push(uploadResult.secure_url);
         paramCount++;
       }
-      
+
       if (req.files.gallery_images && req.files.gallery_images.length > 0) {
         const galleryUrls = [];
         for (const file of req.files.gallery_images) {
@@ -356,14 +423,14 @@ export const updateProduct = async (req, res) => {
         await connection.query('ROLLBACK');
         return res.status(400).json({ error: "Invalid status update" });
       }
-      
+
       updates.push(`status = $${paramCount}`);
       values.push(update_status);
       paramCount++;
-      
+
       if (update_status === 'pending') {
         updates.push(`submitted_at = NOW()`);
-        
+
         // If changing from approved to pending, decrement vendor count
         if (currentProduct.status === 'approved') {
           await connection.query(
@@ -373,7 +440,7 @@ export const updateProduct = async (req, res) => {
         }
       }
     }
-    
+
     // If approved product updated with re-approval, change to pending
     if (currentProduct.status === 'approved' && req.body.require_reapproval) {
       updates.push(`status = 'pending'`);
@@ -411,7 +478,7 @@ export const updateProduct = async (req, res) => {
           "DELETE FROM product_variants WHERE product_id = $1",
           [id]
         );
-        
+
         // Add new variants
         const variants = JSON.parse(variant_data);
         for (const variant of variants) {
@@ -435,7 +502,7 @@ export const updateProduct = async (req, res) => {
     }
 
     await connection.query('COMMIT');
-    
+
     res.json({
       message: "Product updated successfully",
       product: rows[0],
@@ -461,13 +528,13 @@ export const getVendorProducts = async (req, res) => {
   try {
     const vendorId = req.vendorId;
     const { status, page = 1, limit = 20 } = req.query;
-    
+
     if (!vendorId) {
       return res.status(401).json({ error: "Vendor authentication failed" });
     }
 
     const offset = (page - 1) * limit;
-    
+
     let baseQuery = `
       SELECT 
         p.*,
@@ -477,36 +544,36 @@ export const getVendorProducts = async (req, res) => {
       LEFT JOIN product_variants pv ON p.id = pv.product_id
       WHERE p.vendor_id = $1
     `;
-    
+
     let countQuery = `
       SELECT COUNT(*) as total 
       FROM products 
       WHERE vendor_id = $1
     `;
-    
+
     const params = [vendorId];
     const countParams = [vendorId];
-    
+
     if (status) {
       baseQuery += ` AND p.status = $2`;
       countQuery += ` AND status = $2`;
       params.push(status);
       countParams.push(status);
     }
-    
+
     baseQuery += ` 
       GROUP BY p.id
       ORDER BY p.created_at DESC
       LIMIT $${params.length + 1} OFFSET $${params.length + 2}
     `;
-    
+
     params.push(limit, offset);
-    
+
     const [productsResult, countResult] = await Promise.all([
       pool.query(baseQuery, params),
       pool.query(countQuery, countParams)
     ]);
-    
+
     return res.json({
       products: productsResult.rows,
       pagination: {
@@ -516,7 +583,7 @@ export const getVendorProducts = async (req, res) => {
         pages: Math.ceil(countResult.rows[0].total / limit)
       }
     });
-    
+
   } catch (err) {
     console.error(" Vendor getVendorProducts error:", err.message);
     return res.status(500).json({ error: "Failed to fetch products" });
@@ -529,33 +596,33 @@ export const submitForApproval = async (req, res) => {
   try {
     const vendorId = req.vendorId;
     const { id } = req.params;
-    
+
     if (!vendorId) {
       return res.status(401).json({ error: "Vendor authentication failed" });
     }
-    
+
     // Check if product exists and belongs to vendor
     const checkQuery = `
       SELECT id, status FROM products 
       WHERE id = $1 AND vendor_id = $2
     `;
-    
+
     const checkResult = await pool.query(checkQuery, [id, vendorId]);
-    
+
     if (checkResult.rows.length === 0) {
-      return res.status(404).json({ 
-        error: "Product not found or not owned by you" 
+      return res.status(404).json({
+        error: "Product not found or not owned by you"
       });
     }
-    
+
     const product = checkResult.rows[0];
-    
+
     if (product.status !== 'draft') {
-      return res.status(400).json({ 
-        error: `Product cannot be submitted. Current status: ${product.status}` 
+      return res.status(400).json({
+        error: `Product cannot be submitted. Current status: ${product.status}`
       });
     }
-    
+
     // Update product status to pending
     const updateQuery = `
       UPDATE products 
@@ -563,14 +630,14 @@ export const submitForApproval = async (req, res) => {
       WHERE id = $1
       RETURNING *
     `;
-    
+
     const updateResult = await pool.query(updateQuery, [id]);
-    
+
     return res.json({
       message: "Product submitted for admin approval",
       product: updateResult.rows[0]
     });
-    
+
   } catch (err) {
     console.error(" Submit for approval error:", err.message);
     return res.status(500).json({ error: "Failed to submit product for approval" });
@@ -614,7 +681,7 @@ export const deleteProduct = async (req, res) => {
 export const getProductStats = async (req, res) => {
   try {
     const vendorId = req.vendorId;
-    
+
     const query = `
       SELECT 
         status,
@@ -625,28 +692,28 @@ export const getProductStats = async (req, res) => {
       WHERE vendor_id = $1
       GROUP BY status
     `;
-    
+
     const { rows } = await pool.query(query, [vendorId]);
-    
+
     // Get vendor limit info
     const vendorQuery = `
       SELECT plan_type, max_products, current_approved_count, is_trusted_vendor
       FROM vendors WHERE id = $1
     `;
-    
+
     const vendorResult = await pool.query(vendorQuery, [vendorId]);
-    
+
     res.json({
       stats: rows,
       vendor: vendorResult.rows[0],
       limits: {
         used: vendorResult.rows[0]?.current_approved_count || 0,
         max: vendorResult.rows[0]?.max_products || 0,
-        remaining: (vendorResult.rows[0]?.max_products || 0) - 
-                  (vendorResult.rows[0]?.current_approved_count || 0)
+        remaining: (vendorResult.rows[0]?.max_products || 0) -
+          (vendorResult.rows[0]?.current_approved_count || 0)
       }
     });
-    
+
   } catch (err) {
     console.error("❌ Get product stats error:", err.message);
     return res.status(500).json({ error: "Failed to fetch product stats" });
@@ -658,29 +725,29 @@ export const getProductStats = async (req, res) => {
  */
 export const duplicateProduct = async (req, res) => {
   const connection = await pool.connect();
-  
+
   try {
     await connection.query('BEGIN');
-    
+
     const vendorId = req.vendorId;
     const { id } = req.params;
     const { name_suffix = "Copy", submit_for_approval = false } = req.body;
-    
+
     // Get original product
     const originalQuery = `
       SELECT * FROM products 
       WHERE id = $1 AND vendor_id = $2
     `;
-    
+
     const originalResult = await connection.query(originalQuery, [id, vendorId]);
-    
+
     if (originalResult.rows.length === 0) {
       await connection.query('ROLLBACK');
       return res.status(404).json({ error: "Product not found" });
     }
-    
+
     const original = originalResult.rows[0];
-    
+
     // Create duplicate with draft status
     const duplicateQuery = `
       INSERT INTO products 
@@ -690,7 +757,7 @@ export const duplicateProduct = async (req, res) => {
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, 'draft', 'vendor')
       RETURNING *
     `;
-    
+
     const duplicateValues = [
       `${original.name} - ${name_suffix}`,
       original.description,
@@ -708,18 +775,18 @@ export const duplicateProduct = async (req, res) => {
       original.attributes,
       original.gallery_images
     ];
-    
+
     const duplicateResult = await connection.query(duplicateQuery, duplicateValues);
     const newProductId = duplicateResult.rows[0].id;
-    
+
     // Duplicate variants if any
     const variantsQuery = `
       SELECT * FROM product_variants 
       WHERE product_id = $1
     `;
-    
+
     const variantsResult = await connection.query(variantsQuery, [id]);
-    
+
     for (const variant of variantsResult.rows) {
       const variantQuery = `
         INSERT INTO product_variants 
@@ -735,15 +802,15 @@ export const duplicateProduct = async (req, res) => {
         variant.image_url
       ]);
     }
-    
+
     await connection.query('COMMIT');
-    
+
     res.json({
       message: "Product duplicated successfully",
       product: duplicateResult.rows[0],
       variants_copied: variantsResult.rows.length
     });
-    
+
   } catch (err) {
     await connection.query('ROLLBACK');
     console.error(" Duplicate product error:", err.message);
