@@ -4,8 +4,10 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { ShoppingCart, Menu, X, Search } from "lucide-react";
 import Link from "next/link";
 import { FaHeart, FaUser, FaSignInAlt, FaUserPlus, FaStore } from "react-icons/fa";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import debounce from "lodash.debounce";
+import { useCart } from "@/context/CartContext/page";
+
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -17,22 +19,26 @@ export default function Navbar() {
   const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef(null);
   const router = useRouter();
+  const pathname = usePathname();
+  const { getCartTotals, setShowCart } = useCart();
+  const { itemCount } = getCartTotals();
+
 
   // Real API search function
   const searchProducts = async (query) => {
     if (!query.trim()) return [];
-    
+
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/products/search?q=${encodeURIComponent(query)}&limit=5`
       );
-      
+
       if (!response.ok) {
         // If API fails, return empty results (no mock fallback)
         console.warn('Search API failed, returning empty results');
         return [];
       }
-      
+
       const data = await response.json();
       return data.products || data.items || data || [];
     } catch (error) {
@@ -132,6 +138,21 @@ export default function Navbar() {
     return `Ksh ${parseInt(price).toLocaleString()}`;
   };
 
+  const handleCartClick = () => {
+    if (itemCount > 0) {
+      setShowCart(true);
+    } else {
+      // If empty, scroll to products or navigate home
+      if (pathname === '/') {
+        const el = document.getElementById('products-section');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        router.push('/#products-section');
+      }
+    }
+  };
+
+
   return (
     <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${getNavbarBackground()}`}>
       {/* Announcement Bar */}
@@ -183,11 +204,10 @@ export default function Navbar() {
                   value={searchQuery}
                   onChange={handleSearchChange}
                   onFocus={() => searchQuery && setShowSearchResults(true)}
-                  className={`pl-10 pr-4 py-2 rounded-lg border transition-all duration-300 w-48 focus:w-64 focus:outline-none ${
-                    isScrolled 
-                      ? 'bg-gray-50 border-gray-200 text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200' 
+                  className={`pl-10 pr-4 py-2 rounded-lg border transition-all duration-300 w-48 focus:w-64 focus:outline-none ${isScrolled
+                      ? 'bg-gray-50 border-gray-200 text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'
                       : 'bg-white/20 border-white/30 text-white placeholder-blue-100 focus:bg-white focus:text-gray-800 focus:border-white'
-                  }`}
+                    }`}
                 />
                 {searchQuery && (
                   <button
@@ -204,9 +224,8 @@ export default function Navbar() {
 
               {/* Search Results Dropdown */}
               {showSearchResults && (
-                <div className={`absolute top-full left-0 mt-1 w-96 rounded-lg shadow-xl overflow-hidden z-50 ${
-                  isScrolled ? 'bg-white' : 'bg-white'
-                }`}>
+                <div className={`absolute top-full left-0 mt-1 w-96 rounded-lg shadow-xl overflow-hidden z-50 ${isScrolled ? 'bg-white' : 'bg-white'
+                  }`}>
                   <div className="max-h-80 overflow-y-auto">
                     {isSearching ? (
                       <div className="p-4 text-center">
@@ -264,21 +283,14 @@ export default function Navbar() {
                 </div>
               )}
             </div>
-            
-            {/* Wishlist */}
-            <button className={`p-2 transition relative ${getTextColor()} ${getHoverColor()}`}>
-              <FaHeart className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                3
-              </span>
-            </button>
-            
+
             {/* User Account Dropdown */}
+
             <div className="relative group">
               <button className={`p-2 transition flex items-center ${getTextColor()} ${getHoverColor()}`}>
                 <FaUser className="h-5 w-5" />
               </button>
-              
+
               {/* Dropdown Menu */}
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 {userLoggedIn ? (
@@ -318,17 +330,23 @@ export default function Navbar() {
                 )}
               </div>
             </div>
-            
+
             {/* Cart */}
-            <button className={`p-2 transition relative ${getTextColor()} ${getHoverColor()}`}>
+            <button
+              onClick={handleCartClick}
+              className={`p-2 transition relative ${getTextColor()} ${getHoverColor()}`}
+            >
               <ShoppingCart className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                2
-              </span>
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                  {itemCount}
+                </span>
+              )}
             </button>
 
+
             {/* Mobile menu toggle */}
-            <button 
+            <button
               className={`p-2 md:hidden transition ${getTextColor()}`}
               onClick={toggleMenu}
               aria-label="Toggle menu"
@@ -341,9 +359,8 @@ export default function Navbar() {
 
       {/* Slide-in mobile drawer */}
       <div
-        className={`fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-xl transform transition-transform duration-300 ease-in-out md:hidden ${
-          mobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-xl transform transition-transform duration-300 ease-in-out md:hidden ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="flex justify-between items-center px-6 py-6 border-b bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
           <span className="text-xl font-bold">Menu</span>
@@ -381,25 +398,25 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="space-y-2">
-                <Link 
-                  href="/auth/login" 
-                  onClick={toggleMenu} 
+                <Link
+                  href="/auth/login"
+                  onClick={toggleMenu}
                   className="block bg-blue-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-blue-700 transition text-center"
                 >
                   <FaSignInAlt className="inline mr-2" />
                   User Login
                 </Link>
                 <div className="grid grid-cols-2 gap-2">
-                  <Link 
-                    href="/auth/signup" 
-                    onClick={toggleMenu} 
+                  <Link
+                    href="/auth/signup"
+                    onClick={toggleMenu}
                     className="border border-blue-600 text-blue-600 px-4 py-3 rounded-lg font-medium hover:bg-blue-50 transition text-center"
                   >
                     User Sign Up
                   </Link>
-                  <Link 
-                    href="/vendor/login" 
-                    onClick={toggleMenu} 
+                  <Link
+                    href="/vendor/login"
+                    onClick={toggleMenu}
                     className="border border-orange-600 text-orange-600 px-4 py-3 rounded-lg font-medium hover:bg-orange-50 transition text-center"
                   >
                     Seller Login
@@ -410,47 +427,47 @@ export default function Navbar() {
           </div>
 
           {/* Navigation Links */}
-          <Link 
-            href="/" 
-            onClick={toggleMenu} 
+          <Link
+            href="/"
+            onClick={toggleMenu}
             className="py-3 text-lg font-medium text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-3 transition"
           >
             Home
           </Link>
-          <Link 
-            href="app/products" 
-            onClick={toggleMenu} 
+          <Link
+            href="app/products"
+            onClick={toggleMenu}
             className="py-3 text-lg font-medium text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-3 transition"
           >
             Shop All Products
           </Link>
-          <Link 
-            href="app/categories" 
-            onClick={toggleMenu} 
+          <Link
+            href="app/categories"
+            onClick={toggleMenu}
             className="py-3 text-lg font-medium text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-3 transition"
           >
             Categories
           </Link>
-          <Link 
-            href="app/deals" 
-            onClick={toggleMenu} 
+          <Link
+            href="app/deals"
+            onClick={toggleMenu}
             className="py-3 text-lg font-medium text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-3 transition"
           >
             Hot Deals
           </Link>
-          
+
           {/* Account Links */}
           <div className="mt-4 pt-4 border-t">
-            <Link 
-              href="/auth/login" 
-              onClick={toggleMenu} 
+            <Link
+              href="/auth/login"
+              onClick={toggleMenu}
               className="py-3 text-lg font-medium text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-3 transition"
             >
               My Account
             </Link>
-            <Link 
-              href="support/help-center" 
-              onClick={toggleMenu} 
+            <Link
+              href="support/help-center"
+              onClick={toggleMenu}
               className="py-3 text-lg font-medium text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-3 transition"
             >
               Help Center
@@ -479,7 +496,7 @@ export default function Navbar() {
 
       {/* Backdrop for mobile menu */}
       {mobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 md:hidden z-40"
           onClick={toggleMenu}
         />
