@@ -7,20 +7,24 @@ import {
   updateProduct,
   deleteProduct,
   submitForApproval,
+  submitForApproval,
   getProductStats,
+  upload
 } from "../controllers/vendorProductsController.js";
+
 import { checkProductLimit } from "../middleware/productLimitMiddleware.js";
 
 const router = express.Router();
 
 // Add product
-router.post("/", verifyVendor, addProduct);
+router.post("/", verifyVendor, upload, addProduct);
 
 // Get vendor’s products
 router.get("/", verifyVendor, getVendorProducts);
 
 // Update vendor product
-router.put("/:id", verifyVendor, updateProduct);
+router.put("/:id", verifyVendor, upload, updateProduct);
+
 
 // Delete vendor product
 router.delete("/:id", verifyVendor, deleteProduct);

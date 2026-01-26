@@ -135,8 +135,13 @@ export const createVendorProduct = async (productData) => {
       } else if (key === 'main_image' && productData[key] instanceof File) {
         formData.append('main_image', productData[key]);
       } else if (productData[key] !== undefined && productData[key] !== null) {
-        formData.append(key, productData[key]);
+        // Stringify complex objects (features, specifications, attributes, etc.)
+        const value = (typeof productData[key] === 'object' && !(productData[key] instanceof File))
+          ? JSON.stringify(productData[key])
+          : productData[key];
+        formData.append(key, value);
       }
+
     });
 
     const response = await api.post('/vendor/products', formData, {
