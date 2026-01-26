@@ -442,14 +442,14 @@ export default function Navbar() {
           {/* Account Links */}
           <div className="mt-4 pt-4 border-t">
             <Link 
-              href="/user/account" 
+              href="/auth/login" 
               onClick={toggleMenu} 
               className="py-3 text-lg font-medium text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-3 transition"
             >
               My Account
             </Link>
             <Link 
-              href="/help" 
+              href="support/help-center" 
               onClick={toggleMenu} 
               className="py-3 text-lg font-medium text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-3 transition"
             >
@@ -464,13 +464,13 @@ export default function Navbar() {
             ✨ Discover amazing products on Kenya's fastest-growing marketplace
           </div>
           <div className="flex space-x-4">
-            <Link href="/terms" className="text-sm text-blue-600 hover:underline">
+            <Link href="auth/terms" className="text-sm text-blue-600 hover:underline">
               Terms
             </Link>
-            <Link href="/privacy" className="text-sm text-blue-600 hover:underline">
+            <Link href="support/privacy" className="text-sm text-blue-600 hover:underline">
               Privacy
             </Link>
-            <Link href="/contact" className="text-sm text-blue-600 hover:underline">
+            <Link href="support/contact" className="text-sm text-blue-600 hover:underline">
               Contact
             </Link>
           </div>

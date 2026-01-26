@@ -317,8 +317,8 @@ function HomeContent() {
 
           <div className="hidden md:flex items-center space-x-8">
             <Link href="/" className="font-medium hover:text-blue-600 transition">Home</Link>
-            <Link href="#products-section" className="font-medium hover:text-blue-600 transition">Shop</Link>
-            <Link href="#categories" className="font-medium hover:text-blue-600 transition">Categories</Link>
+            <Link href="/products" className="font-medium hover:text-blue-600 transition">Shop</Link>
+            <Link href="/categories" className="font-medium hover:text-blue-600 transition">Categories</Link>
             <Link href="/vendor/signup" className="bg-blue-600 text-white px-6 py-2 rounded-full font-medium hover:bg-blue-700 transition">
               Sell on Nyle
             </Link>
