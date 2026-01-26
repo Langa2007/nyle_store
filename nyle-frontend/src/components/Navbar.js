@@ -311,7 +311,7 @@ export default function Navbar() {
                     <div className="border-t pt-2">
                       <Link href="/vendor/login" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition flex items-center text-sm">
                         <FaStore className="mr-2 text-orange-600" />
-                        Vendor Login
+                        Seller Login
                       </Link>
                     </div>
                   </>
@@ -375,8 +375,8 @@ export default function Navbar() {
                   <FaUser className="text-blue-600 text-xl" />
                 </div>
                 <div>
-                  <div className="font-bold text-gray-900">John Doe</div>
-                  <div className="text-sm text-gray-600">john@example.com</div>
+                  <div className="font-bold text-gray-900">your name</div>
+                  <div className="text-sm text-gray-600">someone@example.com</div>
                 </div>
               </div>
             ) : (
@@ -402,7 +402,7 @@ export default function Navbar() {
                     onClick={toggleMenu} 
                     className="border border-orange-600 text-orange-600 px-4 py-3 rounded-lg font-medium hover:bg-orange-50 transition text-center"
                   >
-                    Vendor Login
+                    Seller Login
                   </Link>
                 </div>
               </div>
@@ -418,21 +418,21 @@ export default function Navbar() {
             Home
           </Link>
           <Link 
-            href="/products" 
+            href="app/products" 
             onClick={toggleMenu} 
             className="py-3 text-lg font-medium text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-3 transition"
           >
             Shop All Products
           </Link>
           <Link 
-            href="/categories" 
+            href="app/categories" 
             onClick={toggleMenu} 
             className="py-3 text-lg font-medium text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-3 transition"
           >
             Categories
           </Link>
           <Link 
-            href="/deals" 
+            href="app/deals" 
             onClick={toggleMenu} 
             className="py-3 text-lg font-medium text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-3 transition"
           >
