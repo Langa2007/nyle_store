@@ -4,8 +4,10 @@
 import { useState } from "react";
 import {
   Edit, Trash2, Eye, MoreVertical, Filter,
-  Search, ChevronDown, CheckCircle, Clock, AlertCircle
+  Search, ChevronDown, CheckCircle, Clock, AlertCircle,
+  Package, Package2
 } from "lucide-react";
+
 import { deleteVendorProduct, submitForApproval } from "@/services/VendorApi";
 
 export default function ProductTable({ products, loading, onRefresh, onEdit, onDelete }) {
@@ -229,8 +231,8 @@ export default function ProductTable({ products, loading, onRefresh, onEdit, onD
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className={`px-2 py-1 rounded-full text-xs font-medium inline-block ${product.stock > 10 ? 'bg-green-100 text-green-800' :
-                        product.stock > 0 ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
+                      product.stock > 0 ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
                       }`}>
                       {product.stock} in stock
                     </div>
