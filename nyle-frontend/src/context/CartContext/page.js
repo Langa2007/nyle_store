@@ -71,12 +71,9 @@ export function CartProvider({ children }) {
     const userId = getUserId();
     const sessionId = userId ? null : getSessionId();
 
-    // If user is not logged in, show auth modal
+    // If user is not logged in, redirect to signup
     if (!userId) {
-      setAuthAction('login');
-      setShowAuthModal(true);
-
-      // Store in localStorage temporarily
+      // Store in localStorage temporarily (so it's available after login/signup)
       const localCart = JSON.parse(localStorage.getItem('local_cart') || '[]');
       const existingIndex = localCart.findIndex(item => item.product_id === product.id);
 
@@ -97,8 +94,14 @@ export function CartProvider({ children }) {
 
       localStorage.setItem('local_cart', JSON.stringify(localCart));
       setCart({ ...cart, items: localCart });
+
+      // Redirect to signup with checkout as next destination
+      if (typeof window !== 'undefined') {
+        window.location.href = `/auth/signup?next=/checkout`;
+      }
       return { success: true, requiresAuth: true };
     }
+
 
     // User is logged in, add to backend
     try {

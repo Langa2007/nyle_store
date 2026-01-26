@@ -9,10 +9,8 @@ const ProductCard = ({ product, currency, convertPrice }) => {
   const handleAddToCart = async () => {
     const result = await addToCart(product, 1);
 
-    if (result.requiresAuth) {
-      setAuthAction('login');
-      setShowAuthModal(true);
-    } else if (result.success) {
+    if (result.success && !result.requiresAuth) {
+
       // Show success notification
       const notification = document.createElement('div');
       notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-in';

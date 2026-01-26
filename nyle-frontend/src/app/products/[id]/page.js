@@ -67,10 +67,7 @@ export default function ProductDetailPage() {
 
     const result = await addToCart(product, quantity);
 
-    if (result.requiresAuth) {
-      setAuthAction('login');
-      setShowAuthModal(true);
-    } else if (result.success) {
+    if (result.success && !result.requiresAuth) {
       // Simple notification
       const notification = document.createElement('div');
       notification.style.cssText = `
@@ -95,13 +92,11 @@ export default function ProductDetailPage() {
 
     const result = await addToCart(product, quantity);
 
-    if (result.requiresAuth) {
-      setAuthAction('login');
-      setShowAuthModal(true);
-    } else if (result.success) {
+    if (result.success && !result.requiresAuth) {
       router.push('/cart');
     }
   };
+
 
   if (loading) {
     return (
