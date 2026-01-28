@@ -103,10 +103,10 @@ export default function AdminDashboardPage() {
           <CardTitle>Pending Vendor Approvals</CardTitle>
         </CardHeader>
         <CardContent>
-          {isLoading && <p>Loading vendors...</p>}
-          {error && <p className="text-red-500">Failed to load vendors</p>}
+          {loadingVendors && <p>Loading vendors...</p>}
+          {vendorError && <p className="text-red-500">Failed to load vendors</p>}
 
-          {!isLoading && vendors?.length === 0 && (
+          {!loadingVendors && vendors?.length === 0 && (
             <p className="text-gray-500">No pending vendors 🎉</p>
           )}
 
