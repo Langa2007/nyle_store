@@ -179,6 +179,7 @@ export default function ProductForm({ product, onClose, onSuccess }) {
         result = await updateVendorProduct(product.id, {
           ...data,
           require_reapproval: data.submit_for_approval,
+          update_status: data.submit_for_approval ? 'pending' : 'draft'
         });
       } else {
         result = await createVendorProduct(data);

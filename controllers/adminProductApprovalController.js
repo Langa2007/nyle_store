@@ -1,5 +1,6 @@
 // controllers/adminProductApprovalController.js
 import pool from "../db/connect.js";
+import { sendProductStatusEmail } from "../services/emailService.js";
 
 //  GET ALL PENDING PRODUCTS
 export const getPendingProducts = async (req, res) => {
@@ -39,7 +40,7 @@ export const approveProduct = async (req, res) => {
 
     // Get product details
     const productQuery = `
-      SELECT p.*, v.id as vendor_id, v.current_approved_count, v.max_products
+      SELECT p.*, v.id as vendor_id, v.email as vendor_email, v.current_approved_count, v.max_products
       FROM products p
       LEFT JOIN vendors v ON p.vendor_id = v.id
       WHERE p.id = $1
@@ -90,6 +91,11 @@ export const approveProduct = async (req, res) => {
 
     await connection.query('COMMIT');
 
+    // Send email notification (non-blocking)
+    if (product.vendor_email) {
+      sendProductStatusEmail(product.vendor_email, product, 'approved').catch(console.error);
+    }
+
     res.json({
       message: "Product approved successfully",
       product: updateResult.rows[0],
@@ -125,7 +131,7 @@ export const rejectProduct = async (req, res) => {
           approved_by = $1,
           rejection_reason = $2
       WHERE id = $3
-      RETURNING *
+      RETURNING *, (SELECT email FROM vendors WHERE id = products.vendor_id) as vendor_email
     `;
 
     const { rows } = await pool.query(q, [adminId, reason.trim(), id]);
@@ -134,9 +140,16 @@ export const rejectProduct = async (req, res) => {
       return res.status(404).json({ error: "Product not found" });
     }
 
+    const product = rows[0];
+
+    // Send email notification (non-blocking)
+    if (product.vendor_email) {
+      sendProductStatusEmail(product.vendor_email, product, 'rejected', reason).catch(console.error);
+    }
+
     res.json({
       message: "Product rejected",
-      product: rows[0]
+      product: product
     });
 
   } catch (err) {

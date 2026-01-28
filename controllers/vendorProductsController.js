@@ -110,6 +110,9 @@ export const addProduct = async (req, res) => {
 
 
 
+    // Parse booleans correctly
+    const submitForApproval = req.body.submit_for_approval === 'true' || req.body.submit_for_approval === true;
+
     // Validate required fields
     if (!name || !price) {
       await connection.query('ROLLBACK');
@@ -119,7 +122,7 @@ export const addProduct = async (req, res) => {
     }
 
     // Check vendor product limit (if submitting for approval)
-    if (submit_for_approval) {
+    if (submitForApproval) {
       const vendorCheck = await connection.query(
         `SELECT plan_type, max_products, current_approved_count, 
                 is_trusted_vendor, status as vendor_status
@@ -165,7 +168,20 @@ export const addProduct = async (req, res) => {
     }
 
     // Upload gallery images
+    // Upload gallery images (mix of existing URLs and new files)
     const galleryUrls = [];
+
+    // 1. Get existing URLs from body (e.g. from duplication)
+    if (req.body.gallery_images) {
+      const existing = Array.isArray(req.body.gallery_images)
+        ? req.body.gallery_images
+        : [req.body.gallery_images];
+
+      const validExisting = existing.filter(url => typeof url === 'string' && url.startsWith('http'));
+      galleryUrls.push(...validExisting);
+    }
+
+    // 2. Upload new files
     if (req.files && req.files.gallery_images) {
       for (const file of req.files.gallery_images) {
         const uploadResult = await uploadToCloudinary(file.buffer);
@@ -173,13 +189,15 @@ export const addProduct = async (req, res) => {
       }
     }
 
+
+
     // Determine initial status
     let initialStatus = 'draft';
     let submittedAt = null;
     let approvedBy = null;
     let approvedAt = null;
 
-    if (submit_for_approval) {
+    if (submitForApproval) {
       const vendor = (await connection.query(
         "SELECT is_trusted_vendor FROM vendors WHERE id = $1",
         [vendorId]
@@ -353,9 +371,9 @@ export const updateProduct = async (req, res) => {
     if (currentProduct.status === 'approved') {
       // For approved products, changes should create a new pending version
       // or require re-approval. Let's implement re-approval requirement.
-      const { require_reapproval } = req.body;
+      const requireReapproval = req.body.require_reapproval === 'true' || req.body.require_reapproval === true;
 
-      if (!require_reapproval) {
+      if (!requireReapproval) {
         await connection.query('ROLLBACK');
         return res.status(400).json({
           error: "Approved products require re-approval",
@@ -443,26 +461,47 @@ export const updateProduct = async (req, res) => {
 
 
     // Handle image updates
-    if (req.files) {
-      if (req.files.main_image) {
-        const uploadResult = await uploadToCloudinary(
-          req.files.main_image[0].buffer
-        );
-        updates.push(`image_url = $${paramCount}`);
-        values.push(uploadResult.secure_url);
-        paramCount++;
-      }
+    if (req.files && req.files.main_image) {
+      const uploadResult = await uploadToCloudinary(
+        req.files.main_image[0].buffer
+      );
+      updates.push(`image_url = $${paramCount}`);
+      values.push(uploadResult.secure_url);
+      paramCount++;
+    }
 
-      if (req.files.gallery_images && req.files.gallery_images.length > 0) {
-        const galleryUrls = [];
-        for (const file of req.files.gallery_images) {
-          const uploadResult = await uploadToCloudinary(file.buffer);
-          galleryUrls.push(uploadResult.secure_url);
-        }
-        updates.push(`gallery_images = $${paramCount}`);
-        values.push(galleryUrls);
-        paramCount++;
+    // Handle gallery_images (mixed existing URLs and new Files)
+    let galleryUpdateNeeded = false;
+    let newGalleryUrls = [];
+
+    // 1. Get existing URLs from body
+    if (req.body.gallery_images) {
+      // multer/body-parser handles multiple fields with same name:
+      // if 1 item -> string, if multiple -> array
+      const existing = Array.isArray(req.body.gallery_images)
+        ? req.body.gallery_images
+        : [req.body.gallery_images];
+
+      // Filter valid strings
+      const validExisting = existing.filter(url => typeof url === 'string' && url.startsWith('http'));
+      newGalleryUrls.push(...validExisting);
+      galleryUpdateNeeded = true;
+    }
+
+    // 2. Upload and add new files
+    if (req.files && req.files.gallery_images && req.files.gallery_images.length > 0) {
+      for (const file of req.files.gallery_images) {
+        const uploadResult = await uploadToCloudinary(file.buffer);
+        newGalleryUrls.push(uploadResult.secure_url);
       }
+      galleryUpdateNeeded = true;
+    }
+
+    if (galleryUpdateNeeded) {
+      updates.push(`gallery_images = $${paramCount}`);
+      // Ensure we store a minimal valid JSON array
+      values.push(JSON.stringify(newGalleryUrls));
+      paramCount++;
     }
 
     // Handle status update

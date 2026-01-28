@@ -30,3 +30,64 @@ export async function sendVerificationCodeEmail(toEmail, code) {
     return false;
   }
 }
+
+/**
+ * Send product status update email to vendor
+ * @param {string} toEmail
+ * @param {object} product
+ * @param {string} status 'approved' | 'rejected' | 'submitted'
+ * @param {string} reason (optional)
+ */
+export async function sendProductStatusEmail(toEmail, product, status, reason = null) {
+  let subject, html;
+  const dashboardUrl = process.env.FRONTEND_URL || "https://nyle-luxe.vercel.app";
+
+  switch (status) {
+    case 'approved':
+      subject = `Your Product "${product.name}" Has Been Approved`;
+      html = `
+        <h2>Product Approved! 🎉</h2>
+        <p>Great news! Your product <strong>${product.name}</strong> has been approved and is now live on the Nyle Store.</p>
+        <p>You can view it on your dashboard.</p>
+        <p><a href="${dashboardUrl}/vendor/dashboard" style="background:#007bff;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;">Go to Dashboard</a></p>
+      `;
+      break;
+    case 'rejected':
+      subject = `Action Required: Product "${product.name}" Needs Changes`;
+      html = `
+        <h2>Product Submission Update</h2>
+        <p>Thank you for submitting <strong>${product.name}</strong>.</p>
+        <p>Unfortunately, it was not approved for the following reason:</p>
+        <blockquote style="background:#f9f9f9;border-left:4px solid #f44336;padding:10px;margin:20px 0;">
+          ${reason || 'Does not meet our listing guidelines.'}
+        </blockquote>
+        <p>Please edit your product to address these issues and resubmit.</p>
+        <p><a href="${dashboardUrl}/vendor/dashboard" style="background:#007bff;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;">Edit Product</a></p>
+      `;
+      break;
+    case 'submitted':
+      subject = `Product "${product.name}" Submitted for Review`;
+      html = `
+        <h2>Submission Received</h2>
+        <p>We have received your request to publish <strong>${product.name}</strong>.</p>
+        <p>Our team will review it shortly and verify it meets our quality standards.</p>
+      `;
+      break;
+    default:
+      return false;
+  }
+
+  try {
+    const resp = await resend.emails.send({
+      from: "Nyle Store <notifications@resend.dev>",
+      to: toEmail,
+      subject,
+      html,
+    });
+    console.log(` Product ${status} email sent to ${toEmail}, id:`, resp.id);
+    return true;
+  } catch (err) {
+    console.error(` Resend ${status} email error:`, err);
+    return false;
+  }
+}

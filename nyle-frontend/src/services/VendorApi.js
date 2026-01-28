@@ -127,9 +127,11 @@ export const createVendorProduct = async (productData) => {
     Object.keys(productData).forEach(key => {
       if (key === 'gallery_images' && Array.isArray(productData[key])) {
         // Handle gallery images array
-        productData[key].forEach((img, index) => {
-          if (img instanceof File) {
-            formData.append('gallery_images', img);
+        productData[key].forEach((item) => {
+          if (item instanceof File) {
+            formData.append('gallery_images', item);
+          } else if (typeof item === 'string') {
+            formData.append('gallery_images', item);
           }
         });
       } else if (key === 'main_image' && productData[key] instanceof File) {
@@ -158,7 +160,45 @@ export const createVendorProduct = async (productData) => {
 
 export const updateVendorProduct = async (productId, productData) => {
   try {
-    const response = await api.put(`/vendor/products/${productId}`, productData);
+    const formData = new FormData();
+
+    // Append all product data
+    Object.keys(productData).forEach(key => {
+      if (key === 'gallery_images' && Array.isArray(productData[key])) {
+        // Handle gallery images array
+        productData[key].forEach((item) => {
+          if (item instanceof File) {
+            // New image file
+            formData.append('gallery_images', item);
+          } else if (typeof item === 'string') {
+            // Existing image URL
+            formData.append('gallery_images', item);
+          }
+        });
+      } else if (key === 'main_image') {
+        if (productData[key] instanceof File) {
+          formData.append('main_image', productData[key]);
+        } else if (typeof productData[key] === 'string') {
+          // Existing main image URL - might not need to send if no change, 
+          // but sending it ensures backend knows it exists if we were to delete it (logic dpeneds on backend)
+          // Ideally backend only updates main_image if a file is provided.
+          // But let's append it just in case backend logic changes to support URL updates.
+          // For now, based on current backend, it only updates if file is provided.
+        }
+      } else if (productData[key] !== undefined && productData[key] !== null) {
+        // Stringify complex objects (features, specifications, attributes, etc.)
+        const value = (typeof productData[key] === 'object' && !(productData[key] instanceof File))
+          ? JSON.stringify(productData[key])
+          : productData[key];
+        formData.append(key, value);
+      }
+    });
+
+    const response = await api.put(`/vendor/products/${productId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   } catch (error) {
     console.error('Error updating product:', error);
