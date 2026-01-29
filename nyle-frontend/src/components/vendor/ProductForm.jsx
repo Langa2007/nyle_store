@@ -47,7 +47,7 @@ const productSchema = z.object({
   meta_description: z.string().optional().or(z.literal("")),
   is_featured: z.boolean().default(false),
   is_bestseller: z.boolean().default(false),
-  features: z.array(z.string()).optional(),
+  features: z.any().optional(),
   specifications: z.record(z.string()).optional(),
   tags: z.any().optional(),
 });
