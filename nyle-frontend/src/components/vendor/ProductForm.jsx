@@ -795,9 +795,14 @@ export default function ProductForm({ product, onClose, onSuccess }) {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => {
+            onClick={async (e) => {
+              e.preventDefault();
+              console.log("Draft button clicked");
               setValue("submit_for_approval", false);
-              handleSubmit(onSubmit)();
+              await handleSubmit(onSubmit, (errors) => {
+                console.error("Draft validation errors:", errors);
+                alert("Please fix form errors before saving draft: " + Object.keys(errors).join(", "));
+              })();
             }}
             disabled={submitting}
             className="px-6 py-3 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition disabled:opacity-50"
@@ -807,9 +812,14 @@ export default function ProductForm({ product, onClose, onSuccess }) {
 
           <button
             type="submit"
-            onClick={() => {
+            onClick={async (e) => {
+              e.preventDefault();
+              console.log("Update button clicked");
               setValue("submit_for_approval", true);
-              handleSubmit(onSubmit)();
+              await handleSubmit(onSubmit, (errors) => {
+                console.error("Validation errors:", errors);
+                alert("Please fix form errors before submitting: " + Object.keys(errors).join(", "));
+              })();
             }}
             disabled={submitting}
             className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 flex items-center gap-2"
