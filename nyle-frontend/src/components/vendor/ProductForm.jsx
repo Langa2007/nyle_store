@@ -27,28 +27,27 @@ const productSchema = z.object({
   price: z.number().min(0.01, "Price must be greater than 0"),
   stock: z.number().int().min(0, "Stock cannot be negative"),
   category: z.string().min(1, "Category is required"),
-  sku: z.string().optional(),
-  weight: z.string().optional(),
-  dimensions: z.string().optional(),
-  shipping_cost: z.number().min(0).optional(),
-  free_shipping_threshold: z.number().optional(),
+  sku: z.string().optional().or(z.literal("")),
+  weight: z.any().optional(), // Allow string or number or undefined
+  dimensions: z.string().optional().or(z.literal("")),
+  shipping_cost: z.number().min(0).optional().or(z.nan()).or(z.null()),
+  free_shipping_threshold: z.number().optional().or(z.nan()).or(z.null()),
   product_type: z.enum(['simple', 'variable']).default('simple'),
   submit_for_approval: z.boolean().default(false),
-  // NEW FIELDS
-  original_price: z.number().optional(),
-  brand: z.string().optional(),
-  color: z.string().optional(),
-  material: z.string().optional(),
-  estimated_delivery_days: z.number().int().min(1).optional(),
-  warranty_info: z.string().optional(),
-  shipping_info: z.string().optional(),
-  return_policy: z.string().optional(),
-  meta_title: z.string().optional(),
-  meta_description: z.string().optional(),
+  // NEW FIELDS- optional
+  original_price: z.number().optional().or(z.nan()).or(z.null()),
+  brand: z.string().optional().or(z.literal("")),
+  color: z.string().optional().or(z.literal("")),
+  material: z.string().optional().or(z.literal("")),
+  estimated_delivery_days: z.number().int().optional().or(z.nan()).or(z.null()),
+  warranty_info: z.string().optional().or(z.literal("")),
+  shipping_info: z.string().optional().or(z.literal("")),
+  return_policy: z.string().optional().or(z.literal("")),
+  meta_title: z.string().optional().or(z.literal("")),
+  meta_description: z.string().optional().or(z.literal("")),
   is_featured: z.boolean().default(false),
   is_bestseller: z.boolean().default(false),
   features: z.array(z.string()).optional(),
-
   specifications: z.record(z.string()).optional(),
   tags: z.array(z.string()).optional(),
 });
@@ -172,6 +171,12 @@ export default function ProductForm({ product, onClose, onSuccess }) {
 
 
   const onSubmit = async (data) => {
+    // Manual validation for Image
+    if (!mainImage && !product?.image_url) {
+      alert("Product image is required!");
+      return;
+    }
+
     setSubmitting(true);
     try {
       let result;
