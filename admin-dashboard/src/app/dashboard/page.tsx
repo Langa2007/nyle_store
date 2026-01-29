@@ -30,7 +30,7 @@ async function fetchPendingVendors() {
 // --- Fetch Pending Products ---
 async function fetchPendingProducts() {
   const res = await axios.get("https://nyle-store.onrender.com/api/admin/products/pending", {
-    headers: { Authorization: `Bearer ${localStorage.getItem("admin_token")}` }
+    headers: { Authorization: `Bearer ${localStorage.getItem("adminAccessToken")}` }
   });
   return res.data;
 }
@@ -69,7 +69,7 @@ export default function AdminDashboardPage() {
   const approveProductMutation = useMutation({
     mutationFn: (id: number) =>
       axios.put(`https://nyle-store.onrender.com/api/admin/products/${id}/approve`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("admin_token")}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem("adminAccessToken")}` }
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pendingProducts"] });
@@ -80,7 +80,7 @@ export default function AdminDashboardPage() {
   const rejectProductMutation = useMutation({
     mutationFn: ({ id, reason }: { id: number; reason: string }) =>
       axios.put(`https://nyle-store.onrender.com/api/admin/products/${id}/reject`, { reason }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("admin_token")}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem("adminAccessToken")}` }
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pendingProducts"] });

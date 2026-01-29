@@ -2,7 +2,7 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
 export const apiRequest = async (endpoint, options = {}) => {
-  const token = localStorage.getItem("token"); // admin JWT
+  const token = localStorage.getItem("adminAccessToken"); // admin JWT
 
   const headers = {
     "Content-Type": "application/json",
