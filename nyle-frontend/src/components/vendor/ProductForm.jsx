@@ -49,7 +49,7 @@ const productSchema = z.object({
   is_bestseller: z.boolean().default(false),
   features: z.array(z.string()).optional(),
   specifications: z.record(z.string()).optional(),
-  tags: z.array(z.string()).optional(),
+  tags: z.any().optional(),
 });
 
 

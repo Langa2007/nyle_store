@@ -74,13 +74,13 @@ export default function SignupPage() {
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     setMessage("");
-    
+
     try {
       const result = await signIn("google", {
         callbackUrl: next,
         redirect: false,
       });
-      
+
       if (result?.error) {
         setMessage(result.error);
       } else if (result?.url) {
@@ -98,25 +98,25 @@ export default function SignupPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
-    
+
     // Validation
     if (!email || !password || !confirmPassword) {
       setMessage("Please fill all required fields.");
       return;
     }
-    
+
     if (password !== confirmPassword) {
       setMessage("Passwords do not match.");
       return;
     }
-    
+
     if (!termsAccepted) {
       setMessage("Please accept the Terms and Privacy Policy.");
       return;
     }
-    
+
     setLoading(true);
-    
+
     try {
       // Register user first
       const registerResponse = await fetch("/api/auth/register", {
@@ -124,13 +124,13 @@ export default function SignupPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
-      
+
       const registerData = await registerResponse.json();
-      
+
       if (!registerResponse.ok) {
         throw new Error(registerData.message || "Registration failed");
       }
-      
+
       // Auto sign in after registration
       const signInResult = await signIn("credentials", {
         email,
@@ -138,7 +138,7 @@ export default function SignupPage() {
         redirect: false,
         callbackUrl: next,
       });
-      
+
       if (signInResult?.error) {
         setMessage(signInResult.error);
       } else if (signInResult?.url) {
@@ -156,14 +156,14 @@ export default function SignupPage() {
       <div className="max-w-lg w-full">
         {/* Header with back to home */}
         <div className="mb-6 flex items-center justify-between">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors group"
           >
-            <svg 
-              className="w-4 h-4 mr-2 transform group-hover:-translate-x-1 transition-transform" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              className="w-4 h-4 mr-2 transform group-hover:-translate-x-1 transition-transform"
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -193,14 +193,14 @@ export default function SignupPage() {
                 <div className="text-xs text-blue-600 mt-1">{suggestedEmail}</div>
               </div>
               <div className="flex gap-2">
-                <button 
-                  onClick={useSuggestedEmail} 
+                <button
+                  onClick={useSuggestedEmail}
                   className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors shadow-sm"
                 >
                   Use
                 </button>
-                <button 
-                  onClick={() => setSuggestedEmail("")} 
+                <button
+                  onClick={() => setSuggestedEmail("")}
                   className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 transition-colors"
                 >
                   No thanks
@@ -333,13 +333,13 @@ export default function SignupPage() {
                 />
                 <div className="text-sm text-gray-700">
                   I agree to the{" "}
-                  <a className="text-blue-600 hover:text-blue-800 underline transition-colors" href="/terms">
+                  <Link className="text-blue-600 hover:text-blue-800 underline transition-colors" href="/auth/terms">
                     Terms of Service
-                  </a>{" "}
+                  </Link>{" "}
                   and{" "}
-                  <a className="text-blue-600 hover:text-blue-800 underline transition-colors" href="/privacy">
+                  <Link className="text-blue-600 hover:text-blue-800 underline transition-colors" href="/auth/privacy">
                     Privacy Policy
-                  </a>
+                  </Link>
                   . I understand that Nyle Store may use my information in accordance with these documents.
                 </div>
               </label>
