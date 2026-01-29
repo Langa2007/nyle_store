@@ -541,12 +541,11 @@ export const updateProduct = async (req, res) => {
     }
 
     values.push(id, vendorId);
-    paramCount += 2;
 
     const q = `
       UPDATE products 
       SET ${updates.join(', ')}, updated_at = NOW()
-      WHERE id = $${paramCount - 1} AND vendor_id = $${paramCount}
+      WHERE id = $${paramCount} AND vendor_id = $${paramCount + 1}
       RETURNING *
     `;
 
