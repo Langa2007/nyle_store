@@ -144,12 +144,13 @@ export default function ProductDetailPage() {
   const galleryImages = product.gallery_images || [];
   const allImages = [...productImages, ...galleryImages];
 
-  // Parse features if it's a string - with defensive try/catch
+  // Parse features if it's a string - with defensive try/catch and array normalization
   let features = [];
   try {
-    features = product.features
+    const rawFeatures = product.features
       ? (typeof product.features === 'string' ? JSON.parse(product.features) : product.features)
       : [];
+    features = Array.isArray(rawFeatures) ? rawFeatures : [];
   } catch (e) {
     console.error("Error parsing features:", e);
     features = [];
@@ -166,12 +167,13 @@ export default function ProductDetailPage() {
     specifications = {};
   }
 
-  // Parse tags if it's a string - with defensive try/catch
+  // Parse tags if it's a string - with defensive try/catch and array normalization
   let tags = [];
   try {
-    tags = product.tags
+    const rawTags = product.tags
       ? (typeof product.tags === 'string' ? JSON.parse(product.tags) : product.tags)
       : [];
+    tags = Array.isArray(rawTags) ? rawTags : [];
   } catch (e) {
     console.error("Error parsing tags:", e);
     tags = [];
