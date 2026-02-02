@@ -53,6 +53,45 @@ function HomeContent() {
   const categoriesContainerRef = useRef(null);
   const sliderRef = useRef(null);
 
+  // Newsletter State
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterStatus, setNewsletterStatus] = useState("idle"); // idle, loading, success, error
+  const [newsletterMessage, setNewsletterMessage] = useState("");
+
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+  };
+
+  const handleNewsletterSubscribe = async (e) => {
+    if (e) e.preventDefault();
+    if (!isValidEmail(newsletterEmail)) return;
+
+    setNewsletterStatus("loading");
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://nyle-store.onrender.com'}/api/newsletter/subscribe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: newsletterEmail }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setNewsletterStatus("success");
+        setNewsletterMessage("🎉 Thank you for subscribing! Check your inbox for updates.");
+        setNewsletterEmail("");
+        setTimeout(() => setNewsletterStatus("idle"), 5000);
+      } else {
+        setNewsletterStatus("error");
+        setNewsletterMessage(data.message || "Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Newsletter error:", error);
+      setNewsletterStatus("error");
+      setNewsletterMessage("Unable to connect to service. Please try later.");
+    }
+  };
+
   // Enhanced featured categories with icons
   const featuredCategories = [
     { id: "electronics", name: "Electronics", icon: <FaLaptop />, color: "from-blue-500 to-cyan-500" },
@@ -1037,19 +1076,47 @@ function HomeContent() {
           <p className="text-blue-100 mb-8 max-w-xl mx-auto">
             Subscribe to our newsletter and get 15% off your first order plus weekly deals
           </p>
-          <form className="max-w-md mx-auto flex gap-4">
+          <form
+            onSubmit={handleNewsletterSubscribe}
+            className="max-w-md mx-auto flex flex-col sm:flex-row gap-4"
+          >
             <input
               type="email"
               placeholder="Enter your email"
+              value={newsletterEmail}
+              onChange={(e) => setNewsletterEmail(e.target.value)}
+              required
               className="flex-grow px-6 py-3 rounded-full text-gray-900 focus:outline-none"
             />
             <button
               type="submit"
-              className="bg-white text-blue-700 px-8 py-3 rounded-full font-bold hover:bg-blue-50 transition"
+              disabled={newsletterStatus === "loading" || !isValidEmail(newsletterEmail)}
+              className="bg-white text-blue-700 px-8 py-3 rounded-full font-bold hover:bg-blue-50 transition disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Subscribe
+              {newsletterStatus === "loading" ? "Subscribing..." : "Subscribe"}
             </button>
           </form>
+
+          {newsletterStatus === "success" && (
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 text-green-300 font-medium"
+            >
+              {newsletterMessage}
+            </motion.p>
+          )}
+
+          {newsletterStatus === "error" && (
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 text-red-300 font-medium text-sm"
+            >
+              {newsletterMessage}
+            </motion.p>
+          )}
+
           <p className="text-sm text-blue-200 mt-4">
             By subscribing, you agree to our Privacy Policy
           </p>

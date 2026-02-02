@@ -354,7 +354,7 @@ export default function TermsOfServicePage() {
               
               <p className="text-sm text-gray-500 mt-6">
                 Need help understanding these terms?{' '}
-                <Link href="/support" className="text-blue-600 hover:underline">
+                <Link href="/support/contact" className="text-blue-600 hover:underline">
                   Contact our support team
                 </Link>
               </p>
@@ -423,16 +423,16 @@ export default function TermsOfServicePage() {
             <div>
               <h4 className="text-xl font-bold mb-4">Legal</h4>
               <div className="grid grid-cols-2 gap-2">
-                <Link href="/terms" className="text-orange-300 hover:text-white transition">
+                <Link href="others/terms" className="text-orange-300 hover:text-white transition">
                   Terms of Service
                 </Link>
-                <Link href="/privacy" className="text-orange-300 hover:text-white transition">
+                <Link href="others/privacy" className="text-orange-300 hover:text-white transition">
                   Privacy Policy
                 </Link>
-                <Link href="/refund" className="text-orange-300 hover:text-white transition">
+                <Link href="payments/returns" className="text-orange-300 hover:text-white transition">
                   Refund Policy
                 </Link>
-                <Link href="/shipping" className="text-orange-300 hover:text-white transition">
+                <Link href="source/shipping-policies" className="text-orange-300 hover:text-white transition">
                   Shipping Policy
                 </Link>
               </div>

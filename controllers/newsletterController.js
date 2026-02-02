@@ -1,5 +1,5 @@
 import db from "../db/connect.js";
-import {Resend } from "resend";
+import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -7,6 +7,14 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export const subscribeNewsletter = async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ message: "Email is required" });
+
+  // Strict email domain validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({
+      message: "Invalid email format. Please provide a valid email with a proper domain (e.g., user@example.com)."
+    });
+  }
 
   try {
     // Ensure table exists

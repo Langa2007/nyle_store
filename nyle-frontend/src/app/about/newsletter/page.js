@@ -10,12 +10,19 @@ export default function NewsletterPage() {
   const [status, setStatus] = useState("");
   const [frequency, setFrequency] = useState("weekly");
 
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+  };
+
   const handleSubscribe = async (e) => {
     e.preventDefault();
+    if (!isValidEmail(email)) return;
+
     setStatus("loading");
 
     try {
-      const res = await fetch("/api/newsletter/subscribe", {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
+      const res = await fetch(`${API_URL}/api/newsletter/subscribe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, frequency }),
@@ -28,7 +35,9 @@ export default function NewsletterPage() {
         // Reset status after 5 seconds
         setTimeout(() => setStatus(""), 5000);
       } else {
-        setStatus(data.message || "error");
+        setStatus("error");
+        // We can store a custom error message if needed, but for now using "error" to trigger generic UI
+        console.error("Subscription failed:", data.message);
       }
     } catch (err) {
       console.error(err);
@@ -93,7 +102,7 @@ export default function NewsletterPage() {
       <div className="relative mb-12">
         <div className="absolute -top-8 -left-8 w-32 h-32 bg-blue-100 rounded-full blur-3xl opacity-40"></div>
         <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-cyan-100 rounded-full blur-3xl opacity-40"></div>
-        
+
         <div className="relative bg-gradient-to-br from-white to-blue-50 rounded-2xl p-8 border border-blue-100 shadow-lg">
           <div className="flex flex-col lg:flex-row items-start gap-8">
             <div className="flex-shrink-0">
@@ -151,7 +160,7 @@ export default function NewsletterPage() {
                 <p className="text-blue-100 mb-6">
                   Join 10,000+ entrepreneurs getting Africa's commerce intelligence delivered weekly.
                 </p>
-                
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-blue-200 mb-2">Email Frequency</label>
@@ -165,11 +174,10 @@ export default function NewsletterPage() {
                           key={option.value}
                           type="button"
                           onClick={() => setFrequency(option.value)}
-                          className={`px-4 py-2 rounded-full transition-all ${
-                            frequency === option.value
+                          className={`px-4 py-2 rounded-full transition-all ${frequency === option.value
                               ? "bg-white text-blue-600 font-medium"
                               : "bg-white/20 hover:bg-white/30"
-                          }`}
+                            }`}
                         >
                           {option.label}
                         </button>
@@ -192,10 +200,10 @@ export default function NewsletterPage() {
                       className="w-full px-4 py-3 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
                     />
                   </div>
-                  
+
                   <button
                     type="submit"
-                    disabled={status === "loading"}
+                    disabled={status === "loading" || !isValidEmail(email)}
                     className="w-full bg-white text-blue-700 px-6 py-4 rounded-lg font-bold hover:shadow-2xl transition-all hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {status === "loading" ? (
