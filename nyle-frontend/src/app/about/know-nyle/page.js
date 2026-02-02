@@ -6,7 +6,7 @@ export default function KnowNylePage() {
   const milestones = [
     { year: "2020", title: "Founded", description: "Launched with a vision to transform African commerce" },
     { year: "2021", title: "First 1,000 Users", description: "Reached our first major milestone" },
-    { year: "2022", title: "Series A Funding", description: "Secured $5M to expand operations" },
+    { year: "2022", title: "Series A Funding", description: "Secured 15M to expand operations" },
     { year: "2023", title: "National Launch", description: "Expanded to all Kenyan counties" },
     { year: "2024", title: "50K+ Users", description: "Become Kenya's fastest-growing marketplace" },
   ];
@@ -46,10 +46,10 @@ export default function KnowNylePage() {
   ];
 
   const teamLeaders = [
-    { name: "Sarah M.", role: "CEO & Founder", expertise: "Tech Entrepreneurship" },
-    { name: "James K.", role: "CTO", expertise: "Platform Architecture" },
-    { name: "Amina W.", role: "Head of Growth", expertise: "Market Expansion" },
-    { name: "David L.", role: "Head of Trust", expertise: "Security & Compliance" },
+    { name: "Fidel Langa.", role: "CEO & Founder", expertise: "Tech Entrepreneurship" },
+    { name: "James Karanga.", role: "CTO", expertise: "Platform Architecture" },
+    { name: "Amina Mohammed.", role: "Head of Growth", expertise: "Market Expansion" },
+    { name: "David Lagat", role: "Head of Trust", expertise: "Security & Compliance" },
   ];
 
   return (

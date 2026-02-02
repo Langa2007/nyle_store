@@ -274,7 +274,7 @@ export default function ContactPage() {
                             value={form.name}
                             onChange={(e) => setForm({ ...form, name: e.target.value })}
                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all"
-                            placeholder="John Doe"
+                            placeholder="your full name"
                             required
                           />
                           {form.name && (
@@ -298,7 +298,7 @@ export default function ContactPage() {
                           value={form.email}
                           onChange={(e) => setForm({ ...form, email: e.target.value })}
                           className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all"
-                          placeholder="john@example.com"
+                          placeholder="someone@example.com"
                           required
                         />
                       </div>
