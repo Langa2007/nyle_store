@@ -7,6 +7,7 @@ import { getCategories } from "../services/categoryService";
 import { getProducts } from "../services/productService";
 import ClientProviders from "../components/ClientProviders";
 import { motion } from "framer-motion";
+import { useCart } from "@/context/CartContext/page";
 
 // Import ALL icons used in the component
 import {
@@ -33,6 +34,7 @@ import {
 } from "react-icons/fa";
 
 function HomeContent() {
+  const { addToCart } = useCart();
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
@@ -858,12 +860,12 @@ function HomeContent() {
                           </div>
                         )}
 
-                        {/* Product Badges */}
-                        <div className="absolute top-4 left-4">
+                        {/* Product Badges - Removed hardcoded -20% */}
+                        {/* <div className="absolute top-4 left-4">
                           <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
                             -20%
                           </span>
-                        </div>
+                        </div> */}
 
                         {/* Category Badge */}
                         <div className="absolute bottom-4 left-4">
@@ -876,10 +878,40 @@ function HomeContent() {
 
                         {/* Quick Actions */}
                         <div className="absolute top-4 right-4 flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow hover:shadow-lg transition">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              // Add to favorites (not implemented yet, but keeping the button)
+                            }}
+                            className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow hover:shadow-lg transition"
+                          >
                             <FaHeart className="text-gray-600 hover:text-red-500" />
                           </button>
-                          <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow hover:shadow-lg transition">
+                          <button
+                            onClick={async (e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+
+                              const result = await addToCart(product, 1);
+                              if (result.success && !result.requiresAuth) {
+                                // Show success notification
+                                const notification = document.createElement('div');
+                                notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-in';
+                                notification.innerHTML = `
+                                  <div class="flex items-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Added to cart!
+                                  </div>
+                                `;
+                                document.body.appendChild(notification);
+                                setTimeout(() => notification.remove(), 3000);
+                              }
+                            }}
+                            className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow hover:shadow-lg transition"
+                          >
                             <FaShoppingCart className="text-gray-600 hover:text-blue-600" />
                           </button>
                         </div>
@@ -923,8 +955,9 @@ function HomeContent() {
                           </div>
                         </div>
 
-                        {/* Features */}
+                        {/* Features - Removed hardcoded delivery and warranty */}
                         <div className="flex items-center space-x-4 text-sm text-gray-600 pt-4 border-t">
+                          {/* 
                           <div className="flex items-center">
                             <FaTruck className="mr-1 text-blue-600" />
                             <span>Free Delivery</span>
@@ -932,7 +965,8 @@ function HomeContent() {
                           <div className="flex items-center">
                             <FaShieldAlt className="mr-1 text-green-600" />
                             <span>2Y Warranty</span>
-                          </div>
+                          </div> 
+                          */}
                         </div>
                       </div>
                     </div>

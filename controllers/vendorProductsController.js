@@ -367,20 +367,20 @@ export const updateProduct = async (req, res) => {
 
     const currentProduct = productCheck.rows[0];
 
-    // Prevent updates on approved products (or require re-approval)
+    // For updates on approved products, we now allow them to stay approved for UX convenience.
+    // If you ever want to force re-approval, you would re-enable this block.
+    /*
     if (currentProduct.status === 'approved') {
-      // For approved products, changes should create a new pending version
-      // or require re-approval. Let's implement re-approval requirement.
       const requireReapproval = req.body.require_reapproval === 'true' || req.body.require_reapproval === true;
-
       if (!requireReapproval) {
         await connection.query('ROLLBACK');
         return res.status(400).json({
           error: "Approved products require re-approval",
-          message: "Set require_reapproval=true to update an approved product. This will change status to pending."
+          message: "Set require_reapproval=true to update an approved product."
         });
       }
     }
+    */
 
     const {
       name,
@@ -529,10 +529,15 @@ export const updateProduct = async (req, res) => {
     }
 
     // If approved product updated with re-approval, change to pending
-    if (currentProduct.status === 'approved' && req.body.require_reapproval) {
+    if (currentProduct.status === 'approved' && (req.body.require_reapproval === 'true' || req.body.require_reapproval === true)) {
       updates.push(`status = 'pending'`);
       updates.push(`submitted_at = NOW()`);
-      // Already decremented count above
+
+      // Decrement vendor count as it's no longer 'live' in the same way (if count is based on live/approved)
+      await connection.query(
+        "UPDATE vendors SET current_approved_count = current_approved_count - 1 WHERE id = $1",
+        [vendorId]
+      );
     }
 
     if (updates.length === 0) {

@@ -144,20 +144,38 @@ export default function ProductDetailPage() {
   const galleryImages = product.gallery_images || [];
   const allImages = [...productImages, ...galleryImages];
 
-  // Parse features if it's a string
-  const features = product.features
-    ? (typeof product.features === 'string' ? JSON.parse(product.features) : product.features)
-    : [];
+  // Parse features if it's a string - with defensive try/catch
+  let features = [];
+  try {
+    features = product.features
+      ? (typeof product.features === 'string' ? JSON.parse(product.features) : product.features)
+      : [];
+  } catch (e) {
+    console.error("Error parsing features:", e);
+    features = [];
+  }
 
-  // Parse specifications if it's a string
-  const specifications = product.specifications
-    ? (typeof product.specifications === 'string' ? JSON.parse(product.specifications) : product.specifications)
-    : {};
+  // Parse specifications if it's a string - with defensive try/catch
+  let specifications = {};
+  try {
+    specifications = product.specifications
+      ? (typeof product.specifications === 'string' ? JSON.parse(product.specifications) : product.specifications)
+      : {};
+  } catch (e) {
+    console.error("Error parsing specifications:", e);
+    specifications = {};
+  }
 
-  // Parse tags if it's a string
-  const tags = product.tags
-    ? (typeof product.tags === 'string' ? JSON.parse(product.tags) : product.tags)
-    : [];
+  // Parse tags if it's a string - with defensive try/catch
+  let tags = [];
+  try {
+    tags = product.tags
+      ? (typeof product.tags === 'string' ? JSON.parse(product.tags) : product.tags)
+      : [];
+  } catch (e) {
+    console.error("Error parsing tags:", e);
+    tags = [];
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
