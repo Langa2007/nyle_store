@@ -83,7 +83,7 @@ function HomeContent() {
         setTimeout(() => setNewsletterStatus("idle"), 5000);
       } else {
         setNewsletterStatus("error");
-        setNewsletterMessage(data.message || "Something went wrong. Please try again.");
+        setNewsletterMessage(data.details || data.message || "Something went wrong. Please try again.");
       }
     } catch (error) {
       console.error("Newsletter error:", error);

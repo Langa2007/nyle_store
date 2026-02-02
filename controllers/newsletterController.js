@@ -17,24 +17,37 @@ export const subscribeNewsletter = async (req, res) => {
   }
 
   try {
-    // Ensure table exists
-    await db.query(`
-      CREATE TABLE IF NOT EXISTS newsletter_subscribers (
-        id SERIAL PRIMARY KEY,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
+    // Attempt to create table (optimized)
+    try {
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+          id SERIAL PRIMARY KEY,
+          email VARCHAR(255) UNIQUE NOT NULL,
+          subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+    } catch (tableErr) {
+      console.error("Table creation error (ignoring if exists):", tableErr.message);
+      // We continue even if this fails, as the table might already exist but IF NOT EXISTS might be restricted
+    }
 
-    await db.query(
+    const result = await db.query(
       "INSERT INTO newsletter_subscribers (email) VALUES ($1) ON CONFLICT (email) DO NOTHING",
       [email]
     );
 
-    res.status(200).json({ message: "Subscribed successfully!" });
+    res.status(200).json({
+      success: true,
+      message: "Subscribed successfully!",
+      alreadySubscribed: result.rowCount === 0
+    });
   } catch (err) {
-    console.error("Newsletter subscription error:", err.message);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Newsletter subscription error:", err);
+    res.status(500).json({
+      error: "Internal server error",
+      details: err.message,
+      hint: "Check if newsletter_subscribers table exists or has correct permissions"
+    });
   }
 };
 
