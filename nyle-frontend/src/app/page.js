@@ -324,7 +324,7 @@ function HomeContent() {
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-center md:justify-between gap-2">
           <div className="flex items-center space-x-2">
             <FaGift className="text-yellow-300" />
-            <span className="font-medium">🎉 January Offers: Up to 60% OFF on Selected Items!</span>
+            <span className="font-medium">🎉 February Deals: Up to 60% OFF on Selected Items!</span>
           </div>
           <div className="flex items-center space-x-4 text-sm">
             <div className="flex items-center space-x-1">
