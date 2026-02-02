@@ -142,20 +142,18 @@ export default function ProductForm({ product, onClose, onSuccess }) {
   const handleImageUpload = async (file, type = "main") => {
     if (type === "main") {
       setMainImage(URL.createObjectURL(file));
-      setValue("main_image", file); // Set the actual file object for the backend
+      setValue("main_image", file, { shouldDirty: true });
     } else {
       setGalleryImages(prev => [...prev, URL.createObjectURL(file)]);
-      // Get current gallery files and add the new one
       const currentFiles = safeArray(watch("gallery_images"));
-      setValue("gallery_images", [...currentFiles, file]);
+      setValue("gallery_images", [...currentFiles, file], { shouldDirty: true });
     }
-
   };
 
   const handleRemoveImage = (index, type = "gallery") => {
     if (type === "main") {
       setMainImage(null);
-      setValue("main_image", null);
+      setValue("main_image", null, { shouldDirty: true });
     } else {
       const newPreviews = [...galleryImages];
       newPreviews.splice(index, 1);
@@ -164,8 +162,7 @@ export default function ProductForm({ product, onClose, onSuccess }) {
       const currentFiles = safeArray(watch("gallery_images"));
       const newFiles = [...currentFiles];
       newFiles.splice(index, 1);
-      setValue("gallery_images", newFiles);
-
+      setValue("gallery_images", newFiles, { shouldDirty: true });
     }
   };
 
@@ -186,14 +183,18 @@ export default function ProductForm({ product, onClose, onSuccess }) {
           require_reapproval: data.submit_for_approval,
           update_status: data.submit_for_approval ? 'pending' : 'draft'
         });
+        alert("Product updated successfully!");
       } else {
         result = await createVendorProduct(data);
+        alert("Product created successfully!");
       }
 
-      onSuccess(result.product);
+      if (onSuccess) onSuccess(result.product);
+      if (onClose) onClose();
     } catch (error) {
       console.error("Failed to save product:", error);
-      alert(error.response?.data?.error || "Failed to save product");
+      const errorMessage = error.response?.data?.details || error.response?.data?.error || error.message || "Failed to save product";
+      alert(errorMessage);
     } finally {
       setSubmitting(false);
     }

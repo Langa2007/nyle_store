@@ -111,6 +111,9 @@ export default function VendorDashboard() {
     setProducts(safeArray(products).map(p =>
       p.id === updatedProduct.id ? updatedProduct : p
     ));
+    alert("Product updated successfully!");
+    setShowProductForm(false);
+    fetchStats();
   };
 
 
