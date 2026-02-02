@@ -50,6 +50,8 @@ const productSchema = z.object({
   features: z.any().optional(),
   specifications: z.record(z.string()).optional(),
   tags: z.any().optional(),
+  main_image: z.any().optional(),
+  gallery_images: z.any().optional(),
 });
 
 

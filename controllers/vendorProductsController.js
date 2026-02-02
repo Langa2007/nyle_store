@@ -499,8 +499,8 @@ export const updateProduct = async (req, res) => {
 
     if (galleryUpdateNeeded) {
       updates.push(`gallery_images = $${paramCount}`);
-      // Ensure we store a minimal valid JSON array
-      values.push(JSON.stringify(newGalleryUrls));
+      // Pass the array directly (Postgres handles it as JSONB or Array depending on column type)
+      values.push(newGalleryUrls);
       paramCount++;
     }
 
