@@ -15,8 +15,7 @@ export default function Navbar() {
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // hide on mobile
-  if (isMobile) return null;
+  // use CSS for hiding to avoid hydration flickers
   const [isScrolled, setIsScrolled] = useState(false);
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -160,7 +159,7 @@ export default function Navbar() {
 
 
   return (
-    <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${getNavbarBackground()}`}>
+    <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 hidden md:block ${getNavbarBackground()}`}>
       {/* Announcement Bar */}
       <div className="bg-gradient-to-r from-blue-800 to-indigo-900 text-white py-2 px-4">
         <div className="container mx-auto text-center text-sm">
