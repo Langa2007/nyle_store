@@ -10,8 +10,11 @@ export default function MobileProductCard({ product, index }) {
     const { addToCart } = useCart();
     const [isAdding, setIsAdding] = useState(false);
 
+    if (!product) return null;
+
     // Handle price conversion/display
-    const priceNum = typeof product.price === 'number' ? product.price : parseFloat(product.price?.toString().replace(/[^0-9.]/g, '') || '0');
+    const priceRaw = product.price || 0;
+    const priceNum = typeof priceRaw === 'number' ? priceRaw : parseFloat(priceRaw.toString().replace(/[^0-9.]/g, '') || '0');
     const priceFormatted = `KES ${priceNum.toLocaleString()}`;
     const originalPrice = `KES ${(priceNum * 1.25).toLocaleString()}`;
     const discount = Math.round(((priceNum * 1.25 - priceNum) / (priceNum * 1.25)) * 100);
@@ -78,8 +81,8 @@ export default function MobileProductCard({ product, index }) {
                         whileTap={{ scale: 0.85 }}
                         onClick={handleAddToCart}
                         className={`w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-xl transition-all duration-300 ${isAdding
-                                ? "bg-green-500 shadow-green-200 rotate-[360deg]"
-                                : "bg-gradient-to-tr from-blue-600 to-indigo-600 shadow-blue-100"
+                            ? "bg-green-500 shadow-green-200 rotate-[360deg]"
+                            : "bg-gradient-to-tr from-blue-600 to-indigo-600 shadow-blue-100"
                             }`}
                     >
                         {isAdding ? <Zap size={18} fill="white" /> : <Plus size={20} />}

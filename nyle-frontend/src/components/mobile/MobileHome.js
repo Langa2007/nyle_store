@@ -27,15 +27,18 @@ export default function MobileHome() {
     const [activeCategory, setActiveCategory] = useState("all");
     const scrollRef = useRef(null);
 
-    const { data: categories = [] } = useQuery({
+    const { data: rawCategories } = useQuery({
         queryKey: ["categories"],
         queryFn: getCategories,
     });
+    const categories = Array.isArray(rawCategories) ? rawCategories : (rawCategories?.categories || rawCategories?.items || []);
 
-    const { data: products = [] } = useQuery({
+    const { data: rawProducts } = useQuery({
         queryKey: ["products"],
         queryFn: getProducts,
     });
+    const products = Array.isArray(rawProducts) ? rawProducts : (rawProducts?.products || rawProducts?.items || []);
+
 
     const [timeLeft, setTimeLeft] = useState({ hours: 2, minutes: 45, seconds: 30 });
 
@@ -62,8 +65,10 @@ export default function MobileHome() {
         return () => clearInterval(timer);
     }, []);
 
-    const flashSaleProducts = products.filter(p => p.on_sale || p.discount).slice(0, 6);
-    if (flashSaleProducts.length === 0) flashSaleProducts.push(...products.slice(0, 6));
+    const flashSaleProducts = Array.isArray(products) ? products.filter(p => p && (p.on_sale || p.discount)).slice(0, 6) : [];
+    if (flashSaleProducts.length === 0 && Array.isArray(products)) {
+        flashSaleProducts.push(...products.slice(0, 6).filter(Boolean));
+    }
 
     const featuredGroups = [
         { id: 'trending', label: 'Trending', icon: <Flame size={14} className="text-orange-500" /> },
@@ -71,11 +76,12 @@ export default function MobileHome() {
         { id: 'new_arrivals', label: 'New', icon: <Award size={14} className="text-blue-500" /> },
     ];
 
-    const filteredProducts = products.filter((p) => {
+    const filteredProducts = Array.isArray(products) ? products.filter((p) => {
+        if (!p) return false;
         const matchesCategory = activeCategory === "all" || p.category === activeCategory || p.category_id === activeCategory;
         const matchesSearch = p.name?.toLowerCase().includes(searchTerm.toLowerCase());
         return matchesCategory && matchesSearch;
-    });
+    }) : [];
 
     return (
         <div className="flex flex-col min-h-screen bg-[#F8FAFF] pb-24">
