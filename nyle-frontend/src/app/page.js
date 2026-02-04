@@ -38,15 +38,26 @@ import {
 function HomeContent() {
   const isMobile = useIsMobile();
   const { addToCart } = useCart();
-  const { data: categories = [] } = useQuery({
+  const { data: rawCategories } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
   });
+  const categories = Array.isArray(rawCategories) ? rawCategories : (rawCategories?.categories || rawCategories?.items || []);
+
+  const { data: rawProducts } = useQuery({
+    queryKey: ["products"],
+    queryFn: getProducts,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+  });
+  const products = Array.isArray(rawProducts) ? rawProducts : (rawProducts?.products || rawProducts?.items || []);
+
 
   const [currency, setCurrency] = useState("KES");
   const [exchangeRate, setExchangeRate] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isAllCategoriesVisible, setIsAllCategoriesVisible] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -145,18 +156,7 @@ function HomeContent() {
     { value: "24/7", label: "Support", icon: <FaHeadphones /> },
   ];
 
-  // Fetch products
-  useEffect(() => {
-    const fetchRealProducts = async () => {
-      try {
-        const data = await getProducts();
-        setProducts(data || []);
-      } catch (err) {
-        console.error("Error loading products:", err);
-      }
-    };
-    fetchRealProducts();
-  }, []);
+  // Products now fetched via useQuery above
 
   // Detect Currency
   useEffect(() => {
@@ -324,7 +324,7 @@ function HomeContent() {
     <>
       {isMobile && (
         <div className="block md:hidden">
-          <MobileHome />
+          <MobileHome products={products} categories={categories} />
         </div>
       )}
       {!isMobile && (

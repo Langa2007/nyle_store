@@ -1,8 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { getCategories } from "@/services/categoryService";
-import { getProducts } from "@/services/productService";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import MobileProductCard from "./MobileProductCard";
@@ -22,23 +19,10 @@ import {
     Truck
 } from "lucide-react";
 
-export default function MobileHome() {
+export default function MobileHome({ products = [], categories = [] }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [activeCategory, setActiveCategory] = useState("all");
     const scrollRef = useRef(null);
-
-    const { data: rawCategories } = useQuery({
-        queryKey: ["categories"],
-        queryFn: getCategories,
-    });
-    const categories = Array.isArray(rawCategories) ? rawCategories : (rawCategories?.categories || rawCategories?.items || []);
-
-    const { data: rawProducts } = useQuery({
-        queryKey: ["products"],
-        queryFn: getProducts,
-    });
-    const products = Array.isArray(rawProducts) ? rawProducts : (rawProducts?.products || rawProducts?.items || []);
-
 
     const [timeLeft, setTimeLeft] = useState({ hours: 2, minutes: 45, seconds: 30 });
 
