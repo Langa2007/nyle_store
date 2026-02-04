@@ -4,8 +4,13 @@ import { useState, useEffect } from "react";
 import { FaArrowUp } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
+import { useIsMobile } from "@/lib/useMobile";
+
 export default function ScrollToTop() {
+    const isMobile = useIsMobile();
     const [isVisible, setIsVisible] = useState(false);
+
+    if (isMobile) return null;
 
     useEffect(() => {
         const scrollRoot = document.getElementById("scroll-root");

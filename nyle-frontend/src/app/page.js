@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import { getCategories } from "../services/categoryService";
 import { getProducts } from "../services/productService";
-import ClientProviders from "../components/ClientProviders";
-import { motion } from "framer-motion";
 import { useCart } from "@/context/CartContext/page";
+import { useIsMobile } from "@/lib/useMobile";
+import MobileHome from "../components/mobile/MobileHome";
+import ClientProviders from "../components/ClientProviders";
 
 // Import ALL icons used in the component
 import {
@@ -34,6 +35,7 @@ import {
 } from "react-icons/fa";
 
 function HomeContent() {
+  const isMobile = useIsMobile();
   const { addToCart } = useCart();
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
@@ -316,6 +318,10 @@ function HomeContent() {
       container.scrollLeft += scrollAmount;
     }
   };
+
+  if (isMobile) {
+    return <MobileHome />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">

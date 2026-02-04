@@ -8,6 +8,7 @@ import ScrollToTop from "../components/ScrollToTop";
 import ClientProviders from "../components/ClientProviders";
 import AuthModal from "../components/AuthModal/page";
 import CartSidebar from "../components/CartSidebar/page";
+import MobileBottomNav from "../components/mobile/MobileBottomNav";
 import { SessionProviderWrapper } from "../components/SessionProviderWrapper";
 import SessionSync from "../components/SessionSync";
 
@@ -29,11 +30,13 @@ export default function RootLayout({ children }) {
             {/* Explicit scroll container */}
             <main
               id="scroll-root"
-              className="container mx-auto px-4 sm:px-6 lg:px-8 h-[100dvh] overflow-y-auto"
+              className="container mx-auto px-4 sm:px-6 lg:px-8 h-[100dvh] overflow-y-auto pb-20 md:pb-0"
             >
               {children}
               <ScrollToTop />
             </main>
+
+            <MobileBottomNav />
 
             {/* Global modals and sidebars */}
             <AuthModal />

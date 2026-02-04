@@ -8,9 +8,15 @@ import { useRouter, usePathname } from "next/navigation";
 import debounce from "lodash.debounce";
 import { useCart } from "@/context/CartContext/page";
 
+import { useIsMobile } from "@/lib/useMobile";
+
 
 export default function Navbar() {
+  const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // hide on mobile
+  if (isMobile) return null;
   const [isScrolled, setIsScrolled] = useState(false);
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -205,8 +211,8 @@ export default function Navbar() {
                   onChange={handleSearchChange}
                   onFocus={() => searchQuery && setShowSearchResults(true)}
                   className={`pl-10 pr-4 py-2 rounded-lg border transition-all duration-300 w-48 focus:w-64 focus:outline-none ${isScrolled
-                      ? 'bg-gray-50 border-gray-200 text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'
-                      : 'bg-white/20 border-white/30 text-white placeholder-blue-100 focus:bg-white focus:text-gray-800 focus:border-white'
+                    ? 'bg-gray-50 border-gray-200 text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'
+                    : 'bg-white/20 border-white/30 text-white placeholder-blue-100 focus:bg-white focus:text-gray-800 focus:border-white'
                     }`}
                 />
                 {searchQuery && (
