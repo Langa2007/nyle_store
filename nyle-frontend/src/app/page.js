@@ -9,6 +9,7 @@ import { useCart } from "@/context/CartContext/page";
 import { useIsMobile } from "@/lib/useMobile";
 import MobileHome from "../components/mobile/MobileHome";
 import ClientProviders from "../components/ClientProviders";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Import ALL icons used in the component
 import {
