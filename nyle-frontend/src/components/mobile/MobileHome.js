@@ -18,7 +18,8 @@ import {
     Clock,
     Tag,
     Star,
-    Award
+    Award,
+    Truck
 } from "lucide-react";
 
 export default function MobileHome() {
