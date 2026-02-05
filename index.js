@@ -4,11 +4,11 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./db/connect.js";
 import bodyparser from "body-parser";
-import {publicLimiter} from "./middleware/rateLimit.js";
+import { publicLimiter } from "./middleware/rateLimit.js";
 import { contactLimiter } from "./middleware/rateLimit.js";
-import {createBullBoard} from "@bull-board/api";
-import {BullMQAdapter} from "@bull-board/api/bullMQAdapter";
-import {ExpressAdapter} from "@bull-board/express";
+import { createBullBoard } from "@bull-board/api";
+import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
+import { ExpressAdapter } from "@bull-board/express";
 import { emailQueue } from "./services/emailQueue.js";
 
 
@@ -45,38 +45,51 @@ const allowedOrigins = [
   "https://nyle-mobile.vercel.app",
 ];
 
-// Main CORS middleware - FIXED
+// Main CORS middleware - Optimized for maximum browser compatibility (including Safari)
 app.use(
   cors({
     origin: function (origin, callback) {
       // Allow requests with no origin (mobile apps, curl, Postman)
       if (!origin) return callback(null, true);
 
-      // Exact match
-      if (allowedOrigins.includes(origin)) return callback(null, true)
+      // Check if origin is in the allowed list
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
       console.warn("Blocked CORS request from:", origin);
       return callback(new Error("Not allowed by CORS"));
     },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization", "Cache-Control", "X-Client-IP"], // ADDED Cache-Control
-    exposedHeaders: ["Content-Range", "X-Content-Range"], // Optional: for pagination
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Cache-Control",
+      "X-Client-IP",
+      "X-Requested-With",
+      "Accept",
+      "Origin"
+    ],
+    exposedHeaders: ["Content-Range", "X-Content-Range"],
     credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
   })
 );
 
-// Enhanced preflight handler - FIXED
+// Enhanced preflight handler
 app.options("*", (req, res) => {
   const origin = req.headers.origin;
-  
+
   if (origin && allowedOrigins.includes(origin)) {
     res.header("Access-Control-Allow-Origin", origin);
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, Cache-Control, X-Client-IP"); // ADDED Cache-Control
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, Cache-Control, X-Client-IP, X-Requested-With, Accept, Origin");
     res.header("Access-Control-Allow-Credentials", "true");
     res.header("Access-Control-Max-Age", "86400"); // Cache preflight for 24 hours
   }
-  
-  res.status(204).send(); // No content for OPTIONS
+
+  res.status(204).end();
 });
 //  Body parsers (always after CORS)
 app.use(express.json());
@@ -142,7 +155,7 @@ app.use("/api/newsletter", newsletterRoutes);
 app.use("/api/support", supportRoutes);
 
 // FAQ routes
-app.use("/api/faqs", faqRoutes);  
+app.use("/api/faqs", faqRoutes);
 
 // Reported issues routes
 app.use("/api/reports", reportRoutes);
