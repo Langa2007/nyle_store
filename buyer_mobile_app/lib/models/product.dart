@@ -20,15 +20,22 @@ class Product {
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
+    double parseDouble(dynamic value) {
+      if (value == null) return 0.0;
+      if (value is num) return value.toDouble();
+      if (value is String) return double.tryParse(value) ?? 0.0;
+      return 0.0;
+    }
+
     return Product(
       id: json['id'],
       name: json['name'] ?? 'No Name',
       description: json['description'] ?? '',
-      price: (json['price'] as num).toDouble(),
+      price: parseDouble(json['price']),
       imageUrl: json['image_url'] ?? json['image'],
       category: json['category'] ?? 'Uncategorized',
       vendorName: json['vendor_name'] ?? 'Unknown Seller',
-      shippingRate: (json['shipping_rate'] as num?)?.toDouble() ?? 0.0,
+      shippingRate: parseDouble(json['shipping_rate']),
     );
   }
 }

@@ -23,8 +23,32 @@ export default function MobileHome({ products = [], categories = [] }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [activeCategory, setActiveCategory] = useState("all");
     const scrollRef = useRef(null);
+    const [isVisible, setIsVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
 
     const [timeLeft, setTimeLeft] = useState({ hours: 2, minutes: 45, seconds: 30 });
+
+    useEffect(() => {
+        const scrollRoot = document.getElementById("scroll-root");
+        if (!scrollRoot) return;
+
+        const handleScroll = () => {
+            const currentScrollY = scrollRoot.scrollTop;
+            if (currentScrollY > 100) {
+                if (currentScrollY > lastScrollY) {
+                    setIsVisible(false); // Scrolling down - hide
+                } else {
+                    setIsVisible(true); // Scrolling up - show
+                }
+            } else {
+                setIsVisible(true);
+            }
+            setLastScrollY(currentScrollY);
+        };
+
+        scrollRoot.addEventListener("scroll", handleScroll);
+        return () => scrollRoot.removeEventListener("scroll", handleScroll);
+    }, [lastScrollY]);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -60,6 +84,24 @@ export default function MobileHome({ products = [], categories = [] }) {
         { id: 'new_arrivals', label: 'New', icon: <Award size={14} className="text-blue-500" /> },
     ];
 
+    const handleCategoryToggle = (catName) => {
+        if (activeCategory === catName) {
+            setActiveCategory("all");
+        } else {
+            setActiveCategory(catName);
+        }
+    };
+
+    const getCategoryImage = (name) => {
+        const n = name?.toLowerCase() || "";
+        if (n.includes("electronics")) return "https://images.unsplash.com/photo-1498049381929-7232985a9003?q=80&w=200&auto=format&fit=crop";
+        if (n.includes("fashion") || n.includes("cloth")) return "https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=200&auto=format&fit=crop";
+        if (n.includes("home")) return "https://images.unsplash.com/photo-1484154218962-a1c00207bf9a?q=80&w=200&auto=format&fit=crop";
+        if (n.includes("beauty")) return "https://images.unsplash.com/photo-1596462502278-27bfdd403348?q=80&w=200&auto=format&fit=crop";
+        if (n.includes("sport") || n.includes("gym")) return "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=200&auto=format&fit=crop";
+        return "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=200&auto=format&fit=crop";
+    };
+
     const filteredProducts = Array.isArray(products) ? products.filter((p) => {
         if (!p) return false;
         const matchesCategory = activeCategory === "all" || p.category === activeCategory || p.category_id === activeCategory;
@@ -69,8 +111,8 @@ export default function MobileHome({ products = [], categories = [] }) {
 
     return (
         <div className="flex flex-col min-h-screen bg-[#F8FAFF] pb-24">
-            {/* Premium Header */}
-            <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl px-4 py-4 border-b border-blue-50/50">
+            {/* Premium Header - Smooth Transitions */}
+            <header className={`sticky top-0 z-40 bg-white/90 backdrop-blur-xl px-4 py-4 border-b border-blue-50/50 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full shadow-lg'}`}>
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
@@ -191,27 +233,28 @@ export default function MobileHome({ products = [], categories = [] }) {
                     </div>
                     <div
                         ref={scrollRef}
-                        className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x"
+                        className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x px-1"
                     >
                         <button
                             onClick={() => setActiveCategory("all")}
-                            className={`flex-shrink-0 px-6 py-3 rounded-2xl text-xs font-black transition-all snap-start ${activeCategory === "all"
-                                ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                                : "bg-white text-gray-500 border border-blue-50 shadow-sm"
-                                }`}
+                            className={`flex-shrink-0 flex flex-col items-center gap-2 transition-all snap-start`}
                         >
-                            All Items
+                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all ${activeCategory === "all" ? "bg-blue-600 text-white shadow-lg shadow-blue-200 scale-110" : "bg-white text-gray-400 border border-blue-50 shadow-sm"}`}>
+                                <Sparkles size={24} />
+                            </div>
+                            <span className={`text-[10px] font-bold ${activeCategory === "all" ? "text-blue-600" : "text-gray-500"}`}>All</span>
                         </button>
                         {categories.map((cat) => (
                             <button
                                 key={cat.id || cat._id}
-                                onClick={() => setActiveCategory(cat.name)}
-                                className={`flex-shrink-0 px-6 py-3 rounded-2xl text-xs font-black transition-all snap-start ${activeCategory === cat.name
-                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                                    : "bg-white text-gray-500 border border-blue-50 shadow-sm"
-                                    }`}
+                                onClick={() => handleCategoryToggle(cat.name)}
+                                className={`flex-shrink-0 flex flex-col items-center gap-2 transition-all snap-start`}
                             >
-                                {cat.name}
+                                <div className={`w-16 h-16 rounded-2xl overflow-hidden relative transition-all ${activeCategory === cat.name ? "ring-2 ring-blue-600 ring-offset-2 scale-110 shadow-lg" : "border border-blue-50 shadow-sm opacity-80"}`}>
+                                    <img src={getCategoryImage(cat.name)} className="w-full h-full object-cover" alt={cat.name} />
+                                    {activeCategory === cat.name && <div className="absolute inset-0 bg-blue-600/20 flex items-center justify-center"><Zap size={16} className="text-white fill-white" /></div>}
+                                </div>
+                                <span className={`text-[10px] font-bold truncate w-16 text-center ${activeCategory === cat.name ? "text-blue-600" : "text-gray-500"}`}>{cat.name}</span>
                             </button>
                         ))}
                     </div>

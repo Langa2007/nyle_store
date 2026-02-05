@@ -14,6 +14,8 @@ import { useIsMobile } from "@/lib/useMobile";
 export default function Navbar() {
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   // use CSS for hiding to avoid hydration flickers
   const [isScrolled, setIsScrolled] = useState(false);
@@ -27,6 +29,32 @@ export default function Navbar() {
   const pathname = usePathname();
   const { getCartTotals, setShowCart } = useCart();
   const { itemCount } = getCartTotals();
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/categories`);
+        if (response.ok) {
+          const data = await response.json();
+          setCategories(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories in Navbar:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const getCategoryImage = (name) => {
+    const n = name?.toLowerCase() || "";
+    if (n.includes("electronics")) return "https://images.unsplash.com/photo-1498049381929-7232985a9003?q=80&w=200&auto=format&fit=crop";
+    if (n.includes("fashion") || n.includes("cloth")) return "https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=200&auto=format&fit=crop";
+    if (n.includes("home")) return "https://images.unsplash.com/photo-1484154218962-a1c00207bf9a?q=80&w=200&auto=format&fit=crop";
+    if (n.includes("beauty")) return "https://images.unsplash.com/photo-1596462502278-27bfdd403348?q=80&w=200&auto=format&fit=crop";
+    if (n.includes("sport") || n.includes("gym")) return "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=200&auto=format&fit=crop";
+    return "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=200&auto=format&fit=crop";
+  };
 
 
   // Real API search function
@@ -110,14 +138,28 @@ export default function Navbar() {
     document.body.style.overflow = mobileMenuOpen ? "hidden" : "auto";
   }, [mobileMenuOpen]);
 
-  // Scroll effect for transparency
+  // Scroll effect for transparency and visibility
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
+
+      // Mobile only: Hide on scroll down, show on scroll up
+      if (typeof window !== 'undefined' && window.innerWidth < 768) {
+        if (window.scrollY > 100) {
+          if (window.scrollY > lastScrollY) {
+            setIsVisible(false);
+          } else {
+            setIsVisible(true);
+          }
+        } else {
+          setIsVisible(true);
+        }
+        setLastScrollY(window.scrollY);
+      }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   const toggleMenu = () => setMobileMenuOpen(!mobileMenuOpen);
 
@@ -159,7 +201,9 @@ export default function Navbar() {
 
 
   return (
-    <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 hidden md:block ${getNavbarBackground()}`}>
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${getNavbarBackground()} ${isVisible ? 'translate-y-0' : '-translate-y-full md:translate-y-0'}`}
+    >
       {/* Announcement Bar */}
       <div className="bg-gradient-to-r from-blue-800 to-indigo-900 text-white py-2 px-4">
         <div className="container mx-auto text-center text-sm">
@@ -397,38 +441,68 @@ export default function Navbar() {
                   <FaUser className="text-blue-600 text-xl" />
                 </div>
                 <div>
-                  <div className="font-bold text-gray-900">your name</div>
-                  <div className="text-sm text-gray-600">someone@example.com</div>
+                  <div className="font-bold text-gray-900">Your Account</div>
+                  <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="text-xs text-red-500 font-medium">Log out</button>
                 </div>
               </div>
             ) : (
-              <div className="space-y-2">
-                <Link
-                  href="/auth/login"
-                  onClick={toggleMenu}
-                  className="block bg-blue-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-blue-700 transition text-center"
-                >
-                  <FaSignInAlt className="inline mr-2" />
-                  User Login
-                </Link>
-                <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-3">
+                <div className="flex flex-col gap-2">
+                  <Link
+                    href="/auth/login"
+                    onClick={toggleMenu}
+                    className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-100"
+                  >
+                    <FaSignInAlt />
+                    Sign In
+                  </Link>
+                  <button
+                    onClick={() => { /* Google Sign In logic */ toggleMenu(); }}
+                    className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-xl font-bold hover:bg-gray-50 transition shadow-sm"
+                  >
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
+                    Continue with Google
+                  </button>
                   <Link
                     href="/auth/signup"
                     onClick={toggleMenu}
-                    className="border border-blue-600 text-blue-600 px-4 py-3 rounded-lg font-medium hover:bg-blue-50 transition text-center"
+                    className="flex items-center justify-center gap-2 border-2 border-blue-600 text-blue-600 px-4 py-2.5 rounded-xl font-bold hover:bg-blue-50 transition"
                   >
-                    User Sign Up
+                    <FaUserPlus />
+                    Create Account
                   </Link>
+                </div>
+                <div className="pt-2 border-t border-gray-100">
                   <Link
                     href="/vendor/login"
                     onClick={toggleMenu}
-                    className="border border-orange-600 text-orange-600 px-4 py-3 rounded-lg font-medium hover:bg-orange-50 transition text-center"
+                    className="flex items-center justify-center gap-2 text-orange-600 text-sm font-bold hover:underline"
                   >
-                    Seller Login
+                    <FaStore />
+                    Seller Dashboard
                   </Link>
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Categories Section in Drawer */}
+          <div className="mt-4">
+            <h3 className="text-sm font-black text-gray-900 mb-4 uppercase tracking-widest">Categories</h3>
+            <div className="grid grid-cols-2 gap-3 pb-8">
+              {categories.slice(0, 6).map((cat) => (
+                <Link
+                  key={cat.id || cat._id}
+                  href={`/products?category=${encodeURIComponent(cat.name)}`}
+                  onClick={toggleMenu}
+                  className="group relative h-24 rounded-2xl overflow-hidden"
+                >
+                  <img src={getCategoryImage(cat.name)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={cat.name} />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <span className="absolute bottom-2 left-2 text-[10px] font-black text-white">{cat.name}</span>
+                </Link>
+              ))}
+            </div>
           </div>
 
           {/* Navigation Links */}
