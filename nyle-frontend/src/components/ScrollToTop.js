@@ -10,9 +10,9 @@ export default function ScrollToTop() {
     const isMobile = useIsMobile();
     const [isVisible, setIsVisible] = useState(false);
 
-    if (isMobile) return null;
-
     useEffect(() => {
+        if (isMobile) return;
+
         const scrollRoot = document.getElementById("scroll-root");
         if (!scrollRoot) return;
 
@@ -29,7 +29,9 @@ export default function ScrollToTop() {
         return () => {
             scrollRoot.removeEventListener("scroll", toggleVisibility);
         };
-    }, []);
+    }, [isMobile]);
+
+    if (isMobile) return null;
 
     const scrollToTop = () => {
         const scrollRoot = document.getElementById("scroll-root");

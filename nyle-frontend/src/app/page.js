@@ -160,16 +160,23 @@ function HomeContent() {
 
   // Detect Currency
   useEffect(() => {
-    fetch("https://ipapi.co/json/")
-      .then((res) => res.json())
-      .then((data) => {
+    const detectCurrency = async () => {
+      try {
+        const res = await fetch("https://ipapi.co/json/", { signal: AbortSignal.timeout(3000) });
+        if (!res.ok) throw new Error("Currency detection failed");
+        const data = await res.json();
         const code = data?.currency || "KES";
         setCurrency(code);
         if (code === "USD") setExchangeRate(0.0077);
         else if (code === "EUR") setExchangeRate(0.0070);
         else setExchangeRate(1);
-      })
-      .catch(() => setCurrency("KES"));
+      } catch (error) {
+        console.warn("Currency detection blocked or failed, defaulting to KES:", error.message);
+        setCurrency("KES");
+        setExchangeRate(1);
+      }
+    };
+    detectCurrency();
   }, []);
 
   // Auto-scroll categories slider
