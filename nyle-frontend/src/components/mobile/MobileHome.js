@@ -250,11 +250,15 @@ export default function MobileHome({ products = [], categories = [] }) {
                                 onClick={() => handleCategoryToggle(cat.name)}
                                 className={`flex-shrink-0 flex flex-col items-center gap-2 transition-all snap-start`}
                             >
-                                <div className={`w-16 h-16 rounded-2xl overflow-hidden relative transition-all ${activeCategory === cat.name ? "ring-2 ring-blue-600 ring-offset-2 scale-110 shadow-lg" : "border border-blue-50 shadow-sm opacity-80"}`}>
-                                    <img src={getCategoryImage(cat.name)} className="w-full h-full object-cover" alt={cat.name} />
-                                    {activeCategory === cat.name && <div className="absolute inset-0 bg-blue-600/20 flex items-center justify-center"><Zap size={16} className="text-white fill-white" /></div>}
+                                <div className={`w-24 h-24 rounded-2xl overflow-hidden relative transition-all ${activeCategory === cat.name ? "ring-2 ring-blue-600 ring-offset-2 scale-110 shadow-lg" : "border border-blue-50 shadow-sm"}`}>
+                                    <img
+                                        src={cat.image_url || getCategoryImage(cat.name)}
+                                        className="w-full h-full object-cover"
+                                        alt={cat.name}
+                                    />
+                                    {activeCategory === cat.name && <div className="absolute inset-0 bg-blue-600/20 flex items-center justify-center"><Zap size={24} className="text-white fill-white" /></div>}
                                 </div>
-                                <span className={`text-[10px] font-bold truncate w-16 text-center ${activeCategory === cat.name ? "text-blue-600" : "text-gray-500"}`}>{cat.name}</span>
+                                <span className={`text-xs font-bold truncate w-24 text-center ${activeCategory === cat.name ? "text-blue-600" : "text-gray-500"}`}>{cat.name}</span>
                             </button>
                         ))}
                     </div>

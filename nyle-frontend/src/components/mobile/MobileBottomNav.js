@@ -28,9 +28,11 @@ export default function MobileBottomNav() {
         if (label === "Cart") {
             e.preventDefault();
             setShowCart(true);
-        } else if (label === "Account" && !isLoggedIn) {
-            e.preventDefault();
-            setShowAuthModal(true);
+        } else if (label === "Account") {
+            if (!isLoggedIn) {
+                e.preventDefault();
+                setShowAuthModal(true);
+            }
         }
     };
 

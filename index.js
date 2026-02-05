@@ -52,8 +52,13 @@ app.use(
       // Allow requests with no origin (mobile apps, curl, Postman)
       if (!origin) return callback(null, true);
 
-      // Check if origin is in the allowed list
-      if (allowedOrigins.includes(origin)) {
+      // Check if origin is in the allowed list or is a local development origin
+      const isLocalhost = origin.startsWith('http://localhost:') ||
+        origin.startsWith('http://127.0.0.1:') ||
+        origin === 'http://localhost' ||
+        origin === 'http://127.0.0.1';
+
+      if (allowedOrigins.includes(origin) || isLocalhost) {
         return callback(null, true);
       }
 
