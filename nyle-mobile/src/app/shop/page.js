@@ -1,23 +1,28 @@
-"use client";
-
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import MobileLayout from "../mobile-layout";
 import ProductCard from "../../components/ProductCard";
+import { fetchWithAuth, API_ENDPOINTS } from "../../lib/api";
 
-// ✅ Temporary currency conversion (until dynamic currency detection)
-const convertToKES = (usd) => Math.round(usd * 130);
 const currency = "KES";
 
-const products = [
-  { id: 1, name: "Wireless Earbuds", price: 49.99, image: "/images/earbuds.jpg" },
-  { id: 2, name: "Smart Watch", price: 89.99, image: "/images/smartwatch.jpg" },
-  { id: 3, name: "Bluetooth Speaker", price: 59.99, image: "/images/speaker.jpg" },
-  { id: 4, name: "Gaming Mouse", price: 29.99, image: "/images/mouse.jpg" },
-  { id: 5, name: "Mini Drone", price: 129.99, image: "/images/drone.jpg" },
-  { id: 6, name: "Portable Charger", price: 39.99, image: "/images/powerbank.jpg" },
-];
-
 export default function ShopPage() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function getProducts() {
+      try {
+        const data = await fetchWithAuth(API_ENDPOINTS.PRODUCTS);
+        setProducts(data);
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    getProducts();
+  }, []);
   return (
     <MobileLayout>
       {/* 🔹 Nyle Luxe Store Header (Left-aligned) */}
@@ -49,29 +54,38 @@ export default function ShopPage() {
       </div>
 
       {/* 🛍️ Product Grid */}
-      <motion.div
-        className="grid grid-cols-2 gap-3 pb-20"
-        initial="hidden"
-        animate="visible"
-        variants={{
-          hidden: { opacity: 0 },
-          visible: {
-            opacity: 1,
-            transition: { staggerChildren: 0.08 },
-          },
-        }}
-      >
-        {products.map((p, i) => (
-          <ProductCard
-            key={p.id}
-            index={i}
-            product={{
-              ...p,
-              price: `${currency} ${convertToKES(p.price).toLocaleString()}`,
-            }}
-          />
-        ))}
-      </motion.div>
+      {loading ? (
+        <div className="flex justify-center items-center h-48">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        </div>
+      ) : products.length === 0 ? (
+        <div className="text-center text-gray-400 py-10">No products found.</div>
+      ) : (
+        <motion.div
+          className="grid grid-cols-2 gap-3 pb-20"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.08 },
+            },
+          }}
+        >
+          {products.map((p, i) => (
+            <ProductCard
+              key={p.id}
+              index={i}
+              product={{
+                ...p,
+                price: `${currency} ${Number(p.price).toLocaleString()}`,
+                image: p.image_url || "/images/placeholder.jpg"
+              }}
+            />
+          ))}
+        </motion.div>
+      )}
     </MobileLayout>
   );
 }

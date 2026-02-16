@@ -3,29 +3,43 @@
 import { useEffect, useState } from "react";
 import { User, LogOut, ShoppingBag, Settings } from "lucide-react";
 import Link from "next/link";
+import { fetchWithAuth, API_ENDPOINTS } from "../../lib/api";
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Simulate a logged-in user (will be replaced with JWT auth)
   useEffect(() => {
-    const mockUser = {
-      name: "Langa Dev",
-      email: "langa@nyle.store",
-      joined: "Jan 2025",
-    };
+    async function getProfileData() {
+      try {
+        // Using a default ID for now, or could get from localStorage/context
+        const profile = await fetchWithAuth(`${API_ENDPOINTS.USER}/1`);
+        setUser({
+          name: profile.name,
+          email: profile.email,
+          joined: new Date(profile.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+        });
 
-    const mockOrders = [
-      { id: 1, total: 325.5, date: "Oct 10, 2025", status: "Delivered" },
-      { id: 2, total: 150.0, date: "Oct 5, 2025", status: "Pending" },
-    ];
-
-    setUser(mockUser);
-    setOrders(mockOrders);
+        // Fetch orders if endpoint exists, otherwise use empty
+        try {
+          const ordersData = await fetchWithAuth(`/orders/user/1`);
+          setOrders(ordersData);
+        } catch (e) {
+          console.warn("Orders fetch failed, might not be implemented yet");
+          setOrders([]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    getProfileData();
   }, []);
 
-  if (!user) return <p className="text-center mt-10 text-gray-500">Loading profile...</p>;
+  if (loading) return <p className="text-center mt-10 text-gray-500">Loading profile...</p>;
+  if (!user) return <p className="text-center mt-10 text-red-500">Error loading profile.</p>;
 
   return (
     <div className="min-h-screen pt-6 pb-24 space-y-8">
@@ -84,11 +98,10 @@ export default function ProfilePage() {
                 <div className="text-right">
                   <p className="font-semibold">${order.total}</p>
                   <span
-                    className={`text-sm px-2 py-1 rounded ${
-                      order.status === "Delivered"
-                        ? "bg-green-100 text-green-600"
-                        : "bg-yellow-100 text-yellow-600"
-                    }`}
+                    className={`text-sm px-2 py-1 rounded ${order.status === "Delivered"
+                      ? "bg-green-100 text-green-600"
+                      : "bg-yellow-100 text-yellow-600"
+                      }`}
                   >
                     {order.status}
                   </span>

@@ -514,21 +514,21 @@ export default function Navbar() {
             Home
           </Link>
           <Link
-            href="app/products"
+            href="/products"
             onClick={toggleMenu}
             className="py-3 text-lg font-medium text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-3 transition"
           >
             Shop All Products
           </Link>
           <Link
-            href="app/categories"
+            href="/categories"
             onClick={toggleMenu}
             className="py-3 text-lg font-medium text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-3 transition"
           >
             Categories
           </Link>
           <Link
-            href="app/deals"
+            href="/deals"
             onClick={toggleMenu}
             className="py-3 text-lg font-medium text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-3 transition"
           >
@@ -563,10 +563,10 @@ export default function Navbar() {
             <Link href="auth/terms" className="text-sm text-blue-600 hover:underline">
               Terms
             </Link>
-            <Link href="support/privacy" className="text-sm text-blue-600 hover:underline">
+            <Link href="/support/privacy" className="text-sm text-blue-600 hover:underline">
               Privacy
             </Link>
-            <Link href="support/contact" className="text-sm text-blue-600 hover:underline">
+            <Link href="/support/contact" className="text-sm text-blue-600 hover:underline">
               Contact
             </Link>
           </div>
