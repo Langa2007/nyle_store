@@ -51,7 +51,7 @@ export default function MobileBottomNav() {
                 </div>
             ), label: "Cart"
         },
-        { href: isLoggedIn ? "/profile" : "#", icon: <User size={24} />, label: "Account" },
+        { href: isLoggedIn ? "/user/dashboard" : "#", icon: <User size={24} />, label: "Account" },
     ];
 
     return (

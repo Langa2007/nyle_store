@@ -20,8 +20,8 @@ export default function RootLayout({ children }) {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
         .register("/sw.js")
-        .then(() => console.log("✅ Service Worker Registered"))
-        .catch((err) => console.error("❌ SW registration failed:", err));
+        .then(() => console.log(" Service Worker Registered"))
+        .catch((err) => console.error(" SW registration failed:", err));
     }
   }, []);
 

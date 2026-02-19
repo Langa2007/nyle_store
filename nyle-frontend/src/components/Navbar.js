@@ -560,10 +560,10 @@ export default function Navbar() {
             ✨ Discover amazing products on Kenya's fastest-growing marketplace
           </div>
           <div className="flex space-x-4">
-            <Link href="auth/terms" className="text-sm text-blue-600 hover:underline">
+            <Link href="/auth/terms" className="text-sm text-blue-600 hover:underline">
               Terms
             </Link>
-            <Link href="/support/privacy" className="text-sm text-blue-600 hover:underline">
+            <Link href="/others/privacy" className="text-sm text-blue-600 hover:underline">
               Privacy
             </Link>
             <Link href="/support/contact" className="text-sm text-blue-600 hover:underline">
