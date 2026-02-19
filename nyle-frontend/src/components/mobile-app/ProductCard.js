@@ -1,6 +1,6 @@
 "use client";
 
-import { useCart } from "../context/CartContext";
+import { useCart } from "@/context/mobile-v2/CartContext";
 import { motion } from "framer-motion";
 
 export default function ProductCard({ product, index }) {

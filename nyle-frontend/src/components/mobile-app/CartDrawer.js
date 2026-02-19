@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCart } from "../context/CartContext";
+import { useCart } from "@/context/mobile-v2/CartContext";
 import { X } from "lucide-react";
 
 export default function CartDrawer() {

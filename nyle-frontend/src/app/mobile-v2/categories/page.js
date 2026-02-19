@@ -1,9 +1,9 @@
 "use client";
 
-import MobileLayout from "../mobile-layout";
+import MobileLayout from "@/app/mobile-v2/mobile-layout";
 import { Grid } from "lucide-react";
 import { useState, useEffect } from "react";
-import { fetchWithAuth, API_ENDPOINTS } from "../../lib/api";
+import { fetchWithAuth, API_ENDPOINTS } from "@/lib/mobile-app/api";
 import Link from "next/link";
 
 export default function CategoriesPage() {

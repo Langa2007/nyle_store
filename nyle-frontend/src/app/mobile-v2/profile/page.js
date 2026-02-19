@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { User, LogOut, ShoppingBag, Settings } from "lucide-react";
 import Link from "next/link";
-import { fetchWithAuth, API_ENDPOINTS } from "../../lib/api";
+import { fetchWithAuth, API_ENDPOINTS } from "@/lib/mobile-app/api";
 import { useSession, signOut } from "next-auth/react";
 
 export default function ProfilePage() {
-  const { data: session, status } = useSession();
+  const sessionObj = useSession();
+  const session = sessionObj?.data;
+  const status = sessionObj?.status;
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 

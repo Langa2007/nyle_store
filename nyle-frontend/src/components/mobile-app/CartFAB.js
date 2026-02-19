@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
-import { useCart } from "../context/CartContext";
+import { useCart } from "@/context/mobile-v2/CartContext";
 
 export default function CartFAB() {
   const { totalCount, setIsOpen } = useCart();

@@ -4,13 +4,13 @@ import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./globals.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import Providers from "../providers";
-import Navbar from "../components/Navbar";
-import MobileNav from "../components/MobileNav";
-import CartFAB from "../components/CartFAB";
-import CartDrawer from "../components/CartDrawer";
+import Providers from "../../providers-mobile";
+import Navbar from "../../components/mobile-app/Navbar";
+import MobileNav from "../../components/mobile-app/MobileNav";
+import CartFAB from "../../components/mobile-app/CartFAB";
+import CartDrawer from "../../components/mobile-app/CartDrawer";
 import { usePathname } from "next/navigation";
-import AuthModal from "../components/AuthModal";
+import AuthModal from "../../components/mobile-app/AuthModal";
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();

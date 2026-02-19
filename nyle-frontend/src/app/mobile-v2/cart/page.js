@@ -1,6 +1,6 @@
 "use client";
 
-import { useCart } from "../../context/CartContext";
+import { useCart } from "@/context/mobile-v2/CartContext";
 import { ShoppingBag, Trash2 } from "lucide-react";
 import Link from "next/link";
 

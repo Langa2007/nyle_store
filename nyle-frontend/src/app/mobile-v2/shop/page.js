@@ -1,8 +1,10 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import MobileLayout from "../mobile-layout";
-import ProductCard from "../../components/ProductCard";
-import { fetchWithAuth, API_ENDPOINTS } from "../../lib/api";
+import MobileLayout from "@/app/mobile-v2/mobile-layout";
+import ProductCard from "@/components/mobile-app/ProductCard";
+import { fetchWithAuth, API_ENDPOINTS } from "@/lib/mobile-app/api";
 
 const currency = "KES";
 

@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { ShoppingCart, Menu, X, User as UserIcon } from "lucide-react";
 import Link from "next/link";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../../context/mobile-v2/CartContext";
 import { useSession } from "next-auth/react";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { cart, setShowAuthModal, setAuthAction } = useCart();
-  const { data: session } = useSession();
+  const sessionObj = useSession();
+  const session = sessionObj?.data;
 
   const toggleMenu = () => setMobileMenuOpen(!mobileMenuOpen);
 

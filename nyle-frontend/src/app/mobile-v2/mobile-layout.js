@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
-import BottomNav from "../components/BottomNav";
+import BottomNav from "@/components/mobile-app/BottomNav";
 
 export default function MobileLayout({ children }) {
   const pathname = usePathname();

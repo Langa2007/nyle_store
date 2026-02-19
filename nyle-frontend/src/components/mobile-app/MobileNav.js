@@ -4,12 +4,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Home, ShoppingCart, User } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useCart } from "../context/CartContext";
+import { useCart } from "@/context/mobile-v2/CartContext";
 
 export default function MobileNav() {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session } = useSession();
+  const sessionObj = useSession();
+  const session = sessionObj?.data;
   const { setShowAuthModal, setAuthAction } = useCart();
 
   const handleNavClick = (href) => {
