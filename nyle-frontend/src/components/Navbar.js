@@ -344,7 +344,7 @@ export default function Navbar() {
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 {userLoggedIn ? (
                   <>
-                    <Link href="/user/dashboard" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
+                    <Link href="/profile" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
                       My Dashboard
                     </Link>
                     <Link href="/user/orders" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">

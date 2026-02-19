@@ -24,20 +24,14 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-blue-600 text-white shadow-md fixed top-0 left-0 w-full z-50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <nav className="bg-black/80 backdrop-blur-xl text-white border-b border-white/5 fixed top-0 left-0 w-full z-50">
+      <div className="mx-auto max-w-7xl px-4">
         <div className="flex h-16 justify-between items-center">
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0 text-2xl font-bold">
-            Nyle Store
+          <Link href="/shop" className="flex-shrink-0 text-xl font-extrabold tracking-tighter">
+            <span className="text-blue-500">NYLE</span>
+            <span className="text-white/40 ml-0.5 font-light">PRO</span>
           </Link>
-
-          {/* Desktop marquee */}
-          <div className="hidden md:flex flex-1 justify-center mx-4">
-            <marquee className="text-sm font-semibold tracking-wide">
-              ✨ Welcome to Nyle Store — Discover, Shop, Thrive with Us ✨
-            </marquee>
-          </div>
 
           {/* Right side */}
           <div className="flex items-center space-x-2 sm:space-x-4">
@@ -98,17 +92,17 @@ export default function Navbar() {
         </div>
 
         <div className="flex flex-col px-6 py-4 space-y-4 font-medium">
-          <Link href="/" onClick={toggleMenu} className="hover:text-blue-200 py-2 border-b border-blue-600/50">
-            Home
+          <Link href="/shop" onClick={toggleMenu} className="hover:text-blue-500 py-3 border-b border-white/5 flex items-center justify-between group">
+            <span>Shop</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
           </Link>
-          <Link href="/shop" onClick={toggleMenu} className="hover:text-blue-200 py-2 border-b border-blue-600/50">
-            Shop
+          <Link href="/cart" onClick={toggleMenu} className="hover:text-blue-500 py-3 border-b border-white/5 flex items-center justify-between group">
+            <span>Cart</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
           </Link>
-          <Link href="/cart" onClick={toggleMenu} className="hover:text-blue-200 py-2 border-b border-blue-600/50">
-            Cart
-          </Link>
-          <Link href="/profile" onClick={handleProfileClick} className="hover:text-blue-200 py-2 border-b border-blue-600/50">
-            Profile
+          <Link href="/profile" onClick={handleProfileClick} className="hover:text-blue-500 py-3 border-b border-white/5 flex items-center justify-between group">
+            <span>Profile</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
           </Link>
           {!session && (
             <button

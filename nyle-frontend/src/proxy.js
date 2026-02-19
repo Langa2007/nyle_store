@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export function proxy(request) {
     const url = request.nextUrl.clone();
     const userAgent = request.headers.get('user-agent') || '';
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(userAgent);
 
     // If mobile device, rewrite to _mobile specific routes
     // We exclude /api, /_next, /static, /images, etc.
@@ -14,6 +14,13 @@ export function proxy(request) {
         path.startsWith('/favicon.ico') ||
         path.startsWith('/images') ||
         path.includes('.');
+
+    // Map legacy dashboard path to profile
+    if (path === '/user/dashboard') {
+        const target = isMobile ? '/mobile-v2/profile' : '/profile';
+        url.pathname = target;
+        return NextResponse.rewrite(url);
+    }
 
     if (isMobile && !isExcluded) {
         // Basic mapping: / -> /mobile-v2, /shop -> /mobile-v2/shop, etc.

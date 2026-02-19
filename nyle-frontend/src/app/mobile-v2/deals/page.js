@@ -1,11 +1,10 @@
 "use client";
 
-import MobileLayout from "../mobile-layout";
 import { Sparkles, Tag } from "lucide-react";
 
 export default function DealsPage() {
     return (
-        <MobileLayout>
+        <div className="pt-6 pb-24 px-4 bg-black min-h-screen text-gray-100">
             <div className="pt-6 pb-24">
                 <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600">
@@ -24,6 +23,6 @@ export default function DealsPage() {
                     <p>Loading the best deals for you...</p>
                 </div>
             </div>
-        </MobileLayout>
+        </div>
     );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import MobileLayout from "../mobile-layout";
 import { User, Bell, Shield, HelpCircle } from "lucide-react";
 
 export default function SettingsPage() {
@@ -27,7 +26,7 @@ export default function SettingsPage() {
   ];
 
   return (
-    <MobileLayout>
+    <div className="pt-6 pb-24 px-4 bg-black min-h-screen text-gray-100">
       <div className="pt-6 pb-24">
         <h1 className="text-2xl font-bold mb-6">Settings</h1>
 
@@ -37,7 +36,7 @@ export default function SettingsPage() {
               <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3 px-2">
                 {group.title}
               </h2>
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="bg-zinc-900 rounded-2xl shadow-sm border border-white/5 overflow-hidden">
                 {group.items.map((item, i) => (
                   <button
                     key={item.label}
@@ -57,6 +56,6 @@ export default function SettingsPage() {
           ))}
         </div>
       </div>
-    </MobileLayout>
+    </div>
   );
 }

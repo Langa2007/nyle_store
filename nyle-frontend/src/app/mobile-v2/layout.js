@@ -14,7 +14,6 @@ import AuthModal from "../../components/mobile-app/AuthModal";
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
-  const showFAB = pathname === "/shop";
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -26,30 +25,35 @@ export default function RootLayout({ children }) {
   }, []);
 
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#1d4ed8" />
+        <meta name="theme-color" content="#000000" />
       </head>
-      <body className="bg-gray-950 text-gray-100">
+      <body className="bg-black text-gray-100 selection:bg-blue-500/30">
         <Providers>
-          <Navbar />
-          <AnimatePresence mode="wait">
-            <motion.main
-              key={pathname}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="container mx-auto p-4 pb-20"
-            >
-              {children}
-            </motion.main>
-          </AnimatePresence>
-          {showFAB && <CartFAB />}
-          <CartDrawer />
-          <MobileNav />
-          <AuthModal />
+          <div className="flex flex-col min-h-screen">
+            {/* Minimal Sticky Header */}
+            <Navbar />
+
+            <main className="flex-1 pt-16 pb-24">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={pathname}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {children}
+                </motion.div>
+              </AnimatePresence>
+            </main>
+
+            <CartDrawer />
+            <MobileNav />
+            <AuthModal />
+          </div>
         </Providers>
       </body>
     </html>

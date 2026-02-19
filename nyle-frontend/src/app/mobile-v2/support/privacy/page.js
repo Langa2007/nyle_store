@@ -1,11 +1,10 @@
 "use client";
 
-import MobileLayout from "../../mobile-layout";
 import { Shield } from "lucide-react";
 
 export default function PrivacyPage() {
     return (
-        <MobileLayout>
+        <div className="pt-6 pb-24 px-4 bg-black min-h-screen text-gray-100">
             <div className="pt-6 pb-24 px-4">
                 <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center text-green-600">
@@ -26,6 +25,6 @@ export default function PrivacyPage() {
                     <p>We do not share your personal information with third parties except as necessary to fulfill your orders (e.g., sharing your address with delivery partners).</p>
                 </div>
             </div>
-        </MobileLayout>
+        </div>
     );
 }
