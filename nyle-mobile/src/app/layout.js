@@ -9,8 +9,8 @@ import Navbar from "../components/Navbar";
 import MobileNav from "../components/MobileNav";
 import CartFAB from "../components/CartFAB";
 import CartDrawer from "../components/CartDrawer";
-import { CartProvider } from "../context/CartContext";
 import { usePathname } from "next/navigation";
+import AuthModal from "../components/AuthModal";
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
@@ -33,24 +33,23 @@ export default function RootLayout({ children }) {
       </head>
       <body className="bg-gray-950 text-gray-100">
         <Providers>
-          <CartProvider>
-            <Navbar />
-            <AnimatePresence mode="wait">
-              <motion.main
-                key={pathname}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.25, ease: "easeInOut" }}
-                className="container mx-auto p-4 pb-20"
-              >
-                {children}
-              </motion.main>
-            </AnimatePresence>
-            {showFAB && <CartFAB />}
-            <CartDrawer />
-            <MobileNav />
-          </CartProvider>
+          <Navbar />
+          <AnimatePresence mode="wait">
+            <motion.main
+              key={pathname}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              className="container mx-auto p-4 pb-20"
+            >
+              {children}
+            </motion.main>
+          </AnimatePresence>
+          {showFAB && <CartFAB />}
+          <CartDrawer />
+          <MobileNav />
+          <AuthModal />
         </Providers>
       </body>
     </html>

@@ -1,12 +1,12 @@
-"use client";
-
 import { CartProvider } from "./context/CartContext";
-// ⬆️  Adjust this import path if your CartContext is in a different folder
+import { SessionProviderWrapper } from "./components/SessionProviderWrapper";
 
 export default function Providers({ children }) {
   return (
-    <CartProvider>
-      {children}
-    </CartProvider>
+    <SessionProviderWrapper>
+      <CartProvider>
+        {children}
+      </CartProvider>
+    </SessionProviderWrapper>
   );
 }

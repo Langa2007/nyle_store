@@ -4,42 +4,64 @@ import { useEffect, useState } from "react";
 import { User, LogOut, ShoppingBag, Settings } from "lucide-react";
 import Link from "next/link";
 import { fetchWithAuth, API_ENDPOINTS } from "../../lib/api";
+import { useSession, signOut } from "next-auth/react";
 
 export default function ProfilePage() {
-  const [user, setUser] = useState(null);
+  const { data: session, status } = useSession();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function getProfileData() {
-      try {
-        // Using a default ID for now, or could get from localStorage/context
-        const profile = await fetchWithAuth(`${API_ENDPOINTS.USER}/1`);
-        setUser({
-          name: profile.name,
-          email: profile.email,
-          joined: new Date(profile.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-        });
+      if (!session?.user?.id) return;
 
-        // Fetch orders if endpoint exists, otherwise use empty
+      try {
+        setLoading(true);
+        // Fetch orders if endpoint exists
         try {
-          const ordersData = await fetchWithAuth(`/orders/user/1`);
+          const ordersData = await fetchWithAuth(`/orders/user/${session.user.id}`);
           setOrders(ordersData);
         } catch (e) {
           console.warn("Orders fetch failed, might not be implemented yet");
           setOrders([]);
         }
       } catch (err) {
-        console.error("Failed to fetch profile:", err);
+        console.error("Failed to fetch profile data:", err);
       } finally {
         setLoading(false);
       }
     }
-    getProfileData();
-  }, []);
 
-  if (loading) return <p className="text-center mt-10 text-gray-500">Loading profile...</p>;
-  if (!user) return <p className="text-center mt-10 text-red-500">Error loading profile.</p>;
+    if (status === "authenticated") {
+      getProfileData();
+    } else if (status === "unauthenticated") {
+      setLoading(false);
+    }
+  }, [session, status]);
+
+  if (status === "loading" || loading) return <p className="text-center mt-10 text-gray-400">Loading profile...</p>;
+
+  if (!session) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center space-y-4">
+        <User size={64} className="text-gray-700" />
+        <h1 className="text-2xl font-bold">Not Logged In</h1>
+        <p className="text-gray-400">Please sign in to view your profile and orders.</p>
+        <button
+          onClick={() => window.location.href = '/'}
+          className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg"
+        >
+          Back to Home
+        </button>
+      </div>
+    );
+  }
+
+  const user = {
+    name: session.user.name,
+    email: session.user.email,
+    joined: "Member" // Or fetch from backend if available in session
+  };
 
   return (
     <div className="min-h-screen pt-6 pb-24 space-y-8">
@@ -73,7 +95,10 @@ export default function ProfilePage() {
           <span className="text-sm mt-1">Settings</span>
         </Link>
 
-        <button className="bg-red-100 text-red-600 rounded-lg p-4 flex flex-col items-center hover:bg-red-200 transition">
+        <button
+          onClick={() => signOut({ callbackUrl: '/' })}
+          className="bg-red-100 text-red-600 rounded-lg p-4 flex flex-col items-center hover:bg-red-200 transition"
+        >
           <LogOut className="h-6 w-6" />
           <span className="text-sm mt-1">Logout</span>
         </button>

@@ -3,10 +3,23 @@
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Home, ShoppingCart, User } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useCart } from "../context/CartContext";
 
 export default function MobileNav() {
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session } = useSession();
+  const { setShowAuthModal, setAuthAction } = useCart();
+
+  const handleNavClick = (href) => {
+    if (href === "/profile" && !session) {
+      setAuthAction('login');
+      setShowAuthModal(true);
+      return;
+    }
+    router.push(href);
+  };
 
   const links = [
     { href: "/shop", icon: <Home size={22} />, label: "Shop" },
@@ -26,10 +39,9 @@ export default function MobileNav() {
         return (
           <button
             key={href}
-            onClick={() => router.push(href)}
-            className={`flex flex-col items-center text-xs ${
-              active ? "text-blue-500" : "text-zinc-400"
-            }`}
+            onClick={() => handleNavClick(href)}
+            className={`flex flex-col items-center text-xs ${active ? "text-blue-500" : "text-zinc-400"
+              }`}
           >
             {icon}
             <span>{label}</span>
