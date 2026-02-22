@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { ShoppingCart, Menu, X, User as UserIcon } from "lucide-react";
 import Link from "next/link";
-import { useCart } from "../../context/mobile-v2/CartContext";
+import { useCart } from "../../context/CartContext/page";
 import { useSession } from "next-auth/react";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { cart, setShowAuthModal, setAuthAction } = useCart();
+  const { setShowAuthModal, setAuthAction, getCartTotals } = useCart();
+  const { itemCount } = getCartTotals();
   const sessionObj = useSession();
   const session = sessionObj?.data;
 
@@ -64,9 +65,9 @@ export default function Navbar() {
             {/* Cart with badge */}
             <Link href="/cart" className="relative p-2">
               <ShoppingCart className="h-6 w-6" />
-              {cart?.length > 0 && (
+              {itemCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-[10px] sm:text-xs rounded-full px-1.5 min-w-[18px] text-center">
-                  {cart.length}
+                  {itemCount}
                 </span>
               )}
             </Link>

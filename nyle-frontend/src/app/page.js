@@ -612,10 +612,17 @@ function HomeContent() {
                 const isSelected = selectedCategory === cat.name;
 
                 return (
-                  <div key={cat.id || cat._id} className="flex-shrink-0">
+                  <motion.div
+                    key={cat.id || cat._id}
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: false, margin: "-50px" }}
+                    transition={{ duration: 0.5, delay: (index % 5) * 0.1 }}
+                    className="flex-shrink-0"
+                  >
                     <button
                       onClick={() => handleCategoryClick(cat.name)}
-                      className={`group relative w-48 h-64 rounded-3xl overflow-hidden transition-all duration-300 transform hover:scale-105 ${isSelected ? "ring-4 ring-blue-500 shadow-2xl scale-105" : "hover:shadow-xl"
+                      className={`group relative w-44 h-60 rounded-3xl overflow-hidden transition-all duration-300 transform hover:scale-105 ${isSelected ? "ring-4 ring-blue-500 shadow-2xl scale-105" : "hover:shadow-xl"
                         }`}
                     >
                       {/* Background Image */}
@@ -648,7 +655,7 @@ function HomeContent() {
                         </div>
                       )}
                     </button>
-                  </div>
+                  </motion.div>
                 );
               })}
 

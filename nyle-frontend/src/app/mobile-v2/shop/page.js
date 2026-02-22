@@ -65,7 +65,7 @@ export default function ShopPage() {
           {categories.map((cat) => (
             <button
               key={cat.id || cat._id}
-              onClick={() => setActiveCategory(cat.id || cat.name)}
+              onClick={() => setActiveCategory(prev => prev === (cat.id || cat.name) ? "all" : (cat.id || cat.name))}
               className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border ${activeCategory === (cat.id || cat.name)
                 ? "bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-900/40"
                 : "bg-gray-900 border-gray-800 text-gray-400 hover:border-gray-700"

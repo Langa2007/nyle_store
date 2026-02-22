@@ -4,14 +4,15 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Home, ShoppingCart, User } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useCart } from "@/context/mobile-v2/CartContext";
+import { useCart } from "@/context/CartContext/page";
 
 export default function MobileNav() {
   const pathname = usePathname();
   const router = useRouter();
   const sessionObj = useSession();
   const session = sessionObj?.data;
-  const { setShowAuthModal, setAuthAction } = useCart();
+  const { setShowAuthModal, setAuthAction, getCartTotals } = useCart();
+  const { itemCount } = getCartTotals();
 
   const handleNavClick = (href) => {
     if (href === "/profile" && !session) {
@@ -24,7 +25,20 @@ export default function MobileNav() {
 
   const links = [
     { href: "/shop", icon: <Home size={22} />, label: "Shop" },
-    { href: "/cart", icon: <ShoppingCart size={22} />, label: "Cart" },
+    {
+      href: "/cart",
+      icon: (
+        <div className="relative">
+          <ShoppingCart size={22} />
+          {itemCount > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-[9px] rounded-full min-w-[15px] h-[15px] flex items-center justify-center font-bold border border-zinc-900">
+              {itemCount}
+            </span>
+          )}
+        </div>
+      ),
+      label: "Cart"
+    },
     { href: "/profile", icon: <User size={22} />, label: "Profile" },
   ];
 

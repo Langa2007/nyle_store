@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from 'react';
-import { useCart } from '../../context/mobile-v2/CartContext';
+import { useCart } from '../../context/CartContext/page';
 import { signIn } from 'next-auth/react';
+import Link from 'next/link';
 import { FaGoogle, FaEnvelope, FaLock, FaUser, FaArrowRight } from 'react-icons/fa';
 
 export default function AuthModal() {

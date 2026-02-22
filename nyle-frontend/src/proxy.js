@@ -6,7 +6,7 @@ export function proxy(request) {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(userAgent);
 
     // If mobile device, rewrite to _mobile specific routes
-    // We exclude /api, /_next, /static, /images, etc.
+    //  exclude /api, /_next, /static, /images, etc.
     const path = url.pathname;
 
     const isExcluded = path.startsWith('/api') ||
