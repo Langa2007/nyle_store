@@ -606,7 +606,7 @@ function HomeContent() {
               </div>
 
               {/* Dynamic Categories from API with Images */}
-              {categories.slice(0, 15).map((cat) => {
+              {categories.slice(0, 15).map((cat, index) => {
                 const { image: fallbackImage } = getCategoryConfig(cat.name);
                 const image = cat.image_url || fallbackImage;
                 const isSelected = selectedCategory === cat.name;

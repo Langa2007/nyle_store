@@ -29,10 +29,15 @@ export function CartProvider({ children }) {
     if (typeof window === 'undefined') return null;
     const token = localStorage.getItem('accessToken') || localStorage.getItem('userAccessToken');
     const userData = localStorage.getItem('user');
+
     if (token && userData) {
       try {
         const user = JSON.parse(userData);
-        return user.id;
+        // CRITICAL: Ensure we only use numeric IDs for the backend serial column.
+        // Google 'sub' strings (e.g. 1151703...) are too large or wrong type for SERIAL.
+        if (user.id && !isNaN(user.id) && Number.isInteger(Number(user.id))) {
+          return parseInt(user.id, 10);
+        }
       } catch (e) {
         return null;
       }

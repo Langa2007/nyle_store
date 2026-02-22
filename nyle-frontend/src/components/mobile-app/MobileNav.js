@@ -24,7 +24,7 @@ export default function MobileNav() {
   };
 
   const links = [
-    { href: "/shop", icon: <Home size={22} />, label: "Shop" },
+    { href: "/", icon: <Home size={22} />, label: "Shop" },
     {
       href: "/cart",
       icon: (
