@@ -12,11 +12,13 @@ if (typeof window !== "undefined") {
     baseURL = "http://localhost:5000/api";
   } else {
     // 🌐 Production (Render, Vercel, etc.)
-    baseURL = "https://nyle-store.onrender.com/api"; // <-- Replace with your deployed backend URL
+    const envUrl = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
+    baseURL = envUrl.endsWith("/api") ? envUrl : `${envUrl.replace(/\/$/, "")}/api`;
   }
 } else {
   // ⚙️ Server-side fallback for SSR builds
-  baseURL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com/api";
+  const envUrl = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
+  baseURL = envUrl.endsWith("/api") ? envUrl : `${envUrl.replace(/\/$/, "")}/api`;
 }
 
 // Axios instance

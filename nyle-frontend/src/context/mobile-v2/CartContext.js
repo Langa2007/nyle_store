@@ -17,7 +17,7 @@ export function CartProvider({ children }) {
     // Basic sync logic using local state
     if (cart.length > 0) {
       try {
-        const res = await fetch(`${API_URL}/api/cart/sync`, {
+        const res = await fetch(`${API_URL}/cart/sync`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

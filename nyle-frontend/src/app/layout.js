@@ -8,6 +8,7 @@ import ScrollToTop from "../components/ScrollToTop";
 import ClientProviders from "../components/ClientProviders";
 import AuthModal from "../components/AuthModal/page";
 import CartSidebar from "../components/CartSidebar/page";
+import MobileNav from "../components/mobile-app/MobileNav"; // Added
 import { SessionProviderWrapper } from "../components/SessionProviderWrapper";
 import SessionSync from "../components/SessionSync";
 
@@ -35,6 +36,7 @@ export default function RootLayout({ children }) {
               <ScrollToTop />
             </main>
 
+            <MobileNav /> {/* Added for mobile icons */}
 
             {/* Global modals and sidebars */}
             <AuthModal />

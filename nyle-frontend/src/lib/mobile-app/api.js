@@ -1,4 +1,9 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com/api";
+const getBaseUrl = () => {
+    const envUrl = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
+    return envUrl.endsWith("/api") ? envUrl : `${envUrl.replace(/\/$/, "")}/api`;
+};
+
+const BASE_URL = getBaseUrl();
 
 export async function fetchWithAuth(endpoint, options = {}) {
     const url = `${BASE_URL}${endpoint}`;
