@@ -39,7 +39,17 @@ export default function MobileNav() {
       ),
       label: "Cart"
     },
-    { href: "/profile", icon: <User size={22} />, label: "Profile" },
+    {
+      href: "/profile",
+      icon: session ? (
+        <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-[10px] border border-white/20">
+          {(session.user.name || session.user.email || 'U').charAt(0).toUpperCase()}
+        </div>
+      ) : (
+        <User size={22} />
+      ),
+      label: "Profile"
+    },
   ];
 
   return (

@@ -3,23 +3,24 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { ShoppingCart, Menu, X, Search } from "lucide-react";
 import Link from "next/link";
-import { FaHeart, FaUser, FaSignInAlt, FaUserPlus, FaStore } from "react-icons/fa";
+import { FaHeart, FaUser, FaSignInAlt, FaUserPlus, FaStore, FaCog, FaHistory, FaSignOutAlt } from "react-icons/fa";
 import { useRouter, usePathname } from "next/navigation";
 import debounce from "lodash.debounce";
 import { useCart } from "@/context/CartContext/page";
-
 import { useIsMobile } from "@/lib/useMobile";
-
+import { useSession, signOut } from "next-auth/react";
 
 export default function Navbar() {
   const isMobile = useIsMobile();
+  const { data: session, status } = useSession();
+  const userLoggedIn = status === "authenticated";
+  const userName = session?.user?.name || "";
+  const userInitial = userName ? userName.charAt(0).toUpperCase() : (session?.user?.email?.charAt(0).toUpperCase() || "");
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-
-  // use CSS for hiding to avoid hydration flickers
   const [isScrolled, setIsScrolled] = useState(false);
-  const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -336,43 +337,60 @@ export default function Navbar() {
             {/* User Account Dropdown */}
 
             <div className="relative group">
-              <button className={`p-2 transition flex items-center ${getTextColor()} ${getHoverColor()}`}>
-                <FaUser className="h-5 w-5" />
+              <button className={`p-1.5 transition flex items-center ${getTextColor()} ${getHoverColor()}`}>
+                {userLoggedIn ? (
+                  <div className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-md ring-2 ring-white/20">
+                    {userInitial}
+                  </div>
+                ) : (
+                  <FaUser className="h-5 w-5" />
+                )}
               </button>
 
               {/* Dropdown Menu */}
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 overflow-hidden py-1">
                 {userLoggedIn ? (
                   <>
-                    <Link href="/profile" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
-                      My Dashboard
+                    <div className="px-4 py-3 border-b border-gray-50 mb-1 bg-gray-50/50">
+                      <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Signed in as</p>
+                      <p className="text-sm font-bold text-gray-900 truncate">{userName || session?.user?.email}</p>
+                    </div>
+                    <Link href="/profile" className="flex items-center px-4 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                      <FaUser className="mr-3 text-blue-500 opacity-70" size={14} />
+                      <span className="text-sm font-medium">My Profile</span>
                     </Link>
-                    <Link href="/user/orders" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
-                      My Orders
+                    <Link href="/user/orders" className="flex items-center px-4 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                      <FaHistory className="mr-3 text-blue-500 opacity-70" size={14} />
+                      <span className="text-sm font-medium">My Orders</span>
                     </Link>
-                    <Link href="/user/wishlist" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition">
-                      Wishlist
+                    <Link href="/settings" className="flex items-center px-4 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                      <FaCog className="mr-3 text-blue-500 opacity-70" size={14} />
+                      <span className="text-sm font-medium">Settings</span>
                     </Link>
-                    <div className="border-t">
-                      <button className="block w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 transition">
-                        Logout
+                    <div className="border-t border-gray-100 mt-1">
+                      <button
+                        onClick={() => signOut({ callbackUrl: '/' })}
+                        className="flex items-center w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 transition-colors"
+                      >
+                        <FaSignOutAlt className="mr-3" size={14} />
+                        <span className="text-sm font-bold">Log out</span>
                       </button>
                     </div>
                   </>
                 ) : (
                   <>
-                    <Link href="/auth/login" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition flex items-center">
-                      <FaSignInAlt className="mr-2 text-blue-600" />
-                      User Login
+                    <Link href="/auth/login" className="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                      <FaSignInAlt className="mr-3 text-blue-600" />
+                      <span className="text-sm font-medium">User Login</span>
                     </Link>
-                    <Link href="/auth/signup" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition flex items-center">
-                      <FaUserPlus className="mr-2 text-green-600" />
-                      User Sign Up
+                    <Link href="/auth/signup" className="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                      <FaUserPlus className="mr-3 text-green-600" />
+                      <span className="text-sm font-medium">User Sign Up</span>
                     </Link>
-                    <div className="border-t pt-2">
-                      <Link href="/vendor/login" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition flex items-center text-sm">
-                        <FaStore className="mr-2 text-orange-600" />
-                        Seller Login
+                    <div className="border-t border-gray-100 mt-1 pt-1 bg-gray-50/50">
+                      <Link href="/vendor/login" className="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                        <FaStore className="mr-3 text-orange-600" />
+                        <span className="text-sm font-bold text-gray-800">Seller Dashboard</span>
                       </Link>
                     </div>
                   </>
