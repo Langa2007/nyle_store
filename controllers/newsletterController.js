@@ -114,10 +114,14 @@ export const sendAnnouncement = async (req, res) => {
 
     // Track results per email
     const results = { sent: 0, failed: 0, errors: [] };
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     for (const sub of subscribers) {
       try {
-        const sendResult = await resend.emails.send({
+        // Throttling to stay within Resend's free tier (2 req/sec)
+        await sleep(500);
+
+        const { data, error } = await resend.emails.send({
           from: "Nyle Store <onboarding@resend.dev>",
           to: sub.email,
           subject: title,
@@ -130,14 +134,17 @@ export const sendAnnouncement = async (req, res) => {
             </div>
           `,
         });
-        console.log(`✅ Email sent to ${sub.email}:`, JSON.stringify(sendResult));
-        results.sent++;
+
+        if (error) {
+          console.error(`❌ Resend Error for ${sub.email}:`, error);
+          results.failed++;
+          results.errors.push({ email: sub.email, error: error.message });
+        } else {
+          console.log(`✅ Email sent to ${sub.email}:`, data.id);
+          results.sent++;
+        }
       } catch (err) {
-        console.error(`❌ Failed to send email to ${sub.email}:`, {
-          message: err.message,
-          statusCode: err.statusCode,
-          name: err.name,
-        });
+        console.error(`❌ Network/SDK Error for ${sub.email}:`, err.message);
         results.failed++;
         results.errors.push({ email: sub.email, error: err.message });
       }
