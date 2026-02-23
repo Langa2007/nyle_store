@@ -28,7 +28,6 @@ export const subscribeNewsletter = async (req, res) => {
       `);
     } catch (tableErr) {
       console.error("Table creation error (ignoring if exists):", tableErr.message);
-      // We continue even if this fails, as the table might already exist but IF NOT EXISTS might be restricted
     }
 
     const result = await db.query(
@@ -108,31 +107,59 @@ export const sendAnnouncement = async (req, res) => {
       "SELECT email FROM newsletter_subscribers"
     );
 
-    if (subscribers.length === 0)
-      return res.status(200).json({ message: "No subscribers to send to." });
+    console.log(`📧 Newsletter send: found ${subscribers.length} subscriber(s)`);
 
-    // Send announcement via Resend
+    if (subscribers.length === 0)
+      return res.status(200).json({ message: "No subscribers to send to.", sent: 0, failed: 0 });
+
+    // Track results per email
+    const results = { sent: 0, failed: 0, errors: [] };
+
     for (const sub of subscribers) {
       try {
-        await resend.emails.send({
-          from: "onboarding@nyle.dev",
+        const sendResult = await resend.emails.send({
+          from: "Nyle Store <onboarding@resend.dev>",
           to: sub.email,
           subject: title,
           html: `
-            <h2>${title}</h2>
-            <p>${message}</p>
-            <br/>
-            <p style="font-size: 0.9rem; color: #555;">— Team Nyle</p>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #f9fafb; border-radius: 12px;">
+              <h1 style="color: #1d4ed8; margin-bottom: 12px;">${title}</h1>
+              <div style="color: #374151; font-size: 15px; line-height: 1.6;">${message}</div>
+              <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;" />
+              <p style="font-size: 0.85rem; color: #9ca3af;">— Team Nyle Store &middot; You're receiving this because you subscribed at nyle-luxe.vercel.app</p>
+            </div>
           `,
         });
+        console.log(`✅ Email sent to ${sub.email}:`, JSON.stringify(sendResult));
+        results.sent++;
       } catch (err) {
-        console.error(`Failed to send email to ${sub.email}:`, err);
+        console.error(`❌ Failed to send email to ${sub.email}:`, {
+          message: err.message,
+          statusCode: err.statusCode,
+          name: err.name,
+        });
+        results.failed++;
+        results.errors.push({ email: sub.email, error: err.message });
       }
     }
 
-    res.status(200).json({ message: "Announcement sent successfully!" });
+    console.log(`📊 Newsletter result: ${results.sent} sent, ${results.failed} failed`);
+
+    if (results.sent === 0 && results.failed > 0) {
+      return res.status(500).json({
+        message: `All emails failed to send. Error: ${results.errors[0]?.error || "Unknown"}`,
+        ...results,
+      });
+    }
+
+    res.status(200).json({
+      message: results.failed > 0
+        ? `Sent to ${results.sent} subscriber(s), ${results.failed} failed.`
+        : `Newsletter sent to all ${results.sent} subscriber(s)!`,
+      ...results,
+    });
   } catch (err) {
-    console.error("Send announcement error:", err.message);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Send announcement error:", err.message, err);
+    res.status(500).json({ message: "Internal server error", details: err.message });
   }
 };

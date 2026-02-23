@@ -55,17 +55,22 @@ export default function NewsletterPage() {
     }
     setSending(true);
     try {
-      await axios.post(
+      const res = await axios.post(
         `${API_BASE}/api/newsletter/send`,
         { title: subject, message },
         { headers: getAuthHeaders() }
       );
-      alert("✅ Newsletter sent successfully!");
+      const data = res.data;
+      const detail = data.sent !== undefined
+        ? `\n\n📨 Sent: ${data.sent}  |  ❌ Failed: ${data.failed}${data.errors?.length ? `\n\nFirst error: ${data.errors[0]?.error}` : ""}`
+        : "";
+      alert(`✅ ${data.message}${detail}`);
       setSubject("");
       setMessage("");
     } catch (err: any) {
       console.error("Failed to send newsletter:", err);
-      alert(`❌ Failed to send newsletter: ${err?.response?.data?.message || "Unknown error"}`);
+      const errData = err?.response?.data;
+      alert(`❌ ${errData?.message || "Failed to send newsletter"}\n\nDetails: ${errData?.details || "Unknown error"}`);
     } finally {
       setSending(false);
     }
