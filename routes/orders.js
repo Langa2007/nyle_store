@@ -8,11 +8,12 @@ import {
   getAllOrdersWithUserAndProducts,
 } from "../controllers/orderController.js";
 import { verifyAdmin } from "../middleware/adminAuth.js";
+import { orderCreationLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
 //  Create an order
-router.post("/", createOrder);
+router.post("/", orderCreationLimiter, createOrder);
 
 //  Get all orders
 router.get("/", getAllOrders);

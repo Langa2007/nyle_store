@@ -7,10 +7,11 @@ import {
   updateSupportStatus
 } from "../controllers/supportController.js";
 import { verifyAdmin } from "../middleware/adminAuth.js";
+import { contactLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
-router.post("/contact", createSupportMessage);
+router.post("/contact", contactLimiter, createSupportMessage);
 router.get("/messages", verifyAdmin, listSupportMessages);
 router.patch("/messages/:id/status", verifyAdmin, updateSupportStatus);
 

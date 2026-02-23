@@ -4,19 +4,19 @@ import {
   listProducts,
   getProductById,
   searchAndFilterProducts,
-
 } from "../controllers/productController.js";
+import { searchLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
-router.get("/search", searchAndFilterProducts);
+router.get("/search", searchLimiter, searchAndFilterProducts);
 router.get("/categories", (req, res, next) => {
-  // We'll delegate to the admin controller or moved logic
+  // Delegate to adminCategoryController
   import("../controllers/adminCategoryController.js").then(module => {
     module.getAllCategories(req, res);
   }).catch(next);
 });
-router.get("/", listProducts);
+router.get("/", searchLimiter, listProducts);
 router.get("/:id", getProductById);
 
 export default router;

@@ -2,11 +2,15 @@
 import express from "express";
 import { listFaqs, createFaq, deleteFaq } from "../controllers/faqController.js";
 import { verifyAdmin } from "../middleware/adminAuth.js";
+import { searchLimiter, adminActionLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
-router.get("/", listFaqs);
-router.post("/", verifyAdmin, createFaq);
-router.delete("/:id", verifyAdmin, deleteFaq);
+// Public — limited to prevent abuse
+router.get("/", searchLimiter, listFaqs);
+
+// Admin only
+router.post("/", verifyAdmin, adminActionLimiter, createFaq);
+router.delete("/:id", verifyAdmin, adminActionLimiter, deleteFaq);
 
 export default router;

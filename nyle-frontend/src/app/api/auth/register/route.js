@@ -3,9 +3,24 @@ export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server'
 import getPrisma from '@/lib/prisma'
+import { rateLimitRequest } from '@/lib/apiRateLimit'
 
 export async function POST(request) {
   try {
+    const { limited } = rateLimitRequest({
+      request,
+      namespace: "auth-register",
+      maxRequests: 8,
+      windowMs: 15 * 60 * 1000,
+    });
+
+    if (limited) {
+      return NextResponse.json(
+        { message: 'Too many registration attempts. Please try again later.' },
+        { status: 429 }
+      );
+    }
+
     const { name, email, password } = await request.json()
 
     // Validate input

@@ -1,6 +1,7 @@
+// routes/adminRoutes.js
 import express from "express";
 import { verifyAdmin } from "../middleware/adminAuth.js";
-
+import { adminActionLimiter, searchLimiter } from "../middleware/rateLimit.js";
 
 import {
   getAllUsers,
@@ -46,46 +47,44 @@ import {
   rejectProduct
 } from "../controllers/adminProductApprovalController.js";
 
-
 const router = express.Router();
 
-//  PRODUCTS
-router.post("/products", productUpload.fields([{ name: 'main_image', maxCount: 1 }, { name: 'gallery_images', maxCount: 5 }]), adminCreateProduct);
-router.get("/products", adminGetAllProducts);
-router.put("/products/:id", productUpload.single("image"), adminUpdateProduct);
-router.put("/products/:id/stock", adminUpdateStock);
-router.delete("/products/:id", adminDeleteProduct);
+// ── PRODUCTS ──────────────────────────────────────────────────────────────────
+router.post("/products", verifyAdmin, adminActionLimiter, productUpload.fields([{ name: 'main_image', maxCount: 1 }, { name: 'gallery_images', maxCount: 5 }]), adminCreateProduct);
+router.get("/products", verifyAdmin, searchLimiter, adminGetAllProducts);
+router.put("/products/:id", verifyAdmin, adminActionLimiter, productUpload.single("image"), adminUpdateProduct);
+router.put("/products/:id/stock", verifyAdmin, adminActionLimiter, adminUpdateStock);
+router.delete("/products/:id", verifyAdmin, adminActionLimiter, adminDeleteProduct);
 
-// VENDOR PRODUCT APPROVALS
+// ── VENDOR PRODUCT APPROVALS ──────────────────────────────────────────────────
 router.get("/products/pending", verifyAdmin, getPendingProducts);
-router.put("/products/:id/approve", verifyAdmin, approveProduct);
-router.put("/products/:id/reject", verifyAdmin, rejectProduct);
+router.put("/products/:id/approve", verifyAdmin, adminActionLimiter, approveProduct);
+router.put("/products/:id/reject", verifyAdmin, adminActionLimiter, rejectProduct);
 
+// ── PRODUCT VENDOR HELPERS ────────────────────────────────────────────────────
+router.post("/vendors/create-or-select", verifyAdmin, adminActionLimiter, productUpload.fields([{ name: 'company_logo', maxCount: 1 }]), createOrSelectVendor);
+router.get("/vendors/active-list", verifyAdmin, getActiveVendors);
+router.get("/vendors/details/:id", verifyAdmin, getVendorDetails);
+router.get("/vendors/:vendor_id/products", verifyAdmin, getProductsByVendor);
 
-// PRODUCT VENDOR HELPERS
-router.post("/vendors/create-or-select", productUpload.fields([{ name: 'company_logo', maxCount: 1 }]), createOrSelectVendor);
-router.get("/vendors/active-list", getActiveVendors);
-router.get("/vendors/details/:id", getVendorDetails);
-router.get("/vendors/:vendor_id/products", getProductsByVendor);
-
-//  USERS
+// ── USERS ─────────────────────────────────────────────────────────────────────
 router.get("/users", verifyAdmin, getAllUsers);
-router.delete("/users/:id", verifyAdmin, deleteUser);
-router.put("/users/:id/promote", verifyAdmin, promoteUser);
+router.delete("/users/:id", verifyAdmin, adminActionLimiter, deleteUser);
+router.put("/users/:id/promote", verifyAdmin, adminActionLimiter, promoteUser);
 
-//  VENDORS (Admin Management)
-router.get("/vendors", getAllVendors);
-router.put("/vendors/:id/approve", approveVendor);
-router.put("/vendors/:id/reject", rejectVendor);
+// ── VENDORS (Admin Management) ────────────────────────────────────────────────
+router.get("/vendors", verifyAdmin, searchLimiter, getAllVendors);
+router.put("/vendors/:id/approve", verifyAdmin, adminActionLimiter, approveVendor);
+router.put("/vendors/:id/reject", verifyAdmin, adminActionLimiter, rejectVendor);
 
-//  CATEGORIES
-router.post("/categories", categoryUpload, createCategory);
-router.get("/categories", getAllCategories);
-router.put("/categories/:id", categoryUpload, updateCategory);
-router.delete("/categories/:id", deleteCategory);
+// ── CATEGORIES ────────────────────────────────────────────────────────────────
+router.post("/categories", verifyAdmin, adminActionLimiter, categoryUpload, createCategory);
+router.get("/categories", getAllCategories); // public read — covered by publicLimiter globally
+router.put("/categories/:id", verifyAdmin, adminActionLimiter, categoryUpload, updateCategory);
+router.delete("/categories/:id", verifyAdmin, adminActionLimiter, deleteCategory);
 
-//  ORDERS
-router.get("/orders", getAllOrders);
-router.put("/orders/:id/status", updateOrderStatus);
+// ── ORDERS ────────────────────────────────────────────────────────────────────
+router.get("/orders", verifyAdmin, getAllOrders);
+router.put("/orders/:id/status", verifyAdmin, adminActionLimiter, updateOrderStatus);
 
 export default router;

@@ -75,6 +75,11 @@ interface ProductVariant {
 
 const baseurl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://nyle-store.onrender.com";
 
+const getAdminAuthHeaders = (): HeadersInit => {
+  const token = typeof window !== "undefined" ? localStorage.getItem("adminAccessToken") : null;
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -156,8 +161,8 @@ export default function AdminProductsPage() {
         setLoading(true);
 
         const [prodRes, catRes] = await Promise.all([
-          fetch(`${baseurl}/api/admin/products`, { credentials: "include" }),
-          fetch(`${baseurl}/api/admin/categories`, { credentials: "include" })
+          fetch(`${baseurl}/api/admin/products`, { headers: getAdminAuthHeaders() }),
+          fetch(`${baseurl}/api/admin/categories`, { headers: getAdminAuthHeaders() })
         ]);
 
         const [prodData, catData] = await Promise.all([
@@ -181,8 +186,7 @@ export default function AdminProductsPage() {
     const fetchVendors = async () => {
       try {
         const res = await fetch(`${baseurl}/api/admin/vendors`, {
-          credentials: "include",
-          headers: { 'Cache-Control': 'no-cache' }
+          headers: getAdminAuthHeaders()
         });
 
         if (res.ok) {
@@ -297,10 +301,10 @@ export default function AdminProductsPage() {
         formData.append(key, value);
       });
 
-      const res = await fetch(`${baseurl}/api/admin/vendors`, {
+      const res = await fetch(`${baseurl}/api/admin/vendors/create-or-select`, {
         method: "POST",
         body: formData,
-        credentials: "include"
+        headers: getAdminAuthHeaders()
       });
 
       const data = await res.json();
@@ -419,7 +423,7 @@ export default function AdminProductsPage() {
       const res = await fetch(`${baseurl}/api/admin/products`, {
         method: "POST",
         body: form,
-        credentials: "include"
+        headers: getAdminAuthHeaders()
       });
 
       const data = await res.json();
@@ -515,7 +519,7 @@ export default function AdminProductsPage() {
       const res = await fetch(`${baseurl}/api/admin/products/${editingProduct.id}`, {
         method: "PUT",
         body: form,
-        credentials: "include"
+        headers: getAdminAuthHeaders()
       });
 
       if (res.ok) {
@@ -584,7 +588,7 @@ export default function AdminProductsPage() {
     try {
       const res = await fetch(`${baseurl}/api/admin/products/${id}`, {
         method: "DELETE",
-        credentials: "include"
+        headers: getAdminAuthHeaders()
       });
 
       const data = await res.json();
@@ -1496,8 +1500,8 @@ export default function AdminProductsPage() {
                     type="submit"
                     disabled={submitting}
                     className={`w-full py-3 px-6 rounded-lg font-semibold text-lg flex items-center justify-center ${submitting
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg"
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg"
                       } transition-all`}
                   >
                     {submitting ? (

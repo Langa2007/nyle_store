@@ -9,11 +9,12 @@ import {
 } from "../controllers/vendorController.js";
 import { verifyAdmin } from "../middleware/adminAuth.js"; 
 import { verifyVendor } from "../middleware/vendorAuth.js"; 
+import { vendorApplyLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
 // Vendor applies
-router.post("/apply", createVendor);
+router.post("/apply", vendorApplyLimiter, createVendor);
 
 // Vendor profile (vendor must be logged in)
 router.get("/me", verifyVendor, myVendor);

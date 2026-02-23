@@ -10,40 +10,36 @@ import {
   getProductStats,
   upload
 } from "../controllers/vendorProductsController.js";
-
-
 import { checkProductLimit } from "../middleware/productLimitMiddleware.js";
+import { vendorMutationLimiter, searchLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
-// Add product
-router.post("/", verifyVendor, upload, addProduct);
+// Add product — requires vendor auth, product limit check, and mutation limiter
+router.post("/", verifyVendor, checkProductLimit, vendorMutationLimiter, upload, addProduct);
 
-// Get vendor’s products
-router.get("/", verifyVendor, getVendorProducts);
+// Get vendor's own products
+router.get("/", verifyVendor, searchLimiter, getVendorProducts);
 
 // Update vendor product
-router.put("/:id", verifyVendor, upload, updateProduct);
-
+router.put("/:id", verifyVendor, vendorMutationLimiter, upload, updateProduct);
 
 // Delete vendor product
-router.delete("/:id", verifyVendor, deleteProduct);
+router.delete("/:id", verifyVendor, vendorMutationLimiter, deleteProduct);
+
 // Get product stats
 router.get("/stats", verifyVendor, getProductStats);
 
+// Submit product for admin approval
+router.post("/:id/submit", verifyVendor, vendorMutationLimiter, submitForApproval);
 
-
-// Apply product limit middleware to product creation
-router.post("/products", checkProductLimit, addProduct);
-router.get("/products", getVendorProducts);
-router.put("/products/:id", updateProduct);
-router.post("/products/:id/submit", submitForApproval);
-router.get("/products/drafts", (req, res) => {
-  req.query = { status: 'draft' };
+// Filter by status
+router.get("/drafts", verifyVendor, (req, res) => {
+  req.query = { ...req.query, status: 'draft' };
   return getVendorProducts(req, res);
 });
-router.get("/products/pending", (req, res) => {
-  req.query = { status: 'pending' };
+router.get("/pending", verifyVendor, (req, res) => {
+  req.query = { ...req.query, status: 'pending' };
   return getVendorProducts(req, res);
 });
 

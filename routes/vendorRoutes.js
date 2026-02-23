@@ -2,6 +2,8 @@
 import express from "express";
 import { pool } from "../db/connect.js";
 import { Resend } from "resend";
+import { verifyAdmin } from "../middleware/adminAuth.js";
+import { adminActionLimiter, searchLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -29,7 +31,7 @@ async function sendVendorStatusEmail(email, status) {
     }
 
     await resend.emails.send({
-      from: "Nyle Store <noreply@nyle-store.resend.dev>",
+      from: "Nyle Store <onboarding@resend.dev>",
       to: email,
       subject,
       html,
@@ -42,7 +44,7 @@ async function sendVendorStatusEmail(email, status) {
 }
 
 // --- Get all pending vendors (admin only) ---
-router.get("/pending", async (req, res) => {
+router.get("/pending", verifyAdmin, searchLimiter, async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT id, legal_name, company_name, email, status, is_verified FROM vendors WHERE status = 'pending'"
@@ -54,19 +56,16 @@ router.get("/pending", async (req, res) => {
   }
 });
 
-// --- Approve vendor ---
-router.put("/:id/approve", async (req, res) => {
+// --- Approve vendor (admin only) ---
+router.put("/:id/approve", verifyAdmin, adminActionLimiter, async (req, res) => {
   try {
     const { id } = req.params;
-
     const q = await pool.query(
       "UPDATE vendors SET status = 'approved' WHERE id = $1 RETURNING email",
       [id]
     );
     const vendorEmail = q.rows[0]?.email;
-
     if (vendorEmail) await sendVendorStatusEmail(vendorEmail, "approved");
-
     res.json({ message: "Vendor approved and email sent" });
   } catch (err) {
     console.error("Approve vendor error:", err);
@@ -74,19 +73,16 @@ router.put("/:id/approve", async (req, res) => {
   }
 });
 
-// --- Reject vendor ---
-router.put("/:id/reject", async (req, res) => {
+// --- Reject vendor (admin only) ---
+router.put("/:id/reject", verifyAdmin, adminActionLimiter, async (req, res) => {
   try {
     const { id } = req.params;
-
     const q = await pool.query(
       "UPDATE vendors SET status = 'rejected' WHERE id = $1 RETURNING email",
       [id]
     );
     const vendorEmail = q.rows[0]?.email;
-
     if (vendorEmail) await sendVendorStatusEmail(vendorEmail, "rejected");
-
     res.json({ message: "Vendor rejected and email sent" });
   } catch (err) {
     console.error("Reject vendor error:", err);

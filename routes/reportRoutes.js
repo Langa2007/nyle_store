@@ -2,14 +2,15 @@
 import express from "express";
 import { createReport, listReports, updateReportStatus } from "../controllers/reportController.js";
 import { verifyAdmin } from "../middleware/adminAuth.js";
-import { body, validationResult } from "express-validator";
-import { createSupportMessage } from "../controllers/supportController.js";
+import { reportLimiter, adminActionLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
-router.post("/", createReport);
+// Public — submit a report (rate limited)
+router.post("/", reportLimiter, createReport);
+
+// Admin only
 router.get("/", verifyAdmin, listReports);
-router.patch("/:id/status", verifyAdmin, updateReportStatus);
-router.post("/", createSupportMessage);
+router.patch("/:id/status", verifyAdmin, adminActionLimiter, updateReportStatus);
 
 export default router;

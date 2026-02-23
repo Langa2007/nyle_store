@@ -8,40 +8,27 @@ import {
   deleteVendor,
 } from "../controllers/adminVendorController.js";
 import {
-   getPendingProducts,
+  getPendingProducts,
   approveProduct,
   rejectProduct,
   bulkApproveProducts
 } from "../controllers/adminProductApprovalController.js";
-
-
-
+import { verifyAdmin } from "../middleware/adminAuth.js";
+import { adminActionLimiter, searchLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
-//  Get all vendors (any status)
-router.get("/",  getAllVendors);
+// ── VENDOR MANAGEMENT ─────────────────────────────────────────────────────────
+router.get("/", verifyAdmin, searchLimiter, getAllVendors);
+router.get("/pending", verifyAdmin, searchLimiter, getPendingVendors);
+router.patch("/:id/approve", verifyAdmin, adminActionLimiter, approveVendor);
+router.patch("/:id/reject", verifyAdmin, adminActionLimiter, rejectVendor);
+router.delete("/:id", verifyAdmin, adminActionLimiter, deleteVendor);
 
-//  Get only pending vendors
-router.get("/pending",  getPendingVendors);
-
-//  Approve vendor
-router.patch("/:id/approve",  approveVendor);
-
-//  Reject vendor
-router.patch("/:id/reject",  rejectVendor);
-
-//  Delete vendor
-router.delete("/:id", deleteVendor);
-// ================= PRODUCT APPROVAL ROUTES ================= //
-
-//  Get all pending products
-router.get("/products/pending", getPendingProducts);
-//  Approve a product
-router.post("/products/:id/approve", approveProduct);
-//  Reject a product
-router.post("/products/:id/reject", rejectProduct);
-//  Bulk approve products
-router.post("/products/bulk-approve", bulkApproveProducts);
+// ── PRODUCT APPROVAL ROUTES ───────────────────────────────────────────────────
+router.get("/products/pending", verifyAdmin, getPendingProducts);
+router.post("/products/:id/approve", verifyAdmin, adminActionLimiter, approveProduct);
+router.post("/products/:id/reject", verifyAdmin, adminActionLimiter, rejectProduct);
+router.post("/products/bulk-approve", verifyAdmin, adminActionLimiter, bulkApproveProducts);
 
 export default router;

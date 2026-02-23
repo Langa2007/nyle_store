@@ -1,16 +1,17 @@
 import express from "express";
 import { subscribeNewsletter, getSubscribers, sendAnnouncement } from "../controllers/newsletterController.js";
 import { verifyAdmin } from "../middleware/adminAuth.js";
-import { body, validationResult } from "express-validator";
+import { newsletterLimiter, adminActionLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
-// public
-router.post("/subscribe", subscribeNewsletter);
+// Public — subscribe (rate limited)
+router.post("/subscribe", newsletterLimiter, subscribeNewsletter);
 
-// admin
+// Admin — view subscribers list
 router.get("/subscribers", verifyAdmin, getSubscribers);
-router.post("/send", verifyAdmin, sendAnnouncement);
 
+// Admin — send newsletter (also rate limited to prevent runaway sends)
+router.post("/send", verifyAdmin, adminActionLimiter, sendAnnouncement);
 
 export default router;

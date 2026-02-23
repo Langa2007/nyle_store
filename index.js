@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import { connectDB } from "./db/connect.js";
 import bodyparser from "body-parser";
 import { publicLimiter } from "./middleware/rateLimit.js";
-import { contactLimiter } from "./middleware/rateLimit.js";
 import { createBullBoard } from "@bull-board/api";
 import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
 import { ExpressAdapter } from "@bull-board/express";
@@ -37,6 +36,7 @@ import userResetPasswordRoutes from "./routes/UserResetPasswordRoutes.js";
 dotenv.config();
 
 const app = express();
+app.set("trust proxy", 1);
 const allowedOrigins = [
   "http://localhost:3000",
   "https://nyle-admin.vercel.app",
@@ -121,8 +121,7 @@ createBullBoard({
   serverAdapter: serverAdapter,
 });
 
-app.use(publicLimiter); // Apply rate limiting to all requests
-app.use("/api/support/contact", contactLimiter); // Apply stricter rate limiting to contact route
+app.use("/api", publicLimiter); // Baseline limiter for all API endpoints
 
 // --- ROUTES ---
 app.use("/api/users", userRoutes);
