@@ -33,8 +33,6 @@ export function CartProvider({ children }) {
     if (token && userData) {
       try {
         const user = JSON.parse(userData);
-        // CRITICAL: Ensure we only use numeric IDs for the backend serial column.
-        // Google 'sub' strings (e.g. 1151703...) are too large or wrong type for SERIAL.
         if (user.id && !isNaN(user.id) && Number.isInteger(Number(user.id))) {
           return parseInt(user.id, 10);
         }

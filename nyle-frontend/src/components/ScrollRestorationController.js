@@ -22,10 +22,6 @@ export default function ScrollRestorationController() {
 
     const restoreScroll = () => {
       const savedPosition = scrollPositions.current[key];
-    
-      // Otherwise, ONLY scroll to top if we explicitly don't want to preserve (e.g., new navigation).
-      // However, typical behavior for "new page" is top.
-      // But for "back" navigation, we want the saved position.
 
       // Since Next.js doesn't easily distinguish "back" vs "push" in this effect without more complex router events,
       // use a simple heuristic:
@@ -33,7 +29,7 @@ export default function ScrollRestorationController() {
       // NOTE: usePathname triggers on both push and pop.
 
       if (savedPosition !== undefined) {
-        // Create a small retry mechanism to handle dynamic content loading (e.g. images expanding layout)
+        // Create a small retry mechanism to handle dynamic content loading
         let attempts = 0;
         const attemptScroll = () => {
           if (Math.abs(scrollRoot.scrollTop - savedPosition) > 10) {

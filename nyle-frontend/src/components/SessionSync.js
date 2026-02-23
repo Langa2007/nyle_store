@@ -27,9 +27,9 @@ export default function SessionSync() {
             }
         } else if (status === "unauthenticated") {
             // Clear if logged out via NextAuth
-            // Note: We only clear these if they look like they were set by this sync
+            // Note: only clear these if they look like they were set by this sync
             // to avoid conflicting with manual logins if any.
-            // For simplicity, we assume NextAuth is the primary driver now.
+            // For simplicity, assume NextAuth is the primary driver.
             localStorage.removeItem("accessToken");
             localStorage.removeItem("userAccessToken");
             localStorage.removeItem("user");
