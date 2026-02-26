@@ -1,19 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
     FaBuilding, FaUser, FaEnvelope, FaPhone, FaGlobe,
     FaLock, FaCheckCircle, FaStore, FaShieldAlt, FaTruck,
-    FaChartLine, FaHandshake
+    FaChartLine, FaHandshake, FaExclamationTriangle
 } from "react-icons/fa";
+import countriesList from 'all-countries-list';
 
-const countries = [
-    "United States", "United Kingdom", "China", "India", "Germany", "Japan",
-    "France", "Canada", "Australia", "United Arab Emirates", "Turkey",
-    "South Africa", "Nigeria", "Tanzania", "Uganda", "Rwanda", "Egypt",
-    "Italy", "Spain", "Netherlands", "Singapore", "Malaysia", "Brazil"
-];
+// Import flags
+import * as Flags from 'country-flag-icons/react/3x2';
+
+// Convert the countries data to our format
+const countries = Object.values(countriesList).map(country => ({
+    name: country.name,
+    code: country.code,
+    dialCode: country.dialCode,
+    emoji: country.emoji
+})).sort((a, b) => a.name.localeCompare(b.name));
 
 const businessTypes = [
     "Electronics & Accessories", "Home & Garden", "Cutleries", "Beauty Products",
@@ -44,6 +49,68 @@ export default function OverseasVendorSignup() {
     const [loading, setLoading] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState(0);
     const [acceptTerms, setAcceptTerms] = useState(false);
+    const [selectedCountry, setSelectedCountry] = useState(null);
+    const [showKenyaModal, setShowKenyaModal] = useState(false);
+    const [phoneError, setPhoneError] = useState("");
+
+    // Update phone when country changes
+    useEffect(() => {
+        if (selectedCountry && selectedCountry.name !== "Kenya") {
+            setForm(prev => ({
+                ...prev,
+                phone: selectedCountry.dialCode
+            }));
+        }
+    }, [selectedCountry]);
+
+    const handleCountryChange = (e) => {
+        const countryName = e.target.value;
+        
+        // Special handling for Kenya
+        if (countryName === "Kenya") {
+            setShowKenyaModal(true);
+            e.target.value = "";
+            return;
+        }
+
+        const country = countries.find(c => c.name === countryName);
+        setSelectedCountry(country);
+        setForm({
+            ...form,
+            country: countryName
+        });
+    };
+
+    const handlePhoneChange = (e) => {
+        let value = e.target.value;
+        
+        if (selectedCountry) {
+            const dialCode = selectedCountry.dialCode;
+            // If user tries to delete or modify dial code, reset it
+            if (!value.startsWith(dialCode)) {
+                value = dialCode;
+            } else {
+                // Allow only numbers after the dial code
+                const numberPart = value.slice(dialCode.length).replace(/[^0-9]/g, '');
+                value = dialCode + numberPart;
+            }
+        }
+        
+        setForm({
+            ...form,
+            phone: value
+        });
+
+        // Basic validation
+        if (selectedCountry && value.length > selectedCountry.dialCode.length) {
+            const numberWithoutCode = value.replace(selectedCountry.dialCode, "");
+            if (numberWithoutCode.length < 4) {
+                setPhoneError("Phone number is too short");
+            } else {
+                setPhoneError("");
+            }
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -93,6 +160,11 @@ export default function OverseasVendorSignup() {
             return;
         }
 
+        if (phoneError) {
+            setError("Please enter a valid phone number.");
+            return;
+        }
+
         const urlToCall = `${process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com"}/api/vendor/auth/signup`;
 
         try {
@@ -111,7 +183,7 @@ export default function OverseasVendorSignup() {
                     country: form.country,
                     business_type: form.business_type,
                     password: form.password,
-                    type: 'overseas' // Flagging for backend
+                    type: 'overseas'
                 }),
             });
 
@@ -137,8 +209,75 @@ export default function OverseasVendorSignup() {
         }
     };
 
+    // Kenya Support Modal
+    const KenyaModal = () => (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl p-8 max-w-md mx-4 relative">
+                <div className="absolute top-4 right-4">
+                    <button 
+                        onClick={() => setShowKenyaModal(false)}
+                        className="text-gray-400 hover:text-gray-600"
+                    >
+                        ✕
+                    </button>
+                </div>
+                
+                <div className="text-center">
+                    <div className="bg-yellow-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                        <FaExclamationTriangle className="text-yellow-600 text-3xl" />
+                    </div>
+                    
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                        Kenyan Vendors
+                    </h3>
+                    
+                    <p className="text-gray-600 mb-6">
+                        For Kenyan-based vendors, please use our local registration portal for a smoother experience and localized support.
+                    </p>
+                    
+                    <div className="space-y-3">
+                        <a
+                            href="/vendor/signup/kenya"
+                            className="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition"
+                        >
+                            Go to Kenyan Vendor Portal
+                        </a>
+                        
+                        <button
+                            onClick={() => {
+                                setShowKenyaModal(false);
+                                window.location.href = "mailto:kenya-support@nyle.co.ke?subject=Kenyan Vendor Registration Assistance";
+                            }}
+                            className="block w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-200 transition"
+                        >
+                            Contact Support
+                        </button>
+                        
+                        <button
+                            onClick={() => setShowKenyaModal(false)}
+                            className="text-gray-500 text-sm hover:text-gray-700"
+                        >
+                            Continue with International Registration
+                        </button>
+                    </div>
+                    
+                    <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                        <p className="text-sm text-blue-800">
+                            <strong>Quick Support:</strong><br />
+                            Email: kenya-support@nyle.co.ke<br />
+                            Phone: +254 700 000 000
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
     return (
-        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-50 py-8 px-4 hidden md:block">
+        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-50 py-8 px-4">
+            {/* Kenya Modal */}
+            {showKenyaModal && <KenyaModal />}
+
             {/* Header Section */}
             <div className="max-w-6xl mx-auto text-center mb-8">
                 <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -299,15 +438,32 @@ export default function OverseasVendorSignup() {
                                             <FaPhone className="mr-2 text-blue-600" />
                                             International Phone *
                                         </label>
-                                        <input
-                                            type="text"
-                                            name="phone"
-                                            placeholder="+1 / +44 / +86 ..."
-                                            value={form.phone}
-                                            onChange={handleChange}
-                                            required
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                        />
+                                        <div className="relative">
+                                            {selectedCountry && (
+                                                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center">
+                                                    <span className="text-xl mr-2">{selectedCountry.emoji}</span>
+                                                    <span className="text-gray-600 font-medium">{selectedCountry.dialCode}</span>
+                                                </div>
+                                            )}
+                                            <input
+                                                type="tel"
+                                                name="phone"
+                                                value={form.phone}
+                                                onChange={handlePhoneChange}
+                                                required
+                                                disabled={!selectedCountry}
+                                                placeholder={!selectedCountry ? "Select a country first" : "Enter number after code"}
+                                                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
+                                                    selectedCountry ? 'pl-24' : ''
+                                                } ${phoneError ? 'border-red-500' : 'border-gray-300'}`}
+                                            />
+                                        </div>
+                                        {phoneError && (
+                                            <p className="mt-1 text-sm text-red-600">{phoneError}</p>
+                                        )}
+                                        {!selectedCountry && (
+                                            <p className="mt-1 text-sm text-gray-500">Please select your country first</p>
+                                        )}
                                     </div>
 
                                     <div>
@@ -318,16 +474,20 @@ export default function OverseasVendorSignup() {
                                         <select
                                             name="country"
                                             value={form.country}
-                                            onChange={handleChange}
+                                            onChange={handleCountryChange}
                                             required
                                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                            title="Select your base country"
                                         >
                                             <option value="">Select Country</option>
                                             {countries.map((country, i) => (
-                                                <option key={i} value={country}>{country}</option>
+                                                <option key={i} value={country.name}>
+                                                    {country.emoji} {country.name} ({country.dialCode})
+                                                </option>
                                             ))}
                                         </select>
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            Note: Kenyan vendors use separate registration
+                                        </p>
                                     </div>
                                 </div>
 
@@ -358,7 +518,6 @@ export default function OverseasVendorSignup() {
                                         onChange={handleChange}
                                         required
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                        title="Select your primary niche"
                                     >
                                         <option value="">Select Product Type</option>
                                         {businessTypes.map((type, i) => (
@@ -434,11 +593,12 @@ export default function OverseasVendorSignup() {
                                 {/* Submit Button */}
                                 <button
                                     type="submit"
-                                    disabled={loading || !acceptTerms}
-                                    className={`w-full py-4 px-6 rounded-lg font-bold text-lg transition-all ${loading || !acceptTerms
+                                    disabled={loading || !acceptTerms || !selectedCountry || !!phoneError}
+                                    className={`w-full py-4 px-6 rounded-lg font-bold text-lg transition-all ${
+                                        loading || !acceptTerms || !selectedCountry || phoneError
                                             ? "bg-gray-400 cursor-not-allowed"
                                             : "bg-gradient-to-r from-blue-700 to-blue-900 hover:from-blue-800 hover:to-black shadow-lg hover:shadow-xl"
-                                        } text-white`}
+                                    } text-white`}
                                 >
                                     {loading ? (
                                         <span className="flex items-center justify-center">
@@ -468,7 +628,7 @@ export default function OverseasVendorSignup() {
             {/* Footer Note */}
             <div className="max-w-3xl mx-auto mt-8 text-center text-gray-500 text-sm">
                 <p>Global accounts undergo specialized verification for import/export compliance. This may take 3-5 business days.</p>
-                <p className="mt-2">International Support: <span className="text-blue-600">global-support@nyle.co.ke</span></p>
+                <p className="mt-2">International Support: <span className="text-blue-600">global-support@nyle.com</span></p>
             </div>
         </div>
     );

@@ -1,12 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   FaStore, FaUser, FaEnvelope, FaPhone, FaBriefcase,
   FaCheckCircle, FaGlobe, FaClock, FaPaperPlane,
   FaHandshake, FaChartLine, FaShieldAlt, FaTruck
 } from "react-icons/fa";
+import countriesList from 'all-countries-list';
+
+// Convert the countries data to our format
+const countries = Object.values(countriesList).map(country => ({
+    name: country.name,
+    code: country.code,
+    dialCode: country.dialCode,
+    emoji: country.emoji
+})).sort((a, b) => a.name.localeCompare(b.name));
 
 export const dynamic = 'force-dynamic';
 
@@ -19,13 +28,86 @@ export default function VendorInterest() {
     business_email: "",
     phone_number: "",
     business_phone: "",
-    location: "",
+    location_country: "",
+    location_city: "",
     agree_terms: false,
   });
 
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedBusinessCountry, setSelectedBusinessCountry] = useState(null);
+  const [phoneError, setPhoneError] = useState("");
+  const [businessPhoneError, setBusinessPhoneError] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // Update personal phone when country changes
+  useEffect(() => {
+    if (selectedCountry) {
+      setForm(prev => ({
+        ...prev,
+        phone_number: selectedCountry.dialCode
+      }));
+    }
+  }, [selectedCountry]);
+
+  // Update business phone when country changes
+  useEffect(() => {
+    if (selectedBusinessCountry) {
+      setForm(prev => ({
+        ...prev,
+        business_phone: selectedBusinessCountry.dialCode
+      }));
+    }
+  }, [selectedBusinessCountry]);
+
+  const handleCountryChange = (e, type) => {
+    const countryName = e.target.value;
+    const country = countries.find(c => c.name === countryName);
+    
+    if (type === 'personal') {
+      setSelectedCountry(country);
+      setForm({
+        ...form,
+        location_country: countryName
+      });
+    } else {
+      setSelectedBusinessCountry(country);
+    }
+  };
+
+  const handlePhoneChange = (e, type) => {
+    let value = e.target.value;
+    const selectedCountryObj = type === 'personal' ? selectedCountry : selectedBusinessCountry;
+    const errorSetter = type === 'personal' ? setPhoneError : setBusinessPhoneError;
+    
+    if (selectedCountryObj) {
+      const dialCode = selectedCountryObj.dialCode;
+      // If user tries to delete or modify dial code, reset it
+      if (!value.startsWith(dialCode)) {
+        value = dialCode;
+      } else {
+        // Allow only numbers after the dial code
+        const numberPart = value.slice(dialCode.length).replace(/[^0-9]/g, '');
+        value = dialCode + numberPart;
+      }
+    }
+    
+    setForm({
+      ...form,
+      [type === 'personal' ? 'phone_number' : 'business_phone']: value
+    });
+
+    // Basic validation
+    if (selectedCountryObj && value.length > selectedCountryObj.dialCode.length) {
+      const numberWithoutCode = value.replace(selectedCountryObj.dialCode, "");
+      if (numberWithoutCode.length < 4) {
+        errorSetter("Phone number is too short");
+      } else {
+        errorSetter("");
+      }
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -44,9 +126,16 @@ export default function VendorInterest() {
       return;
     }
 
+    if (phoneError || businessPhoneError) {
+      setError("Please enter valid phone numbers.");
+      return;
+    }
+
     setLoading(true);
 
-    // Real API call
+    // Combine country and city for location
+    const fullLocation = `${form.location_city}, ${form.location_country}`;
+
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com"}/api/vendor-leads/submit`, {
         method: "POST",
@@ -58,8 +147,10 @@ export default function VendorInterest() {
           business_email: form.business_email,
           phone: form.phone_number,
           business_phone: form.business_phone,
-          location: form.location,
-          type: form.location.toLowerCase().includes("kenya") ? "kenyan" : "overseas"
+          location: fullLocation,
+          country: form.location_country,
+          city: form.location_city,
+          type: form.location_country === "Kenya" ? "kenyan" : "overseas"
         }),
       });
 
@@ -76,9 +167,12 @@ export default function VendorInterest() {
         business_email: "",
         phone_number: "",
         business_phone: "",
-        location: "",
+        location_country: "",
+        location_city: "",
         agree_terms: false,
       });
+      setSelectedCountry(null);
+      setSelectedBusinessCountry(null);
 
     } catch (err) {
       setError(err.message || "Something went wrong. Please try again.");
@@ -120,7 +214,7 @@ export default function VendorInterest() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-50 py-12 px-4 hidden md:block">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-50 py-12 px-4">
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Column - Benefits & Info */}
         <div className="space-y-6">
@@ -281,21 +375,77 @@ export default function VendorInterest() {
                 />
               </div>
 
+              {/* Location - Country First */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                  <FaGlobe className="mr-2 text-blue-600" />
+                  Country *
+                </label>
+                <select
+                  name="location_country"
+                  value={form.location_country}
+                  onChange={(e) => handleCountryChange(e, 'personal')}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                >
+                  <option value="">Select Country</option>
+                  {countries.map((country, i) => (
+                    <option key={i} value={country.name}>
+                      {country.emoji} {country.name} ({country.dialCode})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* City */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                  <FaGlobe className="mr-2 text-blue-600" />
+                  City *
+                </label>
+                <input
+                  type="text"
+                  name="location_city"
+                  placeholder="e.g., Nairobi, London, New York"
+                  value={form.location_city}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                />
+              </div>
+
               {/* Personal Phone */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
                   <FaPhone className="mr-2 text-blue-600" />
                   Your Phone Number *
                 </label>
-                <input
-                  type="tel"
-                  name="phone_number"
-                  placeholder="+254 7XX XXX XXX"
-                  value={form.phone_number}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                />
+                <div className="relative">
+                  {selectedCountry && (
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center">
+                      <span className="text-xl mr-2">{selectedCountry.emoji}</span>
+                      <span className="text-gray-600 font-medium">{selectedCountry.dialCode}</span>
+                    </div>
+                  )}
+                  <input
+                    type="tel"
+                    name="phone_number"
+                    value={form.phone_number}
+                    onChange={(e) => handlePhoneChange(e, 'personal')}
+                    required
+                    disabled={!selectedCountry}
+                    placeholder={!selectedCountry ? "Select country first" : "Enter number after code"}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
+                      selectedCountry ? 'pl-24' : ''
+                    } ${phoneError ? 'border-red-500' : 'border-gray-300'}`}
+                  />
+                </div>
+                {phoneError && (
+                  <p className="mt-1 text-sm text-red-600">{phoneError}</p>
+                )}
+                {!selectedCountry && (
+                  <p className="mt-1 text-sm text-gray-500">Please select your country first</p>
+                )}
               </div>
 
               {/* Business Phone */}
@@ -304,33 +454,44 @@ export default function VendorInterest() {
                   <FaPhone className="mr-2 text-blue-600" />
                   Business Phone Number *
                 </label>
-                <input
-                  type="tel"
-                  name="business_phone"
-                  placeholder="+254 7XX XXX XXX"
-                  value={form.business_phone}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                />
-              </div>
-
-              {/* Location */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                  <FaGlobe className="mr-2 text-blue-600" />
-                  Your Location (Country/City) *
-                </label>
-                <input
-                  type="text"
-                  name="location"
-                  placeholder="e.g., Nairobi, Kenya or London, UK"
-                  value={form.location}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                />
-                <p className="text-xs text-gray-500 mt-1">We'll send the appropriate signup link based on your location</p>
+                <div className="relative">
+                  {selectedBusinessCountry && (
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center">
+                      <span className="text-xl mr-2">{selectedBusinessCountry.emoji}</span>
+                      <span className="text-gray-600 font-medium">{selectedBusinessCountry.dialCode}</span>
+                    </div>
+                  )}
+                  <select
+                    onChange={(e) => handleCountryChange(e, 'business')}
+                    value={selectedBusinessCountry?.name || ""}
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-24 opacity-0 cursor-pointer"
+                  >
+                    <option value="">Select</option>
+                    {countries.map((country, i) => (
+                      <option key={i} value={country.name}>
+                        {country.emoji} {country.name} ({country.dialCode})
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="tel"
+                    name="business_phone"
+                    value={form.business_phone}
+                    onChange={(e) => handlePhoneChange(e, 'business')}
+                    required
+                    disabled={!selectedBusinessCountry}
+                    placeholder={!selectedBusinessCountry ? "Select country first" : "Enter number after code"}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
+                      selectedBusinessCountry ? 'pl-24' : ''
+                    } ${businessPhoneError ? 'border-red-500' : 'border-gray-300'}`}
+                  />
+                </div>
+                {businessPhoneError && (
+                  <p className="mt-1 text-sm text-red-600">{businessPhoneError}</p>
+                )}
+                {!selectedBusinessCountry && (
+                  <p className="mt-1 text-sm text-gray-500">Please select your country first</p>
+                )}
               </div>
 
               {/* Terms Agreement */}
@@ -346,11 +507,11 @@ export default function VendorInterest() {
                 />
                 <label htmlFor="agree_terms" className="text-sm text-gray-700">
                   I agree to the{" "}
-                  <a href="/terms" className="text-blue-600 hover:underline font-medium">
+                  <a href="vendor/terms" className="text-blue-600 hover:underline font-medium">
                     Terms & Conditions
                   </a>
                   {" "}and{" "}
-                  <a href="/privacy" className="text-blue-600 hover:underline font-medium">
+                  <a href="vendor/privacy" className="text-blue-600 hover:underline font-medium">
                     Privacy Policy
                   </a>
                   . I understand that Nyle will contact me within 3 business days.
@@ -360,11 +521,12 @@ export default function VendorInterest() {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={loading}
-                className={`w-full py-4 px-6 rounded-lg font-bold text-lg transition-all flex items-center justify-center ${loading
+                disabled={loading || !selectedCountry || !selectedBusinessCountry || phoneError || businessPhoneError}
+                className={`w-full py-4 px-6 rounded-lg font-bold text-lg transition-all flex items-center justify-center ${
+                  loading || !selectedCountry || !selectedBusinessCountry || phoneError || businessPhoneError
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl"
-                  } text-white`}
+                } text-white`}
               >
                 {loading ? (
                   <>
