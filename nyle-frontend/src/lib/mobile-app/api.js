@@ -40,4 +40,5 @@ export const API_ENDPOINTS = {
     CART: "/cart",
     USER: "/user",
     AUTH: "/auth",
+    LOCATION: "/location",
 };

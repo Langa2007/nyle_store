@@ -1,27 +1,44 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { User, LogOut, ShoppingBag, Settings, Mail, Calendar, Shield, CreditCard, MapPin, ChevronRight, Package, ExternalLink } from "lucide-react";
+import { User, LogOut, ShoppingBag, Settings, Mail, Calendar, Shield, CreditCard, MapPin, ChevronRight, Package, ExternalLink, Plus, Trash2, Navigation } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import useGeolocation from "@/hooks/useGeolocation";
+import { toast } from "react-hot-toast"; 
 
 export default function ProfilePage() {
     const { data: session, status } = useSession();
     const [orders, setOrders] = useState([]);
+    const [locations, setLocations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("overview");
+
+    // Geolocation and New Location State
+    const { getCoordinates, loading: geoLoading } = useGeolocation();
+    const [newLocation, setNewLocation] = useState({ name: "", address: "", is_default: false });
+    const [showAddForm, setShowAddForm] = useState(false);
+    const [submittingLocation, setSubmittingLocation] = useState(false);
 
     useEffect(() => {
         async function getProfileData() {
             if (!session?.user?.id) return;
             try {
                 setLoading(true);
-                // Using existing cart style fetching logic or similar for orders if available
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/orders/user/${session.user.id}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setOrders(data);
+                const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
+
+                // Fetch Orders
+                const ordersRes = await fetch(`${baseUrl}/api/orders/user/${session.user.id}`);
+                if (ordersRes.ok) setOrders(await ordersRes.json());
+
+                // Fetch Locations
+                const locRes = await fetch(`${baseUrl}/api/location`, {
+                    headers: { 'Authorization': `Bearer ${session.accessToken || session.user.accessToken}` }
+                });
+                if (locRes.ok) {
+                    const data = await locRes.json();
+                    setLocations(data.locations || []);
                 }
             } catch (err) {
                 console.error("Failed to fetch profile data:", err);
@@ -120,8 +137,8 @@ export default function ProfilePage() {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl font-bold transition-all ${activeTab === tab.id
-                                        ? "bg-blue-600 text-white shadow-xl shadow-blue-200"
-                                        : "bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-600"
+                                    ? "bg-blue-600 text-white shadow-xl shadow-blue-200"
+                                    : "bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-600"
                                     }`}
                             >
                                 <div className="flex items-center gap-3">
@@ -253,8 +270,167 @@ export default function ProfilePage() {
                                 </motion.div>
                             )}
 
+                            {activeTab === "addresses" && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="space-y-6"
+                                >
+                                    <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden text-left">
+                                        <div className="px-8 py-6 border-b border-gray-50 flex items-center justify-between">
+                                            <h2 className="text-xl font-black text-gray-900">Your Shipping Addresses</h2>
+                                            {!showAddForm && (
+                                                <button
+                                                    onClick={() => setShowAddForm(true)}
+                                                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 transition"
+                                                >
+                                                    <Plus size={16} /> Add New
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        {showAddForm && (
+                                            <div className="p-8 bg-blue-50/30 border-b border-gray-50">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Label (e.g. Home, Office)"
+                                                        value={newLocation.name}
+                                                        onChange={(e) => setNewLocation({ ...newLocation, name: e.target.value })}
+                                                        className="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none"
+                                                    />
+                                                    <div className="flex gap-2">
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Full Address"
+                                                            value={newLocation.address}
+                                                            onChange={(e) => setNewLocation({ ...newLocation, address: e.target.value })}
+                                                            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none"
+                                                        />
+                                                        <button
+                                                            onClick={async () => {
+                                                                try {
+                                                                    const coords = await getCoordinates();
+                                                                    // In a real app we'd reverse geocode here. For now, we'll just log coords for the demo
+                                                                    toast?.success || alert("Location detected! Please enter the address label.");
+                                                                    setNewLocation(prev => ({ ...prev, latitude: coords.latitude, longitude: coords.longitude }));
+                                                                } catch (err) {
+                                                                    alert(err);
+                                                                }
+                                                            }}
+                                                            disabled={geoLoading}
+                                                            className="p-3 bg-white border border-gray-200 rounded-xl text-blue-600 hover:bg-blue-50 transition disabled:opacity-50"
+                                                            title="Auto-detect location"
+                                                        >
+                                                            <Navigation size={20} className={geoLoading ? "animate-pulse" : ""} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2 mb-6">
+                                                    <input
+                                                        type="checkbox"
+                                                        id="is_default"
+                                                        checked={newLocation.is_default}
+                                                        onChange={(e) => setNewLocation({ ...newLocation, is_default: e.target.checked })}
+                                                    />
+                                                    <label htmlFor="is_default" className="text-sm text-gray-600 font-medium">Set as default address</label>
+                                                </div>
+                                                <div className="flex gap-3">
+                                                    <button
+                                                        disabled={submittingLocation}
+                                                        onClick={async () => {
+                                                            if (!newLocation.address) return alert("Address is required");
+                                                            setSubmittingLocation(true);
+                                                            try {
+                                                                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/location`, {
+                                                                    method: "POST",
+                                                                    headers: {
+                                                                        "Content-Type": "application/json",
+                                                                        "Authorization": `Bearer ${session.accessToken || session.user.accessToken}`
+                                                                    },
+                                                                    body: JSON.stringify(newLocation)
+                                                                });
+                                                                if (res.ok) {
+                                                                    const data = await res.json();
+                                                                    setLocations([data.location, ...locations]);
+                                                                    setShowAddForm(false);
+                                                                    setNewLocation({ name: "", address: "", is_default: false });
+                                                                }
+                                                            } catch (err) {
+                                                                alert("Failed to save location");
+                                                            } finally {
+                                                                setSubmittingLocation(false);
+                                                            }
+                                                        }}
+                                                        className="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition disabled:opacity-50"
+                                                    >
+                                                        {submittingLocation ? "Saving..." : "Save Address"}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setShowAddForm(false)}
+                                                        className="bg-white border border-gray-200 text-gray-700 px-6 py-2 rounded-xl font-bold hover:bg-gray-50 transition"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="p-8">
+                                            {locations.length === 0 ? (
+                                                <div className="text-center py-12">
+                                                    <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                        <MapPin size={32} className="text-gray-300" />
+                                                    </div>
+                                                    <h3 className="text-lg font-bold text-gray-900">No addresses yet</h3>
+                                                    <p className="text-gray-500 font-medium">Add a shipping address to speed up your checkout process.</p>
+                                                </div>
+                                            ) : (
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    {locations.map((loc) => (
+                                                        <div key={loc.id} className={`p-6 rounded-2xl border transition-all ${loc.is_default ? 'bg-blue-50/50 border-blue-200 shadow-lg shadow-blue-50' : 'border-gray-100 hover:border-gray-200'}`}>
+                                                            <div className="flex justify-between items-start mb-4">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className={`p-2 rounded-lg ${loc.is_default ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}>
+                                                                        <MapPin size={18} />
+                                                                    </div>
+                                                                    <div>
+                                                                        <h4 className="font-bold text-gray-900">{loc.name}</h4>
+                                                                        {loc.is_default && <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Default</span>}
+                                                                    </div>
+                                                                </div>
+                                                                <button
+                                                                    onClick={async () => {
+                                                                        if (!confirm("Are you sure you want to delete this address?")) return;
+                                                                        try {
+                                                                            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/location/${loc.id}`, {
+                                                                                method: "DELETE",
+                                                                                headers: { "Authorization": `Bearer ${session.accessToken || session.user.accessToken}` }
+                                                                            });
+                                                                            if (res.ok) {
+                                                                                setLocations(locations.filter(l => l.id !== loc.id));
+                                                                            }
+                                                                        } catch (err) {
+                                                                            alert("Failed to delete address");
+                                                                        }
+                                                                    }}
+                                                                    className="text-gray-400 hover:text-red-600 transition"
+                                                                >
+                                                                    <Trash2 size={18} />
+                                                                </button>
+                                                            </div>
+                                                            <p className="text-gray-600 text-sm font-medium leading-relaxed">{loc.address}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+
                             {/* Other tabs placeholders */}
-                            {(activeTab === "payment" || activeTab === "addresses" || activeTab === "security") && (
+                            {(activeTab === "payment" || activeTab === "security") && (
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}

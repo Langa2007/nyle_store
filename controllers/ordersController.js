@@ -2,81 +2,33 @@
 import pool from "../db/connect.js";
 
 //  CREATE ORDER (SINGLE PRODUCT CHECKOUT)
+import { createOrder as createOrderInModel } from "../models/ordersModel.js";
+
 export const createOrder = async (req, res) => {
-  const client = await pool.connect();
   try {
     const user_id = req.user.id; // from JWT middleware
-    const { product_id, quantity, shipping_address } = req.body;
+    const { product_id, quantity, shipping_address, shipping_location_id } = req.body;
 
-    if (!product_id || !quantity || !shipping_address) {
-      return res.status(400).json({ error: "Missing required fields" });
+    if (!product_id || !quantity) {
+      return res.status(400).json({ error: "Missing required fields: product_id and quantity" });
     }
 
-    await client.query("BEGIN");
+    // Unified model handles stock checking and items insertion
+    const items = [{ product_id, quantity }];
 
-    //  1. Get product + vendor
-    const productRes = await client.query(
-      `SELECT id, price, stock, vendor_id 
-       FROM products 
-       WHERE id = $1`,
-      [product_id]
-    );
-
-    if (productRes.rows.length === 0) {
-      throw new Error("Product not found");
-    }
-
-    const product = productRes.rows[0];
-
-    if (product.stock < quantity) {
-      throw new Error("Insufficient stock");
-    }
-
-    const total_amount = product.price * quantity;
-
-    // 2. Create order (WITH vendor_id )
-    const orderRes = await client.query(
-      `INSERT INTO orders (user_id, vendor_id, total_amount, shipping_address, status)
-       VALUES ($1, $2, $3, $4, 'pending')
-       RETURNING *`,
-      [user_id, product.vendor_id, total_amount, shipping_address]
-    );
-
-    const order = orderRes.rows[0];
-
-    //  3. Insert order item (WITH vendor_id )
-    await client.query(
-      `INSERT INTO order_items (order_id, product_id, vendor_id, quantity, price)
-       VALUES ($1, $2, $3, $4, $5)`,
-      [
-        order.id,
-        product.id,
-        product.vendor_id,
-        quantity,
-        product.price,
-      ]
-    );
-
-    //  4. Reduce stock
-    await client.query(
-      `UPDATE products 
-       SET stock = stock - $1 
-       WHERE id = $2`,
-      [quantity, product.id]
-    );
-
-    await client.query("COMMIT");
+    const { order_id, total } = await createOrderInModel(user_id, items, {
+      shipping_address,
+      shipping_location_id
+    });
 
     res.status(201).json({
       message: "Order placed successfully",
-      order,
+      order_id,
+      total
     });
   } catch (err) {
-    await client.query("ROLLBACK");
     console.error(" Checkout Error:", err.message);
     res.status(500).json({ error: err.message });
-  } finally {
-    client.release();
   }
 };
 

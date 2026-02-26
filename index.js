@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./db/connect.js";
+import { initDB } from "./db/init.js";
 import bodyparser from "body-parser";
 import { publicLimiter } from "./middleware/rateLimit.js";
 import { createBullBoard } from "@bull-board/api";
@@ -31,6 +32,9 @@ import vendorRoutes from "./routes/vendorRoutes.js";
 import authRoutes from "./routes/auth.js";
 import passwordroutes from "./routes/passwordResetRoutes.js";
 import userResetPasswordRoutes from "./routes/UserResetPasswordRoutes.js";
+import locationRoutes from "./routes/locationRoutes.js";
+import vendorLeadRoutes from "./routes/vendorLeadRoutes.js";
+
 
 
 dotenv.config();
@@ -163,6 +167,9 @@ app.use("/api/faqs", faqRoutes);
 
 // Reported issues routes
 app.use("/api/reports", reportRoutes);
+app.use("/api/location", locationRoutes);
+app.use("/api/vendor-leads", vendorLeadRoutes);
+
 
 
 
@@ -192,11 +199,12 @@ app.use((err, req, res, next) => {
 const startServer = async () => {
   try {
     await connectDB();
+    await initDB();
     app.listen(PORT, () => {
       console.log(` Server running on port ${PORT}`);
     });
   } catch (err) {
-    console.error(" Failed to connect to DB:", err);
+    console.error(" Failed to connect or initialize DB:", err);
     process.exit(1);
   }
 };

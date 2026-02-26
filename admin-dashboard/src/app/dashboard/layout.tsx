@@ -83,6 +83,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       badge: "5"
     },
     {
+      name: "Vendor Leads",
+      href: "/dashboard/leads",
+      icon: <Building2 size={18} />,
+      badge: "New"
+    },
+    {
       name: "Products",
       href: "/dashboard/products",
       icon: <Package size={18} />,

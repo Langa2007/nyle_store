@@ -8,6 +8,9 @@ const createOrderTables = async () => {
       CREATE TABLE IF NOT EXISTS orders (
         id SERIAL PRIMARY KEY,
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        vendor_id INTEGER REFERENCES users(id), -- Added to support vendor tracking per order
+        shipping_location_id INTEGER REFERENCES user_locations(id) ON DELETE SET NULL,
+        shipping_address TEXT,
         total_amount NUMERIC(10,2),
         status VARCHAR(50) DEFAULT 'pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -19,6 +22,7 @@ const createOrderTables = async () => {
         id SERIAL PRIMARY KEY,
         order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
         product_id INTEGER REFERENCES products(id),
+        vendor_id INTEGER, -- Added to track vendor per item
         quantity INTEGER NOT NULL,
         price NUMERIC(10,2)
       );
@@ -32,7 +36,8 @@ const createOrderTables = async () => {
 createOrderTables();
 
 //  Create a new order and its items
-export const createOrder = async (user_id, items) => {
+export const createOrder = async (user_id, items, locationData = {}) => {
+  const { shipping_location_id = null, shipping_address = null, vendor_id = null } = locationData;
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -60,23 +65,23 @@ export const createOrder = async (user_id, items) => {
 
     // Insert into orders
     const orderRes = await client.query(
-      'INSERT INTO orders (user_id, total_amount) VALUES ($1, $2) RETURNING id',
-      [user_id, total]
+      'INSERT INTO orders (user_id, total_amount, shipping_location_id, shipping_address, vendor_id) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+      [user_id, total, shipping_location_id, shipping_address, vendor_id]
     );
     const orderId = orderRes.rows[0].id;
 
     // Insert order_items and update stock
     for (const { product_id, quantity } of items) {
-      // price stored at purchase time
-      const productPriceRes = await client.query(
-        'SELECT price FROM products WHERE id = $1',
+      // Get product details (including price and vendor_id)
+      const prodRes = await client.query(
+        'SELECT price, vendor_id FROM products WHERE id = $1',
         [product_id]
       );
-      const price = productPriceRes.rows[0].price;
+      const { price, vendor_id } = prodRes.rows[0];
 
       await client.query(
-        'INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)',
-        [orderId, product_id, quantity, price]
+        'INSERT INTO order_items (order_id, product_id, vendor_id, quantity, price) VALUES ($1, $2, $3, $4, $5)',
+        [orderId, product_id, vendor_id, quantity, price]
       );
 
       await client.query(

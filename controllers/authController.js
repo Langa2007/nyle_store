@@ -3,25 +3,6 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import pool from "../db/connect.js";
 
-// Ensure users table exists (runs on load)
-const ensureUsersTable = async () => {
-  try {
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255),
-        email VARCHAR(255) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        is_verified BOOLEAN DEFAULT false,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-  } catch (err) {
-    console.error("Failed to ensure users table:", err.message);
-  }
-};
-ensureUsersTable();
-
 const JWT_EXPIRES = process.env.JWT_EXPIRES || "2h";
 
 // POST /api/auth/register
