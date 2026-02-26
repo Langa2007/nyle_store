@@ -9,12 +9,15 @@ import {
 } from "react-icons/fa";
 import countriesList from 'all-countries-list';
 
+// Import flags
+import * as Flags from 'country-flag-icons/react/3x2';
+
 // Convert the countries data to our format
 const countries = Object.values(countriesList).map(country => ({
-    name: country.name,
-    code: country.code,
-    dialCode: country.dialCode,
-    emoji: country.emoji
+  name: country.name,
+  code: country.code,
+  dialCode: country.dialCode,
+  emoji: country.emoji
 })).sort((a, b) => a.name.localeCompare(b.name));
 
 export const dynamic = 'force-dynamic';
@@ -64,7 +67,7 @@ export default function VendorInterest() {
   const handleCountryChange = (e, type) => {
     const countryName = e.target.value;
     const country = countries.find(c => c.name === countryName);
-    
+
     if (type === 'personal') {
       setSelectedCountry(country);
       setForm({
@@ -80,7 +83,7 @@ export default function VendorInterest() {
     let value = e.target.value;
     const selectedCountryObj = type === 'personal' ? selectedCountry : selectedBusinessCountry;
     const errorSetter = type === 'personal' ? setPhoneError : setBusinessPhoneError;
-    
+
     if (selectedCountryObj) {
       const dialCode = selectedCountryObj.dialCode;
       // If user tries to delete or modify dial code, reset it
@@ -92,7 +95,7 @@ export default function VendorInterest() {
         value = dialCode + numberPart;
       }
     }
-    
+
     setForm({
       ...form,
       [type === 'personal' ? 'phone_number' : 'business_phone']: value
@@ -423,8 +426,10 @@ export default function VendorInterest() {
                 <div className="relative">
                   {selectedCountry && (
                     <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center">
-                      <span className="text-xl mr-2">{selectedCountry.emoji}</span>
-                      <span className="text-gray-600 font-medium">{selectedCountry.dialCode}</span>
+                      {(() => {
+                        const Flag = Flags[selectedCountry.code];
+                        return Flag ? <Flag className="w-6 h-4 mr-2" /> : <span className="text-xl mr-2">{selectedCountry.emoji}</span>;
+                      })()}
                     </div>
                   )}
                   <input
@@ -435,9 +440,8 @@ export default function VendorInterest() {
                     required
                     disabled={!selectedCountry}
                     placeholder={!selectedCountry ? "Select country first" : "Enter number after code"}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-                      selectedCountry ? 'pl-24' : ''
-                    } ${phoneError ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${selectedCountry ? 'pl-14' : ''
+                      } ${phoneError ? 'border-red-500' : 'border-gray-300'}`}
                   />
                 </div>
                 {phoneError && (
@@ -457,8 +461,10 @@ export default function VendorInterest() {
                 <div className="relative">
                   {selectedBusinessCountry && (
                     <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center">
-                      <span className="text-xl mr-2">{selectedBusinessCountry.emoji}</span>
-                      <span className="text-gray-600 font-medium">{selectedBusinessCountry.dialCode}</span>
+                      {(() => {
+                        const Flag = Flags[selectedBusinessCountry.code];
+                        return Flag ? <Flag className="w-6 h-4 mr-2" /> : <span className="text-xl mr-2">{selectedBusinessCountry.emoji}</span>;
+                      })()}
                     </div>
                   )}
                   <select
@@ -481,9 +487,8 @@ export default function VendorInterest() {
                     required
                     disabled={!selectedBusinessCountry}
                     placeholder={!selectedBusinessCountry ? "Select country first" : "Enter number after code"}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-                      selectedBusinessCountry ? 'pl-24' : ''
-                    } ${businessPhoneError ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${selectedBusinessCountry ? 'pl-14' : ''
+                      } ${businessPhoneError ? 'border-red-500' : 'border-gray-300'}`}
                   />
                 </div>
                 {businessPhoneError && (
@@ -522,11 +527,10 @@ export default function VendorInterest() {
               <button
                 type="submit"
                 disabled={loading || !selectedCountry || !selectedBusinessCountry || phoneError || businessPhoneError}
-                className={`w-full py-4 px-6 rounded-lg font-bold text-lg transition-all flex items-center justify-center ${
-                  loading || !selectedCountry || !selectedBusinessCountry || phoneError || businessPhoneError
+                className={`w-full py-4 px-6 rounded-lg font-bold text-lg transition-all flex items-center justify-center ${loading || !selectedCountry || !selectedBusinessCountry || phoneError || businessPhoneError
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl"
-                } text-white`}
+                  } text-white`}
               >
                 {loading ? (
                   <>

@@ -65,7 +65,7 @@ export default function OverseasVendorSignup() {
 
     const handleCountryChange = (e) => {
         const countryName = e.target.value;
-        
+
         // Special handling for Kenya
         if (countryName === "Kenya") {
             setShowKenyaModal(true);
@@ -83,7 +83,7 @@ export default function OverseasVendorSignup() {
 
     const handlePhoneChange = (e) => {
         let value = e.target.value;
-        
+
         if (selectedCountry) {
             const dialCode = selectedCountry.dialCode;
             // If user tries to delete or modify dial code, reset it
@@ -95,7 +95,7 @@ export default function OverseasVendorSignup() {
                 value = dialCode + numberPart;
             }
         }
-        
+
         setForm({
             ...form,
             phone: value
@@ -214,27 +214,27 @@ export default function OverseasVendorSignup() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl p-8 max-w-md mx-4 relative">
                 <div className="absolute top-4 right-4">
-                    <button 
+                    <button
                         onClick={() => setShowKenyaModal(false)}
                         className="text-gray-400 hover:text-gray-600"
                     >
                         ✕
                     </button>
                 </div>
-                
+
                 <div className="text-center">
                     <div className="bg-yellow-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
                         <FaExclamationTriangle className="text-yellow-600 text-3xl" />
                     </div>
-                    
+
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">
                         Kenyan Vendors
                     </h3>
-                    
+
                     <p className="text-gray-600 mb-6">
                         For Kenyan-based vendors, please use our local registration portal for a smoother experience and localized support.
                     </p>
-                    
+
                     <div className="space-y-3">
                         <a
                             href="/vendor/signup/kenya"
@@ -242,7 +242,7 @@ export default function OverseasVendorSignup() {
                         >
                             Go to Kenyan Vendor Portal
                         </a>
-                        
+
                         <button
                             onClick={() => {
                                 setShowKenyaModal(false);
@@ -252,7 +252,7 @@ export default function OverseasVendorSignup() {
                         >
                             Contact Support
                         </button>
-                        
+
                         <button
                             onClick={() => setShowKenyaModal(false)}
                             className="text-gray-500 text-sm hover:text-gray-700"
@@ -260,7 +260,7 @@ export default function OverseasVendorSignup() {
                             Continue with International Registration
                         </button>
                     </div>
-                    
+
                     <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                         <p className="text-sm text-blue-800">
                             <strong>Quick Support:</strong><br />
@@ -441,8 +441,10 @@ export default function OverseasVendorSignup() {
                                         <div className="relative">
                                             {selectedCountry && (
                                                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center">
-                                                    <span className="text-xl mr-2">{selectedCountry.emoji}</span>
-                                                    <span className="text-gray-600 font-medium">{selectedCountry.dialCode}</span>
+                                                    {(() => {
+                                                        const Flag = Flags[selectedCountry.code];
+                                                        return Flag ? <Flag className="w-6 h-4 mr-2" /> : <span className="text-xl mr-2">{selectedCountry.emoji}</span>;
+                                                    })()}
                                                 </div>
                                             )}
                                             <input
@@ -453,9 +455,8 @@ export default function OverseasVendorSignup() {
                                                 required
                                                 disabled={!selectedCountry}
                                                 placeholder={!selectedCountry ? "Select a country first" : "Enter number after code"}
-                                                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-                                                    selectedCountry ? 'pl-24' : ''
-                                                } ${phoneError ? 'border-red-500' : 'border-gray-300'}`}
+                                                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${selectedCountry ? 'pl-14' : ''
+                                                    } ${phoneError ? 'border-red-500' : 'border-gray-300'}`}
                                             />
                                         </div>
                                         {phoneError && (
@@ -594,11 +595,10 @@ export default function OverseasVendorSignup() {
                                 <button
                                     type="submit"
                                     disabled={loading || !acceptTerms || !selectedCountry || !!phoneError}
-                                    className={`w-full py-4 px-6 rounded-lg font-bold text-lg transition-all ${
-                                        loading || !acceptTerms || !selectedCountry || phoneError
+                                    className={`w-full py-4 px-6 rounded-lg font-bold text-lg transition-all ${loading || !acceptTerms || !selectedCountry || phoneError
                                             ? "bg-gray-400 cursor-not-allowed"
                                             : "bg-gradient-to-r from-blue-700 to-blue-900 hover:from-blue-800 hover:to-black shadow-lg hover:shadow-xl"
-                                    } text-white`}
+                                        } text-white`}
                                 >
                                     {loading ? (
                                         <span className="flex items-center justify-center">
