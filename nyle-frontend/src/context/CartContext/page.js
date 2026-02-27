@@ -33,8 +33,8 @@ export function CartProvider({ children }) {
     if (token && userData) {
       try {
         const user = JSON.parse(userData);
-        if (user.id && !isNaN(user.id) && Number.isInteger(Number(user.id))) {
-          return parseInt(user.id, 10);
+        if (user.id) {
+          return String(user.id);
         }
       } catch (e) {
         return null;

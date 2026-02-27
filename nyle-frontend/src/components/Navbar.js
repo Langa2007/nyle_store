@@ -254,7 +254,7 @@ export default function Navbar() {
                   value={searchQuery}
                   onChange={handleSearchChange}
                   onFocus={() => searchQuery && setShowSearchResults(true)}
-                  className={`pl-10 pr-4 py-2 rounded-lg border transition-all duration-300 w-48 focus:w-64 focus:outline-none text-base placeholder:text-gray-400 placeholder:text-sm md:placeholder:text-base ${isScrolled
+                  className={`pl-10 pr-4 py-2 rounded-lg border transition-all duration-300 w-48 md:w-80 focus:w-64 md:focus:w-[450px] focus:outline-none text-base placeholder:text-gray-400 placeholder:text-sm md:placeholder:text-base ${isScrolled
                     ? 'bg-gray-50 border-gray-200 text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'
                     : 'bg-white/20 border-white/30 text-white placeholder-blue-100 focus:bg-white focus:text-gray-800 focus:border-white'
                     }`}
@@ -274,7 +274,7 @@ export default function Navbar() {
 
               {/* Search Results Dropdown */}
               {showSearchResults && (
-                <div className={`absolute top-full left-0 mt-1 w-96 rounded-lg shadow-xl overflow-hidden z-50 ${isScrolled ? 'bg-white' : 'bg-white'
+                <div className={`absolute top-full left-0 mt-1 w-full min-w-[300px] rounded-lg shadow-xl overflow-hidden z-50 ${isScrolled ? 'bg-white' : 'bg-white'
                   }`}>
                   <div className="max-h-80 overflow-y-auto">
                     {isSearching ? (

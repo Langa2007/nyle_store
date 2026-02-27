@@ -23,7 +23,7 @@ model announcements {
 
 model cart {
   id         Int          @id @default(autoincrement())
-  user_id    Int?
+  user_id    String?
   session_id String?      @db.VarChar(255)
   product_id Int?
   quantity   Int          @default(1)
@@ -111,7 +111,7 @@ model order_items {
 
 model orders {
   id           Int           @id @default(autoincrement())
-  user_id      Int?
+  user_id      String?
   total_price  Decimal?      @db.Decimal(10, 2)
   status       String?       @default("pending") @db.VarChar(50)
   created_at   DateTime?     @default(now()) @db.Timestamp(6)
@@ -129,7 +129,7 @@ model password_reset_tokens {
   token      String    @unique @db.VarChar(128)
   expires_at BigInt
   created_at DateTime? @default(now()) @db.Timestamp(6)
-  user_id    Int
+  user_id    String
   user_type  String    @db.VarChar(20)
 
   @@index([expires_at], map: "idx_password_reset_expires")
@@ -236,7 +236,7 @@ model reported_issues {
 model reviews {
   id         Int       @id @default(autoincrement())
   product_id Int?
-  user_id    Int?
+  user_id    String?
   rating     Int?
   comment    String?
   created_at DateTime? @default(now()) @db.Timestamp(6)
@@ -260,7 +260,7 @@ model support_messages {
 
 model user_sessions {
   id            Int       @id @default(autoincrement())
-  user_id       Int
+  user_id       String
   session_token String    @db.VarChar(255)
   created_at    DateTime? @default(now()) @db.Timestamp(6)
   expires_at    DateTime  @db.Timestamp(6)
@@ -268,7 +268,7 @@ model user_sessions {
 }
 
 model User {
-  id             Int              @id @default(autoincrement())
+  id             String           @id @default(dbgenerated("nextval('users_id_seq'::regclass)"))
   name           String           @db.VarChar(100)
   email          String           @unique @db.VarChar(100)
   password       String?          @db.VarChar(255)
@@ -306,7 +306,7 @@ model vendor_categories {
 model vendor_members {
   id        Int     @id @default(autoincrement())
   vendor_id Int
-  user_id   Int
+  user_id   String
   role      String  @db.VarChar(30)
   user      User    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   vendors   vendors @relation(fields: [vendor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
@@ -410,7 +410,7 @@ enum vendor_status {
 // NextAuth models
 model Account {
   id                String  @id @default(cuid())
-  userId            Int
+  userId            String
   type              String
   provider          String
   providerAccountId String
@@ -429,7 +429,7 @@ model Account {
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
-  userId       Int
+  userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
