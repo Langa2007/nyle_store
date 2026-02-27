@@ -62,20 +62,67 @@ export const getAuthOptions = async () => {
             signUp: '/auth/signup',
         },
         callbacks: {
-            async jwt({ token, user, account }) {
+            async jwt({ token, user, account, profile }) {
+                const db = await getPrisma();
+                let needsUpdate = false;
+
+                // Case 1: Initial sign in - Link user to DB
                 if (user) {
-                    token.id = user.id
+                    if (db) {
+                        try {
+                            if (account?.provider === 'google') {
+                                let dbUser = await db.user.findUnique({
+                                    where: { email: user.email }
+                                });
 
-                    // Import jwt locally to avoid build-time worker crashes
-                    const jwt = (await import('jsonwebtoken')).default;
+                                if (!dbUser) {
+                                    dbUser = await db.user.create({
+                                        data: {
+                                            email: user.email,
+                                            name: user.name || 'Google User',
+                                            image: user.image,
+                                        }
+                                    });
+                                    console.log(`[Auth] Created new Google user: ${user.email} (ID: ${dbUser.id})`);
+                                }
+                                token.id = String(dbUser.id);
+                                needsUpdate = true;
+                            } else {
+                                // For credentials, token.id follows user.id
+                                token.id = String(user.id);
+                                needsUpdate = true;
+                            }
+                        } catch (error) {
+                            console.error("[Auth] Error syncing user to DB in jwt callback:", error);
+                        }
+                    }
+                }
+                // Case 2: Refreshing existing session - Self-heal if session uses provider ID
+                else if (token.id && token.id.length > 15 && token.email && db) {
+                    try {
+                        const dbUser = await db.user.findUnique({
+                            where: { email: token.email }
+                        });
+                        if (dbUser) {
+                            console.log(`[Auth] Auto-migrating session ID for ${token.email}: ${token.id} -> ${dbUser.id}`);
+                            token.id = String(dbUser.id);
+                            needsUpdate = true;
+                        }
+                    } catch (error) {
+                        console.error("[Auth] Error migrating session ID:", error);
+                    }
+                }
 
-                    // Create a backend-compatible token
-                    token.accessToken = jwt.sign(
-                        { id: user.id, email: user.email, role: 'user' },
+                // If the ID was updated or it's a new login, refresh the backend-compatible accessToken
+                if (needsUpdate || !token.accessToken) {
+                    const jwtHelper = (await import('jsonwebtoken')).default;
+                    token.accessToken = jwtHelper.sign(
+                        { id: token.id, email: token.email || user?.email, role: 'user' },
                         process.env.JWT_SECRET || 'fallback_secret_during_build',
                         { expiresIn: '24h' }
-                    )
+                    );
                 }
+
                 return token
             },
             async session({ session, token }) {
