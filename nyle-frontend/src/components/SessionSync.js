@@ -9,10 +9,21 @@ import { useEffect } from "react";
  * This ensures the Express backend remains compatible.
  */
 export default function SessionSync() {
-    const { data: session, status } = useSession();
+    const { data: session, status, update } = useSession();
 
     useEffect(() => {
         if (status === "authenticated" && session?.accessToken) {
+            const isBadId = session.user?.id && String(session.user.id).length > 15;
+
+            if (isBadId) {
+                console.warn("[SessionSync] Detected provider ID in session. Requesting migration...");
+                // Clear any residue from localStorage to stop the backend error immediately
+                localStorage.removeItem("user");
+                // Trigger a session refresh to run the JWT migrator
+                update();
+                return;
+            }
+
             // Sync to localStorage for Express backend compatibility
             localStorage.setItem("accessToken", session.accessToken);
             localStorage.setItem("userAccessToken", session.accessToken);
@@ -26,10 +37,7 @@ export default function SessionSync() {
                 }));
             }
         } else if (status === "unauthenticated") {
-            // Clear if logged out via NextAuth
-            // Note: only clear these if they look like they were set by this sync
-            // to avoid conflicting with manual logins if any.
-            // For simplicity, assume NextAuth is the primary driver.
+            // ... (rest of the logic)
             localStorage.removeItem("accessToken");
             localStorage.removeItem("userAccessToken");
             localStorage.removeItem("user");

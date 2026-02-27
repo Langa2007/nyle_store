@@ -68,6 +68,7 @@ export const getAuthOptions = async () => {
 
                 // Case 1: Initial sign in - Link user to DB
                 if (user) {
+                    token.email = user.email; // CRITICAL: Ensure email is preserved for Case 2
                     if (db) {
                         try {
                             if (account?.provider === 'google') {
@@ -87,10 +88,12 @@ export const getAuthOptions = async () => {
                                 }
                                 token.id = String(dbUser.id);
                                 needsUpdate = true;
+                                console.log(`[Auth] Login (Google): ${user.email} -> Internal ID: ${token.id}`);
                             } else {
                                 // For credentials, token.id follows user.id
                                 token.id = String(user.id);
                                 needsUpdate = true;
+                                console.log(`[Auth] Login (Credentials): ${user.email} -> Internal ID: ${token.id}`);
                             }
                         } catch (error) {
                             console.error("[Auth] Error syncing user to DB in jwt callback:", error);
@@ -98,13 +101,14 @@ export const getAuthOptions = async () => {
                     }
                 }
                 // Case 2: Refreshing existing session - Self-heal if session uses provider ID
-                else if (token.id && token.id.length > 15 && token.email && db) {
+                else if (token.id && token.id.length > 15 && (token.email || token.sub) && db) {
                     try {
+                        const searchEmail = token.email || token.sub; // Fallback if email is somehow missing
                         const dbUser = await db.user.findUnique({
-                            where: { email: token.email }
+                            where: { email: searchEmail }
                         });
                         if (dbUser) {
-                            console.log(`[Auth] Auto-migrating session ID for ${token.email}: ${token.id} -> ${dbUser.id}`);
+                            console.log(`[Auth] Auto-migrating session ID for ${searchEmail}: ${token.id} -> ${dbUser.id}`);
                             token.id = String(dbUser.id);
                             needsUpdate = true;
                         }
