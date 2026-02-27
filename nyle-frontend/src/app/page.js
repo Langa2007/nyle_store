@@ -1168,7 +1168,7 @@ function HomeContent() {
                 <ul className="space-y-2 text-sm">
                   <li><Link href="/about/know-nyle" className="text-gray-300 hover:text-white transition hover:underline">Know Nyle</Link></li>
                   <li><Link href="/about/careers" className="text-gray-300 hover:text-white transition hover:underline">Careers</Link></li>
-                  <li><Link href="/about/partner" className="text-gray-300 hover:text-white transition hover:underline">Partners</Link></li>
+                  <li><Link href="/about/partners" className="text-gray-300 hover:text-white transition hover:underline">Partners</Link></li>
                   <li><Link href="/about/newsletter" className="text-gray-300 hover:text-white transition hover:underline">Newsletter</Link></li>
                 </ul>
               </div>
