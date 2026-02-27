@@ -90,11 +90,7 @@ export default function ProductDetailPage() {
   const handleBuyNow = async () => {
     if (!product) return;
 
-    const result = await addToCart(product, quantity);
-
-    if (result.success && !result.requiresAuth) {
-      router.push('/cart');
-    }
+    await addToCart(product, quantity, { buyNow: true });
   };
 
 

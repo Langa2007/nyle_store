@@ -348,33 +348,7 @@ function HomeContent() {
           </div>
         </div>
 
-        {/* Floating Navigation */}
-        <motion.nav
-          initial={{ y: -100 }}
-          animate={{ y: 0 }}
-          className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white/90 backdrop-blur-lg shadow-lg" : "bg-transparent"
-            }`}
-        >
-          <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center">
-                <FaCrown className="text-white text-xl" />
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
-                Nyle Store
-              </span>
-            </Link>
 
-            <div className="hidden md:flex items-center space-x-8">
-              <Link href="/" className="font-medium hover:text-blue-600 transition">Home</Link>
-              <Link href="/products" className="font-medium hover:text-blue-600 transition">Shop</Link>
-              <Link href="/categories" className="font-medium hover:text-blue-600 transition">Categories</Link>
-              <Link href="/vendor/signup" className="bg-blue-600 text-white px-6 py-2 rounded-full font-medium hover:bg-blue-700 transition">
-                Sell on Nyle
-              </Link>
-            </div>
-          </div>
-        </motion.nav>
 
         {/* UPDATED Hero Section - Combining Store Info with Premium Fridge Image */}
         <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white pt-32 pb-20 px-6">
@@ -949,7 +923,7 @@ function HomeContent() {
                                 e.stopPropagation();
 
                                 const result = await addToCart(product, 1);
-                                if (result.success && !result.requiresAuth) {
+                                if (result.success && true) {
                                   // Show success notification
                                   const notification = document.createElement('div');
                                   notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-in';

@@ -70,13 +70,13 @@ export function CartProvider({ children }) {
   }, []);
 
   // Add item to cart
-  const addToCart = async (product, quantity = 1) => {
+  const addToCart = async (product, quantity = 1, options = {}) => {
     const userId = getUserId();
     const sessionId = userId ? null : getSessionId();
 
-    // If user is not logged in, redirect to signup
+    // If user is not logged in, handle guest cart
     if (!userId) {
-      // Store in localStorage temporarily (so it's available after login/signup)
+      // Store in localStorage temporarily
       const localCart = JSON.parse(localStorage.getItem('local_cart') || '[]');
       const existingIndex = localCart.findIndex(item => item.product_id === product.id);
 
@@ -98,11 +98,14 @@ export function CartProvider({ children }) {
       localStorage.setItem('local_cart', JSON.stringify(localCart));
       setCart({ ...cart, items: localCart });
 
-      // Redirect to signup with checkout as next destination
-      if (typeof window !== 'undefined') {
-        window.location.href = `/auth/signup?next=/checkout`;
+      // If Buy Now, redirect to signup/checkout
+      if (options.buyNow) {
+        if (typeof window !== 'undefined') {
+          window.location.href = `/auth/signup?next=/checkout?productId=${product.id}`;
+        }
       }
-      return { success: true, requiresAuth: true };
+
+      return { success: true, requiresAuth: !options.buyNow }; // Return true but indicate it was a guest action
     }
 
 
@@ -123,6 +126,9 @@ export function CartProvider({ children }) {
 
       const data = await res.json();
       setCart(data);
+      if (options.buyNow && typeof window !== 'undefined') {
+        window.location.href = '/checkout';
+      }
       return { success: true, requiresAuth: false };
     } catch (error) {
       console.error('Error adding to cart:', error);
