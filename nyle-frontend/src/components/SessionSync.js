@@ -13,7 +13,11 @@ export default function SessionSync() {
 
     useEffect(() => {
         if (status === "authenticated" && session?.accessToken) {
-            const isBadId = session.user?.id && String(session.user.id).length > 15;
+            // Check if the ID is a Google Provider ID (usually 21 purely numeric digits)
+            // Normal CUIDs/UUIDs contain letters and dashes and will fail the regex test
+            const isBadId = session.user?.id &&
+                String(session.user.id).length > 20 &&
+                /^\d+$/.test(String(session.user.id));
 
             if (isBadId) {
                 console.warn("[SessionSync] Detected provider ID in session. Requesting migration...");

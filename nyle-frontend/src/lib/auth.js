@@ -101,7 +101,7 @@ export const getAuthOptions = async () => {
                     }
                 }
                 // Case 2: Refreshing existing session - Self-heal if session uses provider ID
-                else if (token.id && token.id.length > 15 && (token.email || token.sub) && db) {
+                else if (token.id && token.id.length > 20 && /^\d+$/.test(token.id) && (token.email || token.sub) && db) {
                     try {
                         const searchEmail = token.email || token.sub; // Fallback if email is somehow missing
                         const dbUser = await db.user.findUnique({
