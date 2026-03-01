@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 /**
  * SessionSync handles keeping the traditional "accessToken" and "user"
@@ -10,6 +10,7 @@ import { useEffect } from "react";
  */
 export default function SessionSync() {
     const { data: session, status, update } = useSession();
+    const migrationAttemptRef = useRef(null);
 
     useEffect(() => {
         if (status === "authenticated" && session?.accessToken) {
@@ -20,13 +21,21 @@ export default function SessionSync() {
                 /^\d+$/.test(String(session.user.id));
 
             if (isBadId) {
+                const migrationKey = `${session.user?.email || "unknown"}:${session.user?.id}`;
+                if (migrationAttemptRef.current === migrationKey) {
+                    return;
+                }
+
+                migrationAttemptRef.current = migrationKey;
                 console.warn("[SessionSync] Detected provider ID in session. Requesting migration...");
                 // Clear any residue from localStorage to stop the backend error immediately
                 localStorage.removeItem("user");
                 // Trigger a session refresh to run the JWT migrator
-                update();
+                void update();
                 return;
             }
+
+            migrationAttemptRef.current = null;
 
             // Sync to localStorage for Express backend compatibility
             localStorage.setItem("accessToken", session.accessToken);
@@ -45,8 +54,9 @@ export default function SessionSync() {
             localStorage.removeItem("accessToken");
             localStorage.removeItem("userAccessToken");
             localStorage.removeItem("user");
+            migrationAttemptRef.current = null;
         }
-    }, [session, status]);
+    }, [session, status, update]);
 
     return null; // This component doesn't render anything
 }

@@ -138,7 +138,7 @@ export const getAuthOptions = async () => {
             },
         },
         secret: process.env.NEXTAUTH_SECRET,
-        debug: process.env.NODE_ENV === 'production',
+        debug: process.env.NODE_ENV !== 'production',
     };
 }
 
