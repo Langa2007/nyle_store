@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext/page";
 import { FiArrowLeft, FiMapPin, FiCreditCard, FiShoppingBag, FiNavigation } from "react-icons/fi";
 import useGeolocation from "@/hooks/useGeolocation";
@@ -13,6 +14,7 @@ export default function CheckoutPage() {
   const params = useSearchParams();
   const productId = params.get("productId");
   const router = useRouter();
+  const { data: session, status } = useSession();
   const { cart, getCartTotals, fetchCart } = useCart();
 
   const [directProduct, setDirectProduct] = useState(null);
@@ -25,9 +27,21 @@ export default function CheckoutPage() {
 
   const { getCoordinates, loading: geoLoading } = useGeolocation();
 
+  const getAuthToken = () => {
+    return (
+      session?.accessToken ||
+      localStorage.getItem("accessToken") ||
+      localStorage.getItem("userAccessToken")
+    );
+  };
+
   useEffect(() => {
-    const token = localStorage.getItem("accessToken") || localStorage.getItem("userAccessToken");
-    if (!token) {
+    if (status === "loading") return;
+
+    const token = getAuthToken();
+    const hasSession = status === "authenticated";
+
+    if (!token && !hasSession) {
       const redirectUrl = productId ? `/checkout?productId=${productId}` : "/checkout";
       router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);
       return;
@@ -61,7 +75,7 @@ export default function CheckoutPage() {
         }
       });
 
-  }, [productId, router, fetchCart]);
+  }, [productId, router, fetchCart, session, status]);
 
   const checkoutItems = useMemo(() => {
     if (productId && directProduct) {
@@ -99,7 +113,7 @@ export default function CheckoutPage() {
   }, [productId, directProduct, getCartTotals]);
 
   const placeOrder = async () => {
-    const token = localStorage.getItem("accessToken") || localStorage.getItem("userAccessToken");
+    const token = getAuthToken();
     if (!token) return;
 
     if (!address.trim()) {

@@ -1,12 +1,14 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
+  const { data: session, status } = useSession();
   const [cart, setCart] = useState({ items: [], cart_id: null });
   const [loading, setLoading] = useState(false);
   const [showCart, setShowCart] = useState(false);
@@ -25,7 +27,11 @@ export function CartProvider({ children }) {
   };
 
   // Get current user ID if logged in
-  const getUserId = () => {
+  const getUserId = useCallback(() => {
+    if (status === "authenticated" && session?.user?.id) {
+      return String(session.user.id);
+    }
+
     if (typeof window === 'undefined') return null;
     const token = localStorage.getItem('accessToken') || localStorage.getItem('userAccessToken');
     const userData = localStorage.getItem('user');
@@ -41,7 +47,7 @@ export function CartProvider({ children }) {
       }
     }
     return null;
-  };
+  }, [status, session]);
 
   // Fetch cart from backend
   const fetchCart = useCallback(async () => {
@@ -67,7 +73,7 @@ export function CartProvider({ children }) {
         setCart({ items: localCart, cart_id: null });
       }
     }
-  }, []);
+  }, [getUserId]);
 
   // Add item to cart
   const addToCart = async (product, quantity = 1, options = {}) => {
@@ -76,36 +82,9 @@ export function CartProvider({ children }) {
 
     // If user is not logged in, handle guest cart
     if (!userId) {
-      // Store in localStorage temporarily
-      const localCart = JSON.parse(localStorage.getItem('local_cart') || '[]');
-      const existingIndex = localCart.findIndex(item => item.product_id === product.id);
-
-      if (existingIndex >= 0) {
-        localCart[existingIndex].quantity += quantity;
-      } else {
-        localCart.push({
-          product_id: product.id,
-          quantity,
-          product: {
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image_url: product.image_url
-          }
-        });
-      }
-
-      localStorage.setItem('local_cart', JSON.stringify(localCart));
-      setCart({ ...cart, items: localCart });
-
-      // If Buy Now, redirect to signup/checkout
-      if (options.buyNow) {
-        if (typeof window !== 'undefined') {
-          window.location.href = `/auth/signup?next=/checkout?productId=${product.id}`;
-        }
-      }
-
-      return { success: true, requiresAuth: !options.buyNow }; // Return true but indicate it was a guest action
+      setAuthAction('login');
+      setShowAuthModal(true);
+      return { success: false, requiresAuth: true };
     }
 
 

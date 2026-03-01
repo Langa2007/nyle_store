@@ -86,7 +86,16 @@ export default function ProductCard({ product, index }) {
 
             <motion.button
               whileTap={{ scale: 0.95 }}
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.location.href = `/checkout?product_id=${product.id}`; }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!session) {
+                  setAuthAction('login');
+                  setShowAuthModal(true);
+                  return;
+                }
+                window.location.href = `/checkout?productId=${product.id}`;
+              }}
               className="text-[10px] bg-white text-blue-600 px-3 py-1.5 rounded-lg font-bold hover:bg-gray-100 transition shadow-sm"
             >
               Buy Now
@@ -152,7 +161,14 @@ export default function ProductCard({ product, index }) {
 
                 <div className="flex gap-3">
                   <button
-                    onClick={() => window.location.href = `/checkout?product_id=${product.id}`}
+                    onClick={() => {
+                      if (!session) {
+                        setAuthAction('login');
+                        setShowAuthModal(true);
+                        return;
+                      }
+                      window.location.href = `/checkout?productId=${product.id}`;
+                    }}
                     className="flex-1 bg-white text-blue-600 py-3 rounded-2xl font-bold hover:bg-gray-100 transition shadow-lg active:scale-95"
                   >
                     Buy Now
