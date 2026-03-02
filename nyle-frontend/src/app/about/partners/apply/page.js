@@ -105,7 +105,10 @@ const yearsOptions = [
   "10+ years"
 ];
 
-export default function PartnerApplyPage() {
+import { Suspense } from "react";
+
+function PartnerApplyForm() {
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const preselectedTier = searchParams.get('tier');
@@ -121,7 +124,7 @@ export default function PartnerApplyPage() {
     businessSize: "",
     website: "",
     linkedin: "",
-    
+
     // Contact Information
     fullName: "",
     jobTitle: "",
@@ -131,7 +134,7 @@ export default function PartnerApplyPage() {
     country: "",
     city: "",
     address: "",
-    
+
     // Business Details
     description: "",
     services: [],
@@ -139,13 +142,13 @@ export default function PartnerApplyPage() {
     keyClients: "",
     annualRevenue: "",
     countriesOfOperation: [],
-    
+
     // Partnership Details
     partnershipGoals: "",
     expectedVolume: "",
     integrationTimeline: "",
     additionalInfo: "",
-    
+
     // Agreements
     agreeTerms: false,
     agreeDataProcessing: false,
@@ -197,7 +200,7 @@ export default function PartnerApplyPage() {
 
   const handlePhoneChange = (e) => {
     let value = e.target.value;
-    
+
     if (selectedCountry) {
       const dialCode = selectedCountry.dialCode;
       if (!value.startsWith(dialCode)) {
@@ -207,7 +210,7 @@ export default function PartnerApplyPage() {
         value = dialCode + numberPart;
       }
     }
-    
+
     setFormData(prev => ({
       ...prev,
       phone: value
@@ -268,7 +271,7 @@ export default function PartnerApplyPage() {
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files);
     setUploading(true);
-    
+
     // Simulate upload (in production, upload to server/cloud storage)
     setTimeout(() => {
       const newDocuments = files.map(file => ({
@@ -340,7 +343,7 @@ export default function PartnerApplyPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateStep(4)) return;
 
     setSubmitting(true);
@@ -348,7 +351,7 @@ export default function PartnerApplyPage() {
     // Simulate API call
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       // In production, send to your API
       // const response = await fetch('/api/partner/apply', {
       //   method: 'POST',
@@ -376,15 +379,15 @@ export default function PartnerApplyPage() {
             <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="text-white" size={48} />
             </div>
-            
+
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               We've received your partnership application!
             </h2>
-            
+
             <p className="text-lg text-gray-700 mb-6">
               Your application reference number: <span className="font-mono font-bold text-blue-600">NYLE-PART-{Date.now().toString().slice(-8)}</span>
             </p>
-            
+
             <div className="bg-blue-50 rounded-xl p-6 mb-8">
               <Clock className="text-blue-600 mx-auto mb-3" size={32} />
               <h3 className="font-bold text-gray-900 mb-2">What happens next?</h3>
@@ -407,7 +410,7 @@ export default function PartnerApplyPage() {
                 </li>
               </ul>
             </div>
-            
+
             <div className="space-y-4">
               <button
                 onClick={() => router.push('/partner')}
@@ -415,7 +418,7 @@ export default function PartnerApplyPage() {
               >
                 Back to Partners Page
               </button>
-              
+
               <p className="text-gray-600 text-sm">
                 You'll receive a confirmation email at <span className="font-semibold">{formData.email}</span>
               </p>
@@ -440,21 +443,19 @@ export default function PartnerApplyPage() {
               className={`flex items-center ${step < 4 ? 'flex-1' : ''}`}
             >
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
-                  step < currentStep
-                    ? 'bg-green-500 text-white'
-                    : step === currentStep
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${step < currentStep
+                  ? 'bg-green-500 text-white'
+                  : step === currentStep
                     ? 'bg-blue-600 text-white'
                     : 'bg-gray-200 text-gray-500'
-                }`}
+                  }`}
               >
                 {step < currentStep ? <CheckCircle size={20} /> : step}
               </div>
               {step < 4 && (
                 <div
-                  className={`flex-1 h-1 mx-2 ${
-                    step < currentStep ? 'bg-green-500' : 'bg-gray-200'
-                  }`}
+                  className={`flex-1 h-1 mx-2 ${step < currentStep ? 'bg-green-500' : 'bg-gray-200'
+                    }`}
                 />
               )}
             </div>
@@ -488,11 +489,10 @@ export default function PartnerApplyPage() {
                   {partnerTypes.map((type) => (
                     <label
                       key={type.id}
-                      className={`relative border rounded-xl p-4 cursor-pointer transition-all ${
-                        formData.partnerType === type.id
-                          ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
-                          : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
-                      }`}
+                      className={`relative border rounded-xl p-4 cursor-pointer transition-all ${formData.partnerType === type.id
+                        ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
+                        : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                        }`}
                     >
                       <input
                         type="radio"
@@ -503,11 +503,10 @@ export default function PartnerApplyPage() {
                         className="sr-only"
                       />
                       <div className="flex items-start gap-3">
-                        <div className={`p-2 rounded-lg ${
-                          formData.partnerType === type.id
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-100 text-gray-600'
-                        }`}>
+                        <div className={`p-2 rounded-lg ${formData.partnerType === type.id
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-600'
+                          }`}>
                           {type.icon}
                         </div>
                         <div className="flex-1">
@@ -535,11 +534,10 @@ export default function PartnerApplyPage() {
                   {partnershipTiers.map((tier) => (
                     <label
                       key={tier.level}
-                      className={`relative border rounded-xl p-4 cursor-pointer transition-all ${
-                        formData.partnershipTier === tier.level.toLowerCase()
-                          ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
-                          : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
-                      }`}
+                      className={`relative border rounded-xl p-4 cursor-pointer transition-all ${formData.partnershipTier === tier.level.toLowerCase()
+                        ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
+                        : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                        }`}
                     >
                       <input
                         type="radio"
@@ -583,9 +581,8 @@ export default function PartnerApplyPage() {
                     value={formData.organizationName}
                     onChange={handleChange}
                     placeholder="e.g., Nyle Corporation Ltd"
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-                      errors.organizationName ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.organizationName ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   />
                   {errors.organizationName && (
                     <p className="mt-1 text-sm text-red-600">{errors.organizationName}</p>
@@ -602,9 +599,8 @@ export default function PartnerApplyPage() {
                     value={formData.registrationNumber}
                     onChange={handleChange}
                     placeholder="e.g., BRN-2024-001234"
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-                      errors.registrationNumber ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.registrationNumber ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   />
                   {errors.registrationNumber && (
                     <p className="mt-1 text-sm text-red-600">{errors.registrationNumber}</p>
@@ -619,9 +615,8 @@ export default function PartnerApplyPage() {
                     name="yearEstablished"
                     value={formData.yearEstablished}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-                      errors.yearEstablished ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.yearEstablished ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   >
                     <option value="">Select years in operation</option>
                     {yearsOptions.map((year) => (
@@ -641,9 +636,8 @@ export default function PartnerApplyPage() {
                     name="businessSize"
                     value={formData.businessSize}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-                      errors.businessSize ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.businessSize ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   >
                     <option value="">Select business size</option>
                     {businessSizes.map((size) => (
@@ -713,9 +707,8 @@ export default function PartnerApplyPage() {
                     value={formData.fullName}
                     onChange={handleChange}
                     placeholder="e.g., John Doe"
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-                      errors.fullName ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.fullName ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   />
                   {errors.fullName && (
                     <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
@@ -732,9 +725,8 @@ export default function PartnerApplyPage() {
                     value={formData.jobTitle}
                     onChange={handleChange}
                     placeholder="e.g., Partnerships Manager"
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-                      errors.jobTitle ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.jobTitle ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   />
                   {errors.jobTitle && (
                     <p className="mt-1 text-sm text-red-600">{errors.jobTitle}</p>
@@ -753,9 +745,8 @@ export default function PartnerApplyPage() {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="you@company.com"
-                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-                        errors.email ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.email ? 'border-red-500' : 'border-gray-300'
+                        }`}
                     />
                   </div>
                   {errors.email && (
@@ -781,9 +772,8 @@ export default function PartnerApplyPage() {
                       onChange={handlePhoneChange}
                       disabled={!selectedCountry}
                       placeholder={!selectedCountry ? "Select country first" : "Enter number"}
-                      className={`w-full pl-24 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-                        errors.phone ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full pl-24 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.phone ? 'border-red-500' : 'border-gray-300'
+                        }`}
                     />
                   </div>
                   {errors.phone && (
@@ -813,9 +803,8 @@ export default function PartnerApplyPage() {
                     name="country"
                     value={formData.country}
                     onChange={handleCountryChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-                      errors.country ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.country ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   >
                     <option value="">Select Country</option>
                     {countries.map((country, i) => (
@@ -839,9 +828,8 @@ export default function PartnerApplyPage() {
                     value={formData.city}
                     onChange={handleChange}
                     placeholder="e.g., Nairobi"
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-                      errors.city ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.city ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   />
                   {errors.city && (
                     <p className="mt-1 text-sm text-red-600">{errors.city}</p>
@@ -889,9 +877,8 @@ export default function PartnerApplyPage() {
                   onChange={handleChange}
                   rows="4"
                   placeholder="Describe your business, what you do, your mission, and unique value proposition..."
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-                    errors.description ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.description ? 'border-red-500' : 'border-gray-300'
+                    }`}
                 />
                 {errors.description && (
                   <p className="mt-1 text-sm text-red-600">{errors.description}</p>
@@ -1143,9 +1130,8 @@ export default function PartnerApplyPage() {
                   onChange={handleChange}
                   rows="4"
                   placeholder="Describe your goals, what you hope to achieve, and how you see the partnership working..."
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${
-                    errors.partnershipGoals ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.partnershipGoals ? 'border-red-500' : 'border-gray-300'
+                    }`}
                 />
                 {errors.partnershipGoals && (
                   <p className="mt-1 text-sm text-red-600">{errors.partnershipGoals}</p>
@@ -1174,7 +1160,7 @@ export default function PartnerApplyPage() {
               {/* Integration Timeline */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Integration / Go-live Timeline
+                  Integration / Go-live Timeline
                 </label>
                 <select
                   name="integrationTimeline"
@@ -1208,7 +1194,7 @@ export default function PartnerApplyPage() {
               {/* Agreements */}
               <div className="space-y-4 bg-blue-50 rounded-xl p-6">
                 <h4 className="font-semibold text-gray-900">Terms & Agreements</h4>
-                
+
                 <label className="flex items-start gap-3">
                   <input
                     type="checkbox"
@@ -1298,7 +1284,7 @@ export default function PartnerApplyPage() {
               Previous Step
             </button>
           )}
-          
+
           {currentStep < 4 ? (
             <button
               type="button"
@@ -1354,5 +1340,22 @@ export default function PartnerApplyPage() {
         </div>
       </div>
     </AboutInfoLayout>
+  );
+}
+
+export default function PartnerApplyPage() {
+  return (
+    <Suspense fallback={
+      <AboutInfoLayout
+        title="Apply to Become a Partner"
+        subtitle="Loading application form..."
+      >
+        <div className="flex items-center justify-center p-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      </AboutInfoLayout>
+    }>
+      <PartnerApplyForm />
+    </Suspense>
   );
 }
