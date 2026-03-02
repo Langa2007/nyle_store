@@ -1,20 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
 import {
     Building2,
     Mail,
     Phone,
-    Globe,
-    Clock,
-    CheckCircle,
-    MoreVertical,
     Search,
     RefreshCw,
     Filter,
-    Navigation,
     User as FaUser
 } from "lucide-react";
 
@@ -36,6 +30,7 @@ export default function VendorLeadsPage() {
     const [leads, setLeads] = useState<Lead[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
+    const [sendingLeadId, setSendingLeadId] = useState<number | null>(null);
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
@@ -77,6 +72,29 @@ export default function VendorLeadsPage() {
             }
         } catch (err) {
             toast.error("Failed to update status");
+        }
+    };
+
+    const sendSignupLink = async (id: number) => {
+        try {
+            setSendingLeadId(id);
+            const res = await fetch(`${API_URL}/api/vendor-leads/${id}/send-link`, {
+                method: "POST",
+                headers: getAuthHeaders(),
+            });
+
+            const data = await res.json().catch(() => ({}));
+
+            if (!res.ok) {
+                throw new Error(data.message || "Failed to send signup link");
+            }
+
+            setLeads(leads.map(l => l.id === id ? { ...l, status: "link_sent" } : l));
+            toast.success("Signup link sent");
+        } catch (err: any) {
+            toast.error(err?.message || "Failed to send signup link");
+        } finally {
+            setSendingLeadId(null);
         }
     };
 
@@ -190,14 +208,14 @@ export default function VendorLeadsPage() {
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex justify-end gap-2">
                                             <button
-                                                onClick={() => {
-                                                    const link = lead.type === 'overseas' ? '/vendor/overseas-sellers' : '/vendor/kenyansellers';
-                                                    navigator.clipboard.writeText(`${window.location.origin}${link}`);
-                                                    toast.success("Signup link copied to clipboard");
-                                                    updateStatus(lead.id, 'link_sent');
-                                                }}
-                                                className="p-2 bg-gray-800 text-blue-500 rounded-lg hover:bg-blue-500 hover:text-white transition"
-                                                title="Send Signup Link (Copy)"
+                                                onClick={() => sendSignupLink(lead.id)}
+                                                disabled={lead.status !== "contacted" || sendingLeadId === lead.id}
+                                                className={`p-2 rounded-lg transition ${
+                                                    lead.status !== "contacted" || sendingLeadId === lead.id
+                                                        ? "bg-gray-800 text-gray-600 cursor-not-allowed"
+                                                        : "bg-gray-800 text-blue-500 hover:bg-blue-500 hover:text-white"
+                                                }`}
+                                                title={lead.status !== "contacted" ? "Mark as Contacted first" : "Send Signup Link"}
                                             >
                                                 <Building2 size={16} />
                                             </button>
@@ -207,13 +225,6 @@ export default function VendorLeadsPage() {
                                                 title="Mark as Contacted"
                                             >
                                                 <Phone size={16} />
-                                            </button>
-                                            <button
-                                                onClick={() => updateStatus(lead.id, 'link_sent')}
-                                                className="p-2 bg-gray-800 text-emerald-500 rounded-lg hover:bg-emerald-500 hover:text-white transition"
-                                                title="Mark as Link Sent"
-                                            >
-                                                <CheckCircle size={16} />
                                             </button>
                                         </div>
                                     </td>
