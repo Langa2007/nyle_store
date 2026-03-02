@@ -61,27 +61,27 @@ export default function PartnersPage() {
 
   // Partnership benefits - scalable array
   const partnershipBenefits = [
-    { 
-      icon: <Globe />, 
-      title: "Extended Reach", 
+    {
+      icon: <Globe />,
+      title: "Extended Reach",
       description: "Access to 50K+ active users across Africa",
       stat: "3x Growth"
     },
-    { 
-      icon: <Shield />, 
-      title: "Enhanced Trust", 
+    {
+      icon: <Shield />,
+      title: "Enhanced Trust",
       description: "Built-in verification and security features",
       stat: "99.9% Uptime"
     },
-    { 
-      icon: <TrendingUp />, 
-      title: "Shared Growth", 
+    {
+      icon: <TrendingUp />,
+      title: "Shared Growth",
       description: "Revenue sharing and co-marketing opportunities",
       stat: "40% YoY"
     },
-    { 
-      icon: <Users />, 
-      title: "Community Support", 
+    {
+      icon: <Users />,
+      title: "Community Support",
       description: "Dedicated partner success team",
       stat: "24/7 Support"
     },
@@ -137,7 +137,7 @@ export default function PartnersPage() {
       <div className="relative mb-12">
         <div className="absolute -top-8 -left-8 w-32 h-32 bg-blue-100 rounded-full blur-3xl opacity-40"></div>
         <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-cyan-100 rounded-full blur-3xl opacity-40"></div>
-        
+
         <div className="relative bg-gradient-to-br from-white to-blue-50 rounded-2xl p-8 border border-blue-100 shadow-lg">
           <div className="flex flex-col lg:flex-row items-start gap-8">
             <div className="flex-shrink-0">
@@ -203,7 +203,7 @@ export default function PartnersPage() {
                   </span>
                 </div>
               </div>
-              
+
               <div className="p-6 bg-gradient-to-br from-blue-50/50 to-white">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {category.partners.map((partner, partnerIndex) => (
@@ -271,7 +271,7 @@ export default function PartnersPage() {
                 </div>
 
                 <a
-                  href={`/partner/apply?tier=${tier.level.toLowerCase()}`}
+                  href={`/about/partners/apply?tier=${tier.level.toLowerCase()}`}
                   className={`mt-8 w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold text-white bg-gradient-to-r ${tier.color} hover:shadow-xl transition-all hover:scale-105`}
                 >
                   Apply for {tier.level}
@@ -322,23 +322,23 @@ export default function PartnersPage() {
               Whether you're a logistics provider, payment processor, technology company,
               or enterprise solution — there's a place for you in Africa's commerce revolution.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="/partner/apply"
+                href="/about/partners/apply"
                 className="inline-flex items-center justify-center gap-2 bg-white text-blue-700 px-8 py-4 rounded-full font-bold hover:shadow-2xl transition-all hover:scale-105"
               >
                 <HandshakeIcon size={20} />
                 Become a Partner
               </a>
               <a
-                href="/partners/apply"
+                href="/about/partners/apply"
                 className="inline-flex items-center justify-center gap-2 bg-transparent border-2 border-white/50 text-white px-8 py-4 rounded-full font-bold hover:bg-white/10 transition-all"
               >
                 Contact Partnership Team
               </a>
             </div>
-            
+
             <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
                 <div className="text-2xl font-bold">200+</div>
