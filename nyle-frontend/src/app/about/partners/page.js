@@ -332,7 +332,7 @@ export default function PartnersPage() {
                 Become a Partner
               </a>
               <a
-                href="/partner/contact"
+                href="/partners/apply"
                 className="inline-flex items-center justify-center gap-2 bg-transparent border-2 border-white/50 text-white px-8 py-4 rounded-full font-bold hover:bg-white/10 transition-all"
               >
                 Contact Partnership Team
