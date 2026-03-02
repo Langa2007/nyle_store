@@ -16,7 +16,8 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
   const navItems = [
     { href: "/about/know-nyle", label: "About the Company", icon: <Home size={18} /> },
     { href: "/about/partner", label: "Our Team", icon: <Users size={18} /> },
-    { href: "/about/careers", label: "Careers", icon: <Briefcase size={18} /> },
+    { href: "/about/partners", label: "Partnership Program", icon: <Briefcase size={18} /> },
+    { href: "/about/careers", label: "Careers", icon: <Target size={18} /> },
     { href: "/about/newsletter", label: "Blog", icon: <BookOpen size={18} /> },
   ];
 
@@ -56,7 +57,7 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
               <Sparkles size={16} />
               <span className="text-sm font-medium">Discover Nyle's Journey</span>
             </div>
-            
+
             <motion.h1
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -65,7 +66,7 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
             >
               {title}
             </motion.h1>
-            
+
             {subtitle && (
               <motion.p
                 initial={{ y: -10, opacity: 0 }}
@@ -79,7 +80,7 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
           </motion.div>
 
           {/* Company Stats */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
@@ -123,18 +124,17 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
                       <li key={item.href}>
                         <Link
                           href={item.href}
-                          className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
-                            isActive
+                          className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${isActive
                               ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg"
                               : "hover:bg-blue-50 hover:shadow-md text-gray-700"
-                          }`}
+                            }`}
                         >
                           <div className={`transition-transform ${isActive ? 'text-white' : 'text-blue-500 group-hover:text-blue-600'}`}>
                             {item.icon}
                           </div>
                           <span className="font-medium">{item.label}</span>
-                          <ArrowRight 
-                            size={16} 
+                          <ArrowRight
+                            size={16}
                             className={`ml-auto transition-transform ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1'}`}
                           />
                         </Link>
@@ -281,7 +281,7 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
                   <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
-              
+
               <div className="text-center md:text-right">
                 <div className="inline-block bg-white/10 backdrop-blur-sm rounded-2xl p-6">
                   <h5 className="font-bold mb-3">Connect With Us</h5>

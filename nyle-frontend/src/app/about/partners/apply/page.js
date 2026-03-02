@@ -348,21 +348,24 @@ function PartnerApplyForm() {
 
     setSubmitting(true);
 
-    // Simulate API call
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/partners/apply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
 
-      // In production, send to your API
-      // const response = await fetch('/api/partner/apply', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // });
+      const data = await response.json();
 
-      setSubmitSuccess(true);
-      window.scrollTo(0, 0);
+      if (data.success) {
+        setSubmitSuccess(true);
+        window.scrollTo(0, 0);
+      } else {
+        setErrors({ submit: data.message || "Submission failed. Please try again." });
+      }
     } catch (error) {
-      setErrors({ submit: "Submission failed. Please try again." });
+      console.error("Submission error:", error);
+      setErrors({ submit: "Network error. Please try again later." });
     } finally {
       setSubmitting(false);
     }

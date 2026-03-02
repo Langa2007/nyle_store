@@ -11,6 +11,7 @@ import {
   X,
   Home,
   Users,
+  Handshake,
   Package,
   ShoppingCart,
   Settings,
@@ -86,6 +87,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       name: "Vendor Leads",
       href: "/dashboard/leads",
       icon: <Building2 size={18} />,
+      badge: "New"
+    },
+    {
+      name: "Partners",
+      href: "/dashboard/partners",
+      icon: <Handshake size={18} />,
       badge: "New"
     },
     {

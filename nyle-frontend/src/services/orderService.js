@@ -1,6 +1,6 @@
 // src/services/orderservice.js
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
 /**
  * Fetch all orders for the logged-in user or vendor.

@@ -34,6 +34,7 @@ import passwordroutes from "./routes/passwordResetRoutes.js";
 import userResetPasswordRoutes from "./routes/UserResetPasswordRoutes.js";
 import locationRoutes from "./routes/locationRoutes.js";
 import vendorLeadRoutes from "./routes/vendorLeadRoutes.js";
+import partnerRoutes from "./routes/partnerRoutes.js";
 
 
 
@@ -42,12 +43,14 @@ dotenv.config();
 const app = express();
 app.set("trust proxy", 1);
 const allowedOrigins = [
-  "http://localhost:3000",
+  process.env.FRONTEND_URL,
+  process.env.ADMIN_URL,
+  process.env.MOBILE_URL,
+  "https://nyle-store.onrender.com",
   "https://nyle-admin.vercel.app",
   "https://nyle-luxe.vercel.app",
-  "https://nyle-store.onrender.com",
   "https://nyle-mobile.vercel.app",
-];
+].filter(Boolean);
 
 // Main CORS middleware - Optimized for maximum browser compatibility (including Safari)
 app.use(
@@ -169,6 +172,7 @@ app.use("/api/faqs", faqRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/location", locationRoutes);
 app.use("/api/vendor-leads", vendorLeadRoutes);
+app.use("/api/partners", partnerRoutes);
 
 
 

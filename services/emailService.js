@@ -91,3 +91,59 @@ export async function sendProductStatusEmail(toEmail, product, status, reason = 
     return false;
   }
 }
+
+/**
+ * Send partner application confirmation email
+ * @param {string} toEmail 
+ * @param {object} applicationData 
+ */
+export async function sendPartnerApplicationEmail(toEmail, applicationData) {
+  const { organizationName, fullName, partnershipTier } = applicationData;
+  const subject = `Partnership Application Received - ${organizationName}`;
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e1e8ed; border-radius: 8px; overflow: hidden;">
+      <div style="background: linear-gradient(135deg, #2563eb, #0891b2); padding: 30px; text-align: center; color: white;">
+        <h1 style="margin: 0; font-size: 24px;">Welcome to Nyle Partnerships</h1>
+      </div>
+      <div style="padding: 30px; background: white;">
+        <h2 style="color: #1e293b; margin-top: 0;">Application Received! 🎉</h2>
+        <p>Dear <strong>${fullName}</strong>,</p>
+        <p>Thank you for your interest in partnering with Nyle. We have successfully received the application for <strong>${organizationName}</strong> for the <strong>${partnershipTier || 'Standard'}</strong> partnership tier.</p>
+        
+        <div style="background: #f8fafc; border-radius: 8px; padding: 20px; margin: 25px 0; border: 1px solid #edf2f7;">
+          <h3 style="margin-top: 0; font-size: 16px; color: #475569;">What happens next?</h3>
+          <ul style="padding-left: 20px; margin-bottom: 0;">
+            <li style="margin-bottom: 10px;"><strong>Review Period:</strong> Our partnerships team will review your application within 3-5 business days.</li>
+            <li style="margin-bottom: 10px;"><strong>Initial Contact:</strong> We'll reach out to schedule an introductory call to discuss your partnership goals.</li>
+            <li style="margin-bottom: 10px;"><strong>Due Diligence:</strong> We'll verify your information and conduct a background check.</li>
+            <li><strong>Onboarding:</strong> Once approved, we'll begin the technical and operational integration process.</li>
+          </ul>
+        </div>
+        
+        <p>If you have any urgent questions, feel free to reply to this email or contact our partnership team at <a href="mailto:partners@nyle.co.ke" style="color: #2563eb; text-decoration: none;">partners@nyle.co.ke</a>.</p>
+        
+        <p style="margin-bottom: 0;">Best regards,</p>
+        <p style="margin-top: 5px; font-weight: bold; color: #1e293b;">The Nyle Partnerships Team</p>
+      </div>
+      <div style="background: #f1f5f9; padding: 20px; text-align: center; font-size: 12px; color: #64748b;">
+        <p style="margin: 0;">&copy; ${new Date().getFullYear()} Nyle Store. All rights reserved.</p>
+        <p style="margin: 5px 0 0;">Nairobi, Kenya</p>
+      </div>
+    </div>
+  `;
+
+  try {
+    const resp = await resend.emails.send({
+      from: "Nyle Partnerships <partnerships@resend.dev>",
+      to: toEmail,
+      subject,
+      html,
+    });
+    console.log(" Partner application email sent, id:", resp.id);
+    return true;
+  } catch (err) {
+    console.error(" Partner email error:", err);
+    return false;
+  }
+}
