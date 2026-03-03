@@ -335,14 +335,30 @@ export default function PartnersPage() {
                                             <p className="text-white font-semibold">{selectedApp.organization_name}</p>
                                         </div>
                                         <div>
+                                            <p className="text-xs text-gray-500 mb-1">Registration #</p>
+                                            <p className="text-gray-200 text-sm">{selectedApp.registration_number || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-gray-500 mb-1">Established</p>
+                                            <p className="text-gray-200 text-sm">{selectedApp.year_established || 'N/A'}</p>
+                                        </div>
+                                        <div>
                                             <p className="text-xs text-gray-500 mb-1">Partner Type</p>
                                             <p className="text-gray-200 text-sm capitalize">{selectedApp.partner_type}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-gray-500 mb-1">Business Size</p>
+                                            <p className="text-gray-200 text-sm">{selectedApp.business_size || 'N/A'}</p>
                                         </div>
                                         <div>
                                             <p className="text-xs text-gray-500 mb-1">Selected Tier</p>
                                             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-gradient-to-r ${getTierColor(selectedApp.partnership_tier)}`}>
                                                 {selectedApp.partnership_tier?.toUpperCase()}
                                             </span>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-gray-500 mb-1">Annual Revenue</p>
+                                            <p className="text-gray-200 text-sm">{selectedApp.annual_revenue || 'N/A'}</p>
                                         </div>
                                         {selectedApp.website && (
                                             <div className="col-span-2">
@@ -355,32 +371,107 @@ export default function PartnersPage() {
                                     </div>
                                 </section>
 
+                                {/* Business Profile */}
+                                <section>
+                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Business Profile</h3>
+                                    <div className="space-y-4 bg-gray-800/30 p-6 rounded-2xl border border-gray-800/50">
+                                        <div>
+                                            <p className="text-xs text-gray-500 mb-1 text-blue-500">Core Services</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {(Array.isArray(selectedApp.services) ? selectedApp.services : JSON.parse(selectedApp.services || '[]')).map((s: string, i: number) => (
+                                                    <span key={i} className="px-2 py-1 rounded bg-blue-500/10 text-blue-400 text-[10px] font-medium border border-blue-500/20">{s}</span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-gray-500 mb-1 text-emerald-500">Target Markets</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {(Array.isArray(selectedApp.target_markets) ? selectedApp.target_markets : JSON.parse(selectedApp.target_markets || '[]')).map((m: string, i: number) => (
+                                                    <span key={i} className="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-medium border border-emerald-500/20">{m}</span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-gray-500 mb-1 text-purple-500">Operational Countries</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {(Array.isArray(selectedApp.countries_of_operation) ? selectedApp.countries_of_operation : JSON.parse(selectedApp.countries_of_operation || '[]')).map((c: string, i: number) => (
+                                                    <span key={i} className="px-2 py-1 rounded bg-purple-500/10 text-purple-400 text-[10px] font-medium border border-purple-500/20">{c}</span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-gray-500 mb-1">Business Description</p>
+                                            <p className="text-gray-300 text-sm leading-relaxed italic">"{selectedApp.description || 'No description provided.'}"</p>
+                                        </div>
+                                        {selectedApp.key_clients && (
+                                            <div>
+                                                <p className="text-xs text-gray-500 mb-1">Key Clients</p>
+                                                <p className="text-gray-300 text-sm">{selectedApp.key_clients}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </section>
+
+                                {/* Partnership Goals */}
+                                <section>
+                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Partnership Intent</h3>
+                                    <div className="space-y-4 bg-gray-800/30 p-6 rounded-2xl border border-gray-800/50">
+                                        <div>
+                                            <p className="text-xs text-gray-500 mb-1">Partnership Goals</p>
+                                            <p className="text-gray-300 text-sm leading-relaxed capitalize">{selectedApp.partnership_goals || 'Not specified'}</p>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <p className="text-xs text-gray-500 mb-1">Exp. Volume</p>
+                                                <p className="text-gray-200 text-sm capitalize">{selectedApp.expected_volume || 'N/A'}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-gray-500 mb-1">Go-live Timeline</p>
+                                                <p className="text-gray-200 text-sm capitalize">{selectedApp.integration_timeline || 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                        {selectedApp.additional_info && (
+                                            <div>
+                                                <p className="text-xs text-gray-500 mb-1">Additional Info</p>
+                                                <p className="text-gray-400 text-xs italic">{selectedApp.additional_info}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </section>
+
                                 {/* Contact Info */}
                                 <section>
                                     <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Primary Contact</h3>
                                     <div className="space-y-4 bg-gray-800/30 p-6 rounded-2xl border border-gray-800/50">
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
-                                                <Clock size={20} />
+                                                <User size={20} />
                                             </div>
                                             <div>
                                                 <p className="text-white font-medium">{selectedApp.full_name}</p>
-                                                <p className="text-gray-400 text-xs">Primary Representative</p>
+                                                <p className="text-gray-400 text-xs">{selectedApp.job_title || 'Representative'}</p>
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-1 gap-3 pt-2 border-t border-gray-800">
-                                            <div className="flex items-center gap-3 text-sm text-gray-400">
+                                            <div className="flex items-center gap-3 text-sm text-gray-400 hover:text-blue-400 transition-colors cursor-pointer">
                                                 <Mail size={16} className="text-gray-500" />
                                                 {selectedApp.email}
                                             </div>
                                             <div className="flex items-center gap-3 text-sm text-gray-400">
                                                 <Phone size={16} className="text-gray-500" />
                                                 {selectedApp.phone}
+                                                {selectedApp.alternative_phone && <span className="text-gray-600 text-[10px]">/ {selectedApp.alternative_phone}</span>}
                                             </div>
                                             <div className="flex items-center gap-3 text-sm text-gray-400">
                                                 <Globe size={16} className="text-gray-500" />
                                                 {selectedApp.city}, {selectedApp.country}
                                             </div>
+                                            {selectedApp.address && (
+                                                <div className="flex items-center gap-3 text-sm text-gray-400">
+                                                    <MapPin size={16} className="text-gray-500" />
+                                                    {selectedApp.address}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </section>

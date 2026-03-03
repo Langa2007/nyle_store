@@ -109,7 +109,7 @@ export async function sendPartnerApplicationEmail(toEmail, applicationData) {
       <div style="padding: 30px; background: white;">
         <h2 style="color: #1e293b; margin-top: 0;">Application Received! 🎉</h2>
         <p>Dear <strong>${fullName}</strong>,</p>
-        <p>Thank you for your interest in partnering with Nyle. We have successfully received the application for <strong>${organizationName}</strong> for the <strong>${partnershipTier || 'Standard'}</strong> partnership tier.</p>
+        <p>Thank you for your interest in partnering with Nyle. We have successfully received the application for <strong>${organizationName}</strong> for the <strong>${partnershipTier ? partnershipTier.charAt(0).toUpperCase() + partnershipTier.slice(1) : 'Standard'}</strong> partnership tier.</p>
         
         <div style="background: #f8fafc; border-radius: 8px; padding: 20px; margin: 25px 0; border: 1px solid #edf2f7;">
           <h3 style="margin-top: 0; font-size: 16px; color: #475569;">What happens next?</h3>

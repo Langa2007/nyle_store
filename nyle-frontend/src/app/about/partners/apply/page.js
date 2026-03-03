@@ -117,7 +117,7 @@ function PartnerApplyForm() {
   const [formData, setFormData] = useState({
     // Basic Information
     partnerType: "",
-    partnershipTier: preselectedTier || "",
+    partnershipTier: preselectedTier?.toLowerCase() || "",
     organizationName: "",
     registrationNumber: "",
     yearEstablished: "",
@@ -293,7 +293,12 @@ function PartnerApplyForm() {
     const newErrors = {};
 
     if (step === 1) {
-      if (!formData.partnerType) newErrors.partnerType = "Select your partner type";
+      if (!formData.partnerType) {
+        newErrors.partnerType = "Please select a partner category above";
+      }
+      if (!formData.partnershipTier) {
+        newErrors.partnershipTier = "Please select a partnership tier";
+      }
       if (!formData.organizationName) newErrors.organizationName = "Organization name is required";
       if (!formData.registrationNumber) newErrors.registrationNumber = "Registration number is required";
       if (!formData.yearEstablished) newErrors.yearEstablished = "Year established is required";
@@ -308,20 +313,24 @@ function PartnerApplyForm() {
       } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
         newErrors.email = "Invalid email format";
       }
-      if (!formData.phone) newErrors.phone = "Phone number is required";
+      if (!formData.phone || formData.phone.length < 5) newErrors.phone = "Valid phone number is required";
       if (!formData.country) newErrors.country = "Country is required";
       if (!formData.city) newErrors.city = "City is required";
     }
 
     if (step === 3) {
       if (!formData.description) newErrors.description = "Business description is required";
-      if (formData.services.length === 0) newErrors.services = "At least one service is required";
-      if (formData.targetMarkets.length === 0) newErrors.targetMarkets = "At least one target market is required";
+      if (formData.services.length === 0) {
+        newErrors.services = serviceInput ? "Click the '+' button to add your service" : "At least one service is required";
+      }
+      if (formData.targetMarkets.length === 0) {
+        newErrors.targetMarkets = marketInput ? "Click the '+' button to add your target market" : "At least one target market is required";
+      }
     }
 
     if (step === 4) {
-      if (!formData.partnershipGoals) newErrors.partnershipGoals = "Partnership goals are required";
-      if (!formData.agreeTerms) newErrors.agreeTerms = "You must agree to the terms";
+      if (!formData.partnershipGoals) newErrors.partnershipGoals = "Please tell us your partnership goals";
+      if (!formData.agreeTerms) newErrors.agreeTerms = "You must agree to the terms and conditions";
       if (!formData.agreeDataProcessing) newErrors.agreeDataProcessing = "You must agree to data processing";
     }
 
@@ -490,21 +499,17 @@ function PartnerApplyForm() {
                 </label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {partnerTypes.map((type) => (
-                    <label
+                    <div
                       key={type.id}
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, partnerType: type.id }));
+                        if (errors.partnerType) setErrors(prev => ({ ...prev, partnerType: null }));
+                      }}
                       className={`relative border rounded-xl p-4 cursor-pointer transition-all ${formData.partnerType === type.id
                         ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
                         : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
                         }`}
                     >
-                      <input
-                        type="radio"
-                        name="partnerType"
-                        value={type.id}
-                        checked={formData.partnerType === type.id}
-                        onChange={handleChange}
-                        className="sr-only"
-                      />
                       <div className="flex items-start gap-3">
                         <div className={`p-2 rounded-lg ${formData.partnerType === type.id
                           ? 'bg-blue-600 text-white'
@@ -520,7 +525,7 @@ function PartnerApplyForm() {
                       {formData.partnerType === type.id && (
                         <CheckCircle className="absolute top-4 right-4 text-blue-600" size={20} />
                       )}
-                    </label>
+                    </div>
                   ))}
                 </div>
                 {errors.partnerType && (
@@ -535,21 +540,17 @@ function PartnerApplyForm() {
                 </label>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {partnershipTiers.map((tier) => (
-                    <label
+                    <div
                       key={tier.level}
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, partnershipTier: tier.level.toLowerCase() }));
+                        if (errors.partnershipTier) setErrors(prev => ({ ...prev, partnershipTier: null }));
+                      }}
                       className={`relative border rounded-xl p-4 cursor-pointer transition-all ${formData.partnershipTier === tier.level.toLowerCase()
                         ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
                         : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
                         }`}
                     >
-                      <input
-                        type="radio"
-                        name="partnershipTier"
-                        value={tier.level.toLowerCase()}
-                        checked={formData.partnershipTier === tier.level.toLowerCase()}
-                        onChange={handleChange}
-                        className="sr-only"
-                      />
                       <div className="text-center">
                         <div className={`inline-block px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r ${tier.color} text-white mb-2`}>
                           {tier.level}
@@ -567,9 +568,12 @@ function PartnerApplyForm() {
                       {formData.partnershipTier === tier.level.toLowerCase() && (
                         <CheckCircle className="absolute top-2 right-2 text-blue-600" size={16} />
                       )}
-                    </label>
+                    </div>
                   ))}
                 </div>
+                {errors.partnershipTier && (
+                  <p className="mt-2 text-sm text-red-600">{errors.partnershipTier}</p>
+                )}
               </div>
 
               {/* Organization Details */}
