@@ -359,11 +359,11 @@ export default function Navbar() {
                       <FaUser className="mr-3 text-blue-500 opacity-70" size={14} />
                       <span className="text-sm font-medium">My Profile</span>
                     </Link>
-                    <Link href="/user/orders" className="flex items-center px-4 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                    <Link href="/orders" className="flex items-center px-4 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
                       <FaHistory className="mr-3 text-blue-500 opacity-70" size={14} />
                       <span className="text-sm font-medium">My Orders</span>
                     </Link>
-                    <Link href="/settings" className="flex items-center px-4 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                    <Link href="/profile" className="flex items-center px-4 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
                       <FaCog className="mr-3 text-blue-500 opacity-70" size={14} />
                       <span className="text-sm font-medium">Settings</span>
                     </Link>

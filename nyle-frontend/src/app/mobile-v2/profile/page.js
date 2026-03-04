@@ -105,7 +105,7 @@ export default function ProfilePage() {
         </Link>
 
         <Link
-          href="/settings"
+          href="/mobile-v2/settings"
           className="bg-blue-100 text-blue-600 rounded-lg p-4 flex flex-col items-center hover:bg-blue-200 transition"
         >
           <Settings className="h-6 w-6" />

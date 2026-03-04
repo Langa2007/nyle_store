@@ -107,6 +107,13 @@ const yearsOptions = [
 
 import { Suspense } from "react";
 
+const normalizeTier = (tier) => {
+  const value = (tier || "").toLowerCase().trim();
+  if (value === "gld") return "gold";
+  if (["platinum", "gold", "silver"].includes(value)) return value;
+  return "";
+};
+
 function PartnerApplyForm() {
 
   const router = useRouter();
@@ -116,8 +123,8 @@ function PartnerApplyForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     // Basic Information
-    partnerType: "",
-    partnershipTier: preselectedTier?.toLowerCase() || "",
+    partnerType: "other",
+    partnershipTier: normalizeTier(preselectedTier),
     organizationName: "",
     registrationNumber: "",
     yearEstablished: "",
@@ -174,6 +181,16 @@ function PartnerApplyForm() {
       }));
     }
   }, [selectedCountry]);
+
+  useEffect(() => {
+    const normalized = normalizeTier(preselectedTier);
+    if (normalized) {
+      setFormData((prev) => ({ ...prev, partnershipTier: normalized }));
+      if (errors.partnershipTier) {
+        setErrors((prev) => ({ ...prev, partnershipTier: null }));
+      }
+    }
+  }, [preselectedTier]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -293,9 +310,6 @@ function PartnerApplyForm() {
     const newErrors = {};
 
     if (step === 1) {
-      if (!formData.partnerType) {
-        newErrors.partnerType = "Please select a partner category above";
-      }
       if (!formData.partnershipTier) {
         newErrors.partnershipTier = "Please select a partnership tier";
       }
@@ -361,7 +375,11 @@ function PartnerApplyForm() {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/partners/apply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          partnerType: formData.partnerType || "other",
+          partnershipTier: normalizeTier(formData.partnershipTier)
+        })
       });
 
       const data = await response.json();

@@ -4,21 +4,30 @@ import pool from '../db/connect.js';
 // Helper: getOrCreateCart by user_id or session_id
 async function getOrCreateCart({ user_id, session_id }) {
   if (user_id) {
-    const { rows } = await pool.query('SELECT * FROM cart WHERE user_id=$1 LIMIT 1', [user_id]);
-    if (rows.length) return rows[0];
-    const r = await pool.query('INSERT INTO cart(user_id) VALUES($1) RETURNING *', [user_id]);
-    return r.rows[0];
-  } else if (session_id) {
+    const normalizedUserId = String(user_id).trim();
+    const userCheck = await pool.query('SELECT id FROM users WHERE id=$1 LIMIT 1', [normalizedUserId]);
+
+    if (userCheck.rows.length) {
+      const { rows } = await pool.query('SELECT * FROM cart WHERE user_id=$1 LIMIT 1', [normalizedUserId]);
+      if (rows.length) return rows[0];
+      const r = await pool.query('INSERT INTO cart(user_id) VALUES($1) RETURNING *', [normalizedUserId]);
+      return r.rows[0];
+    }
+
+    console.warn(`[cart] Ignoring unknown user_id "${normalizedUserId}", falling back to session cart.`);
+  }
+
+  if (session_id) {
     const { rows } = await pool.query('SELECT * FROM cart WHERE session_id=$1 LIMIT 1', [session_id]);
     if (rows.length) return rows[0];
     const r = await pool.query('INSERT INTO cart(session_id) VALUES($1) RETURNING *', [session_id]);
     return r.rows[0];
-  } else {
-    // create anonymous cart with random session id
-    const sid = `s_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    const r = await pool.query('INSERT INTO cart(session_id) VALUES($1) RETURNING *', [sid]);
-    return r.rows[0];
   }
+
+  // create anonymous cart with random session id
+  const sid = `s_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const r = await pool.query('INSERT INTO cart(session_id) VALUES($1) RETURNING *', [sid]);
+  return r.rows[0];
 }
 
 export const getCart = async (req, res) => {

@@ -15,7 +15,7 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
 
   const navItems = [
     { href: "/about/know-nyle", label: "About the Company", icon: <Home size={18} /> },
-    { href: "/about/partner", label: "Our Team", icon: <Users size={18} /> },
+    { href: "/about/partners", label: "Our Team", icon: <Users size={18} /> },
     { href: "/about/partners", label: "Partnership Program", icon: <Briefcase size={18} /> },
     { href: "/about/careers", label: "Careers", icon: <Target size={18} /> },
     { href: "/about/newsletter", label: "Blog", icon: <BookOpen size={18} /> },
