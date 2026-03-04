@@ -16,7 +16,10 @@ import {
     Building2,
     ChevronRight,
     ExternalLink,
-    Download
+    Download,
+    MapPin,
+    User,
+    Briefcase
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -33,7 +36,24 @@ interface PartnerApplication {
     created_at: string;
     country: string;
     city: string;
+    address?: string;
+    registration_number?: string;
+    year_established?: string;
+    business_size?: string;
+    annual_revenue?: string;
     website?: string;
+    linkedin?: string;
+    description?: string;
+    key_clients?: string;
+    services?: string | string[];
+    target_markets?: string | string[];
+    countries_of_operation?: string | string[];
+    partnership_goals?: string;
+    expected_volume?: string;
+    integration_timeline?: string;
+    additional_info?: string;
+    job_title?: string;
+    alternative_phone?: string;
 }
 
 export default function PartnersPage() {
@@ -130,7 +150,7 @@ export default function PartnersPage() {
                     <p className="text-gray-400 text-sm mt-1">Manage and review incoming partnership requests</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button
+                    <button title ="Refresh"
                         onClick={fetchApplications}
                         className="p-2 rounded-lg bg-gray-800 text-gray-400 hover:text-white transition-colors border border-gray-700"
                     >
@@ -185,7 +205,7 @@ export default function PartnersPage() {
                             </button>
                         ))}
                     </div>
-                    <button className="p-2.5 rounded-xl bg-gray-900 border border-gray-800 text-gray-400 hover:text-white transition-all">
+                    <button title = "Filter Applications" className="p-2.5 rounded-xl bg-gray-900 border border-gray-800 text-gray-400 hover:text-white transition-all">
                         <Filter size={18} />
                     </button>
                 </div>
@@ -258,7 +278,7 @@ export default function PartnersPage() {
                                             <p className="text-xs text-gray-500">{new Date(app.created_at).toLocaleDateString()}</p>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <button className="p-2 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-white transition-colors">
+                                            <button title="View Details" className="p-2 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-white transition-colors">
                                                 <MoreVertical size={16} />
                                             </button>
                                         </td>
@@ -290,7 +310,7 @@ export default function PartnersPage() {
                         >
                             <div className="flex items-center justify-between mb-8">
                                 <h2 className="text-xl font-bold text-white">Application Details</h2>
-                                <button
+                                <button title= "Close Details"
                                     onClick={() => setSelectedApp(null)}
                                     className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white"
                                 >
