@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import countriesList from 'all-countries-list';
 
+// Import flags
+import * as Flags from 'country-flag-icons/react/3x2';
+
 // Countries data
 const countries = Object.values(countriesList).map(country => ({
   name: country.name,
@@ -786,7 +789,10 @@ function PartnerApplyForm() {
                   <div className="relative">
                     {selectedCountry && (
                       <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center">
-                        <span className="text-xl mr-1">{selectedCountry.emoji}</span>
+                        {(() => {
+                          const Flag = Flags[selectedCountry.code];
+                          return Flag ? <Flag className="w-6 h-4 mr-2" /> : <span className="text-xl mr-2">{selectedCountry.emoji}</span>;
+                        })()}
                         <span className="text-gray-600 text-sm">{selectedCountry.dialCode}</span>
                       </div>
                     )}
@@ -795,10 +801,11 @@ function PartnerApplyForm() {
                       name="phone"
                       value={formData.phone}
                       onChange={handlePhoneChange}
+                      required
                       disabled={!selectedCountry}
                       placeholder={!selectedCountry ? "Select country first" : "Enter number"}
-                      className={`w-full pl-24 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${errors.phone ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${selectedCountry ? 'pl-28' : ''
+                        } ${errors.phone ? 'border-red-500' : 'border-gray-300'}`}
                     />
                   </div>
                   {errors.phone && (
