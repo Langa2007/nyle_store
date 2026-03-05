@@ -14,12 +14,10 @@ import {
     Phone,
     Globe,
     Building2,
-    ChevronRight,
     ExternalLink,
     Download,
     MapPin,
-    User,
-    Briefcase
+    User
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -54,7 +52,23 @@ interface PartnerApplication {
     additional_info?: string;
     job_title?: string;
     alternative_phone?: string;
+    contacted_at?: string | null;
+    contacted_by?: number | null;
+    termination_reason?: string | null;
+    termination_notice_sent_at?: string | null;
+    termination_deadline?: string | null;
+    terminated_at?: string | null;
 }
+
+const TERMINATION_REASONS = [
+    "Breach of agreement terms",
+    "Compliance or legal risk",
+    "Operational performance issues",
+    "Service quality concerns",
+    "Strategic realignment",
+    "Repeated communication failures",
+    "Other"
+];
 
 export default function PartnersPage() {
     const [applications, setApplications] = useState<PartnerApplication[]>([]);
@@ -62,6 +76,8 @@ export default function PartnersPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
     const [selectedApp, setSelectedApp] = useState<PartnerApplication | null>(null);
+    const [terminationReason, setTerminationReason] = useState("");
+    const [updatingStatus, setUpdatingStatus] = useState(false);
 
     const fetchApplications = async () => {
         try {
@@ -87,26 +103,71 @@ export default function PartnersPage() {
         fetchApplications();
     }, []);
 
-    const handleStatusUpdate = async (id: number, newStatus: string) => {
+    useEffect(() => {
+        setTerminationReason(selectedApp?.termination_reason || "");
+    }, [selectedApp?.id, selectedApp?.termination_reason]);
+
+    const handleMarkContacted = async (id: number) => {
         try {
+            setUpdatingStatus(true);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/partners/applications/${id}/contacted`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('adminAccessToken')}`
+                }
+            });
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || "Failed to mark contacted");
+            }
+
+            toast.success("Application marked as contacted");
+            fetchApplications();
+
+            if (selectedApp?.id === id) {
+                setSelectedApp(data.data);
+            }
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "Failed to mark as contacted";
+            toast.error(message);
+        } finally {
+            setUpdatingStatus(false);
+        }
+    };
+
+    const handleStatusUpdate = async (id: number, newStatus: string, reason: string = "") => {
+        try {
+            setUpdatingStatus(true);
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/partners/applications/${id}/status`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('adminAccessToken')}`
                 },
-                body: JSON.stringify({ status: newStatus })
+                body: JSON.stringify({
+                    status: newStatus,
+                    terminationReason: reason || undefined
+                })
             });
             const data = await response.json();
-            if (data.success) {
-                toast.success(`Application ${newStatus}`);
-                fetchApplications();
-                if (selectedApp?.id === id) {
-                    setSelectedApp({ ...selectedApp, status: newStatus });
-                }
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || "Failed to update status");
             }
-        } catch (error) {
-            toast.error("Failed to update status");
+
+            toast.success(`Application ${newStatus.replace("_", " ")}`);
+            fetchApplications();
+            if (selectedApp?.id === id) {
+                setSelectedApp(data.data);
+            }
+
+            if (newStatus === "termination_notice") {
+                setTerminationReason("");
+            }
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "Failed to update status";
+            toast.error(message);
+        } finally {
+            setUpdatingStatus(false);
         }
     };
 
@@ -125,7 +186,26 @@ export default function PartnersPage() {
         switch (status) {
             case 'approved': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
             case 'rejected': return 'bg-red-500/10 text-red-500 border-red-500/20';
+            case 'termination_notice': return 'bg-orange-500/10 text-orange-400 border-orange-500/20';
+            case 'terminated': return 'bg-gray-500/10 text-gray-300 border-gray-500/20';
             default: return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
+        }
+    };
+
+    const getStatusIcon = (status: string) => {
+        if (status === "approved") return <CheckCircle size={12} />;
+        if (status === "rejected" || status === "terminated") return <XCircle size={12} />;
+        return <Clock size={12} />;
+    };
+
+    const parseArrayField = (value?: string | string[]) => {
+        if (Array.isArray(value)) return value;
+        if (!value) return [];
+        try {
+            const parsed = JSON.parse(value);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch {
+            return [];
         }
     };
 
@@ -192,7 +272,7 @@ export default function PartnersPage() {
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="flex bg-gray-900 border border-gray-800 rounded-xl p-1">
-                        {['all', 'pending', 'approved', 'rejected'].map((status) => (
+                        {['all', 'pending', 'approved', 'rejected', 'termination_notice', 'terminated'].map((status) => (
                             <button
                                 key={status}
                                 onClick={() => setFilterStatus(status)}
@@ -270,7 +350,7 @@ export default function PartnersPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[11px] font-medium capitalize ${getStatusColor(app.status)}`}>
-                                                {app.status === 'approved' ? <CheckCircle size={12} /> : app.status === 'rejected' ? <XCircle size={12} /> : <Clock size={12} />}
+                                                {getStatusIcon(app.status)}
                                                 {app.status}
                                             </span>
                                         </td>
@@ -320,30 +400,113 @@ export default function PartnersPage() {
 
                             <div className="space-y-8">
                                 {/* Status Actions */}
-                                <div className="flex items-center justify-between p-4 bg-gray-800/50 rounded-2xl border border-gray-700">
-                                    <div className="flex items-center gap-3">
-                                        <span className={`w-3 h-3 rounded-full animate-pulse ${selectedApp.status === 'approved' ? 'bg-emerald-500' : selectedApp.status === 'rejected' ? 'bg-red-500' : 'bg-amber-500'
-                                            }`}></span>
-                                        <p className="text-sm font-medium text-gray-200 capitalize">Currently {selectedApp.status}</p>
+                                <div className="p-4 bg-gray-800/50 rounded-2xl border border-gray-700 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <span className={`w-3 h-3 rounded-full animate-pulse ${selectedApp.status === 'approved'
+                                                ? 'bg-emerald-500'
+                                                : selectedApp.status === 'rejected' || selectedApp.status === 'terminated'
+                                                    ? 'bg-red-500'
+                                                    : selectedApp.status === 'termination_notice'
+                                                        ? 'bg-orange-500'
+                                                        : 'bg-amber-500'
+                                                }`}></span>
+                                            <p className="text-sm font-medium text-gray-200 capitalize">Currently {selectedApp.status}</p>
+                                        </div>
+                                        <button
+                                            onClick={() => handleMarkContacted(selectedApp.id)}
+                                            disabled={Boolean(selectedApp.contacted_at) || updatingStatus}
+                                            className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedApp.contacted_at
+                                                ? "bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 cursor-not-allowed"
+                                                : "bg-blue-600 hover:bg-blue-700 text-white"
+                                                }`}
+                                        >
+                                            {selectedApp.contacted_at ? "Contacted" : "Mark Contacted"}
+                                        </button>
                                     </div>
-                                    <div className="flex gap-2">
-                                        {selectedApp.status !== 'approved' && (
+
+                                    {selectedApp.contacted_at ? (
+                                        <p className="text-[11px] text-emerald-400">
+                                            Contact marked on {new Date(selectedApp.contacted_at).toLocaleString()}
+                                        </p>
+                                    ) : (
+                                        <p className="text-[11px] text-amber-400">
+                                            Contact must be marked before approve, reject, or termination actions.
+                                        </p>
+                                    )}
+
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedApp.status !== 'approved' && selectedApp.status !== 'terminated' && (
                                             <button
                                                 onClick={() => handleStatusUpdate(selectedApp.id, 'approved')}
-                                                className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-all"
+                                                disabled={!selectedApp.contacted_at || updatingStatus}
+                                                className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${selectedApp.contacted_at
+                                                    ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                                                    : "bg-gray-700 text-gray-400 cursor-not-allowed"
+                                                    }`}
+                                                title={!selectedApp.contacted_at ? "Mark as contacted first" : "Approve"}
                                             >
                                                 Approve
                                             </button>
                                         )}
-                                        {selectedApp.status !== 'rejected' && (
+                                        {selectedApp.status !== 'rejected' && selectedApp.status !== 'terminated' && (
                                             <button
                                                 onClick={() => handleStatusUpdate(selectedApp.id, 'rejected')}
-                                                className="px-4 py-1.5 bg-red-600/10 hover:bg-red-600/20 text-red-500 border border-red-500/20 text-xs font-bold rounded-lg transition-all"
+                                                disabled={!selectedApp.contacted_at || updatingStatus}
+                                                className={`px-4 py-1.5 border text-xs font-bold rounded-lg transition-all ${selectedApp.contacted_at
+                                                    ? "bg-red-600/10 hover:bg-red-600/20 text-red-400 border-red-500/20"
+                                                    : "bg-gray-700 text-gray-400 border-gray-600 cursor-not-allowed"
+                                                    }`}
+                                                title={!selectedApp.contacted_at ? "Mark as contacted first" : "Reject"}
                                             >
                                                 Reject
                                             </button>
                                         )}
                                     </div>
+
+                                    {selectedApp.status !== 'terminated' && (
+                                        <div className="space-y-2 pt-2 border-t border-gray-700">
+                                            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                                                Termination reason
+                                            </label>
+                                            <div className="flex gap-2">
+                                                <select
+                                                    value={terminationReason}
+                                                    onChange={(e) => setTerminationReason(e.target.value)}
+                                                    className="flex-1 rounded-lg bg-gray-900 border border-gray-700 px-3 py-2 text-xs text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+                                                >
+                                                    <option value="">Select reason</option>
+                                                    {TERMINATION_REASONS.map((reason) => (
+                                                        <option key={reason} value={reason}>
+                                                            {reason}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <button
+                                                    onClick={() => handleStatusUpdate(selectedApp.id, 'termination_notice', terminationReason)}
+                                                    disabled={!selectedApp.contacted_at || !terminationReason || updatingStatus}
+                                                    className={`px-3 py-2 text-xs font-bold rounded-lg transition-all border ${selectedApp.contacted_at && terminationReason
+                                                        ? "bg-orange-600/10 hover:bg-orange-600/20 text-orange-400 border-orange-500/30"
+                                                        : "bg-gray-700 text-gray-400 border-gray-600 cursor-not-allowed"
+                                                        }`}
+                                                    title={!selectedApp.contacted_at ? "Mark as contacted first" : "Send termination notice"}
+                                                >
+                                                    Send Termination Notice
+                                                </button>
+                                            </div>
+                                            {selectedApp.termination_reason && (
+                                                <p className="text-[11px] text-orange-300">
+                                                    Active notice reason: {selectedApp.termination_reason}
+                                                </p>
+                                            )}
+                                            {selectedApp.termination_deadline && selectedApp.status === "termination_notice" && (
+                                                <p className="text-[11px] text-orange-400">
+                                                    Response deadline: {new Date(selectedApp.termination_deadline).toLocaleString()}.
+                                                    If no response is received, status will move to permanent termination.
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Company Info */}
@@ -398,7 +561,7 @@ export default function PartnersPage() {
                                         <div>
                                             <p className="text-xs text-gray-500 mb-1 text-blue-500">Core Services</p>
                                             <div className="flex flex-wrap gap-2">
-                                                {(Array.isArray(selectedApp.services) ? selectedApp.services : JSON.parse(selectedApp.services || '[]')).map((s: string, i: number) => (
+                                                {parseArrayField(selectedApp.services).map((s: string, i: number) => (
                                                     <span key={i} className="px-2 py-1 rounded bg-blue-500/10 text-blue-400 text-[10px] font-medium border border-blue-500/20">{s}</span>
                                                 ))}
                                             </div>
@@ -406,7 +569,7 @@ export default function PartnersPage() {
                                         <div>
                                             <p className="text-xs text-gray-500 mb-1 text-emerald-500">Target Markets</p>
                                             <div className="flex flex-wrap gap-2">
-                                                {(Array.isArray(selectedApp.target_markets) ? selectedApp.target_markets : JSON.parse(selectedApp.target_markets || '[]')).map((m: string, i: number) => (
+                                                {parseArrayField(selectedApp.target_markets).map((m: string, i: number) => (
                                                     <span key={i} className="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-medium border border-emerald-500/20">{m}</span>
                                                 ))}
                                             </div>
@@ -414,14 +577,16 @@ export default function PartnersPage() {
                                         <div>
                                             <p className="text-xs text-gray-500 mb-1 text-purple-500">Operational Countries</p>
                                             <div className="flex flex-wrap gap-2">
-                                                {(Array.isArray(selectedApp.countries_of_operation) ? selectedApp.countries_of_operation : JSON.parse(selectedApp.countries_of_operation || '[]')).map((c: string, i: number) => (
+                                                {parseArrayField(selectedApp.countries_of_operation).map((c: string, i: number) => (
                                                     <span key={i} className="px-2 py-1 rounded bg-purple-500/10 text-purple-400 text-[10px] font-medium border border-purple-500/20">{c}</span>
                                                 ))}
                                             </div>
                                         </div>
                                         <div>
                                             <p className="text-xs text-gray-500 mb-1">Business Description</p>
-                                            <p className="text-gray-300 text-sm leading-relaxed italic">"{selectedApp.description || 'No description provided.'}"</p>
+                                            <p className="text-gray-300 text-sm leading-relaxed italic">
+                                                &quot;{selectedApp.description || 'No description provided.'}&quot;
+                                            </p>
                                         </div>
                                         {selectedApp.key_clients && (
                                             <div>

@@ -40,20 +40,107 @@ class PartnerModel {
      * @returns {Array} - List of applications
      */
     static async getAllApplications() {
+        await this.finalizeExpiredTerminations();
         const query = 'SELECT * FROM partner_applications ORDER BY created_at DESC';
         const { rows } = await pool.query(query);
         return rows;
     }
 
     /**
+     * Get single application by ID
+     * @param {number} id
+     * @returns {Object|null}
+     */
+    static async getApplicationById(id) {
+        const { rows } = await pool.query(
+            'SELECT * FROM partner_applications WHERE id = $1',
+            [id]
+        );
+        return rows[0] || null;
+    }
+
+    /**
+     * Mark application as contacted
+     * @param {number} id
+     * @param {number|null} adminId
+     * @returns {Object|null}
+     */
+    static async markContacted(id, adminId = null) {
+        const query = `
+            UPDATE partner_applications
+            SET contacted_at = COALESCE(contacted_at, NOW()),
+                contacted_by = COALESCE(contacted_by, $2)
+            WHERE id = $1
+            RETURNING *
+        `;
+        const { rows } = await pool.query(query, [id, adminId]);
+        return rows[0] || null;
+    }
+
+    /**
+     * Finalize termination notices whose deadline has passed
+     */
+    static async finalizeExpiredTerminations() {
+        const query = `
+            UPDATE partner_applications
+            SET status = 'terminated',
+                terminated_at = COALESCE(terminated_at, NOW())
+            WHERE status = 'termination_notice'
+              AND termination_deadline IS NOT NULL
+              AND termination_deadline <= NOW()
+        `;
+        await pool.query(query);
+    }
+
+    /**
      * Update application status
      * @param {number} id - Application ID
      * @param {string} status - New status
+     * @param {Object} options - Extra update fields
      * @returns {Object} - Updated record
      */
-    static async updateStatus(id, status) {
-        const query = 'UPDATE partner_applications SET status = $1 WHERE id = $2 RETURNING *';
-        const { rows } = await pool.query(query, [status, id]);
+    static async updateStatus(id, status, options = {}) {
+        const { terminationReason = null } = options;
+
+        let query = '';
+        let values = [];
+
+        if (status === 'termination_notice') {
+            query = `
+                UPDATE partner_applications
+                SET status = $1,
+                    termination_reason = $2,
+                    termination_notice_sent_at = NOW(),
+                    termination_deadline = NOW() + INTERVAL '14 days',
+                    terminated_at = NULL
+                WHERE id = $3
+                RETURNING *
+            `;
+            values = [status, terminationReason, id];
+        } else if (status === 'terminated') {
+            query = `
+                UPDATE partner_applications
+                SET status = $1,
+                    terminated_at = NOW()
+                WHERE id = $2
+                RETURNING *
+            `;
+            values = [status, id];
+        } else {
+            query = `
+                UPDATE partner_applications
+                SET status = $1,
+                    termination_reason = NULL,
+                    termination_notice_sent_at = NULL,
+                    termination_deadline = NULL,
+                    terminated_at = NULL
+                WHERE id = $2
+                RETURNING *
+            `;
+            values = [status, id];
+        }
+
+        const { rows } = await pool.query(query, values);
         return rows[0];
     }
 }

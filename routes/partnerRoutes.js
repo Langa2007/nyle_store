@@ -1,7 +1,7 @@
 // routes/partnerRoutes.js
 import express from 'express';
 import PartnerController from '../controllers/partnerController.js';
-// import { authenticateAdmin } from '../middleware/authMiddleware.js'; // Assuming you have admin auth
+import { verifyAdmin } from '../middleware/adminAuth.js';
 
 const router = express.Router();
 
@@ -9,7 +9,8 @@ const router = express.Router();
 router.post('/apply', PartnerController.apply);
 
 // Admin routes (should be protected)
-router.get('/applications', PartnerController.getApplications);
-router.put('/applications/:id/status', PartnerController.updateStatus);
+router.get('/applications', verifyAdmin, PartnerController.getApplications);
+router.put('/applications/:id/contacted', verifyAdmin, PartnerController.markContacted);
+router.put('/applications/:id/status', verifyAdmin, PartnerController.updateStatus);
 
 export default router;

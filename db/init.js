@@ -113,7 +113,16 @@ export const initDB = async () => {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
-        console.log("✅ Partner Applications table initialized");
+        await pool.query(`
+            ALTER TABLE partner_applications
+            ADD COLUMN IF NOT EXISTS contacted_at TIMESTAMP,
+            ADD COLUMN IF NOT EXISTS contacted_by INTEGER,
+            ADD COLUMN IF NOT EXISTS termination_reason TEXT,
+            ADD COLUMN IF NOT EXISTS termination_notice_sent_at TIMESTAMP,
+            ADD COLUMN IF NOT EXISTS termination_deadline TIMESTAMP,
+            ADD COLUMN IF NOT EXISTS terminated_at TIMESTAMP
+        `);
+        console.log("Partner Applications table initialized");
 
         console.log("✨ Database initialization complete!");
     } catch (err) {
@@ -121,3 +130,4 @@ export const initDB = async () => {
         throw err;
     }
 };
+

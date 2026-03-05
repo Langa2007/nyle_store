@@ -147,3 +147,70 @@ export async function sendPartnerApplicationEmail(toEmail, applicationData) {
     return false;
   }
 }
+
+/**
+ * Send partner application status update email
+ * @param {string} toEmail
+ * @param {object} applicationData
+ * @param {string} status 'approved' | 'rejected' | 'termination_notice'
+ */
+export async function sendPartnerStatusEmail(toEmail, applicationData, status) {
+  const { full_name, organization_name, termination_reason, termination_deadline } = applicationData;
+  let subject = "";
+  let html = "";
+
+  const formattedName = full_name || "Partner";
+  const formattedOrg = organization_name || "your organization";
+
+  if (status === "approved") {
+    subject = `Partnership Approved - ${formattedOrg}`;
+    html = `
+      <h2>Your partnership is approved</h2>
+      <p>Hello ${formattedName},</p>
+      <p>We are pleased to inform you that the partnership application for <strong>${formattedOrg}</strong> has been approved.</p>
+      <p>Our partnerships team will contact you with onboarding steps shortly.</p>
+      <p>Regards,<br/>Nyle Partnerships Team</p>
+    `;
+  } else if (status === "rejected") {
+    subject = `Partnership Application Update - ${formattedOrg}`;
+    html = `
+      <h2>Partnership application update</h2>
+      <p>Hello ${formattedName},</p>
+      <p>Thank you for your interest in partnering with Nyle.</p>
+      <p>After review, we are unable to proceed with the application for <strong>${formattedOrg}</strong> at this time.</p>
+      <p>You may re-apply in the future with updated information.</p>
+      <p>Regards,<br/>Nyle Partnerships Team</p>
+    `;
+  } else if (status === "termination_notice") {
+    const deadlineText = termination_deadline
+      ? new Date(termination_deadline).toLocaleDateString()
+      : "within 14 days";
+
+    subject = `Termination Notice - Partnership with ${formattedOrg}`;
+    html = `
+      <h2>Partnership termination notice</h2>
+      <p>Hello ${formattedName},</p>
+      <p>This is a formal notice that we intend to terminate the partnership with <strong>${formattedOrg}</strong>.</p>
+      <p><strong>Reason:</strong> ${termination_reason || "Operational/compliance review outcome"}</p>
+      <p>You have <strong>14 days</strong> to respond. Please respond by <strong>${deadlineText}</strong>.</p>
+      <p>If no response is received by the deadline, the termination process will proceed to permanent termination.</p>
+      <p>Regards,<br/>Nyle Partnerships Team</p>
+    `;
+  } else {
+    return false;
+  }
+
+  try {
+    const resp = await resend.emails.send({
+      from: "Nyle Partnerships <partnerships@resend.dev>",
+      to: toEmail,
+      subject,
+      html,
+    });
+    console.log(` Partner ${status} email sent to ${toEmail}, id:`, resp.id);
+    return true;
+  } catch (err) {
+    console.error(` Partner ${status} email error:`, err);
+    return false;
+  }
+}
