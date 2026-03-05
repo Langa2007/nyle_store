@@ -3,12 +3,90 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { ShoppingCart, Menu, X, Search } from "lucide-react";
 import Link from "next/link";
-import { FaHeart, FaUser, FaSignInAlt, FaUserPlus, FaStore, FaCog, FaHistory, FaSignOutAlt } from "react-icons/fa";
+import { FaHeart, FaUser, FaSignInAlt, FaUserPlus, FaStore, FaCog, FaHistory, FaSignOutAlt, FaGift } from "react-icons/fa";
 import { useRouter, usePathname } from "next/navigation";
 import debounce from "lodash.debounce";
 import { useCart } from "@/context/CartContext/page";
 import { useIsMobile } from "@/lib/useMobile";
 import { useSession, signOut } from "next-auth/react";
+
+const HOLIDAY_CAMPAIGNS = [
+  {
+    id: "international-womens-day",
+    badge: "International Women's Day",
+    headline: "Get 62% OFF on selected collections",
+    ctaLabel: "Take Advantage",
+    ctaHref: "/deals",
+    startDate: "2026-03-01T00:00:00+03:00",
+    endDate: "2026-03-09T00:00:00+03:00",
+  },
+  {
+    id: "easter-special",
+    badge: "Easter Weekend",
+    headline: "Family picks with up to 45% OFF",
+    ctaLabel: "Shop Easter Deals",
+    ctaHref: "/deals",
+    startDate: "2026-04-01T00:00:00+03:00",
+    endDate: "2026-04-07T00:00:00+03:00",
+  },
+  {
+    id: "jamhuri-day",
+    badge: "Jamhuri Day",
+    headline: "Celebrate Kenya with up to 55% OFF",
+    ctaLabel: "Shop Local Favourites",
+    ctaHref: "/deals",
+    startDate: "2026-12-05T00:00:00+03:00",
+    endDate: "2026-12-13T00:00:00+03:00",
+  },
+];
+
+const FALLBACK_CAMPAIGN = {
+  id: "monthly-picks",
+  badge: "Nyle Monthly Picks",
+  headline: "Fresh discounts added every week",
+  ctaLabel: "Browse Deals",
+  ctaHref: "/deals",
+  startDate: "2026-01-01T00:00:00+03:00",
+  endDate: "2026-12-31T23:59:59+03:00",
+};
+
+const pickCampaign = (currentDate = new Date()) => {
+  const now = currentDate.getTime();
+
+  const active = HOLIDAY_CAMPAIGNS.find((campaign) => {
+    const start = new Date(campaign.startDate).getTime();
+    const end = new Date(campaign.endDate).getTime();
+    return now >= start && now < end;
+  });
+  if (active) return active;
+
+  const upcoming = HOLIDAY_CAMPAIGNS.find((campaign) => now < new Date(campaign.startDate).getTime());
+  return upcoming || FALLBACK_CAMPAIGN;
+};
+
+const getTimeLeft = (endDate) => {
+  const remainingMs = new Date(endDate).getTime() - Date.now();
+  if (remainingMs <= 0) {
+    return {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      isExpired: true,
+    };
+  }
+
+  const totalSeconds = Math.floor(remainingMs / 1000);
+  return {
+    days: Math.floor(totalSeconds / 86400),
+    hours: Math.floor((totalSeconds % 86400) / 3600),
+    minutes: Math.floor((totalSeconds % 3600) / 60),
+    seconds: totalSeconds % 60,
+    isExpired: false,
+  };
+};
+
+const formatUnit = (value) => String(value).padStart(2, "0");
 
 export default function Navbar() {
   const isMobile = useIsMobile();
@@ -32,6 +110,8 @@ export default function Navbar() {
   const { getCartTotals, setShowCart } = useCart();
   const { itemCount } = getCartTotals();
   const [categories, setCategories] = useState([]);
+  const [campaign, setCampaign] = useState(() => pickCampaign());
+  const [countdown, setCountdown] = useState(() => getTimeLeft(pickCampaign().endDate));
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -46,6 +126,18 @@ export default function Navbar() {
       }
     };
     fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const updateCampaignCountdown = () => {
+      const selectedCampaign = pickCampaign();
+      setCampaign(selectedCampaign);
+      setCountdown(getTimeLeft(selectedCampaign.endDate));
+    };
+
+    updateCampaignCountdown();
+    const interval = setInterval(updateCampaignCountdown, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const getCategoryImage = (name) => {
@@ -220,12 +312,54 @@ export default function Navbar() {
       ref={navRef}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${getNavbarBackground()} ${isVisible ? 'translate-y-0' : '-translate-y-full md:translate-y-0'}`}
     >
-      {/* Announcement Bar */}
-      <div className="bg-gradient-to-r from-blue-800 to-indigo-900 text-white py-2 px-4">
-        <div className="container mx-auto text-center text-sm">
-          <span className="font-medium"> Up To 60% off on Selected Products!</span>
-          <span className="mx-4 hidden md:inline">|</span>
-          <span className="hidden md:inline">🚚 Free Delivery on Orders Over Ksh 3,000</span>
+      {/* Holiday Offer Bar */}
+      <div className="bg-gradient-to-r from-[#0A3D91] via-[#0F5CC8] to-[#1C74E8] text-white border-b border-white/20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2.5">
+          <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-2 text-xs sm:text-sm">
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/20 text-[11px]">
+                <FaGift />
+              </span>
+              <span className="font-bold tracking-wide uppercase">
+                {campaign.badge}
+              </span>
+              <span className="hidden md:inline text-blue-100">
+                {campaign.headline}
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+              <span className="font-semibold text-white/95">
+                {countdown.isExpired ? "Offer ended" : "Ends in"}
+              </span>
+
+              {!countdown.isExpired && (
+                <>
+                  {[
+                    { label: "Days", value: countdown.days },
+                    { label: "Hours", value: countdown.hours },
+                    { label: "Minutes", value: countdown.minutes },
+                    { label: "Seconds", value: countdown.seconds },
+                  ].map((unit) => (
+                    <div
+                      key={unit.label}
+                      className="rounded-md bg-white/20 px-2 py-1 text-[11px] sm:text-xs font-semibold"
+                    >
+                      <span className="text-white">{formatUnit(unit.value)}</span>{" "}
+                      <span className="text-blue-100">{unit.label}</span>
+                    </div>
+                  ))}
+                </>
+              )}
+
+              <Link
+                href={campaign.ctaHref}
+                className="ml-1 inline-flex items-center rounded-md border border-white/45 px-3 py-1.5 font-semibold text-white hover:bg-white hover:text-blue-700 transition"
+              >
+                {campaign.ctaLabel}
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 
