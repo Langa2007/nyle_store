@@ -62,10 +62,7 @@ body {
 }
 
 /* ===== Main Container ===== */
-main {
-  padding-top: 5rem; /* Space for fixed navbar */
-  padding-left: 1rem;
-  padding-right: 1rem;
+#scroll-root {
   max-width: 100vw;
   overflow-x: hidden;
 }
@@ -100,12 +97,6 @@ button:active {
 
 /* ===== Mobile Styles ===== */
 @media (max-width: 768px) {
-  main {
-    padding-top: 5.5rem;
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
-
   h1 {
     font-size: 1.5rem;
   }
@@ -124,6 +115,7 @@ button:active {
 }
 
 :root {
+  --navbar-offset: 6rem;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);

@@ -470,7 +470,7 @@ export default function PartnersPage() {
                                                 Termination reason
                                             </label>
                                             <div className="flex gap-2">
-                                                <select
+                                                <select title = "Select termination reason"
                                                     value={terminationReason}
                                                     onChange={(e) => setTerminationReason(e.target.value)}
                                                     className="flex-1 rounded-lg bg-gray-900 border border-gray-700 px-3 py-2 text-xs text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500/30"

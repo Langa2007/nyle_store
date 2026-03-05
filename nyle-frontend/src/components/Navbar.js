@@ -26,6 +26,7 @@ export default function Navbar() {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef(null);
+  const navRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
   const { getCartTotals, setShowCart } = useCart();
@@ -162,6 +163,19 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
+  // Keep page content offset in sync with actual navbar height
+  useEffect(() => {
+    const updateNavbarOffset = () => {
+      if (!navRef.current) return;
+      const navHeight = navRef.current.offsetHeight || 0;
+      document.documentElement.style.setProperty("--navbar-offset", `${navHeight}px`);
+    };
+
+    updateNavbarOffset();
+    window.addEventListener("resize", updateNavbarOffset);
+    return () => window.removeEventListener("resize", updateNavbarOffset);
+  }, [mobileMenuOpen, isScrolled, isVisible]);
+
   const toggleMenu = () => setMobileMenuOpen(!mobileMenuOpen);
 
   // Background and text color logic
@@ -203,6 +217,7 @@ export default function Navbar() {
 
   return (
     <nav
+      ref={navRef}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${getNavbarBackground()} ${isVisible ? 'translate-y-0' : '-translate-y-full md:translate-y-0'}`}
     >
       {/* Announcement Bar */}
