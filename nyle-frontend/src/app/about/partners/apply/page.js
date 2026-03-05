@@ -311,6 +311,8 @@ function PartnerApplyForm() {
 
   const validateStep = (step) => {
     const newErrors = {};
+    const pendingService = serviceInput.trim();
+    const pendingMarket = marketInput.trim();
 
     if (step === 1) {
       if (!formData.partnershipTier) {
@@ -337,11 +339,11 @@ function PartnerApplyForm() {
 
     if (step === 3) {
       if (!formData.description) newErrors.description = "Business description is required";
-      if (formData.services.length === 0) {
-        newErrors.services = serviceInput ? "Click the '+' button to add your service" : "At least one service is required";
+      if (formData.services.length === 0 && !pendingService) {
+        newErrors.services = "At least one service is required";
       }
-      if (formData.targetMarkets.length === 0) {
-        newErrors.targetMarkets = marketInput ? "Click the '+' button to add your target market" : "At least one target market is required";
+      if (formData.targetMarkets.length === 0 && !pendingMarket) {
+        newErrors.targetMarkets = "At least one target market is required";
       }
     }
 
@@ -357,6 +359,24 @@ function PartnerApplyForm() {
 
   const handleNextStep = () => {
     if (validateStep(currentStep)) {
+      if (currentStep === 3) {
+        const pendingService = serviceInput.trim();
+        const pendingMarket = marketInput.trim();
+
+        setFormData((prev) => ({
+          ...prev,
+          services: pendingService && !prev.services.includes(pendingService)
+            ? [...prev.services, pendingService]
+            : prev.services,
+          targetMarkets: pendingMarket && !prev.targetMarkets.includes(pendingMarket)
+            ? [...prev.targetMarkets, pendingMarket]
+            : prev.targetMarkets
+        }));
+
+        if (pendingService) setServiceInput("");
+        if (pendingMarket) setMarketInput("");
+      }
+
       setCurrentStep(prev => prev + 1);
       window.scrollTo(0, 0);
     }
