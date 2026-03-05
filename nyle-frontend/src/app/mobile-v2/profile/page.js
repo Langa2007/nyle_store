@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { User, LogOut, ShoppingBag, Settings, MapPin, Navigation, Plus, Trash2 } from "lucide-react";
 import useGeolocation from "@/hooks/useGeolocation";
 import Link from "next/link";
-import { fetchWithAuth, API_ENDPOINTS } from "@/lib/mobile-app/api";
+import { fetchWithAuth } from "@/lib/mobile-app/api";
 import { useSession, signOut } from "next-auth/react";
 
 export default function ProfilePage() {
@@ -21,26 +21,40 @@ export default function ProfilePage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [submittingLocation, setSubmittingLocation] = useState(false);
 
+  const getAuthToken = () => {
+    const token = (
+      session?.accessToken ||
+      session?.user?.accessToken ||
+      (typeof window !== "undefined" ? localStorage.getItem("accessToken") : null) ||
+      (typeof window !== "undefined" ? localStorage.getItem("userAccessToken") : null)
+    );
+    return token && token !== "undefined" && token !== "null" ? token : null;
+  };
+
   useEffect(() => {
     async function getProfileData() {
       if (!session?.user?.id) return;
 
       try {
         setLoading(true);
+        const authToken = getAuthToken();
+
         // Fetch orders if endpoint exists
         try {
-          const ordersData = await fetchWithAuth(`/orders/user/${session.user.id}`);
+          const ordersData = await fetchWithAuth(`/orders/user/${session.user.id}`, { authToken });
           setOrders(ordersData);
         } catch (e) {
           console.warn("Orders fetch failed");
         }
 
         // Fetch locations
-        try {
-          const locData = await fetchWithAuth(`/location`);
-          setLocations(locData.locations || []);
-        } catch (e) {
-          console.warn("Locations fetch failed");
+        if (authToken) {
+          try {
+            const locData = await fetchWithAuth(`/location`, { authToken });
+            setLocations(locData.locations || []);
+          } catch (e) {
+            console.warn("Locations fetch failed");
+          }
         }
       } catch (err) {
         console.error("Failed to fetch profile data:", err);
@@ -183,8 +197,14 @@ export default function ProfilePage() {
                   if (!newLocation.address) return alert("Address is required");
                   setSubmittingLocation(true);
                   try {
+                    const authToken = getAuthToken();
+                    if (!authToken) {
+                      alert("Please sign in again to manage locations.");
+                      return;
+                    }
                     const data = await fetchWithAuth(`/location`, {
                       method: "POST",
+                      authToken,
                       body: JSON.stringify(newLocation)
                     });
                     setLocations([data.location, ...locations]);
@@ -226,7 +246,12 @@ export default function ProfilePage() {
                       onClick={async () => {
                         if (!confirm("Delete this address?")) return;
                         try {
-                          await fetchWithAuth(`/location/${loc.id}`, { method: "DELETE" });
+                          const authToken = getAuthToken();
+                          if (!authToken) {
+                            alert("Please sign in again to manage locations.");
+                            return;
+                          }
+                          await fetchWithAuth(`/location/${loc.id}`, { method: "DELETE", authToken });
                           setLocations(locations.filter(l => l.id !== loc.id));
                         } catch (err) {
                           alert("Failed to delete");

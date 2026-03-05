@@ -21,6 +21,16 @@ export default function ProfilePage() {
     const [showAddForm, setShowAddForm] = useState(false);
     const [submittingLocation, setSubmittingLocation] = useState(false);
 
+    const getAuthToken = () => {
+        const token = (
+            session?.accessToken ||
+            session?.user?.accessToken ||
+            (typeof window !== "undefined" ? localStorage.getItem("accessToken") : null) ||
+            (typeof window !== "undefined" ? localStorage.getItem("userAccessToken") : null)
+        );
+        return token && token !== "undefined" && token !== "null" ? token : null;
+    };
+
     useEffect(() => {
         async function getProfileData() {
             if (!session?.user?.id) return;
@@ -33,12 +43,15 @@ export default function ProfilePage() {
                 if (ordersRes.ok) setOrders(await ordersRes.json());
 
                 // Fetch Locations
-                const locRes = await fetch(`${baseUrl}/api/location`, {
-                    headers: { 'Authorization': `Bearer ${session.accessToken || session.user.accessToken}` }
-                });
-                if (locRes.ok) {
-                    const data = await locRes.json();
-                    setLocations(data.locations || []);
+                const authToken = getAuthToken();
+                if (authToken) {
+                    const locRes = await fetch(`${baseUrl}/api/location`, {
+                        headers: { 'Authorization': `Bearer ${authToken}` }
+                    });
+                    if (locRes.ok) {
+                        const data = await locRes.json();
+                        setLocations(data.locations || []);
+                    }
                 }
             } catch (err) {
                 console.error("Failed to fetch profile data:", err);
@@ -342,11 +355,16 @@ export default function ProfilePage() {
                                                             if (!newLocation.address) return alert("Address is required");
                                                             setSubmittingLocation(true);
                                                             try {
+                                                                const authToken = getAuthToken();
+                                                                if (!authToken) {
+                                                                    alert("Please sign in again to manage locations.");
+                                                                    return;
+                                                                }
                                                                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/location`, {
                                                                     method: "POST",
                                                                     headers: {
                                                                         "Content-Type": "application/json",
-                                                                        "Authorization": `Bearer ${session.accessToken || session.user.accessToken}`
+                                                                        "Authorization": `Bearer ${authToken}`
                                                                     },
                                                                     body: JSON.stringify(newLocation)
                                                                 });
@@ -403,9 +421,14 @@ export default function ProfilePage() {
                                                                     onClick={async () => {
                                                                         if (!confirm("Are you sure you want to delete this address?")) return;
                                                                         try {
+                                                                            const authToken = getAuthToken();
+                                                                            if (!authToken) {
+                                                                                alert("Please sign in again to manage locations.");
+                                                                                return;
+                                                                            }
                                                                             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/location/${loc.id}`, {
                                                                                 method: "DELETE",
-                                                                                headers: { "Authorization": `Bearer ${session.accessToken || session.user.accessToken}` }
+                                                                                headers: { "Authorization": `Bearer ${authToken}` }
                                                                             });
                                                                             if (res.ok) {
                                                                                 setLocations(locations.filter(l => l.id !== loc.id));

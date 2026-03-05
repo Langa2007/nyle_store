@@ -28,11 +28,13 @@ export default function CheckoutPage() {
   const { getCoordinates, loading: geoLoading } = useGeolocation();
 
   const getAuthToken = () => {
-    return (
+    const token = (
       session?.accessToken ||
+      session?.user?.accessToken ||
       localStorage.getItem("accessToken") ||
       localStorage.getItem("userAccessToken")
     );
+    return token && token !== "undefined" && token !== "null" ? token : null;
   };
 
   useEffect(() => {
@@ -59,21 +61,23 @@ export default function CheckoutPage() {
       fetchCart().finally(() => setLoading(false));
     }
 
-    // Fetch user saved locations
-    fetch(`${API_URL}/api/location`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (data?.locations) {
-          setLocations(data.locations);
-          const defaultLoc = data.locations.find(l => l.is_default);
-          if (defaultLoc) {
-            setSelectedLocationId(defaultLoc.id);
-            setAddress(defaultLoc.address);
+    // Fetch user saved locations only when token exists
+    if (token) {
+      fetch(`${API_URL}/api/location`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (data?.locations) {
+            setLocations(data.locations);
+            const defaultLoc = data.locations.find(l => l.is_default);
+            if (defaultLoc) {
+              setSelectedLocationId(defaultLoc.id);
+              setAddress(defaultLoc.address);
+            }
           }
-        }
-      });
+        });
+    }
 
   }, [productId, router, fetchCart, session, status]);
 
@@ -180,7 +184,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-white py-12">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="flex items-center mb-8">
           <Link href="/cart" className="flex items-center text-blue-600 hover:text-blue-800 font-medium mr-4">
@@ -188,7 +192,6 @@ export default function CheckoutPage() {
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
         </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Order Details */}
           <div className="lg:col-span-2 space-y-6">
@@ -373,6 +376,5 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
-    </div>
-  );
+      );
 }
