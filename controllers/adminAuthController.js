@@ -71,11 +71,38 @@ export const verifyAdminToken = async (req, res, next) => {
     if (!decoded.is_admin)
       return res.status(403).json({ message: "Not an admin" });
 
-    // Check last IP
-    const result = await pool.query("SELECT last_ip FROM users WHERE id=$1", [decoded.id]);
-    const lastIP = req.headers['x-client-ip'] || req.ip;
-    if (lastIP && lastIP !== req.ip)
+    const result = await pool.query(
+      "SELECT last_ip, refresh_token FROM users WHERE id=$1 AND is_admin = true",
+      [decoded.id]
+    );
+    if (!result.rows.length) {
+      return res.status(401).json({ message: "Admin session not found" });
+    }
+
+    const admin = result.rows[0];
+    const currentIp = req.ip;
+
+    // Enforce same IP as login session when available.
+    if (admin.last_ip && currentIp && admin.last_ip !== currentIp) {
       return res.status(401).json({ message: "IP changed, please log in again" });
+    }
+
+    // Enforce single active login:
+    // if a newer login issued a new refresh token, invalidate older access tokens.
+    if (!admin.refresh_token) {
+      return res.status(401).json({ message: "Session expired, please log in again" });
+    }
+
+    let refreshDecoded;
+    try {
+      refreshDecoded = jwt.verify(admin.refresh_token, process.env.JWT_REFRESH_SECRET);
+    } catch {
+      return res.status(401).json({ message: "Session expired, please log in again" });
+    }
+
+    if (decoded.iat && refreshDecoded.iat && decoded.iat < refreshDecoded.iat) {
+      return res.status(401).json({ message: "Session replaced by a newer login" });
+    }
 
     req.admin = decoded;
     next();

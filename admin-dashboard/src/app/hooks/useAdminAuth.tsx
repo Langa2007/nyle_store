@@ -4,12 +4,12 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
-const INACTIVITY_LIMIT = 5 * 60 * 1000; // 5 minutes
+const INACTIVITY_LIMIT = 10 * 60 * 1000; // 10 minutes
 const TOKEN_REFRESH_INTERVAL = 30 * 60 * 1000; // 30 minutes
 
 export const useAdminAuth = () => {
   const router = useRouter();
-  const [admin, setAdmin] = useState<any>(null);
+  const [admin, setAdmin] = useState<Record<string, unknown> | null>(null);
   const [initialIp, setInitialIp] = useState<string | null>(null);
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
   const tokenRefreshTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -206,9 +206,10 @@ export const useAdminAuth = () => {
     } else {
       // Tab came back - check if it was hidden too long
       const hiddenTime = localStorage.getItem("adminTabHidden");
-      if (hiddenTime && Date.now() - parseInt(hiddenTime) > 10000) { // 10 seconds
+      if (hiddenTime && Date.now() - parseInt(hiddenTime) > INACTIVITY_LIMIT) {
         console.log("Tab was away too long - verifying session");
-        verifyToken();
+        logout();
+        return;
       }
       localStorage.removeItem("adminTabHidden");
       resetInactivityTimer();

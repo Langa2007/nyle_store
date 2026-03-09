@@ -1,7 +1,7 @@
 // app/partner/apply/page.js
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AboutInfoLayout from "@/components/about/AboutInfoLayout";
 import {
@@ -117,53 +117,56 @@ const normalizeTier = (tier) => {
   return "";
 };
 
+const getInitialPartnerFormData = (preselectedTier) => ({
+  // Basic Information
+  partnerType: "other",
+  partnershipTier: normalizeTier(preselectedTier),
+  organizationName: "",
+  registrationNumber: "",
+  yearEstablished: "",
+  businessSize: "",
+  website: "",
+  linkedin: "",
+
+  // Contact Information
+  fullName: "",
+  jobTitle: "",
+  email: "",
+  phone: "",
+  alternativePhone: "",
+  country: "",
+  city: "",
+  address: "",
+
+  // Business Details
+  description: "",
+  services: [],
+  targetMarkets: [],
+  keyClients: "",
+  annualRevenue: "",
+  countriesOfOperation: [],
+
+  // Partnership Details
+  partnershipGoals: "",
+  expectedVolume: "",
+  integrationTimeline: "",
+  additionalInfo: "",
+
+  // Agreements
+  agreeTerms: false,
+  agreeDataProcessing: false,
+  agreeContact: false
+});
+
 function PartnerApplyForm() {
+  const INACTIVITY_LIMIT_MS = 10 * 60 * 1000;
 
   const router = useRouter();
   const searchParams = useSearchParams();
   const preselectedTier = searchParams.get('tier');
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({
-    // Basic Information
-    partnerType: "other",
-    partnershipTier: normalizeTier(preselectedTier),
-    organizationName: "",
-    registrationNumber: "",
-    yearEstablished: "",
-    businessSize: "",
-    website: "",
-    linkedin: "",
-
-    // Contact Information
-    fullName: "",
-    jobTitle: "",
-    email: "",
-    phone: "",
-    alternativePhone: "",
-    country: "",
-    city: "",
-    address: "",
-
-    // Business Details
-    description: "",
-    services: [],
-    targetMarkets: [],
-    keyClients: "",
-    annualRevenue: "",
-    countriesOfOperation: [],
-
-    // Partnership Details
-    partnershipGoals: "",
-    expectedVolume: "",
-    integrationTimeline: "",
-    additionalInfo: "",
-
-    // Agreements
-    agreeTerms: false,
-    agreeDataProcessing: false,
-    agreeContact: false
-  });
+  const [formData, setFormData] = useState(getInitialPartnerFormData(preselectedTier));
 
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [serviceInput, setServiceInput] = useState("");
@@ -174,6 +177,10 @@ function PartnerApplyForm() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const inactivityTimerRef = useRef(null);
+  const lastActivityRef = useRef(Date.now());
+  const hiddenAtRef = useRef(null);
+  const hasExpiredRef = useRef(false);
 
   // Update phone when country changes
   useEffect(() => {
@@ -194,6 +201,80 @@ function PartnerApplyForm() {
       }
     }
   }, [preselectedTier]);
+
+  useEffect(() => {
+    const resetFormForSecurity = () => {
+      setCurrentStep(1);
+      setFormData(getInitialPartnerFormData(preselectedTier));
+      setSelectedCountry(null);
+      setServiceInput("");
+      setMarketInput("");
+      setCountryOperationInput("");
+      setDocuments([]);
+      setUploading(false);
+    };
+
+    const expireSession = () => {
+      if (hasExpiredRef.current || submitSuccess || submitting) return;
+      hasExpiredRef.current = true;
+
+      resetFormForSecurity();
+      setErrors({
+        submit: "Session expired after 10 minutes of inactivity for your security. Redirecting to home..."
+      });
+
+      setTimeout(() => {
+        router.replace("/");
+      }, 1800);
+    };
+
+    const resetInactivity = () => {
+      if (submitSuccess) return;
+      lastActivityRef.current = Date.now();
+      if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
+      inactivityTimerRef.current = setTimeout(expireSession, INACTIVITY_LIMIT_MS);
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        hiddenAtRef.current = Date.now();
+        return;
+      }
+
+      const hiddenAt = hiddenAtRef.current;
+      hiddenAtRef.current = null;
+      if (hiddenAt && Date.now() - hiddenAt >= INACTIVITY_LIMIT_MS) {
+        expireSession();
+        return;
+      }
+
+      if (Date.now() - lastActivityRef.current >= INACTIVITY_LIMIT_MS) {
+        expireSession();
+        return;
+      }
+
+      resetInactivity();
+    };
+
+    const handleActivity = () => resetInactivity();
+
+    const activityEvents = ["mousedown", "mousemove", "keydown", "scroll", "touchstart", "click", "input"];
+    activityEvents.forEach((eventName) => {
+      window.addEventListener(eventName, handleActivity, { passive: true });
+    });
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("focus", handleVisibility);
+    resetInactivity();
+
+    return () => {
+      if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
+      activityEvents.forEach((eventName) => {
+        window.removeEventListener(eventName, handleActivity);
+      });
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("focus", handleVisibility);
+    };
+  }, [preselectedTier, router, submitSuccess, submitting]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

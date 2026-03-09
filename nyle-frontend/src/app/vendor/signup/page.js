@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   FaStore, FaUser, FaEnvelope, FaPhone, FaBriefcase,
@@ -23,6 +23,7 @@ const countries = Object.values(countriesList).map(country => ({
 export const dynamic = 'force-dynamic';
 
 export default function VendorInterest() {
+  const INACTIVITY_LIMIT_MS = 10 * 60 * 1000;
   const router = useRouter();
   const [form, setForm] = useState({
     full_name: "",
@@ -43,6 +44,10 @@ export default function VendorInterest() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const inactivityTimerRef = useRef(null);
+  const lastActivityRef = useRef(Date.now());
+  const hiddenAtRef = useRef(null);
+  const hasExpiredRef = useRef(false);
 
   // Update personal phone when country changes
   useEffect(() => {
@@ -63,6 +68,85 @@ export default function VendorInterest() {
       }));
     }
   }, [selectedBusinessCountry]);
+
+  useEffect(() => {
+    const resetFormForSecurity = () => {
+      setForm({
+        full_name: "",
+        business_name: "",
+        email: "",
+        business_email: "",
+        phone_number: "",
+        business_phone: "",
+        location_country: "",
+        location_city: "",
+        agree_terms: false,
+      });
+      setSelectedCountry(null);
+      setSelectedBusinessCountry(null);
+      setPhoneError("");
+      setBusinessPhoneError("");
+    };
+
+    const expireSession = () => {
+      if (hasExpiredRef.current || success || loading) return;
+      hasExpiredRef.current = true;
+
+      resetFormForSecurity();
+      setError("Session expired after 10 minutes of inactivity for your security. Redirecting to home...");
+
+      setTimeout(() => {
+        router.replace("/");
+      }, 1800);
+    };
+
+    const resetInactivity = () => {
+      if (success) return;
+      lastActivityRef.current = Date.now();
+      if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
+      inactivityTimerRef.current = setTimeout(expireSession, INACTIVITY_LIMIT_MS);
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        hiddenAtRef.current = Date.now();
+        return;
+      }
+
+      const hiddenAt = hiddenAtRef.current;
+      hiddenAtRef.current = null;
+      if (hiddenAt && Date.now() - hiddenAt >= INACTIVITY_LIMIT_MS) {
+        expireSession();
+        return;
+      }
+
+      if (Date.now() - lastActivityRef.current >= INACTIVITY_LIMIT_MS) {
+        expireSession();
+        return;
+      }
+
+      resetInactivity();
+    };
+
+    const handleActivity = () => resetInactivity();
+
+    const activityEvents = ["mousedown", "mousemove", "keydown", "scroll", "touchstart", "click", "input"];
+    activityEvents.forEach((eventName) => {
+      window.addEventListener(eventName, handleActivity, { passive: true });
+    });
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("focus", handleVisibility);
+    resetInactivity();
+
+    return () => {
+      if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
+      activityEvents.forEach((eventName) => {
+        window.removeEventListener(eventName, handleActivity);
+      });
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("focus", handleVisibility);
+    };
+  }, [router, success, loading]);
 
   const handleCountryChange = (e, type) => {
     const countryName = e.target.value;

@@ -1,20 +1,38 @@
 // src/app/login/page.tsx
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/app/components/ui/card";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
+
+  useEffect(() => {
+    const queryReason = searchParams.get("reason");
+    const storageReason = localStorage.getItem("adminSecurityReason");
+    const reason = queryReason || storageReason;
+    if (!reason) return;
+
+    if (reason === "inactive") {
+      setError("Your admin session expired after 10 minutes of inactivity. Please log in again.");
+    } else if (reason === "session_replaced") {
+      setError("Your session was closed because this admin account logged in from another device.");
+    } else if (reason === "unauthorized") {
+      setError("Your session is no longer valid. Please log in again.");
+    }
+
+    localStorage.removeItem("adminSecurityReason");
+  }, [searchParams]);
 
   // Get client IP (matches useAdminAuth implementation)
   const getClientIp = async () => {
@@ -40,14 +58,19 @@ export default function LoginPage() {
       const res = await fetch(`${API_URL}/api/admin/auth/login`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "X-Client-IP": currentIp // Pass IP to backend for initial verification if supported
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({ email, password }),
       });
 
       const text = await res.text();
-      let data: any;
+      let data: {
+        accessToken?: string;
+        refreshToken?: string;
+        admin?: { name?: string };
+        error?: string;
+        message?: string;
+      };
       try {
         data = JSON.parse(text);
       } catch {
@@ -65,6 +88,7 @@ export default function LoginPage() {
       localStorage.removeItem("adminLoggedIn");
       localStorage.removeItem("adminLogoutEvent");
       localStorage.removeItem("adminTabHidden");
+      localStorage.removeItem("adminSecurityReason");
 
       // Save tokens
       localStorage.setItem("adminAccessToken", data.accessToken);

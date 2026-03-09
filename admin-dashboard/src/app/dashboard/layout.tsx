@@ -64,6 +64,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const handleLogout = () => {
     localStorage.removeItem("adminAccessToken");
     localStorage.removeItem("adminRefreshToken");
+    localStorage.removeItem("adminLastActive");
+    localStorage.removeItem("adminInitialIp");
+    localStorage.removeItem("adminLoggedIn");
+    localStorage.removeItem("adminTabHidden");
+    localStorage.removeItem("adminSecurityReason");
+    localStorage.setItem("adminLogoutEvent", Date.now().toString());
     toast.success("Logged out successfully", {
       icon: <LogOut className="w-5 h-5 text-emerald-500" />
     });
