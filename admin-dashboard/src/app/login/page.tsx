@@ -79,6 +79,9 @@ export default function LoginPage() {
 
       if (!res.ok)
         throw new Error(data.error || data.message || "Login failed");
+      if (!data.accessToken || !data.refreshToken) {
+        throw new Error("Login response missing required tokens");
+      }
 
       // Clear any existing session data to ensure a clean start
       localStorage.removeItem("adminAccessToken");
