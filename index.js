@@ -35,6 +35,7 @@ import userResetPasswordRoutes from "./routes/UserResetPasswordRoutes.js";
 import locationRoutes from "./routes/locationRoutes.js";
 import vendorLeadRoutes from "./routes/vendorLeadRoutes.js";
 import partnerRoutes from "./routes/partnerRoutes.js";
+import adminNotificationsRoutes from "./routes/adminNotifications.js";
 
 
 
@@ -150,6 +151,7 @@ app.use("/api/vendor/products", vendorProductRoutes);
 // Admin authentication & management
 app.use("/api/admin/auth", adminAuthRoutes);       // must come first
 app.use("/api/admin/vendors", adminVendorRoutes);
+app.use("/api/admin/notifications", adminNotificationsRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/admin/queues", serverAdapter.getRouter()); // Bull Board UI
 

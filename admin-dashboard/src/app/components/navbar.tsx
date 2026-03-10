@@ -1,11 +1,11 @@
 "use client"
 
-import { 
-  Bell, 
-  Search, 
-  Settings, 
-  HelpCircle, 
-  Moon, 
+import {
+  Bell,
+  Search,
+  Settings,
+  HelpCircle,
+  Moon,
   Sun,
   ChevronDown,
   User,
@@ -14,49 +14,53 @@ import {
   Shield
 } from "lucide-react"
 import { useState, useEffect } from "react"
+import { useAdminNotifications } from "../hooks/useAdminNotifications"
 
 export default function Navbar() {
   const [darkMode, setDarkMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [showUserMenu, setShowUserMenu] = useState(false)
-  const [notifications] = useState([
-    { id: 1, title: "New order received", time: "5 min ago", unread: true },
-    { id: 2, title: "Server maintenance", time: "1 hour ago", unread: true },
-    { id: 3, title: "Payment processed", time: "2 hours ago", unread: false },
-    { id: 4, title: "New vendor registered", time: "1 day ago", unread: false },
-  ])
-  
-  const [showNotifications, setShowNotifications] = useState(false)
-  const [currentTime, setCurrentTime] = useState("")
   const [showSearch, setShowSearch] = useState(false)
+
+  const { notifications: liveNotifications, loading: notificationsLoading } = useAdminNotifications(60000);
+
+  const notifications = [
+    ...(liveNotifications.details.pendingVendors > 0 ? [{ id: 'vendor', title: `${liveNotifications.details.pendingVendors} Pending Vendor Approval(s)`, time: "Requires action", unread: true, type: "warning" }] : []),
+    ...(liveNotifications.details.pendingPartners > 0 ? [{ id: 'partner', title: `${liveNotifications.details.pendingPartners} Pending Partner Application(s)`, time: "Requires action", unread: true, type: "warning" }] : []),
+    ...(liveNotifications.details.pendingOrders > 0 ? [{ id: 'order', title: `${liveNotifications.details.pendingOrders} Pending Order(s)`, time: "Requires processing", unread: true, type: "info" }] : []),
+    ...(liveNotifications.details.openSupportMessages > 0 ? [{ id: 'support', title: `${liveNotifications.details.openSupportMessages} Open Support Ticket(s)`, time: "Unresolved", unread: true, type: "warning" }] : []),
+    ...(liveNotifications.details.openReportedIssues > 0 ? [{ id: 'report', title: `${liveNotifications.details.openReportedIssues} Open Reported Issue(s)`, time: "Unresolved", unread: true, type: "warning" }] : [])
+  ];
+
+  const unreadCount = liveNotifications.total;
+  const [currentTime, setCurrentTime] = useState("")
+  const [showNotifications, setShowNotifications] = useState(false)
 
   useEffect(() => {
     const updateTime = () => {
       const now = new Date()
-      setCurrentTime(now.toLocaleTimeString([], { 
-        hour: '2-digit', 
+      setCurrentTime(now.toLocaleTimeString([], {
+        hour: '2-digit',
         minute: '2-digit',
-        hour12: true 
+        hour12: true
       }))
     }
-    
+
     updateTime()
     const interval = setInterval(updateTime, 60000)
-    
+
     return () => clearInterval(interval)
   }, [])
-
-  const unreadCount = notifications.filter(n => n.unread).length
 
   return (
     <>
       {/* Search Overlay */}
       {showSearch && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-start justify-center pt-20 px-4"
           onClick={() => setShowSearch(false)}
         >
-          <div 
+          <div
             className="w-full max-w-2xl bg-gray-900 rounded-xl shadow-2xl p-2 border border-gray-800"
             onClick={(e) => e.stopPropagation()}
           >
@@ -139,8 +143,8 @@ export default function Navbar() {
           </button>
 
           {/* Apps Menu */}
-          <button title= "Apps Menu"
-           className="p-2 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white transition-colors hidden lg:flex">
+          <button title="Apps Menu"
+            className="p-2 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white transition-colors hidden lg:flex">
             <Grid className="w-5 h-5" />
           </button>
 
@@ -154,13 +158,13 @@ export default function Navbar() {
           </button>
 
           {/* Help */}
-          <button title= "Help Center"
-           className="p-2 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-blue-400 transition-colors hidden lg:flex">
+          <button title="Help Center"
+            className="p-2 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-blue-400 transition-colors hidden lg:flex">
             <HelpCircle className="w-5 h-5" />
           </button>
 
           {/* Settings */}
-          <button title= "Settings"
+          <button title="Settings"
             className="p-2 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white transition-colors">
             <Settings className="w-5 h-5" />
           </button>
@@ -182,7 +186,7 @@ export default function Navbar() {
             {/* Notifications Dropdown */}
             {showNotifications && (
               <>
-                <div 
+                <div
                   className="fixed inset-0 z-40"
                   onClick={() => setShowNotifications(false)}
                 />
@@ -195,25 +199,30 @@ export default function Navbar() {
                       </span>
                     </div>
                   </div>
-                  <div className="max-h-96 overflow-y-auto">
-                    {notifications.map((notification) => (
-                      <div
-                        key={notification.id}
-                        className={`p-4 border-b border-gray-800 hover:bg-gray-800/50 cursor-pointer transition-colors ${
-                          notification.unread ? 'bg-blue-500/5' : ''
-                        }`}
-                      >
-                        <div className="flex items-start space-x-3">
-                          <div className={`w-2 h-2 rounded-full mt-2 ${
-                            notification.unread ? 'bg-blue-500 animate-pulse' : 'bg-gray-600'
-                          }`}></div>
-                          <div className="flex-1">
-                            <p className="text-sm font-medium text-white">{notification.title}</p>
-                            <p className="text-xs text-gray-400 mt-1">{notification.time}</p>
+                  <div className="max-h-96 overflow-y-auto w-full">
+                    {notificationsLoading ? (
+                      <div className="p-4 text-center text-sm text-gray-500">Loading notifications...</div>
+                    ) : notifications.length === 0 ? (
+                      <div className="p-4 text-center text-sm text-gray-500">No pending notifications</div>
+                    ) : (
+                      notifications.map((notification) => (
+                        <div
+                          key={notification.id}
+                          className={`p-4 border-b border-gray-800 hover:bg-gray-800/50 cursor-pointer transition-colors ${notification.unread ? 'bg-blue-500/5' : ''
+                            }`}
+                          onClick={() => setShowNotifications(false)}
+                        >
+                          <div className="flex items-start space-x-3">
+                            <div className={`w-2 h-2 rounded-full mt-2 animate-pulse flex-shrink-0 ${notification.type === 'warning' ? 'bg-amber-500' : 'bg-blue-500'
+                              }`}></div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-white">{notification.title}</p>
+                              <p className="text-xs text-gray-400 mt-1">{notification.time}</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                   <div className="p-3 border-t border-gray-800">
                     <button className="w-full py-2 text-sm text-center text-blue-400 hover:text-blue-300 transition-colors">
@@ -241,15 +250,14 @@ export default function Navbar() {
                 </div>
                 <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-gray-900"></div>
               </div>
-              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-                showUserMenu ? 'rotate-180' : ''
-              }`} />
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''
+                }`} />
             </button>
 
             {/* User Dropdown Menu */}
             {showUserMenu && (
               <>
-                <div 
+                <div
                   className="fixed inset-0 z-30"
                   onClick={() => setShowUserMenu(false)}
                 />

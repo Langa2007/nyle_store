@@ -26,6 +26,7 @@ import {
   Zap,
   FileText,
 } from "lucide-react";
+import { useAdminNotifications } from "../hooks/useAdminNotifications";
 
 interface AdminLayoutProps {
   title?: string;
@@ -39,11 +40,11 @@ function mergeClasses(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function AdminLayout({ 
-  title, 
-  children, 
+export default function AdminLayout({
+  title,
+  children,
   headerActions,
-  breadcrumbs 
+  breadcrumbs
 }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
@@ -53,64 +54,68 @@ export default function AdminLayout({
   const pathname = usePathname();
 
   const navItems = [
-    { 
-      name: "Dashboard", 
-      href: "/dashboard", 
+    {
+      name: "Dashboard",
+      href: "/dashboard",
       icon: <LayoutDashboard size={18} />,
-      badge: null 
+      badge: null
     },
-    { 
-      name: "Vendors", 
-      href: "/dashboard/vendors", 
+    {
+      name: "Vendors",
+      href: "/dashboard/vendors",
       icon: <Users size={18} />,
-      badge: "5" 
+      badge: "5"
     },
-    { 
-      name: "Products", 
-      href: "/dashboard/products", 
+    {
+      name: "Products",
+      href: "/dashboard/products",
       icon: <Package size={18} />,
-      badge: "12" 
+      badge: "12"
     },
-    { 
-      name: "Orders", 
-      href: "/dashboard/orders", 
+    {
+      name: "Orders",
+      href: "/dashboard/orders",
       icon: <ShoppingCart size={18} />,
-      badge: "3+" 
+      badge: "3+"
     },
-    { 
-      name: "Categories", 
-      href: "/dashboard/categories", 
+    {
+      name: "Categories",
+      href: "/dashboard/categories",
       icon: <List size={18} />,
-      badge: null 
+      badge: null
     },
-    { 
-      name: "Newsletter", 
-      href: "/dashboard/newsletter", 
+    {
+      name: "Newsletter",
+      href: "/dashboard/newsletter",
       icon: <Mail size={18} />,
-      badge: "New" 
+      badge: "New"
     },
-    { 
-      name: "Analytics", 
-      href: "/dashboard/analytics", 
+    {
+      name: "Analytics",
+      href: "/dashboard/analytics",
       icon: <BarChart3 size={18} />,
-      badge: null 
+      badge: null
     },
-    { 
-      name: "Settings", 
-      href: "/dashboard/settings", 
+    {
+      name: "Settings",
+      href: "/dashboard/settings",
       icon: <Settings size={18} />,
-      badge: null 
+      badge: null
     },
   ];
 
+  const { notifications: liveNotifications, loading: notificationsLoading } = useAdminNotifications(60000); // Poll every minute
+
+  // Map the summary details into actionable notification objects
   const notifications = [
-    { id: 1, title: "New order received", time: "5 min ago", unread: true, type: "success" },
-    { id: 2, title: "Server maintenance", time: "1 hour ago", unread: true, type: "warning" },
-    { id: 3, title: "Payment processed", time: "2 hours ago", unread: false, type: "info" },
-    { id: 4, title: "New vendor registered", time: "1 day ago", unread: false, type: "success" },
+    ...(liveNotifications.details.pendingVendors > 0 ? [{ id: 'vendor', title: `${liveNotifications.details.pendingVendors} Pending Vendor Approval(s)`, time: "Requires action", unread: true, type: "warning" }] : []),
+    ...(liveNotifications.details.pendingPartners > 0 ? [{ id: 'partner', title: `${liveNotifications.details.pendingPartners} Pending Partner Application(s)`, time: "Requires action", unread: true, type: "warning" }] : []),
+    ...(liveNotifications.details.pendingOrders > 0 ? [{ id: 'order', title: `${liveNotifications.details.pendingOrders} Pending Order(s)`, time: "Requires processing", unread: true, type: "info" }] : []),
+    ...(liveNotifications.details.openSupportMessages > 0 ? [{ id: 'support', title: `${liveNotifications.details.openSupportMessages} Open Support Ticket(s)`, time: "Unresolved", unread: true, type: "warning" }] : []),
+    ...(liveNotifications.details.openReportedIssues > 0 ? [{ id: 'report', title: `${liveNotifications.details.openReportedIssues} Open Reported Issue(s)`, time: "Unresolved", unread: true, type: "warning" }] : [])
   ];
 
-  const unreadCount = notifications.filter(n => n.unread).length;
+  const unreadCount = liveNotifications.total;
 
   return (
     <div className={mergeClasses(
@@ -191,8 +196,8 @@ export default function AdminLayout({
                   className={mergeClasses(
                     "group flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 relative",
                     "hover:bg-gray-800/50 hover:translate-x-1",
-                    isActive 
-                      ? "bg-gradient-to-r from-blue-500/20 to-purple-500/10 text-white border-l-4 border-blue-500" 
+                    isActive
+                      ? "bg-gradient-to-r from-blue-500/20 to-purple-500/10 text-white border-l-4 border-blue-500"
                       : "text-gray-400 hover:text-white"
                   )}
                 >
@@ -205,12 +210,12 @@ export default function AdminLayout({
                     </div>
                     {item.name}
                   </div>
-                  
+
                   {item.badge && (
                     <span className={mergeClasses(
                       "px-2 py-1 text-xs font-semibold rounded-full transition-all",
-                      isActive 
-                        ? "bg-white text-gray-900" 
+                      isActive
+                        ? "bg-white text-gray-900"
                         : "bg-gradient-to-r from-blue-600/50 to-purple-600/50 text-blue-300 group-hover:text-white"
                     )}>
                       {item.badge}
@@ -283,8 +288,8 @@ export default function AdminLayout({
           "sticky top-0 z-20",
           "px-6 py-4 flex items-center justify-between",
           "border-b backdrop-blur-sm",
-          darkMode 
-            ? "bg-gray-900/80 border-gray-800/50" 
+          darkMode
+            ? "bg-gray-900/80 border-gray-800/50"
             : "bg-white/80 border-gray-200"
         )}>
           <div className="flex items-center gap-4">
@@ -299,8 +304,8 @@ export default function AdminLayout({
 
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-sm">
-              <Link 
-                href="/dashboard" 
+              <Link
+                href="/dashboard"
                 className={mergeClasses(
                   "hover:text-blue-400 transition-colors",
                   darkMode ? "text-gray-400" : "text-gray-600"
@@ -312,7 +317,7 @@ export default function AdminLayout({
                 <div key={index} className="flex items-center gap-2">
                   <span className={darkMode ? "text-gray-600" : "text-gray-400"}>/</span>
                   {crumb.href ? (
-                    <Link 
+                    <Link
                       href={crumb.href}
                       className={mergeClasses(
                         "hover:text-blue-400 transition-colors",
@@ -344,8 +349,8 @@ export default function AdminLayout({
               <button className={mergeClasses(
                 "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
                 "flex items-center gap-2",
-                darkMode 
-                  ? "bg-blue-600/20 text-blue-400 hover:bg-blue-600/30" 
+                darkMode
+                  ? "bg-blue-600/20 text-blue-400 hover:bg-blue-600/30"
                   : "bg-blue-100 text-blue-600 hover:bg-blue-200"
               )}>
                 <Zap size={14} />
@@ -353,8 +358,8 @@ export default function AdminLayout({
               </button>
               <button className={mergeClasses(
                 "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
-                darkMode 
-                  ? "text-gray-400 hover:text-white hover:bg-gray-800" 
+                darkMode
+                  ? "text-gray-400 hover:text-white hover:bg-gray-800"
                   : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
               )}>
                 <FileText size={14} />
@@ -367,8 +372,8 @@ export default function AdminLayout({
               onClick={() => setSearchOpen(true)}
               className={mergeClasses(
                 "p-2 rounded-lg transition-colors",
-                darkMode 
-                  ? "text-gray-400 hover:text-white hover:bg-gray-800" 
+                darkMode
+                  ? "text-gray-400 hover:text-white hover:bg-gray-800"
                   : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
               )}
               title="Quick Search"
@@ -382,8 +387,8 @@ export default function AdminLayout({
                 onClick={() => setNotificationsOpen(!notificationsOpen)}
                 className={mergeClasses(
                   "p-2 rounded-lg transition-colors relative",
-                  darkMode 
-                    ? "text-gray-400 hover:text-white hover:bg-gray-800" 
+                  darkMode
+                    ? "text-gray-400 hover:text-white hover:bg-gray-800"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                 )}
               >
@@ -399,7 +404,7 @@ export default function AdminLayout({
               <AnimatePresence>
                 {notificationsOpen && (
                   <>
-                    <div 
+                    <div
                       className="fixed inset-0 z-10"
                       onClick={() => setNotificationsOpen(false)}
                     />
@@ -409,8 +414,8 @@ export default function AdminLayout({
                       exit={{ opacity: 0, y: -10 }}
                       className={mergeClasses(
                         "absolute right-0 mt-2 w-80 rounded-xl shadow-2xl z-20 overflow-hidden",
-                        darkMode 
-                          ? "bg-gray-900 border border-gray-800" 
+                        darkMode
+                          ? "bg-gray-900 border border-gray-800"
                           : "bg-white border border-gray-200"
                       )}
                     >
@@ -425,36 +430,39 @@ export default function AdminLayout({
                           </span>
                         </div>
                       </div>
-                      <div className="max-h-96 overflow-y-auto">
-                        {notifications.map((notification) => (
-                          <div
-                            key={notification.id}
-                            className={mergeClasses(
-                              "p-4 border-b cursor-pointer transition-colors",
-                              notification.unread && darkMode && "bg-blue-500/5",
-                              notification.unread && !darkMode && "bg-blue-50",
-                              darkMode ? "border-gray-800 hover:bg-gray-800/50" : "border-gray-100 hover:bg-gray-50"
-                            )}
-                          >
-                            <div className="flex items-start gap-3">
-                              <div className={mergeClasses(
-                                "w-2 h-2 rounded-full mt-2 flex-shrink-0",
-                                notification.unread 
-                                  ? notification.type === "warning" 
-                                    ? "bg-amber-500 animate-pulse" 
-                                    : "bg-blue-500 animate-pulse"
-                                  : "bg-gray-400"
-                              )}></div>
-                              <div className="flex-1">
-                                <p className="text-sm font-medium">{notification.title}</p>
-                                <p className={mergeClasses(
-                                  "text-xs mt-1",
-                                  darkMode ? "text-gray-400" : "text-gray-500"
-                                )}>{notification.time}</p>
+                      <div className="max-h-96 overflow-y-auto w-full">
+                        {notificationsLoading ? (
+                          <div className="p-4 text-center text-sm text-gray-500">Loading notifications...</div>
+                        ) : notifications.length === 0 ? (
+                          <div className="p-4 text-center text-sm text-gray-500">No pending notifications</div>
+                        ) : (
+                          notifications.map((notification) => (
+                            <Link href={`/dashboard`} key={notification.id} onClick={() => setNotificationsOpen(false)}>
+                              <div
+                                className={mergeClasses(
+                                  "p-4 border-b cursor-pointer transition-colors",
+                                  notification.unread && darkMode && "bg-amber-500/5 hover:bg-amber-500/10",
+                                  notification.unread && !darkMode && "bg-amber-50 hover:bg-amber-100",
+                                  darkMode ? "border-gray-800" : "border-gray-100"
+                                )}
+                              >
+                                <div className="flex items-start gap-3">
+                                  <div className={mergeClasses(
+                                    "w-2 h-2 rounded-full mt-2 flex-shrink-0 animate-pulse",
+                                    notification.type === "warning" ? "bg-amber-500" : "bg-blue-500"
+                                  )}></div>
+                                  <div className="flex-1">
+                                    <p className="text-sm font-medium">{notification.title}</p>
+                                    <p className={mergeClasses(
+                                      "text-xs mt-1",
+                                      darkMode ? "text-gray-400" : "text-gray-500"
+                                    )}>{notification.time}</p>
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-                          </div>
-                        ))}
+                            </Link>
+                          ))
+                        )}
                       </div>
                       <div className={mergeClasses(
                         "p-3 border-t",
@@ -475,8 +483,8 @@ export default function AdminLayout({
               onClick={() => setDarkMode(!darkMode)}
               className={mergeClasses(
                 "p-2 rounded-lg transition-colors",
-                darkMode 
-                  ? "text-gray-400 hover:text-yellow-400 hover:bg-gray-800" 
+                darkMode
+                  ? "text-gray-400 hover:text-yellow-400 hover:bg-gray-800"
                   : "text-gray-600 hover:text-amber-600 hover:bg-gray-100"
               )}
               title="Toggle Theme"
@@ -514,7 +522,7 @@ export default function AdminLayout({
               <AnimatePresence>
                 {userMenuOpen && (
                   <>
-                    <div 
+                    <div
                       className="fixed inset-0 z-10"
                       onClick={() => setUserMenuOpen(false)}
                     />
@@ -524,8 +532,8 @@ export default function AdminLayout({
                       exit={{ opacity: 0, y: -10 }}
                       className={mergeClasses(
                         "absolute right-0 mt-2 w-56 rounded-xl shadow-2xl z-20 overflow-hidden",
-                        darkMode 
-                          ? "bg-gray-900 border border-gray-800" 
+                        darkMode
+                          ? "bg-gray-900 border border-gray-800"
                           : "bg-white border border-gray-200"
                       )}
                     >
@@ -549,8 +557,8 @@ export default function AdminLayout({
                       <div className="py-2">
                         <button className={mergeClasses(
                           "w-full px-4 py-3 text-left text-sm transition-colors flex items-center gap-3",
-                          darkMode 
-                            ? "text-gray-300 hover:bg-gray-800 hover:text-white" 
+                          darkMode
+                            ? "text-gray-300 hover:bg-gray-800 hover:text-white"
                             : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                         )}>
                           <Users size={16} />
@@ -558,8 +566,8 @@ export default function AdminLayout({
                         </button>
                         <button className={mergeClasses(
                           "w-full px-4 py-3 text-left text-sm transition-colors flex items-center gap-3",
-                          darkMode 
-                            ? "text-gray-300 hover:bg-gray-800 hover:text-white" 
+                          darkMode
+                            ? "text-gray-300 hover:bg-gray-800 hover:text-white"
                             : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                         )}>
                           <Settings size={16} />
@@ -567,8 +575,8 @@ export default function AdminLayout({
                         </button>
                         <button className={mergeClasses(
                           "w-full px-4 py-3 text-left text-sm transition-colors flex items-center gap-3",
-                          darkMode 
-                            ? "text-gray-300 hover:bg-gray-800 hover:text-white" 
+                          darkMode
+                            ? "text-gray-300 hover:bg-gray-800 hover:text-white"
                             : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                         )}>
                           <Shield size={16} />
@@ -598,7 +606,7 @@ export default function AdminLayout({
               {headerActions}
             </div>
           )}
-          
+
           {/* Animated Content Container */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -606,8 +614,8 @@ export default function AdminLayout({
             transition={{ duration: 0.3 }}
             className={mergeClasses(
               "rounded-2xl p-6",
-              darkMode 
-                ? "bg-gray-900/50 border border-gray-800/50" 
+              darkMode
+                ? "bg-gray-900/50 border border-gray-800/50"
                 : "bg-white border border-gray-200"
             )}
           >
@@ -618,8 +626,8 @@ export default function AdminLayout({
         {/* Footer */}
         <footer className={mergeClasses(
           "px-6 py-4 border-t",
-          darkMode 
-            ? "bg-gray-900/50 border-gray-800/50" 
+          darkMode
+            ? "bg-gray-900/50 border-gray-800/50"
             : "bg-white border-gray-200"
         )}>
           <div className="flex items-center justify-between text-sm">
@@ -666,8 +674,8 @@ export default function AdminLayout({
               exit={{ opacity: 0, y: -20 }}
               className={mergeClasses(
                 "w-full max-w-2xl rounded-xl shadow-2xl p-2 border",
-                darkMode 
-                  ? "bg-gray-900 border-gray-800" 
+                darkMode
+                  ? "bg-gray-900 border-gray-800"
                   : "bg-white border-gray-200"
               )}
               onClick={(e) => e.stopPropagation()}
@@ -679,8 +687,8 @@ export default function AdminLayout({
                   placeholder="Search analytics, reports, vendors, products..."
                   className={mergeClasses(
                     "w-full pl-12 pr-4 py-4 rounded-lg text-lg focus:outline-none",
-                    darkMode 
-                      ? "bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500" 
+                    darkMode
+                      ? "bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500"
                       : "bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   )}
                   autoFocus

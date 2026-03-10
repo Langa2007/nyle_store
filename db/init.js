@@ -5,7 +5,7 @@ import pool from './connect.js';
  */
 export const initDB = async () => {
     try {
-        console.log("🚀 Starting database initialization...");
+        console.log(" Starting database initialization...");
 
         // 1. Users table (Base for many others)
         await pool.query(`
@@ -18,7 +18,7 @@ export const initDB = async () => {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
-        console.log("✅ Users table initialized");
+        console.log(" Users table initialized");
 
         // 2. Vendors table
         await pool.query(`
@@ -40,7 +40,7 @@ export const initDB = async () => {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
-        console.log("✅ Vendors table initialized");
+        console.log(" Vendors table initialized");
 
         // 3. Vendor Leads table
         await pool.query(`
@@ -61,7 +61,7 @@ export const initDB = async () => {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
-        console.log("✅ Vendor Leads table initialized");
+        console.log(" Vendor Leads table initialized");
 
         // 4. User Locations table (References Users)
         await pool.query(`
@@ -77,7 +77,7 @@ export const initDB = async () => {
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
-        console.log("✅ User Locations table initialized");
+        console.log(" User Locations table initialized");
 
         // 5. Partner Applications table
         await pool.query(`
@@ -124,9 +124,9 @@ export const initDB = async () => {
         `);
         console.log("Partner Applications table initialized");
 
-        console.log("✨ Database initialization complete!");
+        console.log(" Database initialization complete!");
     } catch (err) {
-        console.error("❌ Database initialization failed:", err.message);
+        console.error(" Database initialization failed:", err.message);
         throw err;
     }
 };
