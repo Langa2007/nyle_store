@@ -23,7 +23,9 @@ const generateTokens = (admin) => {
 // --- LOGIN ---
 export const adminLogin = async (req, res) => {
   const { email, password } = req.body;
-  const ip = req.ip;
+  const ip = req.headers['x-client-ip'] ||
+    req.headers['x-forwarded-for']?.split(',')[0].trim() ||
+    req.ip;
 
   try {
     const result = await pool.query(
@@ -80,7 +82,11 @@ export const verifyAdminToken = async (req, res, next) => {
     }
 
     const admin = result.rows[0];
-    const currentIp = req.ip;
+
+    // Robust IP extraction matching the login logic
+    const currentIp = req.headers['x-client-ip'] ||
+      req.headers['x-forwarded-for']?.split(',')[0].trim() ||
+      req.ip;
 
     // Enforce same IP as login session when available.
     if (admin.last_ip && currentIp && admin.last_ip !== currentIp) {
@@ -114,7 +120,9 @@ export const verifyAdminToken = async (req, res, next) => {
 // --- REFRESH TOKEN ---
 export const refreshAdminToken = async (req, res) => {
   const { refreshToken } = req.body;
-  const ip = req.ip;
+  const ip = req.headers['x-client-ip'] ||
+    req.headers['x-forwarded-for']?.split(',')[0].trim() ||
+    req.ip;
   if (!refreshToken) return res.status(401).json({ error: "No refresh token provided" });
 
   try {
