@@ -153,7 +153,7 @@ export default function AdminProductsPage() {
 
   const [vendorForm, setVendorForm] = useState({
     legal_name: "",
-    business_email: "",
+    email: "",
     phone: "",
     business_address: "",
     tax_id: "",
@@ -298,8 +298,8 @@ export default function AdminProductsPage() {
 
   // Vendor management
   const handleCreateVendor = async () => {
-    if (!vendorForm.legal_name || !vendorForm.business_email) {
-      toast.error("Legal name and business email are required");
+    if (!vendorForm.legal_name || !vendorForm.email) {
+      toast.error("Legal name and email are required");
       return;
     }
 
@@ -323,7 +323,7 @@ export default function AdminProductsPage() {
         setShowVendorForm(false);
         setVendorForm({
           legal_name: "",
-          business_email: "",
+          email: "",
           phone: "",
           business_address: "",
           tax_id: "",
@@ -1295,7 +1295,7 @@ export default function AdminProductsPage() {
                       <option value="">Choose a vendor...</option>
                       {vendors.map((vendor) => (
                         <option key={vendor.id} value={vendor.id}>
-                          {vendor.legal_name} ({vendor.business_email})
+                          {vendor.legal_name} ({vendor.email})
                         </option>
                       ))}
                     </select>
@@ -1322,9 +1322,9 @@ export default function AdminProductsPage() {
                           />
                           <input
                             type="email"
-                            name="business_email"
-                            placeholder="Business Email *"
-                            value={vendorForm.business_email}
+                            name="email"
+                            placeholder="vendor@example.com"
+                            value={vendorForm.email}
                             onChange={handleVendorFormChange}
                             className="px-4 py-2 border rounded"
                             required

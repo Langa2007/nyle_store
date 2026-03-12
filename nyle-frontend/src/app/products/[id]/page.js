@@ -540,9 +540,9 @@ export default function ProductDetailPage() {
                   <p className="text-gray-600 mt-1">{product.company_name}</p>
                 )}
                 <div className="mt-4 space-y-2">
-                  {product.business_email && (
+                  {product.vendor_email && (
                     <p className="text-gray-700">
-                      <span className="font-medium">Email:</span> {product.business_email}
+                      <span className="font-medium">Email:</span> {product.vendor_email}
                     </p>
                   )}
                   {product.phone && (

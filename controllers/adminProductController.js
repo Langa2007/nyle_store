@@ -31,7 +31,7 @@ export const createOrSelectVendor = async (req, res) => {
     const {
       vendor_id,
       legal_name,
-      business_email,
+      email,
       phone,
       business_address,
       tax_id,
@@ -61,9 +61,9 @@ export const createOrSelectVendor = async (req, res) => {
     }
 
     // Create new vendor
-    if (!legal_name || !business_email) {
+    if (!legal_name || !email) {
       return res.status(400).json({
-        error: "Legal name and business email are required for new vendors"
+        error: "Legal name and email are required for new vendors"
       });
     }
 
@@ -87,7 +87,7 @@ export const createOrSelectVendor = async (req, res) => {
 
     const vendorValues = [
       legal_name,
-      business_email, // Variable business_email from request body
+      email, // Variable email from request body
       phone,
       business_address,
       tax_id,
