@@ -25,6 +25,7 @@ import {
   TrendingUp,
   Zap,
   FileText,
+  AlertTriangle,
 } from "lucide-react";
 import { useAdminNotifications } from "../hooks/useAdminNotifications";
 
@@ -52,6 +53,7 @@ export default function AdminLayout({
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const pathname = usePathname();
+  const { notifications: liveNotifications, loading: notificationsLoading } = useAdminNotifications(60000); // Poll every minute
 
   const navItems = [
     {
@@ -116,7 +118,6 @@ export default function AdminLayout({
     },
   ];
 
-  const { notifications: liveNotifications, loading: notificationsLoading } = useAdminNotifications(60000); // Poll every minute
 
   // Map the summary details into actionable notification objects
   const notifications = [
