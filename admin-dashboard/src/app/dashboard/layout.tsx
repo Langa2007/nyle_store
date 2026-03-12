@@ -35,6 +35,7 @@ import {
   CreditCard,
   FileText,
   AlertCircle,
+  AlertTriangle,
   ChevronDown,
   Building2,
   Layers,
@@ -76,6 +77,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     });
     router.push("/login");
   };
+
+  const { notifications: liveNotifications, loading: notificationsLoading } = useAdminNotifications(60000);
 
   const navItems = [
     {
@@ -133,6 +136,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       badge: null
     },
     {
+      name: "User Reports",
+      href: "/dashboard/reports",
+      icon: <AlertTriangle size={18} />,
+      badge: (liveNotifications?.details?.openReportedIssues > 0) ? liveNotifications.details.openReportedIssues.toString() : null
+    },
+    {
       name: "Settings",
       href: "/dashboard/settings",
       icon: <Settings size={18} />,
@@ -140,7 +149,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     },
   ];
 
-  const { notifications: liveNotifications, loading: notificationsLoading } = useAdminNotifications(60000);
 
   const notifications = [
     ...(liveNotifications.details.pendingVendors > 0 ? [{ id: 'vendor', title: `${liveNotifications.details.pendingVendors} Pending Vendor Approval(s)`, time: "Requires action", unread: true, type: "warning" }] : []),

@@ -23,7 +23,7 @@ interface UserReport {
   created_at: string;
 }
 
-const baseurl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://nyle-store.onrender.com";
+const baseurl = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
 const getAdminAuthHeaders = (): HeadersInit => {
   const token = typeof window !== "undefined" ? localStorage.getItem("adminAccessToken") : null;
