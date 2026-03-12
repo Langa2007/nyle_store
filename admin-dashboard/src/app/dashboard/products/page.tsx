@@ -51,7 +51,7 @@ interface Product {
 interface Vendor {
   id: number;
   legal_name: string;
-  business_email: string;
+  email: string;
   business_type?: string;
 }
 

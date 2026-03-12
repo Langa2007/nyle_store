@@ -16,7 +16,7 @@ router.get('/summary', async (req, res) => {
             openReportedIssuesResult
         ] = await Promise.all([
             pool.query("SELECT COUNT(*) FROM vendors WHERE status = 'pending'"),
-            pool.query("SELECT COUNT(*) FROM partners WHERE status = 'pending' OR status = 'termination_notice'"),
+            pool.query("SELECT COUNT(*) FROM partner_applications WHERE status = 'pending' OR status = 'termination_notice'"),
             pool.query("SELECT COUNT(*) FROM orders WHERE status = 'pending'"),
             pool.query("SELECT COUNT(*) FROM support_messages WHERE status = 'open'"),
             pool.query("SELECT COUNT(*) FROM reported_issues WHERE status = 'open'")

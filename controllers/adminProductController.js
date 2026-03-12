@@ -79,7 +79,7 @@ export const createOrSelectVendor = async (req, res) => {
 
     const vendorQuery = `
       INSERT INTO vendors 
-      (legal_name, business_email, phone, business_address, tax_id, 
+      (legal_name, email, phone, business_address, tax_id, 
        business_type, shipping_policy, return_policy, company_logo)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING id, legal_name
@@ -87,7 +87,7 @@ export const createOrSelectVendor = async (req, res) => {
 
     const vendorValues = [
       legal_name,
-      business_email,
+      business_email, // Variable business_email from request body
       phone,
       business_address,
       tax_id,
@@ -294,7 +294,7 @@ export const adminCreateProduct = async (req, res) => {
 
     // Fetch complete product with vendor info
     const finalProduct = await connection.query(`
-      SELECT p.*, v.legal_name as vendor_name, v.business_email, v.phone
+      SELECT p.*, v.legal_name as vendor_name, v.email, v.phone
       FROM products p
       LEFT JOIN vendors v ON p.vendor_id = v.id
       WHERE p.id = $1
@@ -315,7 +315,7 @@ export const adminCreateProduct = async (req, res) => {
 export const getAllVendors = async (req, res) => {
   try {
     const query = `
-      SELECT id, legal_name, business_email, business_type, 
+      SELECT id, legal_name, email, business_type, 
              created_at, status
       FROM vendors 
       WHERE status = 'active'
@@ -366,7 +366,7 @@ export const adminGetAllProducts = async (req, res) => {
       SELECT 
         p.*, 
         v.legal_name AS vendor_name,
-        v.business_email,
+        v.email,
         v.business_type,
         COUNT(DISTINCT pv.id) as variant_count,
         COALESCE(SUM(pv.stock), p.stock) as total_stock
@@ -630,7 +630,7 @@ export const getProductWithDetails = async (req, res) => {
       SELECT 
         p.*,
         v.legal_name as vendor_name,
-        v.business_email,
+        v.email,
         v.phone,
         v.business_address,
         COALESCE(

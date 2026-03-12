@@ -1219,7 +1219,7 @@ function HomeContent() {
                 </h3>
                 <ul className="space-y-2 text-sm">
                   <li><Link href="/vendor/why-sell" className="text-gray-300 hover:text-white transition hover:underline">Why Sell on Nyle</Link></li>
-                  <li><Link href="/vendor/signup" className="text-gray-300 hover:text-white transition hover:underline">Become a Seller</Link></li>
+                  <li><Link href="/vendor/signup" className="text-gray-300 hover:text-white transition hover:underline">Sell On Nyle</Link></li>
                   <li><Link href="/vendor/quotations" className="text-gray-300 hover:text-white transition hover:underline">Get Seller Quotations</Link></li>
                   <li><Link href="/vendor/policies" className="text-gray-300 hover:text-white transition hover:underline">Seller Policies</Link></li>
                   <li><Link href="/vendor/app" className="text-gray-300 hover:text-white transition hover:underline">Get Our App</Link></li>
