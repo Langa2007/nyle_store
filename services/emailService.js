@@ -214,3 +214,85 @@ export async function sendPartnerStatusEmail(toEmail, applicationData, status) {
     return false;
   }
 }
+
+/**
+ * Send complaint receipt confirmation to user
+ * @param {string} toEmail
+ * @param {object} issueData
+ */
+export async function sendSupportReceiptEmail(toEmail, issueData) {
+  const { name, title, description } = issueData;
+  const subject = `Complaint Received: ${title}`;
+  const html = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; color: #1e293b;">
+      <h2 style="color: #2563eb; margin-top: 0;">We've Received Your Report</h2>
+      <p>Hello ${name || 'User'},</p>
+      <p>Thank you for bringing this to our attention. We have received your complaint regarding <strong>${title}</strong>.</p>
+      
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 24px 0;">
+        <h4 style="margin: 0 0 8px 0; color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Your Description</h4>
+        <p style="margin: 0; color: #334155; line-height: 1.5;">${description}</p>
+      </div>
+
+      <p>Our support team is currently reviewing your case. We will notify you once it's resolved.</p>
+      <p style="font-size: 14px; color: #64748b; margin-top: 24px; border-top: 1px solid #e2e8f0; pt: 16px;">
+        If this is an emergency, please call us directly for immediate assistance.
+      </p>
+    </div>
+  `;
+
+  try {
+    const resp = await resend.emails.send({
+      from: "Nyle Support <support@resend.dev>",
+      to: toEmail,
+      subject,
+      html,
+    });
+    console.log(" Support receipt email sent, id:", resp.id);
+    return true;
+  } catch (err) {
+    console.error(" sendSupportReceiptEmail error:", err);
+    return false;
+  }
+}
+
+/**
+ * Send issue resolution email to user
+ * @param {string} toEmail
+ * @param {object} issueData
+ */
+export async function sendSupportResolutionEmail(toEmail, issueData) {
+  const { name, title, resolutionMessage } = issueData;
+  const subject = `RESOLVED: ${title}`;
+  const html = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; color: #1e293b;">
+      <h2 style="color: #10b981; margin-top: 0;">Issue Resolved 🎉</h2>
+      <p>Hello ${name || 'User'},</p>
+      <p>We are pleased to inform you that your reported issue <strong>"${title}"</strong> has been addressed and resolved.</p>
+      
+      ${resolutionMessage ? `
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; margin: 24px 0;">
+          <h4 style="margin: 0 0 8px 0; color: #15803d; font-size: 12px; text-transform: uppercase;">Resolution Message</h4>
+          <p style="margin: 0; color: #166534; line-height: 1.5;">${resolutionMessage}</p>
+        </div>
+      ` : ''}
+
+      <p>Thank you for your patience and for helping us improve Nyle Store.</p>
+      <p style="margin-top: 24px; color: #64748b; font-size: 14px;">Best regards,<br>The Nyle Support Team</p>
+    </div>
+  `;
+
+  try {
+    const resp = await resend.emails.send({
+      from: "Nyle Support <support@resend.dev>",
+      to: toEmail,
+      subject,
+      html,
+    });
+    console.log(" Support resolution email sent, id:", resp.id);
+    return true;
+  } catch (err) {
+    console.error(" sendSupportResolutionEmail error:", err);
+    return false;
+  }
+}

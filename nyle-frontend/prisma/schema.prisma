@@ -220,15 +220,19 @@ model products {
 }
 
 model reported_issues {
-  id             Int       @id @default(autoincrement())
-  reporter_name  String?
-  reporter_email String?
-  description    String
-  url            String?
-  priority       String?   @default("normal")
-  status         String    @default("open")
-  created_at     DateTime? @default(now()) @db.Timestamptz(6)
-  updated_at     DateTime? @default(now()) @db.Timestamptz(6)
+  id                 Int       @id @default(autoincrement())
+  reporter_name      String?
+  reporter_email     String?
+  reporter_phone     String?
+  issue_category_id  Int?
+  issue_title        String?
+  description        String
+  url                String?
+  priority           String?   @default("normal")
+  status             String    @default("open")
+  resolution_message String?
+  created_at         DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime? @default(now()) @db.Timestamptz(6)
 
   @@index([status], map: "idx_reported_issues_status")
 }

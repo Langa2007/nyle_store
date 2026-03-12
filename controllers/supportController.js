@@ -1,80 +1,162 @@
 // controllers/supportController.js
 import { pool } from "../db/connect.js";
-import {Resend} from "resend";
+import { sendSupportReceiptEmail, sendSupportResolutionEmail } from "../services/emailService.js";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+/**
+ * Mapped Issue Categories
+ */
+const ISSUE_CATEGORIES = {
+  1: "Website Bug",
+  2: "Payment Issue",
+  3: "Vendor Problem",
+  4: "Delivery Delay",
+  5: "Account Access",
+  6: "Other"
+};
 
-// POST /api/support/contact
-export const createSupportMessage = async (req, res) => {
+/**
+ * Handle user complaint submission
+ */
+export const submitComplaint = async (req, res) => {
   try {
-    const { name, email, subject, message } = req.body;
-    if (!email || !message)
-      return res.status(400).json({ message: "Email and message are required" });
+    const { 
+      reporter_name, 
+      reporter_email, 
+      reporter_phone, 
+      description, 
+      issue_category_id, 
+      url 
+    } = req.body;
 
-    const q = await pool.query(
-      `INSERT INTO support_messages (name, email, subject, message)
-       VALUES ($1,$2,$3,$4) RETURNING id, created_at`,
-      [name || null, email, subject || null, message]
-    );
+    const email = reporter_email?.toLowerCase();
+    const catId = parseInt(issue_category_id);
 
-    // Notify admin via Resend (best-effort)
-    try {
-      await resend.emails.send({
-        from: "onboarding@nyle.dev",
-        to: process.env.GMAIL_USER,
-        subject: `New support message: ${subject || "No subject"}`,
-        html: `<p><strong>From:</strong> ${name || "Anonymous"} &lt;${email}&gt;</p>
-               <p><strong>Message:</strong></p><p>${message}</p>`,
-      });
-    } catch (e) {
-      console.error("Failed to send admin notification via Resend:", e);
+    if (!email || !description || !catId) {
+      return res.status(400).json({ message: "Email, description, and issue category are required." });
     }
 
-    res
-      .status(201)
-      .json({ message: "Support message received", id: q.rows[0].id });
-  } catch (err) {
-    console.error("createSupportMessage error:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-};
+    const issueTitle = ISSUE_CATEGORIES[catId] || "General Inquiry";
 
-export const listSupportMessages = async (req, res) => {
-  // admin only
-  try {
-    const page = Math.max(Number(req.query.page) || 1, 1);
-    const pageSize = Math.min(Number(req.query.pageSize) || 25, 200);
+    // 1. Rate Limiting Check (3 per hour) - Extra safety besides middleware
+    const hourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const countQ = await pool.query(
+      "SELECT COUNT(*) FROM reported_issues WHERE reporter_email = $1 AND created_at > $2",
+      [email, hourAgo]
+    );
+    if (parseInt(countQ.rows[0].count) >= 3) {
+      return res.status(429).json({ 
+        message: "Submission limit exceeded (3 per hour). Please call support for immediate assistance if urgent." 
+      });
+    }
 
-    const offset = (page - 1) * pageSize;
-    const q = await pool.query(
-      `SELECT * FROM support_messages ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
-      [pageSize, offset]
+    // 2. Duplicate Check (Open issue of same category for same email)
+    const duplicateQ = await pool.query(
+      "SELECT id FROM reported_issues WHERE reporter_email = $1 AND issue_category_id = $2 AND status = 'open'",
+      [email, catId]
+    );
+    if (duplicateQ.rows.length > 0) {
+      return res.status(409).json({ 
+        message: `You already have an open report for "${issueTitle}". Please wait for resolution before submitting another of the same type.` 
+      });
+    }
+
+    // 3. Create Issue
+    const insertQ = await pool.query(
+      `INSERT INTO reported_issues (
+        reporter_name, reporter_email, reporter_phone, 
+        issue_category_id, issue_title, description, 
+        url, status
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, 'open') RETURNING id`,
+      [reporter_name, email, reporter_phone, catId, issueTitle, description, url]
     );
 
-    const totalQ = await pool.query(`SELECT COUNT(*) FROM support_messages`);
-    res.json({
-      items: q.rows,
-      total: Number(totalQ.rows[0].count),
-      page,
-      pageSize,
+    const issueId = insertQ.rows[0].id;
+
+    // 4. Send Confirmation Email
+    await sendSupportReceiptEmail(email, {
+      name: reporter_name,
+      title: issueTitle,
+      description
     });
+
+    res.status(201).json({ 
+      success: true, 
+      message: "Complaint submitted successfully. A confirmation email has been sent.",
+      id: issueId 
+    });
+
   } catch (err) {
-    console.error("listSupportMessages error:", err);
-    res.status(500).json({ message: "Server error" });
+    console.error("submitComplaint error:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
-export const updateSupportStatus = async (req, res) => {
+/**
+ * Handle admin resolving an issue
+ */
+export const resolveComplaint = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { resolution_message } = req.body;
+
+    // Fetch complaint data first
+    const issueQ = await pool.query("SELECT * FROM reported_issues WHERE id = $1", [id]);
+    if (issueQ.rows.length === 0) {
+      return res.status(404).json({ message: "Issue not found" });
+    }
+
+    const issue = issueQ.rows[0];
+
+    // Update status to resolved
     await pool.query(
-      `UPDATE support_messages SET status=$1, updated_at=now() WHERE id=$2`,
-      [status || "open", id]
+      "UPDATE reported_issues SET status = 'resolved', resolution_message = $1, updated_at = NOW() WHERE id = $2",
+      [resolution_message, id]
     );
-    res.json({ message: "Updated" });
+
+    // Send resolution email
+    await sendSupportResolutionEmail(issue.reporter_email, {
+      name: issue.reporter_name,
+      title: issue.issue_title,
+      resolutionMessage: resolution_message
+    });
+
+    res.json({ success: true, message: "Issue marked as resolved and user notified." });
+
   } catch (err) {
-    console.error("updateSupportStatus error:", err);
-    res.status(500).json({ message: "Server error" });
+    console.error("resolveComplaint error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+/**
+ * List issues for admin
+ */
+export const listComplaints = async (req, res) => {
+  try {
+    const { status, category } = req.query;
+    let query = "SELECT * FROM reported_issues";
+    let params = [];
+    let conditions = [];
+
+    if (status) {
+      conditions.push(`status = $${params.length + 1}`);
+      params.push(status);
+    }
+    if (category) {
+      conditions.push(`issue_category_id = $${params.length + 1}`);
+      params.push(category);
+    }
+
+    if (conditions.length > 0) {
+      query += " WHERE " + conditions.join(" AND ");
+    }
+
+    query += " ORDER BY created_at DESC";
+
+    const q = await pool.query(query, params);
+    res.json(q.rows);
+  } catch (err) {
+    console.error("listComplaints error:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

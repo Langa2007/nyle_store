@@ -103,6 +103,12 @@ export default function AdminLayout({
       badge: null
     },
     {
+      name: "User Reports",
+      href: "/dashboard/reports",
+      icon: <AlertTriangle size={18} />,
+      badge: liveNotifications.details.openReportedIssues > 0 ? liveNotifications.details.openReportedIssues.toString() : null
+    },
+    {
       name: "Settings",
       href: "/dashboard/settings",
       icon: <Settings size={18} />,

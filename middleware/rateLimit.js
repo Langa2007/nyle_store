@@ -56,11 +56,11 @@ export const newsletterLimiter = createLimiter({
   message: "Too many newsletter requests. Please try again later.",
 });
 
-// Issue/bug reports
+// Issue/bug reports (Strict: 3 per hour)
 export const reportLimiter = createLimiter({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 8,
-  message: "Too many reports submitted. Please try again later.",
+  max: 3,
+  message: "Daily limit reached for problem reports (3 per hour). If you have more issues, please call admin/support for assistance.",
 });
 
 // Cart mutations (add, update, remove, sync)
