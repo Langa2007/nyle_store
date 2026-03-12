@@ -26,13 +26,13 @@ const HOLIDAY_CAMPAIGNS = [
   {
     id: "easter-special",
     badge: "🐰 Easter Weekend",
-    headline: "Egg-citing deals: Up to 45% OFF family favorites",
+    headline: "Exciting deals: Up to 45% OFF family favorites",
     ctaLabel: "Hop to Deals",
     ctaHref: "/deals/easter",
     startDate: "2026-04-01T00:00:00+03:00",
     endDate: "2026-04-07T00:00:00+03:00",
     gradient: "from-yellow-400 via-orange-400 to-red-400",
-    icon: "🥚"
+    icon: ""
   },
   {
     id: "jamhuri-day",
@@ -271,12 +271,12 @@ export default function Navbar() {
 
   const getCategoryImage = (name) => {
     const n = name?.toLowerCase() || "";
-    if (n.includes("electronics")) return "https://images.unsplash.com/photo-1498049381929-7232985a9003?q=80&w=200&auto=format&fit=crop";
-    if (n.includes("fashion") || n.includes("cloth")) return "https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=200&auto=format&fit=crop";
-    if (n.includes("home")) return "https://images.unsplash.com/photo-1484154218962-a1c00207bf9a?q=80&w=200&auto=format&fit=crop";
-    if (n.includes("beauty")) return "https://images.unsplash.com/photo-1596462502278-27bfdd403348?q=80&w=200&auto=format&fit=crop";
-    if (n.includes("sport") || n.includes("gym")) return "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=200&auto=format&fit=crop";
-    return "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=200&auto=format&fit=crop";
+    if (n.includes("electronics")) return "https://images.unsplash.com/photo-1498049381929-7232985a9003?q=80&w=400&auto=format&fit=crop";
+    if (n.includes("fashion") || n.includes("cloth")) return "https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=400&auto=format&fit=crop";
+    if (n.includes("home")) return "https://images.unsplash.com/photo-1484154218962-a1c00207bf9a?q=80&w=400&auto=format&fit=crop";
+    if (n.includes("beauty")) return "https://images.unsplash.com/photo-1596462502278-27bfdd403348?q=80&w=400&auto=format&fit=crop";
+    if (n.includes("sport") || n.includes("gym")) return "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=400&auto=format&fit=crop";
+    return "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=400&auto=format&fit=crop";
   };
 
   // Search function
@@ -567,18 +567,18 @@ export default function Navbar() {
                           <Link
                             key={cat.id || cat._id}
                             href={`/products?category=${encodeURIComponent(cat.name)}`}
-                            className="group/item flex items-center gap-3 p-2 rounded-xl hover:bg-blue-50 transition-all"
+                            className="group/item flex items-center gap-4 p-3 rounded-2xl hover:bg-blue-50 transition-all duration-300"
                           >
-                            <div className="w-10 h-10 rounded-lg overflow-hidden">
+                            <div className="w-16 h-16 rounded-xl overflow-hidden shadow-md ring-2 ring-transparent group-hover/item:ring-blue-200 transition-all">
                               <img
-                                src={getCategoryImage(cat.name)}
+                                src={cat.image_url || getCategoryImage(cat.name)}
                                 alt={cat.name}
-                                className="w-full h-full object-cover group-hover/item:scale-110 transition-transform"
+                                className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500"
                               />
                             </div>
                             <div>
-                              <p className="font-bold text-gray-800 text-sm">{cat.name}</p>
-                              <p className="text-xs text-gray-500">Shop now →</p>
+                              <p className="font-black text-gray-900 text-sm mb-0.5">{cat.name}</p>
+                              <p className="text-[10px] font-bold text-blue-600 uppercase tracking-tighter opacity-0 group-hover/item:opacity-100 transition-opacity">Explore now →</p>
                             </div>
                           </Link>
                         ))}
