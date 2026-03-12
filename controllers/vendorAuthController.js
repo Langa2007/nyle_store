@@ -163,7 +163,7 @@ export const vendorLogin = async (req, res) => {
 
     const normalizedEmail = email.trim().toLowerCase();
     const q = await pool.query(
-      "SELECT id, password, is_verified, status FROM vendors WHERE email=$1",
+      "SELECT id, password, is_verified, status, company_name, legal_name, contact_person FROM vendors WHERE email=$1",
       [normalizedEmail]
     );
 
@@ -193,7 +193,13 @@ export const vendorLogin = async (req, res) => {
     return res.json({
       message: "Login successful",
       token,
-      vendor: { id: vendor.id, status: vendor.status }
+      vendor: {
+        id: vendor.id,
+        status: vendor.status,
+        company_name: vendor.company_name,
+        legal_name: vendor.legal_name,
+        contact_person: vendor.contact_person
+      }
     });
 
   } catch (err) {
@@ -220,7 +226,7 @@ export const magicLogin = async (req, res) => {
       return res.status(400).json({ message: "Invalid token type" });
 
     const q = await pool.query(
-      "SELECT id, status, is_verified FROM vendors WHERE id=$1",
+      "SELECT id, status, is_verified, company_name, legal_name, contact_person FROM vendors WHERE id=$1",
       [payload.vendor_id]
     );
 
@@ -238,7 +244,16 @@ export const magicLogin = async (req, res) => {
       { expiresIn: "12h" }
     );
 
-    return res.json({ token: authToken, vendor: { id: v.id, status: v.status } });
+    return res.json({
+      token: authToken,
+      vendor: {
+        id: v.id,
+        status: v.status,
+        company_name: v.company_name,
+        legal_name: v.legal_name,
+        contact_person: v.contact_person
+      }
+    });
 
   } catch (err) {
     console.error("magicLogin error:", err);
@@ -284,7 +299,7 @@ export const verifySession = async (req, res) => {
     const vendorId = req.user.vendor_id;
 
     const q = await pool.query(
-      "SELECT id, legal_name, company_name, email, status, is_verified, business_type FROM vendors WHERE id=$1",
+      "SELECT id, legal_name, company_name, contact_person, email, status, is_verified, business_type FROM vendors WHERE id=$1",
       [vendorId]
     );
 

@@ -132,7 +132,7 @@ function VendorLoginContent() {
 
         if (data.vendor) {
           localStorage.setItem('vendor_data', JSON.stringify(data.vendor));
-          setSuccessMessage(`Welcome back, ${data.vendor.business_name || data.vendor.contact_person}!`);
+          setSuccessMessage(`Welcome back, ${data.vendor.company_name || data.vendor.business_name || data.vendor.contact_person}!`);
         }
 
         // Show success message briefly before redirect

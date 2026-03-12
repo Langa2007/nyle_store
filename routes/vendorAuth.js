@@ -5,10 +5,10 @@ import {
   vendorLogin,
   verifyToken,
   magicLogin,
-
   resendVerificationCode,
   verifySession
 } from "../controllers/vendorAuthController.js";
+import { getNotificationSummary } from "../controllers/vendorNotificationController.js";
 import { verifyVendor } from "../middleware/vendorAuth.js";
 
 // Import updated password reset functions
@@ -40,6 +40,9 @@ router.post("/resend-code", authLimiter, resendVerificationCode);
 // Verify session - GET (Requires Token)
 router.get("/verify-session", verifyVendor, verifySession);
 
+// Get notification summary - GET (Requires Token)
+router.get("/notification-summary", verifyVendor, getNotificationSummary);
+
 // 🔐 PASSWORD RESET ENDPOINTS (USING CODES)
 
 // Forgot password - sends 6-digit code
@@ -67,3 +70,4 @@ router.post("/resend-reset-code", passwordResetLimiter, (req, res) => {
 });
 
 export default router;
+

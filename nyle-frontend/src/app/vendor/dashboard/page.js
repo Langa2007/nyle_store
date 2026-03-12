@@ -13,6 +13,8 @@ import ProductForm from "@/components/vendor/ProductForm";
 import ProductTable from "@/components/vendor/ProductTable";
 import StatsOverview from "@/components/vendor/StatsOverview";
 import { getVendorProducts, getProductStats, verifyVendorSession } from "@/services/VendorApi";
+import { useVendorNotifications } from "@/hooks/useVendorNotifications";
+import { Bell, ChevronDown } from "lucide-react";
 
 // Helper for defensive programming
 const safeArray = (data) => Array.isArray(data) ? data : [];
@@ -32,6 +34,10 @@ export default function VendorDashboard() {
   const [vendorData, setVendorData] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [isVerified, setIsVerified] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  // Custom hook for notifications
+  const { notifications, count, refetch: refetchNotifications } = useVendorNotifications();
 
   const menuItems = [
     { id: "dashboard", name: "Dashboard", icon: BarChart3 },
@@ -196,7 +202,7 @@ export default function VendorDashboard() {
             <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl p-6 text-white">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl font-bold mb-2">Welcome back, {vendorData?.company_name || vendorData?.business_name || 'Vendor'}!</h1>
+                  <h1 className="text-2xl font-bold mb-2">Welcome back, {vendorData?.company_name || vendorData?.legal_name || vendorData?.business_name || 'Vendor'}!</h1>
                   <p className="text-blue-100">Here's what's happening with your store today</p>
                 </div>
                 <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
@@ -408,7 +414,7 @@ export default function VendorDashboard() {
                 className="w-10 h-10 rounded-lg border-2 border-blue-200"
               />
               <div className="flex-1 min-w-0">
-                <div className="text-white font-semibold truncate">{vendorData?.business_name}</div>
+                <div className="text-white font-semibold truncate">{vendorData?.company_name || vendorData?.business_name || 'Vendor'}</div>
                 <div className="text-blue-300 text-xs truncate">
                   {vendorData?.email}
                 </div>
@@ -464,12 +470,79 @@ export default function VendorDashboard() {
 
             <div className="flex items-center gap-6">
               {/* Notifications */}
-              <button className="relative p-2 text-gray-600 hover:text-blue-600">
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                  3
-                </div>
-                <BellIcon />
-              </button>
+              <div className="relative">
+                <button
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="relative p-2 text-gray-600 hover:text-blue-600 transition-colors"
+                >
+                  {count > 0 && (
+                    <div className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold border-2 border-white">
+                      {count > 9 ? '9+' : count}
+                    </div>
+                  )}
+                  <Bell className="w-6 h-6" />
+                </button>
+
+                {showNotifications && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setShowNotifications(false)}
+                    ></div>
+                    <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                      <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                        <h3 className="font-bold text-gray-800">Notifications</h3>
+                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
+                          {count} New
+                        </span>
+                      </div>
+                      <div className="max-h-96 overflow-y-auto">
+                        {notifications.length > 0 ? (
+                          notifications.map((notif) => (
+                            <div
+                              key={notif.id}
+                              className="p-4 border-b border-gray-50 hover:bg-gray-50 transition cursor-pointer"
+                              onClick={() => {
+                                if (notif.action_url) router.push(notif.action_url);
+                                setShowNotifications(false);
+                              }}
+                            >
+                              <div className="flex gap-3">
+                                <div className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${notif.severity === 'high' ? 'bg-red-500' :
+                                    notif.severity === 'medium' ? 'bg-yellow-500' : 'bg-blue-500'
+                                  }`}></div>
+                                <div>
+                                  <div className="text-sm font-semibold text-gray-900">{notif.title}</div>
+                                  <div className="text-xs text-gray-600 mt-1 line-clamp-2">{notif.message}</div>
+                                  <div className="text-[10px] text-gray-400 mt-2 flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    {new Date(notif.timestamp).toLocaleDateString()} {new Date(notif.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="p-8 text-center">
+                            <Bell className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+                            <p className="text-gray-500 text-sm">No new notifications</p>
+                          </div>
+                        )}
+                      </div>
+                      {notifications.length > 0 && (
+                        <div className="p-3 bg-gray-50 border-t border-gray-100 text-center">
+                          <button
+                            className="text-xs text-blue-600 font-semibold hover:underline"
+                            onClick={() => setShowNotifications(false)}
+                          >
+                            Mark all as read
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
 
               {/* Vendor Profile */}
               <div className="flex items-center gap-3">
