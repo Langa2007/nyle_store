@@ -73,6 +73,12 @@ export default function AdminLayout({
       badge: "12"
     },
     {
+      name: "Product Catalog",
+      href: "/dashboard/products/all",
+      icon: <List size={18} />,
+      badge: null
+    },
+    {
       name: "Orders",
       href: "/dashboard/orders",
       icon: <ShoppingCart size={18} />,

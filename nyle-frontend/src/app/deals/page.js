@@ -41,7 +41,7 @@ function DealsContent() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-red-600 via-orange-600 to-red-700 text-white pt-32 pb-20 px-6 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-red-400 via-orange-600 to-red-500 text-white pt-32 pb-20 px-6 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <FaBolt className="absolute top-10 left-10 text-9xl rotate-12" />
           <FaFire className="absolute bottom-10 right-10 text-9xl -rotate-12" />

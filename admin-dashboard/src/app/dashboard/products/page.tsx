@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import AdminLayout from "@/app/components/AdminLayout";
@@ -82,6 +83,17 @@ const getAdminAuthHeaders = (): HeadersInit => {
 };
 
 export default function AdminProductsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AdminProductsContent />
+    </Suspense>
+  );
+}
+
+function AdminProductsContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const editId = searchParams.get("edit");
   const [products, setProducts] = useState<Product[]>([]);
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -209,6 +221,16 @@ export default function AdminProductsPage() {
 
     fetchInitialData();
   }, [baseurl]);
+
+  // Handle edit mode from query param
+  useEffect(() => {
+    if (editId && products.length > 0) {
+      const productToEdit = products.find(p => p.id === parseInt(editId));
+      if (productToEdit) {
+        handleEditClick(productToEdit);
+      }
+    }
+  }, [editId, products]);
 
   // Handle image uploads
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1583,142 +1605,41 @@ export default function AdminProductsPage() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN: PRODUCT LIST */}
+          {/* RIGHT COLUMN: ACTION CARDS */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-lg p-6 sticky top-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold flex items-center">
-                  <FaWarehouse className="mr-2 text-gray-600" />
-                  Products ({products.length})
+            <div className="bg-white rounded-xl shadow-lg p-6 sticky top-6 space-y-6">
+              <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                <h2 className="text-xl font-semibold flex items-center text-blue-900 mb-2">
+                  <FaWarehouse className="mr-2 text-blue-600" />
+                  Inventory Management
                 </h2>
+                <p className="text-sm text-blue-700 mb-4">
+                  View and manage all products, including hot deals, stock levels, and vendor assignments in a distraction-free view.
+                </p>
                 <button
-                  onClick={() => setViewAllVendors(!viewAllVendors)}
-                  className={`text-sm px-3 py-1 rounded-full transition ${viewAllVendors ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                  onClick={() => router.push("/dashboard/products/all")}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition shadow-lg shadow-blue-500/20 flex items-center justify-center"
                 >
-                  {viewAllVendors ? "Showing All Vendors" : "View All Products"}
-                </button>
-                <button
-                  onClick={resetForm}
-                  className="text-sm text-blue-600 hover:text-blue-800"
-                >
-                  Reset Form
+                  <FaBox className="mr-2" />
+                  Show All Products
                 </button>
               </div>
 
-              <div className="space-y-4 max-h-[calc(100vh-300px)] overflow-y-auto pr-2">
-                {products.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <FaBox className="text-4xl mx-auto mb-3 text-gray-300" />
-                    <p>No products yet</p>
-                    <p className="text-sm mt-1">Create your first product</p>
-                  </div>
-                ) : (
-                  products
-                    .filter(p => viewAllVendors ? true : !!p.vendor_name) // Example filter: if not viewAll, maybe only show those with names? 
-                    // Actually, the user wants "View All Products from all vendors". 
-                    // Let's assume the default view might be filtered or they just want the toggle to confirm they are seeing everything.
-                    .map((product) => (
-                    <div
-                      key={product.id}
-                      className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition"
-                    >
-                      <div className="flex items-start space-x-4">
-                        <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
-                          {product.image_url ? (
-                            <img
-                              src={product.image_url}
-                              alt={product.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-400">
-                              <FaBox />
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-medium text-gray-900 truncate">
-                            {product.name}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            Ksh {product.price.toLocaleString()}
-                            {product.original_price && (
-                              <span className="ml-2 text-xs text-gray-400 line-through">
-                                Ksh {product.original_price.toLocaleString()}
-                              </span>
-                            )}
-                          </p>
-                          <div className="flex items-center justify-between mt-2">
-                            <span className="text-xs text-gray-500">
-                              Stock: {product.stock}
-                            </span>
-                            <span className="text-xs text-gray-500">
-                              {product.vendor_name || 'No vendor'}
-                            </span>
-                          </div>
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {product.is_featured && (
-                              <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                                Featured
-                              </span>
-                            )}
-                            {product.is_bestseller && (
-                              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                                Best Seller
-                              </span>
-                            )}
-                            {product.brand && (
-                              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                {product.brand}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col space-y-2">
-                          <button
-                            onClick={() => handleEditClick(product)}
-                            className="text-blue-600 hover:text-blue-800 p-1"
-                            title="Edit product"
-                          >
-                            <FaPlus size={14} className="rotate-45" style={{ display: 'none' }} /> {/* placeholder for icon alignment */}
-                            <FaPlus className="inline mr-1" style={{ display: 'none' }} />
-                            <FaClipboardList className="inline" />
-                          </button>
-
-                          <button
-                            onClick={() => toggleHotDeal(product.id, !!product.is_hot_deal)}
-                            className={`p-1 rounded transition ${product.is_hot_deal ? 'text-red-600 hover:text-red-800' : 'text-gray-400 hover:text-gray-600'}`}
-                            title={product.is_hot_deal ? 'Remove from Hot Deals' : 'Mark as Hot Deal'}
-                          >
-                            <FaBolt />
-                          </button>
-
-                          <button
-                            onClick={() => handleDeleteInitiate(product.id)}
-                            className="text-red-600 hover:text-red-800 p-1"
-                            title="Delete product"
-                          >
-                            <FaTrash />
-                          </button>
-                        </div>
-
-                      </div>
-                    </div>
-                  ))
-                )}
+              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <h3 className="font-semibold text-gray-800 mb-2 flex items-center">
+                  <FaInfoCircle className="mr-2 text-gray-500" />
+                  Quick Tips
+                </h3>
+                <ul className="text-xs text-gray-600 space-y-2">
+                  <li>• High-quality images increase sales by up to 40%.</li>
+                  <li>• Detailed specifications help buyers make decisions faster.</li>
+                  <li>• Marking products as "Hot Deals" features them on the homepage.</li>
+                </ul>
               </div>
 
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Recent Activity</span>
-                  <span className="text-blue-600 font-medium">
-                    {new Date().toLocaleDateString()}
-                  </span>
-                </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  All products are linked to their respective vendors
+              <div className="pt-6 border-t border-gray-100 italic text-center">
+                <p className="text-xs text-gray-400">
+                  Last session activity: {new Date().toLocaleDateString()}
                 </p>
               </div>
             </div>
@@ -1740,7 +1661,7 @@ export default function AdminProductsPage() {
                   <FaTrash className="text-red-600 mr-2" />
                   Confirm Deletion
                 </h3>
-                <button 
+                <button title= "Close delete confirmation" 
                   onClick={() => setShowDeleteModal(false)}
                   className="text-gray-400 hover:text-gray-600"
                 >
@@ -1758,10 +1679,10 @@ export default function AdminProductsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Reason for Removal *
                 </label>
-                <select 
+                <select title= "Select reason for product deletion"
                   value={deleteReason}
                   onChange={(e) => setDeleteReason(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Select a reason...</option>
                   <option value="Inappropriate Content">Inappropriate Content</option>
