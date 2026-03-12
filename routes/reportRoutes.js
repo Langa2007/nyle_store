@@ -1,9 +1,9 @@
 // routes/reportRoutes.js
 import express from "express";
 import { 
-  submitComplaint, 
-  listComplaints, 
-  resolveComplaint 
+  createSupportMessage as submitComplaint, 
+  listSupportMessages as listComplaints, 
+  updateSupportStatus as resolveComplaint 
 } from "../controllers/supportController.js";
 import { verifyAdmin } from "../middleware/adminAuth.js";
 import { reportLimiter, adminActionLimiter } from "../middleware/rateLimit.js";
