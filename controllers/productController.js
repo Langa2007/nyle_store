@@ -58,7 +58,7 @@ export const getProductById = async (req, res) => {
 
 //  PUBLIC: SEARCH & FILTER - ONLY APPROVED
 export const searchAndFilterProducts = async (req, res) => {
-  const { name, category, minPrice, maxPrice } = req.query;
+  const { name, category, minPrice, maxPrice, is_hot_deal } = req.query;
 
   let query = `
     SELECT p.*, v.legal_name AS vendor_name 
@@ -88,6 +88,10 @@ export const searchAndFilterProducts = async (req, res) => {
   if (maxPrice) {
     query += ` AND p.price <= $${count++}`;
     values.push(maxPrice);
+  }
+
+  if (is_hot_deal === 'true') {
+    query += ` AND p.is_hot_deal = true`;
   }
 
   try {

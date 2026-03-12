@@ -146,6 +146,7 @@ export const adminCreateProduct = async (req, res) => {
       estimated_delivery_days,
       is_featured,
       is_bestseller,
+      is_hot_deal,
       rating,
       review_count,
       meta_title,
@@ -197,11 +198,11 @@ export const adminCreateProduct = async (req, res) => {
        product_type, attributes, gallery_images,
        original_price, features, warranty_info, shipping_info, 
        return_policy, specifications, tags, brand, color, material,
-       estimated_delivery_days, is_featured, is_bestseller, rating,
+       estimated_delivery_days, is_featured, is_bestseller, is_hot_deal, rating,
        review_count, meta_title, meta_description, status, created_by)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
               $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28,
-              $29, $30, $31, $32, $33, $34)
+              $29, $30, $31, $32, $33, $34, $35)
       RETURNING *
     `;
 
@@ -235,6 +236,7 @@ export const adminCreateProduct = async (req, res) => {
       estimated_delivery_days ? parseInt(estimated_delivery_days) : 3,
       is_featured === 'true',
       is_bestseller === 'true',
+      is_hot_deal === 'true',
       rating ? parseFloat(rating) : 0,
       review_count ? parseInt(review_count) : 0,
       meta_title,
@@ -397,7 +399,7 @@ export const adminUpdateProduct = async (req, res) => {
       // NEW FIELDS
       original_price, features, warranty_info, shipping_info,
       return_policy, specifications, tags, brand, color, material,
-      estimated_delivery_days, is_featured, is_bestseller
+      estimated_delivery_days, is_featured, is_bestseller, is_hot_deal
     } = req.body;
 
     // Check if product exists and belongs to vendor if vendor_id is changed
@@ -444,6 +446,7 @@ export const adminUpdateProduct = async (req, res) => {
     if (estimated_delivery_days !== undefined) { updates.push(`estimated_delivery_days = $${paramCount}`); values.push(parseInt(estimated_delivery_days)); paramCount++; }
     if (is_featured !== undefined) { updates.push(`is_featured = $${paramCount}`); values.push(is_featured === 'true'); paramCount++; }
     if (is_bestseller !== undefined) { updates.push(`is_bestseller = $${paramCount}`); values.push(is_bestseller === 'true'); paramCount++; }
+    if (is_hot_deal !== undefined) { updates.push(`is_hot_deal = $${paramCount}`); values.push(is_hot_deal === 'true'); paramCount++; }
 
     // Handle image update if provided
     let imageUrl = null;
@@ -482,13 +485,29 @@ export const adminUpdateProduct = async (req, res) => {
   }
 };
 
-//  ADMIN DELETE PRODUCT (with cascade handling)
+//  ADMIN DELETE PRODUCT (with cascade handling and vendor notification)
 export const adminDeleteProduct = async (req, res) => {
   const { id } = req.params;
+  const { reason } = req.body;
   const connection = await pool.connect();
 
   try {
     await connection.query('BEGIN');
+
+    // Fetch product and vendor info before deletion for email
+    const productInfo = await connection.query(`
+      SELECT p.name, v.email as vendor_email, v.legal_name as vendor_name
+      FROM products p
+      LEFT JOIN vendors v ON p.vendor_id = v.id
+      WHERE p.id = $1
+    `, [id]);
+
+    if (productInfo.rows.length === 0) {
+      await connection.query('ROLLBACK');
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    const { name, vendor_email, vendor_name } = productInfo.rows[0];
 
     // First, delete variants if any
     await connection.query(
@@ -506,14 +525,17 @@ export const adminDeleteProduct = async (req, res) => {
     const q = "DELETE FROM products WHERE id = $1 RETURNING *";
     const { rows } = await connection.query(q, [id]);
 
-    if (!rows.length) {
-      await connection.query('ROLLBACK');
-      return res.status(404).json({ error: "Product not found" });
+    await connection.query('COMMIT');
+
+    // Send notification email to vendor
+    if (vendor_email) {
+      import("../services/emailService.js").then(module => {
+        module.sendProductStatusEmail(vendor_email, { name }, 'rejected', reason || "Administrative removal");
+      }).catch(err => console.error("Failed to send deletion email:", err));
     }
 
-    await connection.query('COMMIT');
     res.json({
-      message: "Product and associated data deleted successfully",
+      message: "Product deleted successfully and vendor notified",
       product: rows[0]
     });
   } catch (err) {
@@ -522,6 +544,32 @@ export const adminDeleteProduct = async (req, res) => {
     res.status(500).json({ error: "Failed to delete product" });
   } finally {
     connection.release();
+  }
+};
+
+//  ADMIN TOGGLE HOT DEAL
+export const adminToggleHotDeal = async (req, res) => {
+  const { id } = req.params;
+  const { is_hot_deal } = req.body;
+
+  try {
+    const q = `
+      UPDATE products 
+      SET is_hot_deal = $1, updated_at = NOW()
+      WHERE id = $2
+      RETURNING id, name, is_hot_deal
+    `;
+
+    const { rows } = await pool.query(q, [is_hot_deal, id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(" Error toggling hot deal:", err.message);
+    res.status(500).json({ error: "Failed to update hot deal status" });
   }
 };
 

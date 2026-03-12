@@ -200,6 +200,7 @@ model products {
   estimated_delivery_days Int?                    @default(3)
   is_featured             Boolean?                @default(false)
   is_bestseller           Boolean?                @default(false)
+  is_hot_deal             Boolean?                @default(false)
   rating                  Decimal?                @default(0.00) @db.Decimal(3, 2)
   review_count            Int?                    @default(0)
   meta_title              String?                 @db.VarChar(255)

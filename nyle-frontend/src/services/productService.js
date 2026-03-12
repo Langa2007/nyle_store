@@ -2,8 +2,8 @@
 import api from "./api";
 
 // ---------- CUSTOMER PRODUCTS ----------
-export const getProducts = async () => {
-  const res = await api.get("/products");
+export const getProducts = async (params = {}) => {
+  const res = await api.get("/products", { params });
   return res.data;
 };
 

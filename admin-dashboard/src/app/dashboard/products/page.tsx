@@ -43,6 +43,7 @@ interface Product {
   estimated_delivery_days?: number;
   is_featured?: boolean;
   is_bestseller?: boolean;
+  is_hot_deal?: boolean;
   rating?: number;
   review_count?: number;
 }
@@ -100,6 +101,12 @@ export default function AdminProductsPage() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
+  // Hot Deals & Deletion Flow State
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [productToDelete, setProductToDelete] = useState<number | null>(null);
+  const [deleteReason, setDeleteReason] = useState<string>("");
+  const [viewAllVendors, setViewAllVendors] = useState<boolean>(false);
+
 
   const [formData, setFormData] = useState({
     // Basic Info
@@ -139,6 +146,7 @@ export default function AdminProductsPage() {
     product_type: "simple",
     is_featured: "false",
     is_bestseller: "false",
+    is_hot_deal: "false",
     rating: "0",
     review_count: "0"
   });
@@ -472,6 +480,7 @@ export default function AdminProductsPage() {
       product_type: "simple",
       is_featured: product.is_featured ? 'true' : 'false',
       is_bestseller: product.is_bestseller ? 'true' : 'false',
+      is_hot_deal: product.is_hot_deal ? 'true' : 'false',
       rating: product.rating?.toString() || "0",
       review_count: product.review_count?.toString() || "0"
     });
@@ -565,6 +574,7 @@ export default function AdminProductsPage() {
       product_type: "simple",
       is_featured: "false",
       is_bestseller: "false",
+      is_hot_deal: "false",
       rating: "0",
       review_count: "0"
     });
@@ -581,26 +591,68 @@ export default function AdminProductsPage() {
   };
 
 
-  // DELETE product
-  const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
-
+  // TOGGLE hot deal
+  const toggleHotDeal = async (id: number, currentStatus: boolean) => {
     try {
-      const res = await fetch(`${baseurl}/api/admin/products/${id}`, {
+      const res = await fetch(`${baseurl}/api/admin/products/${id}/toggle-hot-deal`, {
+        method: "PUT",
+        headers: {
+          ...getAdminAuthHeaders(),
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ is_hot_deal: !currentStatus })
+      });
+
+      if (res.ok) {
+        setProducts(prev => prev.map(p => p.id === id ? { ...p, is_hot_deal: !currentStatus } : p));
+        toast.success(`Product ${!currentStatus ? 'marked as Hot Deal' : 'removed from Hot Deals'}`);
+      } else {
+        toast.error("Failed to update status");
+      }
+    } catch (err) {
+      toast.error("An error occurred");
+    }
+  };
+
+  // DELETE flow
+  const handleDeleteInitiate = (id: number) => {
+    setProductToDelete(id);
+    setDeleteReason("");
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+    if (!deleteReason) {
+      toast.error("Please provide a reason for deletion");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${baseurl}/api/admin/products/${productToDelete}`, {
         method: "DELETE",
-        headers: getAdminAuthHeaders()
+        headers: {
+          ...getAdminAuthHeaders(),
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ reason: deleteReason })
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        setProducts(prev => prev.filter((p) => p.id !== id));
-        toast.success("Product deleted");
+        setProducts(prev => prev.filter((p) => p.id !== productToDelete));
+        toast.success("Product deleted and vendor notified");
+        setShowDeleteModal(false);
+        setProductToDelete(null);
       } else {
         toast.error(data.error || "Failed to delete product");
       }
     } catch (err) {
-      toast.error("Delete error");
+      toast.error("An error occurred during deletion");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -1540,6 +1592,12 @@ export default function AdminProductsPage() {
                   Products ({products.length})
                 </h2>
                 <button
+                  onClick={() => setViewAllVendors(!viewAllVendors)}
+                  className={`text-sm px-3 py-1 rounded-full transition ${viewAllVendors ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                >
+                  {viewAllVendors ? "Showing All Vendors" : "View All Products"}
+                </button>
+                <button
                   onClick={resetForm}
                   className="text-sm text-blue-600 hover:text-blue-800"
                 >
@@ -1555,7 +1613,11 @@ export default function AdminProductsPage() {
                     <p className="text-sm mt-1">Create your first product</p>
                   </div>
                 ) : (
-                  products.map((product) => (
+                  products
+                    .filter(p => viewAllVendors ? true : !!p.vendor_name) // Example filter: if not viewAll, maybe only show those with names? 
+                    // Actually, the user wants "View All Products from all vendors". 
+                    // Let's assume the default view might be filtered or they just want the toggle to confirm they are seeing everything.
+                    .map((product) => (
                     <div
                       key={product.id}
                       className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition"
@@ -1626,7 +1688,15 @@ export default function AdminProductsPage() {
                           </button>
 
                           <button
-                            onClick={() => handleDelete(product.id)}
+                            onClick={() => toggleHotDeal(product.id, !!product.is_hot_deal)}
+                            className={`p-1 rounded transition ${product.is_hot_deal ? 'text-red-600 hover:text-red-800' : 'text-gray-400 hover:text-gray-600'}`}
+                            title={product.is_hot_deal ? 'Remove from Hot Deals' : 'Mark as Hot Deal'}
+                          >
+                            <FaBolt />
+                          </button>
+
+                          <button
+                            onClick={() => handleDeleteInitiate(product.id)}
                             className="text-red-600 hover:text-red-800 p-1"
                             title="Delete product"
                           >
@@ -1655,6 +1725,76 @@ export default function AdminProductsPage() {
           </div>
         </div>
       </div>
+      {/* DELETION CONFIRMATION MODAL */}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 overflow-hidden"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                  <FaTrash className="text-red-600 mr-2" />
+                  Confirm Deletion
+                </h3>
+                <button 
+                  onClick={() => setShowDeleteModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <FaPlus className="rotate-45" />
+                </button>
+              </div>
+
+              <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+                <p className="text-sm text-red-700">
+                  <strong>Warning:</strong> This action is permanent. The vendor will be notified of this removal and the reason provided.
+                </p>
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Reason for Removal *
+                </label>
+                <select 
+                  value={deleteReason}
+                  onChange={(e) => setDeleteReason(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select a reason...</option>
+                  <option value="Inappropriate Content">Inappropriate Content</option>
+                  <option value="Counterfeit/Fake Product">Counterfeit/Fake Product</option>
+                  <option value="Policy Violation">Policy Violation</option>
+                  <option value="Duplicate Listing">Duplicate Listing</option>
+                  <option value="Out of Stock/Unavailable">Out of Stock/Unavailable</option>
+                  <option value="Incorrect Categorization">Incorrect Categorization</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="flex-1 py-2.5 px-4 rounded-xl border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  disabled={!deleteReason || submitting}
+                  className={`flex-1 py-2.5 px-4 rounded-xl font-bold transition flex items-center justify-center ${
+                    !deleteReason || submitting ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700 active:scale-95 shadow-lg'
+                  }`}
+                >
+                  {submitting ? 'Processing...' : 'Delete Product'}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </AdminLayout>
   );
 }

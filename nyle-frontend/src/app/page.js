@@ -46,10 +46,18 @@ function HomeContent() {
   const { data: rawProducts } = useQuery({
     queryKey: ["products"],
     queryFn: getProducts,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
   const products = Array.isArray(rawProducts) ? rawProducts : (rawProducts?.products || rawProducts?.items || []);
+
+  const { data: rawHotDeals } = useQuery({
+    queryKey: ["hot-deals"],
+    queryFn: () => getProducts({ is_hot_deal: true }),
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+  const hotDeals = Array.isArray(rawHotDeals) ? rawHotDeals : (rawHotDeals?.products || rawHotDeals?.items || []);
 
 
   const [currency, setCurrency] = useState("KES");
@@ -788,6 +796,92 @@ function HomeContent() {
             </div>
           )}
         </section>
+
+        {/* HOT DEALS SECTION - PREMIUM CAROUSEL */}
+        {hotDeals.length > 0 && (
+          <section id="hot-deals" className="container mx-auto px-6 mt-20 relative overflow-hidden">
+            <div className="flex items-center justify-between mb-10">
+              <div>
+                <h2 className="text-4xl font-extrabold text-gray-900 flex items-center">
+                  <FaBolt className="text-red-500 mr-3 animate-pulse" />
+                  Hot <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent ml-2">Deals</span>
+                </h2>
+                <p className="text-gray-600 mt-2 text-lg">Hurry! Limited time offers on top brand products</p>
+              </div>
+              <Link href="/deals" className="flex items-center text-red-600 font-bold hover:text-red-700 transition group">
+                View All Deals
+                <FaArrowRight className="ml-2 group-hover:translate-x-2 transition-transform" />
+              </Link>
+            </div>
+
+            <div className="flex overflow-x-auto pb-8 space-x-6 scrollbar-hide snap-x snap-mandatory">
+              {hotDeals.map((product, index) => (
+                <motion.div
+                  key={product.id || product._id}
+                  initial={{ opacity: 0, x: 50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex-shrink-0 w-80 snap-start"
+                >
+                  <Link href={`/products/${product.id || product._id}`}>
+                    <div className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border border-red-50 relative">
+                      {/* Deal Badge */}
+                      <div className="absolute top-4 left-4 z-20">
+                        <span className="bg-red-600 text-white px-4 py-1.5 rounded-full text-sm font-black shadow-lg animate-bounce">
+                          HOT DEAL
+                        </span>
+                      </div>
+
+                      {/* Image */}
+                      <div className="relative h-64 overflow-hidden">
+                        <img
+                          src={product.image_url || "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"}
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                      </div>
+
+                      {/* Info */}
+                      <div className="p-6">
+                        <div className="flex justify-between items-start mb-2">
+                          <h3 className="text-xl font-bold text-gray-900 line-clamp-1">{product.name}</h3>
+                          <div className="flex items-center text-yellow-400">
+                            <FaStar />
+                            <span className="ml-1 text-sm font-bold text-gray-700">{product.rating || "4.8"}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-end space-x-3 mb-4">
+                          <span className="text-2xl font-black text-red-600">
+                            {currency} {convertPrice(product.price)}
+                          </span>
+                          {product.original_price && (
+                            <span className="text-sm text-gray-400 line-through mb-1">
+                              {currency} {convertPrice(product.original_price)}
+                            </span>
+                          )}
+                        </div>
+
+                        <button
+                          onClick={async (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            addToCart(product, 1);
+                          }}
+                          className="w-full py-3 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-xl font-bold hover:shadow-lg transition transform active:scale-95 flex items-center justify-center space-x-2"
+                        >
+                          <FaShoppingCart />
+                          <span>Grab Deal Now</span>
+                        </button>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Featured Products - NOW FILTERED BY CATEGORY */}
         <section id="products-section" className="container mx-auto px-6 mt-16">
