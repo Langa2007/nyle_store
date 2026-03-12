@@ -160,3 +160,8 @@ export const listComplaints = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// Aliases for backward compatibility with supportRoutes.js
+export const createSupportMessage = submitComplaint;
+export const listSupportMessages = listComplaints;
+export const updateSupportStatus = resolveComplaint;
