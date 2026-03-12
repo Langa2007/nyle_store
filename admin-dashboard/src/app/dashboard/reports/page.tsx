@@ -91,7 +91,7 @@ export default function UserReportsPage() {
   };
 
   return (
-    <AdminLayout title="User Support & Complaints">
+    <>
       <div className="p-6 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
@@ -292,6 +292,6 @@ export default function UserReportsPage() {
           </div>
         </div>
       </div>
-    </AdminLayout>
+    </>
   );
 }

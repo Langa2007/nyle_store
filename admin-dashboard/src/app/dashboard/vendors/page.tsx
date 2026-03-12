@@ -252,13 +252,16 @@ export default function AdminVendorsPage() {
   ];
 
   return (
-    <AdminLayout
-      title="Vendor Management"
-      breadcrumbs={[
-        { label: "Partners", href: "/dashboard/partners" },
-        { label: "Vendors" }
-      ]}
-      headerActions={
+    <>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Vendor Management</h1>
+          <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+            <span>Partners</span>
+            <span>/</span>
+            <span className="text-blue-600">Vendors</span>
+          </div>
+        </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => fetchVendors()}
@@ -268,8 +271,8 @@ export default function AdminVendorsPage() {
             Refresh
           </button>
         </div>
-      }
-    >
+      </div>
+
       <div className="space-y-8">
         {/* Hero Header */}
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 p-6 text-white shadow-xl">
@@ -779,6 +782,6 @@ export default function AdminVendorsPage() {
           )}
         </div>
       </div>
-    </AdminLayout>
+    </>
   );
 }

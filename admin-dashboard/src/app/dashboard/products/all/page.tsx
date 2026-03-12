@@ -138,7 +138,7 @@ export default function AllProductsPage() {
   });
 
   return (
-    <AdminLayout title="All Products Catalog">
+    <>
       <div className="p-6">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -369,6 +369,6 @@ export default function AllProductsPage() {
           </div>
         )}
       </AnimatePresence>
-    </AdminLayout>
+    </>
   );
 }

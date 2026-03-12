@@ -91,7 +91,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       name: "Vendors",
       href: "/dashboard/vendors",
       icon: <Users size={18} />,
-      badge: "5"
+      badge: liveNotifications?.details?.pendingVendors > 0 ? liveNotifications.details.pendingVendors.toString() : null
     },
     {
       name: "Vendor Leads",
@@ -103,19 +103,25 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       name: "Partners",
       href: "/dashboard/partners",
       icon: <Handshake size={18} />,
-      badge: "New"
+      badge: liveNotifications?.details?.pendingPartners > 0 ? liveNotifications.details.pendingPartners.toString() : null
     },
     {
       name: "Products",
       href: "/dashboard/products",
       icon: <Package size={18} />,
-      badge: "12"
+      badge: null
+    },
+    {
+      name: "Product Catalog",
+      href: "/dashboard/products/all",
+      icon: <Layers size={18} />,
+      badge: null
     },
     {
       name: "Orders",
       href: "/dashboard/orders",
       icon: <ShoppingCart size={18} />,
-      badge: "3+"
+      badge: liveNotifications?.details?.pendingOrders > 0 ? liveNotifications.details.pendingOrders.toString() : null
     },
     {
       name: "Categories",

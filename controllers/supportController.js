@@ -17,7 +17,7 @@ const ISSUE_CATEGORIES = {
 /**
  * Handle user complaint submission
  */
-export const submitComplaint = async (req, res) => {
+export const createSupportMessage = async (req, res) => {
   try {
     const { 
       reporter_name, 
@@ -94,7 +94,7 @@ export const submitComplaint = async (req, res) => {
 /**
  * Handle admin resolving an issue
  */
-export const resolveComplaint = async (req, res) => {
+export const updateSupportStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { resolution_message } = req.body;
@@ -131,7 +131,7 @@ export const resolveComplaint = async (req, res) => {
 /**
  * List issues for admin
  */
-export const listComplaints = async (req, res) => {
+export const listSupportMessages = async (req, res) => {
   try {
     const { status, category } = req.query;
     let query = "SELECT * FROM reported_issues";
@@ -160,8 +160,3 @@ export const listComplaints = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
-// Aliases for backward compatibility with supportRoutes.js
-export const createSupportMessage = submitComplaint;
-export const listSupportMessages = listComplaints;
-export const updateSupportStatus = resolveComplaint;

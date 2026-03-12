@@ -124,6 +124,26 @@ export const initDB = async () => {
         `);
         console.log("Partner Applications table initialized");
 
+        // 6. Reported Issues table
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS reported_issues (
+                id SERIAL PRIMARY KEY,
+                reporter_name VARCHAR(255),
+                reporter_email VARCHAR(255),
+                reporter_phone VARCHAR(50),
+                issue_category_id INTEGER,
+                issue_title VARCHAR(255),
+                description TEXT NOT NULL,
+                url TEXT,
+                priority VARCHAR(20) DEFAULT 'normal',
+                status VARCHAR(20) DEFAULT 'open',
+                resolution_message TEXT,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        console.log(" Reported Issues table initialized");
+
         console.log(" Database initialization complete!");
     } catch (err) {
         console.error(" Database initialization failed:", err.message);
