@@ -28,6 +28,13 @@ export const authLimiter = createLimiter({
   message: "Too many authentication attempts. Please try again later.",
 });
 
+// OTP sending endpoints (login/resend)
+export const otpSendLimiter = createLimiter({
+  windowMs: 10 * 60 * 1000, // 10 min
+  max: 5,
+  message: "Too many OTP requests. Please wait before trying again.",
+});
+
 // Password reset endpoints
 export const passwordResetLimiter = createLimiter({
   windowMs: 30 * 60 * 1000, // 30 min

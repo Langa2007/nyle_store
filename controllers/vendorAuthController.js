@@ -9,6 +9,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const VERIF_DURATION_HOURS = Number(process.env.VERIF_DURATION_HOURS || 24);
 const MAGIC_LINK_MINUTES = Number(process.env.MAGIC_LINK_DURATION_MINUTES || 20);
+const LOGIN_OTP_MINUTES = Number(process.env.LOGIN_OTP_DURATION_MINUTES || 10);
 
 // ------------------ Send Email (Resend) ------------------
 async function sendVerificationCodeEmail(toEmail, code) {
@@ -28,6 +29,28 @@ async function sendVerificationCodeEmail(toEmail, code) {
     console.log("Verification code sent successfully via Resend");
   } catch (err) {
     console.error("Error sending verification email via Resend:", err);
+  }
+}
+
+async function sendLoginOtpEmail(toEmail, code) {
+  try {
+    await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: toEmail,
+      subject: "Your Nyle vendor login code",
+      html: `
+        <h2>Vendor login verification</h2>
+        <p>Your one-time login code:</p>
+        <h1 style="font-size: 32px; letter-spacing: 8px;">${code}</h1>
+        <p>This code expires in ${LOGIN_OTP_MINUTES} minute(s).</p>
+        <p>If you did not attempt to sign in, please reset your password immediately.</p>
+      `
+    });
+    console.log("Login OTP sent successfully via Resend");
+    return true;
+  } catch (err) {
+    console.error("Error sending login OTP via Resend:", err);
+    return false;
   }
 }
 
@@ -184,6 +207,70 @@ export const vendorLogin = async (req, res) => {
     if (!match)
       return res.status(400).json({ message: "Incorrect password" });
 
+    const code = String(100000 + Math.floor(Math.random() * 900000));
+    const expires = new Date(Date.now() + LOGIN_OTP_MINUTES * 60 * 1000);
+
+    await pool.query(
+      "UPDATE vendors SET login_otp=$1, login_otp_expires=$2 WHERE id=$3",
+      [code, expires, vendor.id]
+    );
+
+    const emailSent = await sendLoginOtpEmail(normalizedEmail, code);
+    if (!emailSent) {
+      return res.status(500).json({ message: "Unable to send login code. Please try again." });
+    }
+
+    return res.json({
+      message: "Login code sent to your email.",
+      otpRequired: true,
+      email: normalizedEmail
+    });
+
+  } catch (err) {
+    console.error("vendorLogin error:", err);
+    res.status(500).json({ message: "Server error during login" });
+  }
+};
+
+// ------------------ Verify Login OTP ------------------
+export const verifyLoginOtp = async (req, res) => {
+  try {
+    const { email, code } = req.body;
+
+    if (!email || !code)
+      return res.status(400).json({ message: "Email and code are required" });
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const q = await pool.query(
+      `SELECT id, status, is_verified, company_name, legal_name, contact_person, login_otp_expires
+       FROM vendors WHERE email=$1 AND login_otp=$2`,
+      [normalizedEmail, code]
+    );
+
+    if (!q.rows.length)
+      return res.status(400).json({ message: "Invalid code or email" });
+
+    const vendor = q.rows[0];
+
+    if (!vendor.is_verified)
+      return res.status(403).json({ message: "Email not verified" });
+
+    if (vendor.status !== "approved")
+      return res.status(403).json({ message: "Account awaiting admin approval" });
+
+    if (vendor.login_otp_expires && new Date() > vendor.login_otp_expires) {
+      await pool.query(
+        "UPDATE vendors SET login_otp=NULL, login_otp_expires=NULL WHERE id=$1",
+        [vendor.id]
+      );
+      return res.status(400).json({ message: "Code expired" });
+    }
+
+    await pool.query(
+      "UPDATE vendors SET login_otp=NULL, login_otp_expires=NULL WHERE id=$1",
+      [vendor.id]
+    );
+
     const token = jwt.sign(
       { vendor_id: vendor.id, role: "vendor" },
       process.env.JWT_SECRET,
@@ -201,13 +288,56 @@ export const vendorLogin = async (req, res) => {
         contact_person: vendor.contact_person
       }
     });
-
   } catch (err) {
-    console.error("vendorLogin error:", err);
-    res.status(500).json({ message: "Server error during login" });
+    console.error("verifyLoginOtp error:", err);
+    res.status(500).json({ message: "Server error during OTP verification" });
   }
 };
 
+// ------------------ Resend Login OTP ------------------
+export const resendLoginOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email)
+      return res.status(400).json({ message: "Email is required" });
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const q = await pool.query(
+      "SELECT id, is_verified, status FROM vendors WHERE email=$1",
+      [normalizedEmail]
+    );
+
+    if (!q.rows.length)
+      return res.status(400).json({ message: "Vendor not found" });
+
+    const vendor = q.rows[0];
+
+    if (!vendor.is_verified)
+      return res.status(403).json({ message: "Email not verified" });
+
+    if (vendor.status !== "approved")
+      return res.status(403).json({ message: "Account awaiting admin approval" });
+
+    const code = String(100000 + Math.floor(Math.random() * 900000));
+    const expires = new Date(Date.now() + LOGIN_OTP_MINUTES * 60 * 1000);
+
+    await pool.query(
+      "UPDATE vendors SET login_otp=$1, login_otp_expires=$2 WHERE id=$3",
+      [code, expires, vendor.id]
+    );
+
+    const emailSent = await sendLoginOtpEmail(normalizedEmail, code);
+    if (!emailSent) {
+      return res.status(500).json({ message: "Unable to send login code. Please try again." });
+    }
+
+    return res.json({ message: "Login code resent successfully." });
+  } catch (err) {
+    console.error("resendLoginOtp error:", err);
+    res.status(500).json({ message: "Server error while resending login code" });
+  }
+};
 
 // ------------------ Magic Login ------------------
 export const magicLogin = async (req, res) => {

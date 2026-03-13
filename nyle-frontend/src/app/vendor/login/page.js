@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Eye,
@@ -33,6 +33,12 @@ function VendorLoginContent() {
   const [loginError, setLoginError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [loginAttempts, setLoginAttempts] = useState(0);
+  const [otpRequired, setOtpRequired] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+  const [otpEmail, setOtpEmail] = useState("");
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpResendLoading, setOtpResendLoading] = useState(false);
+  const [otpCooldown, setOtpCooldown] = useState(0);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -59,6 +65,13 @@ function VendorLoginContent() {
       }
     }
   }, [errorParam]);
+
+  // Cooldown timer for resending OTP
+  useEffect(() => {
+    if (otpCooldown <= 0) return;
+    const timer = setInterval(() => setOtpCooldown((c) => c - 1), 1000);
+    return () => clearInterval(timer);
+  }, [otpCooldown]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -126,6 +139,14 @@ function VendorLoginContent() {
         return;
       }
 
+      if (data?.otpRequired) {
+        setOtpRequired(true);
+        setOtpEmail(data.email || form.email);
+        setSuccessMessage(data.message || "Login code sent to your email.");
+        setLoading(false);
+        return;
+      }
+
       // Success - store token and redirect
       if (data.token) {
         localStorage.setItem('vendor_token', data.token);
@@ -149,6 +170,94 @@ function VendorLoginContent() {
       setLoginError('Network error. Please check your connection and try again.');
       setLoading(false);
     }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    if (!otpCode) {
+      setLoginError("Please enter the verification code.");
+      return;
+    }
+
+    setOtpLoading(true);
+    setLoginError(null);
+    setSuccessMessage(null);
+
+    try {
+      const res = await fetch(`${API_URL}/api/vendor/auth/login/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: otpEmail || form.email, code: otpCode }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setLoginError(data?.message || "OTP verification failed. Please try again.");
+        return;
+      }
+
+      if (data.token) {
+        localStorage.setItem("vendor_token", data.token);
+        if (data.vendor) {
+          localStorage.setItem("vendor_data", JSON.stringify(data.vendor));
+          setSuccessMessage(`Welcome back, ${data.vendor.company_name || data.vendor.business_name || data.vendor.contact_person}!`);
+        }
+
+        setTimeout(() => {
+          router.push(redirect);
+        }, 1200);
+      } else {
+        setLoginError("Verification succeeded but no token received. Please contact support.");
+      }
+    } catch (err) {
+      console.error("OTP verification error:", err);
+      setLoginError("Network error. Please check your connection and try again.");
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (!otpEmail && !form.email) {
+      setLoginError("Please enter your email address.");
+      return;
+    }
+
+    setOtpResendLoading(true);
+    setLoginError(null);
+    setSuccessMessage(null);
+
+    try {
+      const res = await fetch(`${API_URL}/api/vendor/auth/login/resend-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: otpEmail || form.email }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setLoginError(data?.message || "Failed to resend login code.");
+        return;
+      }
+
+      setSuccessMessage("New login code sent. Please check your inbox.");
+      setOtpCooldown(60);
+    } catch (err) {
+      console.error("Resend OTP error:", err);
+      setLoginError("Network error. Please check your connection and try again.");
+    } finally {
+      setOtpResendLoading(false);
+    }
+  };
+
+  const handleBackToLogin = () => {
+    setOtpRequired(false);
+    setOtpCode("");
+    setOtpEmail("");
+    setSuccessMessage(null);
+    setLoginError(null);
   };
 
   // Enhanced Forgot Password handler
@@ -295,7 +404,7 @@ function VendorLoginContent() {
 
           <div className="p-6">
             {/* LOGIN FORM */}
-            {!resetRequested ? (
+            {!resetRequested && !otpRequired ? (
               <form onSubmit={handleLogin} className="space-y-5">
                 {/* Email Field */}
                 <div>
@@ -386,6 +495,93 @@ function VendorLoginContent() {
                     </>
                   )}
                 </button>
+              </form>
+            ) : otpRequired ? (
+              /* OTP FORM */
+              <form onSubmit={handleVerifyOtp} className="space-y-5">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Two-step verification</h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Enter the 6-digit code sent to <span className="font-medium">{otpEmail || form.email}</span>.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="email"
+                      value={otpEmail || form.email}
+                      disabled
+                      className="w-full pl-10 pr-4 py-3 border border-gray-200 bg-gray-50 rounded-lg text-gray-600"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    One-Time Code
+                  </label>
+                  <div className="relative">
+                    <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      placeholder="Enter 6-digit code"
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value)}
+                      maxLength={6}
+                      required
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={otpLoading}
+                  className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 px-4 rounded-lg font-medium hover:shadow-lg transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {otpLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Verifying...
+                    </>
+                  ) : (
+                    <>
+                      <Shield className="w-5 h-5" />
+                      Verify & Sign In
+                    </>
+                  )}
+                </button>
+
+                <div className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={handleResendOtp}
+                    disabled={otpResendLoading || otpCooldown > 0}
+                    className="w-full border border-blue-600 text-blue-600 py-3 px-4 rounded-lg font-medium hover:bg-blue-50 transition disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {otpResendLoading
+                      ? "Resending..."
+                      : otpCooldown > 0
+                        ? `Resend available in ${otpCooldown}s`
+                        : "Resend code"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleBackToLogin}
+                    className="w-full border border-gray-300 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-50 transition flex items-center justify-center gap-2"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                    Back to Login
+                  </button>
+                </div>
               </form>
             ) : (
               /* PASSWORD RESET FORM */

@@ -37,10 +37,17 @@ export const initDB = async () => {
                 is_verified BOOLEAN DEFAULT false,
                 verification_token VARCHAR(255),
                 verification_expires TIMESTAMP,
+                login_otp VARCHAR(255),
+                login_otp_expires TIMESTAMP,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
         console.log(" Vendors table initialized");
+        await pool.query(`
+            ALTER TABLE vendors
+            ADD COLUMN IF NOT EXISTS login_otp VARCHAR(255),
+            ADD COLUMN IF NOT EXISTS login_otp_expires TIMESTAMP
+        `);
 
         // 3. Vendor Leads table
         await pool.query(`

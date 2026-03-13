@@ -90,8 +90,8 @@ export default function ContactPage() {
       title: "Call Support", 
       icon: Phone, 
       color: "from-green-500 to-emerald-500",
-      description: "+254 700 000 000",
-      action: "tel:+254700000000"
+      description: "+254 704521408",
+      action: "tel:+254704521408"
     },
     { 
       id: "email", 
@@ -209,7 +209,7 @@ export default function ContactPage() {
                     <input 
                       type="tel" 
                       className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:bg-white transition-all outline-none"
-                      placeholder="+254 700 000000"
+                      placeholder="+254 704 521 408"
                       value={form.reporter_phone}
                       onChange={(e) => setForm({...form, reporter_phone: e.target.value})}
                     />
@@ -306,7 +306,7 @@ export default function ContactPage() {
               <p className="text-gray-500 text-sm mb-6">
                 For security breaches or critical system downtime, please call our emergency line immediately.
               </p>
-              <a href="tel:+254700000000" className="flex items-center justify-center gap-3 py-3 bg-red-50 text-red-600 font-bold rounded-xl hover:bg-red-100 transition-colors">
+              <a href="tel:+254704521408" className="flex items-center justify-center gap-3 py-3 bg-red-50 text-red-600 font-bold rounded-xl hover:bg-red-100 transition-colors">
                 <Phone className="h-5 w-5" />
                 Call Emergency Support
               </a>

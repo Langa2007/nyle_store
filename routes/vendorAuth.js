@@ -3,6 +3,8 @@ import express from "express";
 import {
   vendorSignup,
   vendorLogin,
+  verifyLoginOtp,
+  resendLoginOtp,
   verifyToken,
   magicLogin,
   resendVerificationCode,
@@ -18,7 +20,7 @@ import {
   resetPassword,
   resendResetCode
 } from "../controllers/passwordResetController.js";
-import { authLimiter, passwordResetLimiter } from "../middleware/rateLimit.js";
+import { authLimiter, otpSendLimiter, passwordResetLimiter } from "../middleware/rateLimit.js";
 
 const router = express.Router();
 
@@ -26,7 +28,13 @@ const router = express.Router();
 router.post("/signup", authLimiter, vendorSignup);
 
 // Login (email/password) - requires verified + approved
-router.post("/login", authLimiter, vendorLogin);
+router.post("/login", authLimiter, otpSendLimiter, vendorLogin);
+
+// Verify login OTP - POST { email, code }
+router.post("/login/verify-otp", authLimiter, verifyLoginOtp);
+
+// Resend login OTP - POST { email }
+router.post("/login/resend-otp", authLimiter, otpSendLimiter, resendLoginOtp);
 
 // Verify token (code) - POST { email, code }
 router.post("/verify-token", authLimiter, verifyToken);
