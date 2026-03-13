@@ -142,6 +142,16 @@ export const initDB = async () => {
                 updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             )
         `);
+        await pool.query(`
+            ALTER TABLE reported_issues
+            ADD COLUMN IF NOT EXISTS reporter_name VARCHAR(255),
+            ADD COLUMN IF NOT EXISTS reporter_phone VARCHAR(50),
+            ADD COLUMN IF NOT EXISTS issue_category_id INTEGER,
+            ADD COLUMN IF NOT EXISTS issue_title VARCHAR(255),
+            ADD COLUMN IF NOT EXISTS priority VARCHAR(20) DEFAULT 'normal',
+            ADD COLUMN IF NOT EXISTS resolution_message TEXT,
+            ADD COLUMN IF NOT EXISTS url TEXT
+        `);
         console.log(" Reported Issues table initialized");
 
         console.log(" Database initialization complete!");
