@@ -32,7 +32,9 @@ export default function RootLayout({ children }) {
               id="scroll-root"
               className="container mx-auto px-4 sm:px-6 lg:px-8 mt-[var(--navbar-offset)] h-[calc(100dvh-var(--navbar-offset))] overflow-y-auto pb-20 md:pb-0"
             >
-              {children}
+              <Suspense fallback={<div className="flex h-screen items-center justify-center"><div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" /></div>}>
+                {children}
+              </Suspense>
               <ScrollToTop />
             </main>
 

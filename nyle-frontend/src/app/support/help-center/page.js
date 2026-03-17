@@ -25,6 +25,8 @@ import {
   Users,
   HelpCircle,
   Star,
+  CheckCircle,
+  Phone,
   ArrowRight,
   Sparkles,
   Eye,
