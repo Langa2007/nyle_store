@@ -320,7 +320,7 @@ export default function ContactPage() {
                   rel="noopener noreferrer" 
                   className="flex items-center justify-center gap-3 py-3 bg-green-50 text-green-600 font-bold rounded-xl hover:bg-green-100 transition-colors"
                 >
-                  <MessageCircle className="h-5 w-5" />
+                  <WhatsAppIcon className="h-5 w-5" />
                   WhatsApp Support
                 </a>
               </div>
