@@ -199,8 +199,8 @@ export default function SuppliersPage() {
 
   return (
     <BuyerInfoLayout
-      title="Verified Suppliers"
-      subtitle="We verify, you trade with confidence."
+      title="Verified Suppliers & Partners"
+      subtitle="Connect with pre-vetted sourcing partners and reliable global suppliers."
       stats={supplierStats}
     >
       <div className="space-y-8">

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { HelpCircle, MessageSquare, FileText, AlertCircle, ChevronRight, Shield, Zap, Globe } from "lucide-react";
+import { HelpCircle, MessageSquare, FileText, AlertCircle, ChevronRight, Shield, Zap, Globe, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -170,13 +170,24 @@ export default function SupportInfoLayout({ title, subtitle, children }) {
                   <p className="text-xs text-gray-600 mb-3">
                     Our team is available 24/7 for critical issues.
                   </p>
-                  <Link
-                    href="/support/contact?priority=urgent"
-                    className="inline-flex items-center justify-center w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all duration-200 hover:shadow-md"
-                  >
-                    <AlertCircle className="h-4 w-4 mr-2" />
-                    Get Emergency Support
-                  </Link>
+                  <div className="space-y-2">
+                    <Link
+                      href="/support/contact?priority=urgent"
+                      className="inline-flex items-center justify-center w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all duration-200 hover:shadow-md"
+                    >
+                      <AlertCircle className="h-4 w-4 mr-2" />
+                      Get Emergency Support
+                    </Link>
+                    <a
+                      href="https://wa.me/254704521408"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center w-full px-4 py-2 bg-[#25D366] hover:bg-[#20bd5a] text-white text-sm font-medium rounded-lg transition-all duration-200 hover:shadow-md"
+                    >
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      WhatsApp Emergency
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>

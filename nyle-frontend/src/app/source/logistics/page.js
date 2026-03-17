@@ -104,8 +104,8 @@ export default function LogisticsPage() {
 
   return (
     <BuyerInfoLayout
-      title="Logistics & Delivery"
-      subtitle="From pickup to delivery — Nyle ensures smooth movement of your goods across Kenya and beyond."
+      title="Sourcing & Logistics"
+      subtitle="Optimize your supply chain with Nyle's integrated sourcing and global logistics solutions."
       stats={logisticsStats}
     >
       <div className="space-y-8">

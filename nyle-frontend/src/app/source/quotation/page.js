@@ -199,8 +199,8 @@ Specifications: ${rfqForm.specifications || "[Technical Specifications]"}`;
 
   return (
     <BuyerInfoLayout
-      title="Get Quotation"
-      subtitle="Post your sourcing request once — receive offers from verified suppliers instantly."
+      title="Global Sourcing & Quotations"
+      subtitle="Request quotes from verified global suppliers and optimize your procurement process."
       stats={quotationStats}
     >
       <div className="space-y-8">

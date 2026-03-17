@@ -31,6 +31,8 @@ import {
   Clock
 } from "lucide-react";
 import SupportInfoLayout from "@/components/support/SupportInfoLayout";
+import { MessageCircle as WhatsAppIcon } from "lucide-react";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
 export default function HelpCenterPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -414,16 +416,26 @@ export default function HelpCenterPage() {
             <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl p-6 text-white">
               <h3 className="font-bold text-white text-lg mb-3">Still Need Help?</h3>
               <p className="text-blue-100 mb-4">
-                Can't find what you're looking for? Our support team is ready to help.
+                Can't find what you're looking for? Our support team is ready to help via WhatsApp or Call.
               </p>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-full py-3 bg-white text-blue-600 font-semibold rounded-xl hover:shadow-lg flex items-center justify-center gap-2"
-              >
-                <MessageSquare className="h-5 w-5" />
-                Contact Support
-              </motion.button>
+              <div className="space-y-3">
+                <a 
+                  href="https://wa.me/254704521408"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-3 bg-[#25D366] text-white font-semibold rounded-xl hover:shadow-lg flex items-center justify-center gap-2 transition-all"
+                >
+                  <WhatsAppIcon className="h-5 w-5 fill-white" />
+                  WhatsApp Support
+                </a>
+                <a 
+                  href="tel:+254704521408"
+                  className="w-full py-3 bg-white text-blue-600 font-semibold rounded-xl hover:shadow-lg flex items-center justify-center gap-2 transition-all"
+                >
+                  <Phone className="h-5 w-5" />
+                  Call Support
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -459,6 +471,7 @@ export default function HelpCenterPage() {
           </div>
         </motion.div>
       </div>
+      <FloatingWhatsApp />
     </SupportInfoLayout>
   );
 }

@@ -156,11 +156,11 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [],
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-white/10 backdrop-blur-sm rounded-xl">
-                <User className="h-6 w-6 text-white" />
+                <Truck className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold">Welcome to Supplier Interface</h2>
-                <p className="text-blue-100 text-sm">View all of our Suppliers</p>
+                <h2 className="text-lg font-semibold">Logistics & Sourcing Interface</h2>
+                <p className="text-blue-100 text-sm">Empowering Your Supply Chain</p>
               </div>
             </div>
 
@@ -236,8 +236,8 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [],
                     <div className="absolute bottom-0 right-0 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></div>
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900">Your Account</h3>
-                    <p className="text-sm text-gray-600">Supplier Dashboard</p>
+                    <h3 className="font-bold text-gray-900">Logistic Network</h3>
+                    <p className="text-sm text-gray-600">Sourcing Dashboard</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
@@ -382,8 +382,8 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [],
                         <Sparkles className="h-5 w-5 text-white" />
                       </div>
                       <div>
-                        <h2 className="text-xl font-bold text-gray-900">Dashboard Overview</h2>
-                        <p className="text-gray-600 text-sm">Take a look at nyle suppliers</p>
+                        <h2 className="text-xl font-bold text-gray-900">Logistics Overview</h2>
+                        <p className="text-gray-600 text-sm">End-to-end supply chain visibility</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">

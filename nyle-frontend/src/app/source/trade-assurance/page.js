@@ -156,8 +156,8 @@ export default function TradeAssurancePage() {
 
   return (
     <BuyerInfoLayout
-      title="Trade Assurance"
-      subtitle="Confidence is built into every transaction."
+      title="Trade & Sourcing Assurance"
+      subtitle="Guaranteed protection for your global sourcing and logistics transactions."
       stats={assuranceStats}
     >
       <div className="space-y-8">

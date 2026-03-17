@@ -515,7 +515,7 @@ function HomeContent() {
                         whileTap={{ scale: 0.95 }}
                         className="border-2 border-white/40 backdrop-blur-md text-white px-10 py-5 rounded-2xl font-black text-xl hover:bg-white/10 transition-all flex items-center group border-dashed"
                       >
-                        <FaRocket className="mr-3 group-hover:rotate-12 transition-transform" />
+                        <div className="mr-3 group-hover:rotate-12 transition-transform" />
                         Become a Seller
                       </motion.button>
                     </Link>

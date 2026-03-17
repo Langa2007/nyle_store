@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import SupportInfoLayout from "@/components/support/SupportInfoLayout";
 import { toast } from "sonner";
+import { MessageCircle as WhatsAppIcon } from "lucide-react";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
 /**
  * Predefined Issue Categories as per requirement
@@ -79,17 +81,18 @@ export default function ContactPage() {
 
   const contactMethods = [
     { 
-      id: "form", 
-      title: "Problem Report", 
-      icon: MessageSquare, 
-      color: "from-red-500 to-orange-500",
-      description: "Direct wire to Admin dashboard"
+      id: "phone", 
+      title: "WhatsApp Support", 
+      icon: WhatsAppIcon, 
+      color: "from-green-500 to-emerald-500",
+      description: "0704521408",
+      action: "https://wa.me/254704521408"
     },
     { 
-      id: "phone", 
+      id: "call", 
       title: "Call Support", 
       icon: Phone, 
-      color: "from-green-500 to-emerald-500",
+      color: "from-blue-500 to-cyan-500",
       description: "+254 704521408",
       action: "tel:+254704521408"
     },
@@ -97,7 +100,7 @@ export default function ContactPage() {
       id: "email", 
       title: "Email Support", 
       icon: Mail, 
-      color: "from-blue-500 to-purple-500",
+      color: "from-indigo-500 to-purple-500",
       description: "support@nyle.store",
       action: "mailto:support@nyle.store"
     }
@@ -306,14 +309,26 @@ export default function ContactPage() {
               <p className="text-gray-500 text-sm mb-6">
                 For security breaches or critical system downtime, please call our emergency line immediately.
               </p>
-              <a href="tel:+254704521408" className="flex items-center justify-center gap-3 py-3 bg-red-50 text-red-600 font-bold rounded-xl hover:bg-red-100 transition-colors">
-                <Phone className="h-5 w-5" />
-                Call Emergency Support
-              </a>
+              <div className="space-y-3">
+                <a href="tel:+254704521408" className="flex items-center justify-center gap-3 py-3 bg-red-50 text-red-600 font-bold rounded-xl hover:bg-red-100 transition-colors">
+                  <Phone className="h-5 w-5" />
+                  Call Emergency Support
+                </a>
+                <a 
+                  href="https://wa.me/254704521408" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="flex items-center justify-center gap-3 py-3 bg-green-50 text-green-600 font-bold rounded-xl hover:bg-green-100 transition-colors"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  WhatsApp Support
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <FloatingWhatsApp />
     </SupportInfoLayout>
   );
 }
