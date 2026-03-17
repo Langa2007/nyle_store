@@ -335,9 +335,6 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
         className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full shadow-2xl flex items-center justify-center z-50 group"
       >
         <HelpCircle className="text-white" size={22} />
-        <span className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full text-xs flex items-center justify-center text-white">
-          1
-        </span>
       </motion.button>
     </div>
   );
