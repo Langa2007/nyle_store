@@ -71,6 +71,54 @@ function HomeContent() {
   const [scrollLeft, setScrollLeft] = useState(0);
   const categoriesContainerRef = useRef(null);
   const sliderRef = useRef(null);
+  
+  // Hero Carousel State
+  const [heroSlides, setHeroSlides] = useState([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [heroLoading, setHeroLoading] = useState(true);
+
+  const defaultSlides = [
+    {
+      id: "default-1",
+      title: "Discover Amazing Products Daily",
+      subtitle: "Your premier destination for quality products from trusted vendors across Kenya.",
+      image_url: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=2070&auto=format&fit=crop",
+      button_text: "Start Shopping",
+      button_link: "#products"
+    },
+    {
+      id: "default-2",
+      title: "Smart Home, Smart Living",
+      subtitle: "Experience the future with our curated collection of smart appliances.",
+      image_url: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+      button_text: "View Appliances",
+      button_link: "#products"
+    },
+    {
+      id: "default-3",
+      title: "Elevate Your Style",
+      subtitle: "New arrivals in fashion. Trendy, authentic, and affordable.",
+      image_url: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop",
+      button_text: "Browse Fashion",
+      button_link: "#products"
+    },
+    {
+      id: "default-4",
+      title: "Modern Tech Essentials",
+      subtitle: "Gadgets that power your productivity and entertainment.",
+      image_url: "https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=2070&auto=format&fit=crop",
+      button_text: "Shop Tech",
+      button_link: "#products"
+    },
+    {
+      id: "default-5",
+      title: "Quality for Your Family",
+      subtitle: "Everything you need for a comfortable and happy home.",
+      image_url: "https://images.unsplash.com/photo-1556911220-e15201887572?q=80&w=2070&auto=format&fit=crop",
+      button_text: "Explore Home",
+      button_link: "#products"
+    }
+  ];
 
   // Newsletter State
   const [newsletterEmail, setNewsletterEmail] = useState("");
@@ -183,6 +231,36 @@ function HomeContent() {
     };
     detectCurrency();
   }, []);
+
+  // Fetch Hero Slides
+  useEffect(() => {
+    const fetchHeroSlides = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://nyle-store.onrender.com'}/api/hero/active`);
+        if (res.ok) {
+          const data = await res.ok ? await res.json() : [];
+          setHeroSlides(data.length > 0 ? data : defaultSlides);
+        } else {
+          setHeroSlides(defaultSlides);
+        }
+      } catch (err) {
+        console.error("Hero fetch error:", err);
+        setHeroSlides(defaultSlides);
+      } finally {
+        setHeroLoading(false);
+      }
+    };
+    fetchHeroSlides();
+  }, []);
+
+  // Hero Transition Logic (30 seconds)
+  useEffect(() => {
+    if (heroSlides.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [heroSlides]);
 
   // Auto-scroll categories slider
   useEffect(() => {
@@ -358,161 +436,116 @@ function HomeContent() {
 
 
 
-        {/* UPDATED Hero Section - Combining Store Info with Premium Fridge Image */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white pt-32 pb-20 px-6">
-          {/* Animated background elements */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl"></div>
-            <div className="absolute top-60 -left-40 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl"></div>
-          </div>
+        {/* DYNAMIC Hero Section */}
+        <section className="relative h-[85vh] min-h-[600px] overflow-hidden bg-gray-900 group">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentSlide}
+              initial={{ opacity: 0, scale: 1.1 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              className="absolute inset-0"
+            >
+              {/* Background Image */}
+              <div 
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-[30000ms] ease-linear scale-110 group-hover:scale-125"
+                style={{ 
+                  backgroundImage: `url(${heroSlides[currentSlide]?.image_url || defaultSlides[0].image_url})`,
+                }}
+              />
+              
+              {/* Overlays for readability and depth */}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-950/90 via-blue-900/60 to-transparent" />
+              <div className="absolute inset-0 bg-black/30" />
+              
+              {/* Animated particles/glows */}
+              <div className="absolute top-1/4 -right-20 w-96 h-96 bg-blue-500/20 rounded-full blur-[120px] animate-pulse" />
+              <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-indigo-500/20 rounded-full blur-[120px] animate-pulse" />
+            </motion.div>
+          </AnimatePresence>
 
-          <div className="container mx-auto relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              {/* LEFT SIDE: Store Information */}
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-              >
-                <div className="inline-flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-                  <FaFire className="text-orange-400 mr-2" />
-                  <span className="text-sm font-medium"> Kenya's Fastest Growing Marketplace</span>
-                </div>
-
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6">
-                  Discover Amazing
-                  <span className="block bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                    Products Daily
-                  </span>
-                </h1>
-
-                <p className="text-xl text-blue-100 mb-8 max-w-2xl">
-                  Welcome to <span className="font-bold text-white">Nyle Store</span> –
-                  Your premier destination for quality products from trusted vendors across Kenya.
-                  Shop smart, live better.
-                </p>
-
-                {/* Enhanced Search Bar */}
-                <div className="max-w-2xl mb-8">
-                  <div className="relative group">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-1000"></div>
-                    <div className="relative flex items-center bg-white rounded-xl shadow-2xl">
-                      <input
-                        type="text"
-                        placeholder="What are you looking for today?"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="flex-grow px-6 py-4 text-gray-800 rounded-xl focus:outline-none text-lg"
-                      />
-                      <button
-                        onClick={scrollToProducts}
-                        className="m-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-3 rounded-lg hover:from-blue-700 hover:to-cyan-700 transition-all transform hover:scale-105"
-                      >
-                        <FaSearch size={20} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Hero CTA Buttons */}
-                <div className="flex flex-wrap gap-4">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={scrollToProducts}
-                    className="bg-gradient-to-r from-white to-blue-50 text-blue-700 px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-all flex items-center group"
+          <div className="container mx-auto h-full flex items-center relative z-10 px-6">
+            <div className="max-w-4xl space-y-8">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentSlide}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -30 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className="space-y-6"
+                >
+                  <motion.div 
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="inline-flex items-center bg-white/10 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20 shadow-xl"
                   >
-                    Start Shopping Now
-                    <FaArrowRight className="ml-3 group-hover:translate-x-2 transition-transform" />
-                  </motion.button>
+                    <FaFire className="text-orange-400 mr-2 text-xl" />
+                    <span className="text-sm md:text-base font-bold tracking-wide uppercase"> Kenya's Fastest Growing Marketplace</span>
+                  </motion.div>
 
-                  <Link href="/vendor/signup">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="border-2 border-white/30 backdrop-blur-sm text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white/10 transition-all flex items-center group"
-                    >
-                      <FaRocket className="mr-3" />
-                      Become a Seller
-                    </motion.button>
-                  </Link>
-                </div>
-
-                {/* Quick Stats */}
-                <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap.4">
-                  {stats.map((stat, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center"
-                    >
-                      <div className="text-2xl font-bold mb-1">{stat.value}</div>
-                      <div className="text-sm text-blue-200">{stat.label}</div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-
-              {/* RIGHT SIDE: UPDATED Hero Image - Premium Smart Fridge */}
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="relative"
-              >
-                <div className="relative rounded-3xl overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500 border-4 border-white/20">
-                  {/* Premium Smart Fridge Image */}
-                  <img
-                    src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-                    alt="Premium Smart Refrigerator - Featured Product"
-                    className="w-full h-[500px] object-cover"
-                    onError={(e) => {
-                      e.target.src = "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-blue-900/50 to-transparent"></div>
-
-                  {/* Featured Product Badge */}
-                  <div className="absolute top-6 left-6">
-                    <span className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                      🔥 Featured Product
+                  <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-[1.1] drop-shadow-2xl">
+                    {heroSlides[currentSlide]?.title || "Discover Quality"}
+                    <span className="block mt-2 bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent italic">
+                      {heroSlides[currentSlide]?.subtitle ? "" : "Every Day"}
                     </span>
-                  </div>
+                  </h1>
 
-                  {/* Floating product card */}
-                  <div className="absolute -bottom-6 -right-6 bg-white rounded-2xl p-6 shadow-2xl w-72">
-                    <div className="flex items-center space-x-3 mb-4">
-                      <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl flex items-center justify-center">
-                        <FaSnowflake className="text-blue-600 text-2xl" />
-                      </div>
-                      <div>
-                        <div className="font-bold text-gray-900">Smart Fridge Pro</div>
-                        <div className="text-sm text-gray-600">Energy Star Rated</div>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <span className="text-2xl font-bold text-blue-700">Ksh 89,999</span>
-                        <span className="text-sm text-gray-500 line-through">Ksh 109,999</span>
-                      </div>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <FaTruck className="mr-2 text-green-600" />
-                        <span>Free Delivery Nationwide</span>
-                      </div>
-                      <button
-                        onClick={scrollToProducts}
-                        className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-lg font-bold hover:from-blue-700 hover:to-cyan-700 transition shadow-lg"
+                  <p className="text-xl md:text-2xl text-blue-100/90 max-w-2xl font-medium leading-relaxed drop-shadow-lg">
+                    {heroSlides[currentSlide]?.subtitle || "Explore the best deals and authentic products from trusted Kenyan sellers. Shop with confidence."}
+                  </p>
+
+                  <div className="flex flex-wrap gap-5 pt-4">
+                    <motion.button
+                      whileHover={{ scale: 1.05, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2)" }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={scrollToProducts}
+                      className="bg-gradient-to-r from-white to-blue-50 text-blue-900 px-10 py-5 rounded-2xl font-black text-xl shadow-2xl transition-all flex items-center group relative overflow-hidden"
+                    >
+                      <span className="relative z-10">{heroSlides[currentSlide]?.button_text || "Shop Collection"}</span>
+                      <FaArrowRight className="ml-3 group-hover:translate-x-3 transition-transform relative z-10" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-100 to-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </motion.button>
+
+                    <Link href="/vendor/signup">
+                      <motion.button
+                        whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 255, 255, 0.2)" }}
+                        whileTap={{ scale: 0.95 }}
+                        className="border-2 border-white/40 backdrop-blur-md text-white px-10 py-5 rounded-2xl font-black text-xl hover:bg-white/10 transition-all flex items-center group border-dashed"
                       >
-                        Shop Now
-                      </button>
-                    </div>
+                        <FaRocket className="mr-3 group-hover:rotate-12 transition-transform" />
+                        Become a Seller
+                      </motion.button>
+                    </Link>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Slider Indicators */}
+              <div className="flex items-center gap-3 pt-12">
+                {heroSlides.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentSlide(idx)}
+                    className={`h-2 transition-all duration-500 rounded-full ${idx === currentSlide ? 'w-12 bg-white' : 'w-2 bg-white/30 hover:bg-white/50'}`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
+
+          {/* Decorative scroll button */}
+          <motion.div 
+            animate={{ y: [0, 10, 0] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/50 hidden md:block"
+          >
+            <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center p-1">
+              <div className="w-1 h-2 bg-white rounded-full" />
+            </div>
+          </motion.div>
         </section>
 
         {/* ENHANCED Categories Section - AUTO-SCROLLING SLIDER */}

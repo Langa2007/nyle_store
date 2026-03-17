@@ -36,6 +36,7 @@ import locationRoutes from "./routes/locationRoutes.js";
 import vendorLeadRoutes from "./routes/vendorLeadRoutes.js";
 import partnerRoutes from "./routes/partnerRoutes.js";
 import adminNotificationsRoutes from "./routes/adminNotifications.js";
+import heroRoutes from "./routes/heroRoutes.js";
 
 
 
@@ -175,6 +176,7 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/location", locationRoutes);
 app.use("/api/vendor-leads", vendorLeadRoutes);
 app.use("/api/partners", partnerRoutes);
+app.use("/api/hero", heroRoutes);
 
 
 

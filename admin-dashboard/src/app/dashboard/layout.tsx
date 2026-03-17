@@ -130,6 +130,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       badge: null
     },
     {
+      name: "Hero Management",
+      href: "/dashboard/hero",
+      icon: <Layers size={18} />,
+      badge: "Carousel"
+    },
+    {
       name: "Newsletter",
       href: "/dashboard/newsletter",
       icon: <Mail size={18} />,

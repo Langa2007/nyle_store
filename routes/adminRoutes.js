@@ -48,6 +48,13 @@ import {
   rejectProduct
 } from "../controllers/adminProductApprovalController.js";
 
+import {
+  createSlide,
+  getAllSlides,
+  updateSlide,
+  deleteSlide
+} from "../controllers/adminHeroController.js";
+
 const router = express.Router();
 
 //  PRODUCTS 
@@ -88,5 +95,11 @@ router.delete("/categories/:id", verifyAdmin, adminActionLimiter, deleteCategory
 //  ORDERS 
 router.get("/orders", verifyAdmin, getAllOrders);
 router.put("/orders/:id/status", verifyAdmin, adminActionLimiter, updateOrderStatus);
+
+//  HERO SLIDES
+router.post("/hero-slides", verifyAdmin, adminActionLimiter, productUpload.single("image"), createSlide);
+router.get("/hero-slides", verifyAdmin, getAllSlides);
+router.put("/hero-slides/:id", verifyAdmin, adminActionLimiter, productUpload.single("image"), updateSlide);
+router.delete("/hero-slides/:id", verifyAdmin, adminActionLimiter, deleteSlide);
 
 export default router;
