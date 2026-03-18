@@ -178,14 +178,14 @@ const pickCampaign = (currentDate = new Date()) => {
     const end = new Date(campaign.endDate).getTime();
     return now >= start && now < end;
   });
-  
+
   if (active) return active;
 
   // Find the next upcoming campaign
   const upcoming = HOLIDAY_CAMPAIGNS
     .filter((campaign) => now < new Date(campaign.startDate).getTime())
     .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];
-    
+
   return upcoming || FALLBACK_CAMPAIGN;
 };
 
@@ -459,7 +459,7 @@ export default function Navbar() {
             <div className="absolute top-0 left-0 w-20 h-20 bg-white rounded-full blur-3xl animate-pulse"></div>
             <div className="absolute bottom-0 right-0 w-32 h-32 bg-white rounded-full blur-3xl animate-pulse delay-1000"></div>
           </div>
-          
+
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2.5 relative">
             <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
               {/* Left side - Badge and headline */}
@@ -539,11 +539,11 @@ export default function Navbar() {
             {/* Desktop Navigation Links with Mega Menu */}
             <div className="hidden md:flex items-center space-x-6">
               {[
-                { href: "/", label: "Home", icon: "🏠" },
-                { href: "/products", label: "Shop", icon: "🛍️", hasMega: true },
-                { href: "/categories", label: "Categories", icon: "📱", hasMega: true },
-                { href: "/deals", label: "🔥 Hot Deals", icon: "" },
-                { href: "/brands", label: "Brands", icon: "🏷️" },
+                { href: "/", label: "Home" },
+                { href: "/products", label: "Shop", hasMega: true },
+                { href: "/categories", label: "Categories", hasMega: true },
+                { href: "/deals", label: "Hot Deals" },
+                { href: "/brands", label: "Brands" },
               ].map((item) => (
                 <div
                   key={item.href}
@@ -606,20 +606,18 @@ export default function Navbar() {
                     value={searchQuery}
                     onChange={handleSearchChange}
                     onFocus={() => searchQuery && setShowSearchResults(true)}
-                    className={`pl-10 pr-12 py-2.5 rounded-full border-2 transition-all duration-300 w-64 focus:w-96 focus:outline-none text-base placeholder:text-sm ${
-                      isScrolled
+                    className={`pl-10 pr-12 py-2.5 rounded-full border-2 transition-all duration-300 w-64 focus:w-96 focus:outline-none text-base placeholder:text-sm ${isScrolled
                         ? 'bg-gray-50 border-gray-200 text-gray-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-100'
                         : 'bg-white/20 border-white/30 text-white placeholder-blue-100 focus:bg-white focus:text-gray-800 focus:border-white'
-                    }`}
+                      }`}
                   />
                   <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${isScrolled ? 'text-gray-400' : 'text-blue-200'}`} />
                   <button
                     type="submit"
-                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 px-3 py-1 rounded-full text-xs font-bold ${
-                      isScrolled
+                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 px-3 py-1 rounded-full text-xs font-bold ${isScrolled
                         ? 'bg-blue-600 text-white hover:bg-blue-700'
                         : 'bg-white/30 text-white hover:bg-white/40'
-                    } transition`}
+                      } transition`}
                   >
                     Go
                   </button>
@@ -866,9 +864,8 @@ export default function Navbar() {
 
       {/* Enhanced mobile drawer */}
       <div
-        className={`fixed top-0 right-0 h-full w-full max-w-sm bg-gradient-to-b from-white to-gray-50 shadow-2xl transform transition-transform duration-500 ease-out md:hidden z-50 ${
-          mobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 h-full w-full max-w-sm bg-gradient-to-b from-white to-gray-50 shadow-2xl transform transition-transform duration-500 ease-out md:hidden z-50 ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="flex justify-between items-center px-6 py-5 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white">
           <div className="flex items-center gap-3">
