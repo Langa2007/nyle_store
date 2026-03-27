@@ -5,6 +5,7 @@ import { ShoppingCart, Menu, X, User as UserIcon } from "lucide-react";
 import Link from "next/link";
 import { useCart } from "../../context/CartContext/page";
 import { useSession } from "next-auth/react";
+import NyleLogo from "@/components/branding/NyleLogo";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -29,9 +30,18 @@ export default function Navbar() {
       <div className="mx-auto max-w-7xl px-4">
         <div className="flex h-16 justify-between items-center">
           {/* Logo */}
-          <Link href="/shop" className="flex-shrink-0 text-xl font-extrabold tracking-tighter">
-            <span className="text-blue-500">NYLE</span>
-            <span className="text-white/40 ml-0.5 font-light">PRO</span>
+          <Link href="/shop" className="flex flex-shrink-0 items-center gap-2.5">
+            <NyleLogo
+              alt="Nyle logo"
+              width={36}
+              height={36}
+              priority
+              className="h-9 w-9 drop-shadow-[0_8px_20px_rgba(245,158,11,0.3)]"
+            />
+            <span className="text-xl font-extrabold tracking-tighter">
+              <span className="text-blue-500">NYLE</span>
+              <span className="ml-0.5 font-light text-white/40">PRO</span>
+            </span>
           </Link>
 
           {/* Right side */}

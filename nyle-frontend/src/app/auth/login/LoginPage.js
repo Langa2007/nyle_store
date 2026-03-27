@@ -15,6 +15,7 @@ import {
 } from "react-icons/fa";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import NyleLogo from "@/components/branding/NyleLogo";
 
 
 export default function LoginPage() {
@@ -113,8 +114,14 @@ export default function LoginPage() {
       <div className="max-w-md w-full">
         {/* Logo Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl mb-4">
-            <span className="text-white text-2xl font-bold">N</span>
+          <div className="mb-4 flex justify-center">
+            <NyleLogo
+              alt="Nyle logo"
+              width={84}
+              height={84}
+              priority
+              className="h-20 w-20 drop-shadow-[0_14px_30px_rgba(245,158,11,0.28)]"
+            />
           </div>
           <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
           <p className="text-gray-600 mt-2">Sign in to your Nyle Store account</p>

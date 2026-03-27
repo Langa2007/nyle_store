@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import pool from "../db/connect.js";
 
-// --- TOKEN GENERATION ---
 const generateTokens = (admin) => {
   const accessToken = jwt.sign(
     { id: admin.id, email: admin.email, is_admin: true },
@@ -20,7 +19,7 @@ const generateTokens = (admin) => {
   return { accessToken, refreshToken };
 };
 
-// --- LOGIN ---
+// LOGIN
 export const adminLogin = async (req, res) => {
   const { email, password } = req.body;
   const ip = req.headers['x-client-ip'] ||
@@ -62,7 +61,7 @@ export const adminLogin = async (req, res) => {
   }
 };
 
-// --- VERIFY ADMIN TOKEN (Middleware) ---
+// VERIFY ADMIN TOKEN 
 export const verifyAdminToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(" ")[1];
@@ -117,7 +116,7 @@ export const verifyAdminToken = async (req, res, next) => {
   }
 };
 
-// --- REFRESH TOKEN ---
+
 export const refreshAdminToken = async (req, res) => {
   const { refreshToken } = req.body;
   const ip = req.headers['x-client-ip'] ||
@@ -150,7 +149,7 @@ export const refreshAdminToken = async (req, res) => {
 
     res.json({ accessToken: newAccessToken });
   } catch (err) {
-    console.error("❌ Token refresh error:", err.message);
+    console.error("Token refresh error:", err.message);
     res.status(403).json({ error: "Invalid or expired refresh token" });
   }
 };

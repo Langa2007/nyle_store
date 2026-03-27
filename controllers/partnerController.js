@@ -3,9 +3,6 @@ import PartnerModel from '../models/partnerModel.js';
 import { sendPartnerApplicationEmail, sendPartnerStatusEmail } from '../services/emailService.js';
 
 class PartnerController {
-    /**
-     * Handle partner application submission
-     */
     static async apply(req, res) {
         try {
             const formData = req.body;
@@ -42,9 +39,6 @@ class PartnerController {
         }
     }
 
-    /**
-     * Get all partner applications (Admin)
-     */
     static async getApplications(req, res) {
         try {
             const applications = await PartnerModel.getAllApplications();
@@ -61,9 +55,6 @@ class PartnerController {
         }
     }
 
-    /**
-     * Mark application as contacted (Admin)
-     */
     static async markContacted(req, res) {
         try {
             const { id } = req.params;
@@ -91,9 +82,6 @@ class PartnerController {
         }
     }
 
-    /**
-     * Update application status (Admin)
-     */
     static async updateStatus(req, res) {
         try {
             const { id } = req.params;

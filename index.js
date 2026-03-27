@@ -105,7 +105,7 @@ app.options("*", (req, res) => {
 
   res.status(204).end();
 });
-//  Body parsers (always after CORS)
+//  Body parsers 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -115,7 +115,7 @@ const PORT = process.env.PORT || 5000;
 app.use(bodyparser.json());
 app.use(express.json());
 
-// Log every request (useful during debugging)
+// Log every request 
 app.use((req, res, next) => {
   console.log(`➡️ ${req.method} ${req.url}`);
   next();
@@ -132,7 +132,7 @@ createBullBoard({
 
 app.use("/api", publicLimiter); // Baseline limiter for all API endpoints
 
-// --- ROUTES ---
+// ROUTES
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
@@ -192,7 +192,7 @@ app.get("/", (req, res) => {
 });
 
 
-// --- Error Logger (for debugging database or route errors) ---
+// Error Logger 
 app.use((err, req, res, next) => {
   console.error(" SERVER ERROR:", {
     message: err.message,

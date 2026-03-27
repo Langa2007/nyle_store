@@ -1,6 +1,5 @@
 import pool from "../db/connect.js";
 
-// Get all orders with user & items
 export const getAllOrders = async (req, res) => {
   try {
     const result = await pool.query(`

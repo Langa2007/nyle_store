@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <linearGradient id="gold-main" x1="56" y1="40" x2="198" y2="218" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF6BF"/>
+      <stop offset="0.32" stop-color="#F8D765"/>
+      <stop offset="0.68" stop-color="#D49A22"/>
+      <stop offset="1" stop-color="#8F5A10"/>
+    </linearGradient>
+    <linearGradient id="gold-accent" x1="85" y1="55" x2="164" y2="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF8D8"/>
+      <stop offset="0.5" stop-color="#F4D25E"/>
+      <stop offset="1" stop-color="#B97914"/>
+    </linearGradient>
+    <linearGradient id="gold-ring" x1="43" y1="58" x2="219" y2="191" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F7D972"/>
+      <stop offset="0.5" stop-color="#E9B93F"/>
+      <stop offset="1" stop-color="#9A6517"/>
+    </linearGradient>
+    <filter id="brand-glow" x="18" y="18" width="220" height="220" color-interpolation-filters="sRGB">
+      <feOffset dy="2"/>
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feColorMatrix
+        in="blur"
+        type="matrix"
+        values="0 0 0 0 0.93 0 0 0 0 0.74 0 0 0 0 0.24 0 0 0 0.25 0"
+      />
+      <feBlend in="SourceGraphic" mode="screen"/>
+    </filter>
+  </defs>
+  <g filter="url(#brand-glow)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M73 173C45 154 38 117 55 86C67 64 89 50 113 46" stroke="url(#gold-ring)" stroke-width="12"/>
+    <path d="M187 78C207 93 218 116 218 143C218 175 194 203 162 210" stroke="url(#gold-ring)" stroke-width="12"/>
+    <path d="M91 165V80" stroke="url(#gold-main)" stroke-width="18"/>
+    <path d="M91 83L163 169" stroke="url(#gold-main)" stroke-width="18"/>
+    <path d="M163 169V69" stroke="url(#gold-main)" stroke-width="18"/>
+    <path d="M163 168C163 193 154 212 138 226" stroke="url(#gold-main)" stroke-width="12"/>
+    <path d="M82 183C98 196 118 203 139 203C149 203 159 202 169 198" stroke="url(#gold-accent)" stroke-width="6" opacity=".7"/>
+    <path d="M103 46H149L172 68L127 80L84 68L103 46Z" fill="url(#gold-main)"/>
+    <path d="M103 46H149M84 68L103 46M149 46L172 68M127 46V80M84 68H172" stroke="url(#gold-accent)" stroke-width="4"/>
+  </g>
+</svg>

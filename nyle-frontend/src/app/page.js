@@ -7,6 +7,7 @@ import { getCategories } from "../services/categoryService";
 import { getProducts } from "../services/productService";
 import { useCart } from "@/context/CartContext/page";
 import ClientProviders from "../components/ClientProviders";
+import NyleLogo from "@/components/branding/NyleLogo";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Import ALL icons used in the component
@@ -1243,6 +1244,28 @@ function HomeContent() {
         {/* ENHANCED FOOTER - WITH ALL ORIGINAL LINKS RESTORED */}
         <footer id="footer" className="mt-24 bg-gradient-to-br from-gray-900 to-blue-900 text-white">
           <div className="container mx-auto px-6 py-16">
+            <div className="mb-12 flex flex-col gap-5 rounded-3xl border border-white/10 bg-white/5 p-6 md:flex-row md:items-center md:justify-between">
+              <div className="flex items-center gap-4">
+                <NyleLogo
+                  alt="Nyle logo"
+                  width={72}
+                  height={72}
+                  priority
+                  className="h-16 w-16 shrink-0 drop-shadow-[0_14px_34px_rgba(245,158,11,0.3)] md:h-[72px] md:w-[72px]"
+                />
+                <div>
+                  <h3 className="text-2xl font-black tracking-tight">
+                    Nyle<span className="text-yellow-300">Store</span>
+                  </h3>
+                  <p className="mt-1 text-sm text-blue-100">
+                    Premium shopping, trusted sellers, and a cleaner signature mark across the storefront.
+                  </p>
+                </div>
+              </div>
+              <p className="max-w-xl text-sm leading-6 text-blue-100/90">
+                Kenya's premier marketplace for premium discoveries, trusted vendors, and elevated everyday essentials.
+              </p>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10">
               {/* Sell on Nyle Section */}
               <div>

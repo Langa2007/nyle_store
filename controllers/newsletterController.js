@@ -2,13 +2,10 @@ import db from "../db/connect.js";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-
-// --- Subscribe to Newsletter ---
 export const subscribeNewsletter = async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ message: "Email is required" });
 
-  // Strict email domain validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({
@@ -50,7 +47,6 @@ export const subscribeNewsletter = async (req, res) => {
   }
 };
 
-// --- Get All Subscribers ---
 export const getSubscribers = async (req, res) => {
   try {
     const { rows } = await db.query(
@@ -63,14 +59,12 @@ export const getSubscribers = async (req, res) => {
   }
 };
 
-// --- Send Announcement (Admin Only) ---
 export const sendAnnouncement = async (req, res) => {
   const { title, message } = req.body;
   if (!title || !message)
     return res.status(400).json({ message: "Title and message are required" });
 
   try {
-    // Ensure announcements & logs tables exist
     await db.query(`
       CREATE TABLE IF NOT EXISTS announcements (
         id SERIAL PRIMARY KEY,
@@ -107,7 +101,7 @@ export const sendAnnouncement = async (req, res) => {
       "SELECT email FROM newsletter_subscribers"
     );
 
-    console.log(`📧 Newsletter send: found ${subscribers.length} subscriber(s)`);
+    console.log(` Newsletter send: found ${subscribers.length} subscriber(s)`);
 
     if (subscribers.length === 0)
       return res.status(200).json({ message: "No subscribers to send to.", sent: 0, failed: 0 });
@@ -136,21 +130,21 @@ export const sendAnnouncement = async (req, res) => {
         });
 
         if (error) {
-          console.error(`❌ Resend Error for ${sub.email}:`, error);
+          console.error(` Resend Error for ${sub.email}:`, error);
           results.failed++;
           results.errors.push({ email: sub.email, error: error.message });
         } else {
-          console.log(`✅ Email sent to ${sub.email}:`, data.id);
+          console.log(` Email sent to ${sub.email}:`, data.id);
           results.sent++;
         }
       } catch (err) {
-        console.error(`❌ Network/SDK Error for ${sub.email}:`, err.message);
+        console.error(` Network/SDK Error for ${sub.email}:`, err.message);
         results.failed++;
         results.errors.push({ email: sub.email, error: err.message });
       }
     }
 
-    console.log(`📊 Newsletter result: ${results.sent} sent, ${results.failed} failed`);
+    console.log(` Newsletter result: ${results.sent} sent, ${results.failed} failed`);
 
     if (results.sent === 0 && results.failed > 0) {
       return res.status(500).json({

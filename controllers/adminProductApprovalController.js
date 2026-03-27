@@ -27,7 +27,7 @@ export const getPendingProducts = async (req, res) => {
   }
 };
 
-//  APPROVE PRODUCT
+
 export const approveProduct = async (req, res) => {
   const connection = await pool.connect();
 
@@ -35,10 +35,8 @@ export const approveProduct = async (req, res) => {
     await connection.query('BEGIN');
 
     const { id } = req.params;
-    const adminId = req.admin?.id; // Using admin ID from verifyAdmin middleware
+    const adminId = req.admin?.id;
 
-
-    // Get product details
     const productQuery = `
       SELECT p.*, v.id as vendor_id, v.email as vendor_email, v.current_approved_count, v.max_products
       FROM products p
@@ -67,7 +65,6 @@ export const approveProduct = async (req, res) => {
       });
     }
 
-    // Update product status
     const updateProductQuery = `
       UPDATE products 
       SET status = 'approved', 
@@ -79,7 +76,6 @@ export const approveProduct = async (req, res) => {
 
     const updateResult = await connection.query(updateProductQuery, [adminId, id]);
 
-    // Update vendor's approved product count
     const updateVendorQuery = `
       UPDATE vendors 
       SET current_approved_count = current_approved_count + 1
@@ -91,7 +87,6 @@ export const approveProduct = async (req, res) => {
 
     await connection.query('COMMIT');
 
-    // Send email notification (non-blocking)
     if (product.vendor_email) {
       sendProductStatusEmail(product.vendor_email, product, 'approved').catch(console.error);
     }
@@ -111,7 +106,7 @@ export const approveProduct = async (req, res) => {
   }
 };
 
-// ✅ REJECT PRODUCT
+
 export const rejectProduct = async (req, res) => {
   try {
     const { id } = req.params;

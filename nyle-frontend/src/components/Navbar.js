@@ -9,6 +9,7 @@ import debounce from "lodash.debounce";
 import { useCart } from "@/context/CartContext/page";
 import { useIsMobile } from "@/lib/useMobile";
 import { useSession, signOut } from "next-auth/react";
+import NyleLogo from "@/components/branding/NyleLogo";
 
 // Enhanced holiday campaigns with more dynamic options
 const HOLIDAY_CAMPAIGNS = [
@@ -523,9 +524,13 @@ export default function Navbar() {
           <div className="flex h-16 justify-between items-center">
             {/* Logo with animation */}
             <Link href="/" className="flex items-center space-x-3 group">
-              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-2xl group-hover:rotate-6 transition-transform duration-300">
-                <span className="text-blue-600 font-black text-xl">N</span>
-              </div>
+              <NyleLogo
+                alt="Nyle logo"
+                width={44}
+                height={44}
+                priority
+                className="h-11 w-11 shrink-0 drop-shadow-[0_10px_24px_rgba(245,158,11,0.35)] transition-transform duration-300 group-hover:scale-105"
+              />
               <span className={`text-2xl font-black tracking-tight ${getTextColor()} group-hover:scale-105 transition-transform duration-300`}>
                 Nyle<span className="text-yellow-300">Store</span>
               </span>
@@ -869,10 +874,16 @@ export default function Navbar() {
       >
         <div className="flex justify-between items-center px-6 py-5 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-              <span className="text-blue-600 font-black text-lg">N</span>
-            </div>
-            <span className="text-xl font-black">NyleStore</span>
+            <NyleLogo
+              alt="Nyle logo"
+              width={42}
+              height={42}
+              priority
+              className="h-10 w-10 shrink-0 drop-shadow-[0_8px_20px_rgba(245,158,11,0.3)]"
+            />
+            <span className="text-xl font-black tracking-tight">
+              Nyle<span className="text-yellow-300">Store</span>
+            </span>
           </div>
           <button onClick={toggleMenu} className="p-2 hover:bg-white/10 rounded-xl transition">
             <X className="h-6 w-6" />

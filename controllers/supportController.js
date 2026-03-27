@@ -2,9 +2,6 @@
 import { pool } from "../db/connect.js";
 import { sendSupportReceiptEmail, sendSupportResolutionEmail } from "../services/emailService.js";
 
-/**
- * Mapped Issue Categories
- */
 const ISSUE_CATEGORIES = {
   1: "Website Bug",
   2: "Payment Issue",
@@ -14,18 +11,16 @@ const ISSUE_CATEGORIES = {
   6: "Other"
 };
 
-/**
- * Handle user complaint submission
- */
+
 export const createSupportMessage = async (req, res) => {
   try {
-    const { 
-      reporter_name, 
-      reporter_email, 
-      reporter_phone, 
-      description, 
-      issue_category_id, 
-      url 
+    const {
+      reporter_name,
+      reporter_email,
+      reporter_phone,
+      description,
+      issue_category_id,
+      url
     } = req.body;
 
     const email = reporter_email?.toLowerCase();
@@ -44,8 +39,8 @@ export const createSupportMessage = async (req, res) => {
       [email, hourAgo]
     );
     if (parseInt(countQ.rows[0].count) >= 3) {
-      return res.status(429).json({ 
-        message: "Submission limit exceeded (3 per hour). Please call support for immediate assistance if urgent." 
+      return res.status(429).json({
+        message: "Submission limit exceeded (3 per hour). Please call support for immediate assistance if urgent."
       });
     }
 
@@ -55,8 +50,8 @@ export const createSupportMessage = async (req, res) => {
       [email, catId]
     );
     if (duplicateQ.rows.length > 0) {
-      return res.status(409).json({ 
-        message: `You already have an open report for "${issueTitle}". Please wait for resolution before submitting another of the same type.` 
+      return res.status(409).json({
+        message: `You already have an open report for "${issueTitle}". Please wait for resolution before submitting another of the same type.`
       });
     }
 
@@ -79,10 +74,10 @@ export const createSupportMessage = async (req, res) => {
       description
     });
 
-    res.status(201).json({ 
-      success: true, 
+    res.status(201).json({
+      success: true,
       message: "Complaint submitted successfully. A confirmation email has been sent.",
-      id: issueId 
+      id: issueId
     });
 
   } catch (err) {
@@ -128,9 +123,6 @@ export const updateSupportStatus = async (req, res) => {
   }
 };
 
-/**
- * List issues for admin
- */
 export const listSupportMessages = async (req, res) => {
   try {
     const { status, category } = req.query;

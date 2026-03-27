@@ -11,7 +11,6 @@ const VERIF_DURATION_HOURS = Number(process.env.VERIF_DURATION_HOURS || 24);
 const MAGIC_LINK_MINUTES = Number(process.env.MAGIC_LINK_DURATION_MINUTES || 20);
 const LOGIN_OTP_MINUTES = Number(process.env.LOGIN_OTP_DURATION_MINUTES || 10);
 
-// ------------------ Send Email (Resend) ------------------
 async function sendVerificationCodeEmail(toEmail, code) {
   try {
     await resend.emails.send({
@@ -130,7 +129,6 @@ export const vendorSignup = async (req, res) => {
   }
 };
 
-// ------------------ Verify Code ------------------
 export const verifyToken = async (req, res) => {
   try {
     const { email, code } = req.body;
@@ -232,7 +230,6 @@ export const vendorLogin = async (req, res) => {
   }
 };
 
-// ------------------ Verify Login OTP ------------------
 export const verifyLoginOtp = async (req, res) => {
   try {
     const { email, code } = req.body;
@@ -422,10 +419,8 @@ export const resendVerificationCode = async (req, res) => {
   }
 };
 
-// ------------------ Verify Session ------------------
 export const verifySession = async (req, res) => {
   try {
-    // req.user is set by verifyVendor middleware
     const vendorId = req.user.vendor_id;
 
     const q = await pool.query(

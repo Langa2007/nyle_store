@@ -43,15 +43,6 @@ export const createCategory = async (req, res) => {
     }
 
     console.log("Creating category:", name, "Image:", imageUrl);
-
-    // Check if table has image column, if not, logic might fail unless schema matches.
-    // Assuming schema has 'image_url' or user will add it.
-    // We will use 'image' or 'image_url'? Standardize on 'image_url'.
-
-    // First, let's try to see if we can insert with image_url
-    // If column doesn't exist, we might want to catch that error, but usually we just assume schema exists.
-
-    // Fix potential sequence out-of-sync issue
     try {
       await pool.query("SELECT setval(pg_get_serial_sequence('categories', 'id'), COALESCE(max(id), 0) + 1, false) FROM categories;");
     } catch (seqErr) {

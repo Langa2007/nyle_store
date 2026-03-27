@@ -4,7 +4,6 @@ import cloudinary from "../config/cloudinary.js";
 import multer from "multer";
 import streamifier from "streamifier";
 
-//  Same multer setup as admin
 const storage = multer.memoryStorage();
 export const upload = multer({
   storage,
@@ -14,7 +13,6 @@ export const upload = multer({
   { name: 'gallery_images', maxCount: 10 }
 ]);
 
-//  Same Cloudinary uploader
 const uploadToCloudinary = (fileBuffer, folder = "nyle-vendor-products") => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
@@ -59,10 +57,6 @@ const safeInt = (value, defaultValue = 0) => {
 };
 
 
-/**
- * Vendor creates product with full features (similar to admin)
- */
-
 export const addProduct = async (req, res) => {
   const connection = await pool.connect();
 
@@ -90,7 +84,6 @@ export const addProduct = async (req, res) => {
       attributes,
       variant_data,
       submit_for_approval = false,
-      // NEW FIELDS
       original_price,
       features,
       warranty_info,
@@ -252,7 +245,6 @@ export const addProduct = async (req, res) => {
       initialStatus,
       submittedAt,
       approvedAt,
-      // NEW FIELDS
       safeFloat(original_price),
       safeJsonParse(features, "features"),
       warranty_info,
@@ -334,9 +326,6 @@ export const addProduct = async (req, res) => {
   }
 };
 
-/**
- * Vendor updates product with full features
- */
 export const updateProduct = async (req, res) => {
   const connection = await pool.connect();
 
@@ -367,9 +356,6 @@ export const updateProduct = async (req, res) => {
 
     const currentProduct = productCheck.rows[0];
 
-    // For updates on approved products, we now allow them to stay approved for UX convenience.
-    // If you ever want to force re-approval, you would re-enable this block.
-    /*
     if (currentProduct.status === 'approved') {
       const requireReapproval = req.body.require_reapproval === 'true' || req.body.require_reapproval === true;
       if (!requireReapproval) {
@@ -380,7 +366,6 @@ export const updateProduct = async (req, res) => {
         });
       }
     }
-    */
 
     const {
       name,
@@ -397,7 +382,6 @@ export const updateProduct = async (req, res) => {
       attributes,
       variant_data,
       update_status, // Optional: 'draft', 'pending'
-      // NEW FIELDS
       original_price,
       features,
       warranty_info,
@@ -609,12 +593,6 @@ export const updateProduct = async (req, res) => {
   }
 };
 
-// Keep other functions (getVendorProducts, deleteProduct, submitForApproval) 
-// but update getVendorProducts to include variant counts, etc.
-
-/**
- * Get vendor products with detailed info
- */
 export const getVendorProducts = async (req, res) => {
   try {
     const vendorId = req.vendorId;
@@ -735,13 +713,6 @@ export const submitForApproval = async (req, res) => {
   }
 };
 
-/**
- * Update one of the vendor's products
- */
-
-/**
- * Delete a vendor product
- */
 export const deleteProduct = async (req, res) => {
   try {
     const vendorId = req.vendorId;
@@ -766,9 +737,7 @@ export const deleteProduct = async (req, res) => {
     return res.status(500).json({ error: "Failed to delete product" });
   }
 };
-/**
- * Get product statistics for vendor dashboard
- */
+
 export const getProductStats = async (req, res) => {
   try {
     const vendorId = req.vendorId;
@@ -811,9 +780,6 @@ export const getProductStats = async (req, res) => {
   }
 };
 
-/**
- * Duplicate a product (useful for creating similar products)
- */
 export const duplicateProduct = async (req, res) => {
   const connection = await pool.connect();
 

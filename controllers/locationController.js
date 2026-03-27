@@ -1,9 +1,5 @@
 // controllers/locationController.js
 import * as LocationModel from '../models/locationModel.js';
-
-/**
- * Handle saving a new location
- */
 export const handleSaveLocation = async (req, res) => {
     const { name, address, latitude, longitude, is_default } = req.body;
     const userId = req.user?.id || req.body.user_id; // Support both auth middleware or direct body (for testing)
@@ -31,9 +27,6 @@ export const handleSaveLocation = async (req, res) => {
     }
 };
 
-/**
- * Handle fetching user locations
- */
 export const handleGetLocations = async (req, res) => {
     const userId = req.user?.id || req.query.user_id;
 
@@ -50,9 +43,6 @@ export const handleGetLocations = async (req, res) => {
     }
 };
 
-/**
- * Handle deleting a location
- */
 export const handleDeleteLocation = async (req, res) => {
     const locationId = req.params.id;
     const userId = req.user?.id || req.body.user_id;

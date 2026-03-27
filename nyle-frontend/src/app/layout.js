@@ -12,6 +12,16 @@ import MobileNav from "../components/mobile-app/MobileNav"; // Added
 import { SessionProviderWrapper } from "../components/SessionProviderWrapper";
 import SessionSync from "../components/SessionSync";
 
+export const metadata = {
+  title: "Nyle Store",
+  description: "Shop smarter with Nyle Store.",
+  manifest: "/manifest.json",
+  icons: {
+    icon: [{ url: "/nyle-mark.svg", type: "image/svg+xml" }],
+    shortcut: "/nyle-mark.svg",
+  },
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
