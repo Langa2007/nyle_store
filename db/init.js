@@ -161,6 +161,61 @@ export const initDB = async () => {
         `);
         console.log(" Reported Issues table initialized");
 
+        // 7. Wishlist table
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS wishlist_items (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                session_id VARCHAR(255),
+                product_id INTEGER NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT wishlist_owner_check CHECK (
+                    (user_id IS NOT NULL AND session_id IS NULL) OR
+                    (user_id IS NULL AND session_id IS NOT NULL)
+                ),
+                CONSTRAINT wishlist_user_product_unique UNIQUE (user_id, product_id),
+                CONSTRAINT wishlist_session_product_unique UNIQUE (session_id, product_id)
+            )
+        `);
+        await pool.query(`
+            CREATE INDEX IF NOT EXISTS wishlist_user_idx
+            ON wishlist_items (user_id, created_at DESC)
+        `);
+        await pool.query(`
+            CREATE INDEX IF NOT EXISTS wishlist_session_idx
+            ON wishlist_items (session_id, created_at DESC)
+        `);
+        console.log(" Wishlist table initialized");
+
+        // 8. Recently viewed table
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS recently_viewed_items (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                session_id VARCHAR(255),
+                product_id INTEGER NOT NULL,
+                viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT recently_viewed_owner_check CHECK (
+                    (user_id IS NOT NULL AND session_id IS NULL) OR
+                    (user_id IS NULL AND session_id IS NOT NULL)
+                ),
+                CONSTRAINT recently_viewed_user_product_unique UNIQUE (user_id, product_id),
+                CONSTRAINT recently_viewed_session_product_unique UNIQUE (session_id, product_id)
+            )
+        `);
+        await pool.query(`
+            CREATE INDEX IF NOT EXISTS recently_viewed_user_idx
+            ON recently_viewed_items (user_id, viewed_at DESC)
+        `);
+        await pool.query(`
+            CREATE INDEX IF NOT EXISTS recently_viewed_session_idx
+            ON recently_viewed_items (session_id, viewed_at DESC)
+        `);
+        console.log(" Recently viewed table initialized");
+
         console.log(" Database initialization complete!");
     } catch (err) {
         console.error(" Database initialization failed:", err.message);

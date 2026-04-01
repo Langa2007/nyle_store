@@ -6,7 +6,7 @@ import { useEffect, useState, useRef } from "react";
 import { getCategories } from "../services/categoryService";
 import { getProducts } from "../services/productService";
 import { useCart } from "@/context/CartContext/page";
-import ClientProviders from "../components/ClientProviders";
+import { useShopActivity } from "@/context/ShopActivityContext/page";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Import ALL icons used in the component
@@ -35,6 +35,12 @@ import {
 
 function HomeContent() {
   const { addToCart } = useCart();
+  const {
+    recentlyViewedItems,
+    toggleWishlist,
+    isWishlisted,
+    clearRecentlyViewed,
+  } = useShopActivity();
   const { data: rawCategories } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
@@ -367,6 +373,34 @@ function HomeContent() {
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
+  const resetProductView = () => {
+    setSearchTerm("");
+    setSelectedCategory("all");
+    setTimeout(() => scrollToProducts(), 100);
+  };
+
+  const showCartNotification = (message) => {
+    const notification = document.createElement("div");
+    notification.className = "fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-in";
+    notification.innerHTML = `
+      <div class="flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        ${message}
+      </div>
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+  };
+
+  const handleQuickAddToCart = async (product) => {
+    const result = await addToCart(product, 1);
+    if (result.success) {
+      showCartNotification("Added to cart!");
+    }
+  };
+
   // Handle category click
   const handleCategoryClick = (categoryId) => {
     // If clicking the same category that's already selected, toggle it off (undo)
@@ -409,6 +443,10 @@ function HomeContent() {
       container.scrollLeft += scrollAmount;
     }
   };
+
+  const recentProducts = recentlyViewedItems
+    .filter((product) => Number(product?.id || product?.product_id))
+    .slice(0, 4);
 
   return (
     <>
@@ -916,6 +954,113 @@ function HomeContent() {
           </section>
         )}
 
+        {recentProducts.length > 0 && (
+          <section id="recently-viewed" className="container mx-auto px-6 mt-16 scroll-mt-32">
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-10">
+              <div>
+                <div className="inline-flex items-center bg-rose-100 text-rose-700 px-4 py-2 rounded-full mb-4">
+                  <FaHeart className="mr-2" />
+                  <span className="font-medium">Recently Viewed</span>
+                </div>
+                <h2 className="text-4xl font-bold text-gray-900 mb-3">Pick Up Where You Left Off</h2>
+                <p className="text-gray-600 text-lg max-w-2xl">
+                  Your latest product views stay here so you can jump back in quickly, then return to the full catalogue whenever you're ready.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={resetProductView}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition"
+                >
+                  See All Products
+                </button>
+                <button
+                  onClick={clearRecentlyViewed}
+                  className="bg-white text-gray-700 border border-gray-200 px-6 py-3 rounded-full font-semibold hover:bg-gray-50 transition"
+                >
+                  Clear History
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+              {recentProducts.map((product, index) => {
+                const productId = product.id || product.product_id || product._id;
+                const wishlisted = isWishlisted(productId);
+
+                return (
+                  <motion.div
+                    key={`recent-${productId}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.08 }}
+                    whileHover={{ y: -6 }}
+                  >
+                    <Link href={`/products/${productId}`}>
+                      <div className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
+                        <div className="relative h-56 overflow-hidden bg-gradient-to-br from-rose-50 to-blue-50">
+                          {product.image_url ? (
+                            <img
+                              src={product.image_url}
+                              alt={product.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              No Image
+                            </div>
+                          )}
+
+                          <button
+                            onClick={async (e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              await toggleWishlist(product);
+                            }}
+                            className="absolute top-4 right-4 w-10 h-10 bg-white/95 rounded-full flex items-center justify-center shadow hover:shadow-lg transition"
+                            aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                            title={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                          >
+                            <FaHeart className={wishlisted ? "text-red-500" : "text-gray-500 hover:text-red-500"} />
+                          </button>
+                        </div>
+
+                        <div className="p-5">
+                          <h3 className="text-lg font-bold text-gray-900 line-clamp-1 mb-2">{product.name}</h3>
+                          <p className="text-sm text-gray-500 line-clamp-2 min-h-[2.5rem] mb-4">
+                            {product.description || "Premium quality product with excellent features."}
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="text-xl font-bold text-blue-700">
+                                {currency} {convertPrice(product.price || 0)}
+                              </div>
+                              <div className="text-xs text-gray-400">
+                                Viewed recently
+                              </div>
+                            </div>
+                            <button
+                              onClick={async (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                await handleQuickAddToCart(product);
+                              }}
+                              className="w-11 h-11 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition"
+                              aria-label="Add to cart"
+                            >
+                              <FaShoppingCart />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
         {/* Featured Products - NOW FILTERED BY CATEGORY */}
         <section id="products-section" className="container mx-auto px-6 mt-16">
           <div className="text-center mb-12">
@@ -1035,36 +1180,25 @@ function HomeContent() {
                           {/* Quick Actions */}
                           <div className="absolute top-4 right-4 flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button
-                              onClick={(e) => {
+                              onClick={async (e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                // Add to favorites (not implemented yet, but keeping the button)
+                                await toggleWishlist(product);
                               }}
                               className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow hover:shadow-lg transition"
+                              aria-label={isWishlisted(product.id || product._id) ? "Remove from wishlist" : "Add to wishlist"}
                             >
-                              <FaHeart className="text-gray-600 hover:text-red-500" />
+                              <FaHeart
+                                className={isWishlisted(product.id || product._id)
+                                  ? "text-red-500"
+                                  : "text-gray-600 hover:text-red-500"}
+                              />
                             </button>
                             <button
                               onClick={async (e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-
-                                const result = await addToCart(product, 1);
-                                if (result.success && true) {
-                                  // Show success notification
-                                  const notification = document.createElement('div');
-                                  notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-in';
-                                  notification.innerHTML = `
-                                  <div class="flex items-center">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                    Added to cart!
-                                  </div>
-                                `;
-                                  document.body.appendChild(notification);
-                                  setTimeout(() => notification.remove(), 3000);
-                                }
+                                await handleQuickAddToCart(product);
                               }}
                               className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow hover:shadow-lg transition"
                             >
@@ -1398,11 +1532,7 @@ function HomeContent() {
 }
 
 export default function Home() {
-  return (
-    <ClientProviders>
-      <HomeContent />
-    </ClientProviders>
-  );
+  return <HomeContent />;
 }
 
 export const dynamic = "force-dynamic";

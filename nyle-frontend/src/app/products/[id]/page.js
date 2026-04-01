@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useCart } from '@/context/CartContext/page';
+import { useShopActivity } from "@/context/ShopActivityContext/page";
 import {
   FaStar,
   FaTruck,
@@ -19,7 +20,8 @@ import {
   FaRuler,
   FaCalendarAlt,
   FaHashtag,
-  FaShippingFast
+  FaShippingFast,
+  FaHeart
 } from "react-icons/fa";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
@@ -27,7 +29,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.
 export default function ProductDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-  const { addToCart, setShowAuthModal, setAuthAction, setShowCart } = useCart();
+  const { addToCart } = useCart();
+  const { trackRecentlyViewed, toggleWishlist, isWishlisted } = useShopActivity();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -61,6 +64,11 @@ export default function ProductDetailPage() {
 
     fetchProduct();
   }, [id, router]);
+
+  useEffect(() => {
+    if (!product?.id) return;
+    trackRecentlyViewed(product);
+  }, [product, trackRecentlyViewed]);
 
   const handleAddToCart = async () => {
     if (!product) return;
@@ -130,6 +138,7 @@ export default function ProductDetailPage() {
   };
 
   const discountPercentage = calculateDiscount();
+  const wishlisted = isWishlisted(product.id);
 
   // Handle images (array or single)
   const productImages = product.image_url
@@ -409,6 +418,16 @@ export default function ProductDetailPage() {
                     }`}
                 >
                   Buy Now
+                </button>
+                <button
+                  onClick={() => toggleWishlist(product)}
+                  className={`px-5 py-4 rounded-lg font-semibold text-lg transition-colors border ${wishlisted
+                    ? "bg-red-50 text-red-600 border-red-200"
+                    : "bg-white text-gray-700 border-gray-300 hover:border-red-200 hover:text-red-600"
+                    }`}
+                  aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                >
+                  <FaHeart />
                 </button>
               </div>
 

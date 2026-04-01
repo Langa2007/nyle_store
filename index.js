@@ -37,6 +37,8 @@ import vendorLeadRoutes from "./routes/vendorLeadRoutes.js";
 import partnerRoutes from "./routes/partnerRoutes.js";
 import adminNotificationsRoutes from "./routes/adminNotifications.js";
 import heroRoutes from "./routes/heroRoutes.js";
+import wishlistRoutes from "./routes/wishlist.js";
+import recentlyViewedRoutes from "./routes/recentlyViewed.js";
 
 
 
@@ -177,6 +179,8 @@ app.use("/api/location", locationRoutes);
 app.use("/api/vendor-leads", vendorLeadRoutes);
 app.use("/api/partners", partnerRoutes);
 app.use("/api/hero", heroRoutes);
+app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/recently-viewed", recentlyViewedRoutes);
 
 
 

@@ -7,6 +7,7 @@ import { FaHeart, FaUser, FaSignInAlt, FaUserPlus, FaStore, FaCog, FaHistory, Fa
 import { useRouter, usePathname } from "next/navigation";
 import debounce from "lodash.debounce";
 import { useCart } from "@/context/CartContext/page";
+import { useShopActivity } from "@/context/ShopActivityContext/page";
 import { useIsMobile } from "@/lib/useMobile";
 import { useSession, signOut } from "next-auth/react";
 import NyleLogo from "@/components/branding/NyleLogo";
@@ -237,6 +238,7 @@ export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const { getCartTotals, setShowCart } = useCart();
+  const { wishlistCount, recentlyViewedCount } = useShopActivity();
   const { itemCount } = getCartTotals();
   const [categories, setCategories] = useState([]);
   const [campaign, setCampaign] = useState(() => pickCampaign());
@@ -720,13 +722,17 @@ export default function Navbar() {
                         </div>
                         <div className="flex-1">
                           <p className="font-bold text-gray-900">Wishlist</p>
-                          <p className="text-xs text-gray-500">3 items saved</p>
+                          <p className="text-xs text-gray-500">
+                            {wishlistCount === 0
+                              ? "No saved items yet"
+                              : `${wishlistCount} item${wishlistCount === 1 ? "" : "s"} saved`}
+                          </p>
                         </div>
                         <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
                       </Link>
 
                       <Link
-                        href="/recently-viewed"
+                        href="/#recently-viewed"
                         className="flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 transition group"
                       >
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -734,7 +740,11 @@ export default function Navbar() {
                         </div>
                         <div className="flex-1">
                           <p className="font-bold text-gray-900">Recently Viewed</p>
-                          <p className="text-xs text-gray-500">5 items</p>
+                          <p className="text-xs text-gray-500">
+                            {recentlyViewedCount === 0
+                              ? "Nothing viewed yet"
+                              : `${recentlyViewedCount} recent item${recentlyViewedCount === 1 ? "" : "s"}`}
+                          </p>
                         </div>
                         <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
                       </Link>
@@ -794,7 +804,9 @@ export default function Navbar() {
                         <Link href="/wishlist" className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-xl transition-all">
                           <FaHeart className="text-pink-500" size={14} />
                           <span className="text-sm font-medium flex-1">Wishlist</span>
-                          <span className="text-xs bg-pink-100 text-pink-700 px-2 py-1 rounded-full">3</span>
+                          <span className="text-xs bg-pink-100 text-pink-700 px-2 py-1 rounded-full">
+                            {wishlistCount}
+                          </span>
                         </Link>
                         <div className="border-t my-2"></div>
                         <button
