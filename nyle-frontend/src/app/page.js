@@ -81,9 +81,9 @@ function HomeContent() {
   // Hero Carousel State
   const [heroSlides, setHeroSlides] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [heroLoading, setHeroLoading] = useState(true);
+  const [heroFetchFailed, setHeroFetchFailed] = useState(false);
 
-  const defaultSlides = [
+  const fallbackHeroSlides = [
     {
       id: "default-1",
       title: "Discover Amazing Products Daily",
@@ -244,29 +244,43 @@ function HomeContent() {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://nyle-store.onrender.com'}/api/hero/active`);
         if (res.ok) {
-          const data = await res.ok ? await res.json() : [];
-          setHeroSlides(data.length > 0 ? data : defaultSlides);
+          const data = await res.json();
+          setHeroSlides(Array.isArray(data) ? data : []);
+          setHeroFetchFailed(false);
         } else {
-          setHeroSlides(defaultSlides);
+          setHeroSlides([]);
+          setHeroFetchFailed(true);
         }
       } catch (err) {
         console.error("Hero fetch error:", err);
-        setHeroSlides(defaultSlides);
-      } finally {
-        setHeroLoading(false);
+        setHeroSlides([]);
+        setHeroFetchFailed(true);
       }
     };
     fetchHeroSlides();
   }, []);
 
+  const displayHeroSlides = heroSlides.length > 0
+    ? heroSlides
+    : heroFetchFailed
+      ? fallbackHeroSlides
+      : [];
+  const activeHeroSlide = displayHeroSlides[currentSlide] || null;
+
   // Hero Transition Logic (30 seconds)
   useEffect(() => {
-    if (heroSlides.length <= 1) return;
+    if (displayHeroSlides.length <= 1) return;
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+      setCurrentSlide((prev) => (prev + 1) % displayHeroSlides.length);
     }, 30000);
     return () => clearInterval(interval);
-  }, [heroSlides]);
+  }, [displayHeroSlides.length]);
+
+  useEffect(() => {
+    if (currentSlide >= displayHeroSlides.length) {
+      setCurrentSlide(0);
+    }
+  }, [currentSlide, displayHeroSlides.length]);
 
   // Auto-scroll categories slider
   useEffect(() => {
@@ -489,7 +503,7 @@ function HomeContent() {
               <div 
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-[30000ms] ease-linear scale-110 group-hover:scale-125"
                 style={{ 
-                  backgroundImage: `url(${heroSlides[currentSlide]?.image_url || defaultSlides[0].image_url})`,
+                  backgroundImage: activeHeroSlide?.image_url ? `url(${activeHeroSlide.image_url})` : undefined,
                 }}
               />
               
@@ -525,14 +539,14 @@ function HomeContent() {
                   </motion.div>
 
                   <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-[1.1] drop-shadow-2xl">
-                    {heroSlides[currentSlide]?.title || "Discover Quality"}
+                    {activeHeroSlide?.title || "Discover Quality"}
                     <span className="block mt-2 bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent italic">
-                      {heroSlides[currentSlide]?.subtitle ? "" : "Every Day"}
+                      {activeHeroSlide?.subtitle ? "" : "Every Day"}
                     </span>
                   </h1>
 
                   <p className="text-xl md:text-2xl text-blue-100/90 max-w-2xl font-medium leading-relaxed drop-shadow-lg">
-                    {heroSlides[currentSlide]?.subtitle || "Explore the best deals and authentic products from trusted Kenyan sellers. Shop with confidence."}
+                    {activeHeroSlide?.subtitle || "Explore the best deals and authentic products from trusted Kenyan sellers. Shop with confidence."}
                   </p>
 
                   <div className="flex flex-wrap gap-5 pt-4">
@@ -542,7 +556,7 @@ function HomeContent() {
                       onClick={scrollToProducts}
                       className="bg-gradient-to-r from-white to-blue-50 text-blue-900 px-10 py-5 rounded-2xl font-black text-xl shadow-2xl transition-all flex items-center group relative overflow-hidden"
                     >
-                      <span className="relative z-10">{heroSlides[currentSlide]?.button_text || "Shop Collection"}</span>
+                      <span className="relative z-10">{activeHeroSlide?.button_text || "Shop Collection"}</span>
                       <FaArrowRight className="ml-3 group-hover:translate-x-3 transition-transform relative z-10" />
                       <div className="absolute inset-0 bg-gradient-to-r from-blue-100 to-white opacity-0 group-hover:opacity-100 transition-opacity" />
                     </motion.button>
@@ -563,7 +577,7 @@ function HomeContent() {
 
               {/* Slider Indicators */}
               <div className="flex items-center gap-3 pt-12">
-                {heroSlides.map((_, idx) => (
+                {displayHeroSlides.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => setCurrentSlide(idx)}
