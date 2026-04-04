@@ -9,7 +9,7 @@ import { passwordResetLimiter } from '../middleware/rateLimit.js';
 
 const router = express.Router();
 
-// 🔐 VENDOR PASSWORD RESET ROUTES (USING 6-DIGIT CODES)
+//  VENDOR PASSWORD RESET ROUTES (USING 6-DIGIT CODES)
 
 // 1. Request password reset - sends 6-digit code to email
 router.post('/vendor/auth/forgot-password', passwordResetLimiter, (req, res) => {

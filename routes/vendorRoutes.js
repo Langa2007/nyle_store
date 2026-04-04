@@ -8,7 +8,7 @@ import { adminActionLimiter, searchLimiter } from "../middleware/rateLimit.js";
 const router = express.Router();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// --- Helper: send status email via Resend ---
+// Helper: send status email via Resend 
 async function sendVendorStatusEmail(email, status) {
   try {
     let subject, html;
@@ -56,7 +56,7 @@ router.get("/pending", verifyAdmin, searchLimiter, async (req, res) => {
   }
 });
 
-// --- Approve vendor (admin only) ---
+//Approve vendor (admin only)
 router.put("/:id/approve", verifyAdmin, adminActionLimiter, async (req, res) => {
   try {
     const { id } = req.params;
@@ -73,7 +73,7 @@ router.put("/:id/approve", verifyAdmin, adminActionLimiter, async (req, res) => 
   }
 });
 
-// --- Reject vendor (admin only) ---
+// Reject vendor (admin only) 
 router.put("/:id/reject", verifyAdmin, adminActionLimiter, async (req, res) => {
   try {
     const { id } = req.params;

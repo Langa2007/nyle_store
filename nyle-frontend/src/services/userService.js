@@ -2,9 +2,7 @@
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
-/**
- * Register a new user.
- */
+// Register a new user.
 export async function registerUser(userData) {
   const res = await fetch(`${API_URL}/api/users/register`, {
     method: "POST",
@@ -15,9 +13,7 @@ export async function registerUser(userData) {
   return res.json();
 }
 
-/**
- * Log in an existing user.
- */
+// Log in an existing user.
 export async function loginUser(credentials) {
   const res = await fetch(`${API_URL}/api/users/login`, {
     method: "POST",
@@ -28,9 +24,7 @@ export async function loginUser(credentials) {
   return res.json();
 }
 
-/**
- * Fetch current user profile.
- */
+//Fetch current user profile.
 export async function getUserProfile(token) {
   const res = await fetch(`${API_URL}/api/users/profile`, {
     headers: { Authorization: `Bearer ${token}` },

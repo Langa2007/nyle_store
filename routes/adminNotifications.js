@@ -3,8 +3,7 @@ import { pool } from '../db/connect.js';
 
 const router = express.Router();
 
-// GET /api/admin/notifications/summary
-// Fetches the count of actionable items requiring admin attention
+// GET /api/admin/notifications/
 router.get('/summary', async (req, res) => {
     try {
         // Execute queries in parallel for performance

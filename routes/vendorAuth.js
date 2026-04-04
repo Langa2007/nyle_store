@@ -51,7 +51,7 @@ router.get("/verify-session", verifyVendor, verifySession);
 // Get notification summary - GET (Requires Token)
 router.get("/notification-summary", verifyVendor, getNotificationSummary);
 
-// 🔐 PASSWORD RESET ENDPOINTS (USING CODES)
+//  PASSWORD RESET ENDPOINTS (USING CODES)
 
 // Forgot password - sends 6-digit code
 router.post("/forgot-password", passwordResetLimiter, (req, res) => {
