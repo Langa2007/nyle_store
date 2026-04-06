@@ -247,7 +247,7 @@ export default function VendorSignup() {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6" autoComplete="on">
                 {/* Business Details Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -262,6 +262,7 @@ export default function VendorSignup() {
                       value={form.legal_name}
                       onChange={handleChange}
                       required
+                      autoComplete="organization"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                     />
                   </div>
@@ -278,6 +279,7 @@ export default function VendorSignup() {
                       value={form.company_name}
                       onChange={handleChange}
                       required
+                      autoComplete="organization"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                     />
                   </div>
@@ -297,6 +299,7 @@ export default function VendorSignup() {
                       value={form.contact_person}
                       onChange={handleChange}
                       required
+                      autoComplete="name"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                     />
                   </div>
@@ -313,6 +316,7 @@ export default function VendorSignup() {
                       value={form.email}
                       onChange={handleChange}
                       required
+                      autoComplete="email"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                     />
                   </div>
@@ -332,6 +336,7 @@ export default function VendorSignup() {
                       value={form.phone}
                       onChange={handleChange}
                       required
+                      autoComplete="tel"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                     />
                   </div>
@@ -370,6 +375,7 @@ export default function VendorSignup() {
                     value={form.address}
                     onChange={handleChange}
                     required
+                    autoComplete="street-address"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                   />
                 </div>
@@ -407,6 +413,7 @@ export default function VendorSignup() {
                       value={form.password}
                       onChange={handleChange}
                       required
+                      autoComplete="new-password"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                     />
 
@@ -453,6 +460,7 @@ export default function VendorSignup() {
                       value={form.confirm_password}
                       onChange={handleChange}
                       required
+                      autoComplete="new-password"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                     />
                     {form.confirm_password && form.password === form.confirm_password && (

@@ -254,13 +254,15 @@ export default function SignupPage() {
             <div className="flex-1 h-px bg-gray-200"></div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5" autoComplete="on">
             <div>
               <label className="text-sm font-medium text-gray-700 mb-1 block">Full name <span className="text-gray-400">(optional)</span></label>
               <input
+                name="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="John Doe"
+                autoComplete="name"
                 className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
             </div>
@@ -268,6 +270,7 @@ export default function SignupPage() {
             <div>
               <label className="text-sm font-medium text-gray-700 mb-1 block">Email address</label>
               <input
+                name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
@@ -282,6 +285,7 @@ export default function SignupPage() {
               <label className="text-sm font-medium text-gray-700 mb-1 block">Password</label>
               <div className="relative">
                 <input
+                  name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Create a strong password"
@@ -306,6 +310,7 @@ export default function SignupPage() {
               <label className="text-sm font-medium text-gray-700 mb-1 block">Confirm Password</label>
               <div className="relative">
                 <input
+                  name="confirmPassword"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Re-enter your password"

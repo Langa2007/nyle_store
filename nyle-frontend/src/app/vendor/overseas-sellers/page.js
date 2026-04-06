@@ -360,7 +360,7 @@ export default function OverseasVendorSignup() {
                                 </div>
                             )}
 
-                            <form onSubmit={handleSubmit} className="space-y-6">
+                            <form onSubmit={handleSubmit} className="space-y-6" autoComplete="on">
                                 {/* Business Details Section */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
@@ -375,6 +375,7 @@ export default function OverseasVendorSignup() {
                                             value={form.legal_name}
                                             onChange={handleChange}
                                             required
+                                            autoComplete="organization"
                                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                                         />
                                     </div>
@@ -391,6 +392,7 @@ export default function OverseasVendorSignup() {
                                             value={form.company_name}
                                             onChange={handleChange}
                                             required
+                                            autoComplete="organization"
                                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                                         />
                                     </div>
@@ -410,6 +412,7 @@ export default function OverseasVendorSignup() {
                                             value={form.contact_person}
                                             onChange={handleChange}
                                             required
+                                            autoComplete="name"
                                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                                         />
                                     </div>
@@ -426,6 +429,7 @@ export default function OverseasVendorSignup() {
                                             value={form.email}
                                             onChange={handleChange}
                                             required
+                                            autoComplete="email"
                                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                                         />
                                     </div>
@@ -455,6 +459,7 @@ export default function OverseasVendorSignup() {
                                                 required
                                                 disabled={!selectedCountry}
                                                 placeholder={!selectedCountry ? "Select a country first" : "Enter number after code"}
+                                                autoComplete="tel"
                                                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ${selectedCountry ? 'pl-14' : ''
                                                     } ${phoneError ? 'border-red-500' : 'border-gray-300'}`}
                                             />
@@ -505,6 +510,7 @@ export default function OverseasVendorSignup() {
                                         value={form.address}
                                         onChange={handleChange}
                                         required
+                                        autoComplete="street-address"
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                                     />
                                 </div>
@@ -541,6 +547,7 @@ export default function OverseasVendorSignup() {
                                             value={form.password}
                                             onChange={handleChange}
                                             required
+                                            autoComplete="new-password"
                                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                                         />
 
@@ -568,6 +575,7 @@ export default function OverseasVendorSignup() {
                                             value={form.confirm_password}
                                             onChange={handleChange}
                                             required
+                                            autoComplete="new-password"
                                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                                         />
                                     </div>
