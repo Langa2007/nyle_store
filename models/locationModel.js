@@ -1,14 +1,17 @@
 // models/locationModel.js
 import pool from '../db/connect.js';
+import { getUsersIdSqlType } from '../db/userIdSchema.js';
 
 /**
  * Initialize the user_locations table
  */
 export const initLocationTable = async () => {
+    const userIdSqlType = await getUsersIdSqlType();
+
     const query = `
     CREATE TABLE IF NOT EXISTS user_locations (
       id SERIAL PRIMARY KEY,
-      user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      user_id ${userIdSqlType} NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       name VARCHAR(100), -- e.g., "Home", "Office"
       address TEXT NOT NULL,
       latitude DECIMAL(10, 8),

@@ -1,14 +1,10 @@
 import pool from "../db/connect.js";
+import { normalizeUserId } from "../db/userIdSchema.js";
 
 const MAX_RECENT_ITEMS = 24;
 
-const parseUserId = (value) => {
-  const parsed = Number(value);
-  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
-};
-
 const getActor = (req, res) => {
-  const userId = parseUserId(req.body?.user_id ?? req.query?.user_id);
+  const userId = normalizeUserId(req.body?.user_id ?? req.query?.user_id);
   const sessionId = String(req.body?.session_id ?? req.query?.session_id ?? "").trim();
 
   if (!userId && !sessionId) {
@@ -188,7 +184,7 @@ export const clearRecentlyViewed = async (req, res) => {
 };
 
 export const syncRecentlyViewed = async (req, res) => {
-  const userId = parseUserId(req.body?.user_id);
+  const userId = normalizeUserId(req.body?.user_id);
   const sessionId = String(req.body?.session_id ?? "").trim();
 
   if (!userId || !sessionId) {

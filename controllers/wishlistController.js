@@ -1,12 +1,8 @@
 import pool from "../db/connect.js";
-
-const parseUserId = (value) => {
-  const parsed = Number(value);
-  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
-};
+import { normalizeUserId } from "../db/userIdSchema.js";
 
 const getActor = (req, res) => {
-  const userId = parseUserId(req.body?.user_id ?? req.query?.user_id);
+  const userId = normalizeUserId(req.body?.user_id ?? req.query?.user_id);
   const sessionId = String(req.body?.session_id ?? req.query?.session_id ?? "").trim();
 
   if (!userId && !sessionId) {
@@ -159,7 +155,7 @@ export const removeWishlistItem = async (req, res) => {
 };
 
 export const syncWishlist = async (req, res) => {
-  const userId = parseUserId(req.body?.user_id);
+  const userId = normalizeUserId(req.body?.user_id);
   const sessionId = String(req.body?.session_id ?? "").trim();
 
   if (!userId || !sessionId) {

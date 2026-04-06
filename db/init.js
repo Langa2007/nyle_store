@@ -1,4 +1,5 @@
 import pool from './connect.js';
+import { getUsersIdSqlType } from './userIdSchema.js';
 
 /**
  * Initialize all database tables in the correct order to respect foreign keys
@@ -19,6 +20,8 @@ export const initDB = async () => {
             )
         `);
         console.log(" Users table initialized");
+
+        const userIdSqlType = await getUsersIdSqlType();
 
         // 2. Vendors table
         await pool.query(`
@@ -74,7 +77,7 @@ export const initDB = async () => {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS user_locations (
                 id SERIAL PRIMARY KEY,
-                user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                user_id ${userIdSqlType} NOT NULL REFERENCES users(id) ON DELETE CASCADE,
                 name VARCHAR(100),
                 address TEXT NOT NULL,
                 latitude DECIMAL(10, 8),
@@ -165,7 +168,7 @@ export const initDB = async () => {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS wishlist_items (
                 id SERIAL PRIMARY KEY,
-                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                user_id ${userIdSqlType} REFERENCES users(id) ON DELETE CASCADE,
                 session_id VARCHAR(255),
                 product_id INTEGER NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -192,7 +195,7 @@ export const initDB = async () => {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS recently_viewed_items (
                 id SERIAL PRIMARY KEY,
-                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                user_id ${userIdSqlType} REFERENCES users(id) ON DELETE CASCADE,
                 session_id VARCHAR(255),
                 product_id INTEGER NOT NULL,
                 viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

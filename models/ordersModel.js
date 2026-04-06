@@ -1,14 +1,17 @@
 // models/ordersModel.js
 import pool from '../db/connect.js';
+import { getUsersIdSqlType } from '../db/userIdSchema.js';
 
 //  Ensure tables exist
 const createOrderTables = async () => {
   try {
+    const userIdSqlType = await getUsersIdSqlType();
+
     await pool.query(`
       CREATE TABLE IF NOT EXISTS orders (
         id SERIAL PRIMARY KEY,
-        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        vendor_id INTEGER REFERENCES users(id), -- Added to support vendor tracking per order
+        user_id ${userIdSqlType} REFERENCES users(id) ON DELETE CASCADE,
+        vendor_id INTEGER REFERENCES vendors(id),
         shipping_location_id INTEGER REFERENCES user_locations(id) ON DELETE SET NULL,
         shipping_address TEXT,
         total_amount NUMERIC(10,2),
