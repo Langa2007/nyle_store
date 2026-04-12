@@ -2,11 +2,17 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 const SHOP_ACTIVITY_SESSION_KEY = "shop_activity_session_id";
 
 const ShopActivityContext = createContext(null);
+
+const shouldSuspendCommerceFetches = (pathname = "") =>
+  pathname.startsWith("/vendor") ||
+  pathname.startsWith("/admin") ||
+  pathname.startsWith("/auth");
 
 const normalizeItems = (data) => {
   if (Array.isArray(data)) return data;
@@ -21,11 +27,13 @@ const readExistingSessionId = () => {
 
 export function ShopActivityProvider({ children }) {
   const { data: session, status } = useSession();
+  const pathname = usePathname();
   const [wishlistItems, setWishlistItems] = useState([]);
   const [recentlyViewedItems, setRecentlyViewedItems] = useState([]);
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const [recentlyViewedLoading, setRecentlyViewedLoading] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const suspendCommerceFetches = shouldSuspendCommerceFetches(pathname);
 
   const getSessionId = useCallback(() => {
     if (typeof window === "undefined") return null;
@@ -236,10 +244,17 @@ export function ShopActivityProvider({ children }) {
   );
 
   useEffect(() => {
+    if (suspendCommerceFetches) {
+      setWishlistItems([]);
+      setRecentlyViewedItems([]);
+      return;
+    }
     refreshActivity();
-  }, [refreshActivity]);
+  }, [refreshActivity, suspendCommerceFetches]);
 
   useEffect(() => {
+    if (suspendCommerceFetches) return;
+
     const userId = getUserId();
     const sessionId = readExistingSessionId();
 
@@ -269,7 +284,7 @@ export function ShopActivityProvider({ children }) {
     };
 
     syncGuestData();
-  }, [getUserId, isSyncing, refreshActivity]);
+  }, [getUserId, isSyncing, refreshActivity, suspendCommerceFetches]);
 
   const value = useMemo(() => ({
     wishlistItems,

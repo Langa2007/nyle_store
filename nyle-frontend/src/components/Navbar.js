@@ -215,6 +215,13 @@ const getTimeLeft = (endDate) => {
 
 const formatUnit = (value) => String(value).padStart(2, "0");
 
+const shouldLoadCommerceChrome = (pathname = "") =>
+  !(
+    pathname.startsWith("/vendor") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/auth")
+  );
+
 export default function Navbar() {
   const isMobile = useIsMobile();
   const { data: session, status } = useSession();
@@ -241,11 +248,24 @@ export default function Navbar() {
   const { wishlistCount, recentlyViewedCount } = useShopActivity();
   const { itemCount } = getCartTotals();
   const [categories, setCategories] = useState([]);
-  const [campaign, setCampaign] = useState(() => pickCampaign());
-  const [countdown, setCountdown] = useState(() => getTimeLeft(pickCampaign().endDate));
+  const [campaign, setCampaign] = useState(FALLBACK_CAMPAIGN);
+  const [countdown, setCountdown] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    isExpired: false,
+  });
+  const [campaignReady, setCampaignReady] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const loadCommerceChrome = shouldLoadCommerceChrome(pathname);
 
   useEffect(() => {
+    if (!loadCommerceChrome) {
+      setCategories([]);
+      return;
+    }
+
     const fetchCategories = async () => {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/categories`);
@@ -258,13 +278,14 @@ export default function Navbar() {
       }
     };
     fetchCategories();
-  }, []);
+  }, [loadCommerceChrome]);
 
   useEffect(() => {
     const updateCampaignCountdown = () => {
       const selectedCampaign = pickCampaign();
       setCampaign(selectedCampaign);
       setCountdown(getTimeLeft(selectedCampaign.endDate));
+      setCampaignReady(true);
     };
 
     updateCampaignCountdown();
@@ -482,10 +503,10 @@ export default function Navbar() {
               <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
                 <span className="font-semibold text-white/90 flex items-center gap-1">
                   <Zap className="w-3 h-3 fill-yellow-300 text-yellow-300" />
-                  {countdown.isExpired ? "Limited time offer ended" : "Ends in"}
+                  {campaignReady && countdown.isExpired ? "Limited time offer ended" : "Ends in"}
                 </span>
 
-                {!countdown.isExpired && (
+                {campaignReady && !countdown.isExpired && (
                   <div className="flex gap-1 sm:gap-2">
                     {[
                       { label: "Days", value: countdown.days, color: "from-yellow-300 to-yellow-500" },

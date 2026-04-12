@@ -5,20 +5,31 @@ const defaultHandler = (message) => (req, res) => {
   res.status(429).json({ message });
 };
 
-const createLimiter = ({ windowMs, max, message }) =>
+const createLimiter = ({ windowMs, max, message, skip }) =>
   rateLimit({
     windowMs,
     max,
     standardHeaders: true,
     legacyHeaders: false,
+    skip,
     handler: defaultHandler(message),
   });
+
+const isSafeReadMethod = (method) => ["GET", "HEAD", "OPTIONS"].includes(method);
+
+const isAuthOrRecoveryPath = (path = "") =>
+  path.startsWith("/auth") ||
+  path.startsWith("/admin/auth") ||
+  path.startsWith("/vendor/auth") ||
+  path.startsWith("/password-reset") ||
+  path.startsWith("/user/password-reset");
 
 // General public API limiter (global fallback — applied to all routes in index.js)
 export const publicLimiter = createLimiter({
   windowMs: 15 * 60 * 1000, // 15 min
-  max: 120,
+  max: Number(process.env.PUBLIC_API_RATE_LIMIT_MAX || 600),
   message: "Too many requests, please try again later.",
+  skip: (req) => isSafeReadMethod(req.method) || isAuthOrRecoveryPath(req.path),
 });
 
 // Auth endpoints — login, register, token verify

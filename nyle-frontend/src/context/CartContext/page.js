@@ -2,18 +2,26 @@
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
 const CartContext = createContext();
 
+const shouldSuspendCommerceFetches = (pathname = "") =>
+  pathname.startsWith("/vendor") ||
+  pathname.startsWith("/admin") ||
+  pathname.startsWith("/auth");
+
 export function CartProvider({ children }) {
   const { data: session, status } = useSession();
+  const pathname = usePathname();
   const [cart, setCart] = useState({ items: [], cart_id: null });
   const [loading, setLoading] = useState(false);
   const [showCart, setShowCart] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authAction, setAuthAction] = useState(null); // 'login' or 'register'
+  const suspendCommerceFetches = shouldSuspendCommerceFetches(pathname);
 
   // Get or create session ID
   const getSessionId = () => {
@@ -243,8 +251,12 @@ export function CartProvider({ children }) {
 
   // Initial fetch
   useEffect(() => {
+    if (suspendCommerceFetches) {
+      setCart({ items: [], cart_id: null });
+      return;
+    }
     fetchCart();
-  }, [fetchCart]);
+  }, [fetchCart, suspendCommerceFetches]);
 
   return (
     <CartContext.Provider value={{
