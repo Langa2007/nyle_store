@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import NyleLogo from "@/components/branding/NyleLogo";
+import NyleLogo from "@/components/branding/NyleLogo.png";
 
 function PasswordStrength({ password }) {
   if (!password) return null;

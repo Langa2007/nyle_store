@@ -15,7 +15,7 @@ import {
 } from "react-icons/fa";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import NyleLogo from "@/components/branding/NyleLogo";
+import NyleLogo from "@/components/branding/NyleLogo.png";
 
 
 export default function LoginPage() {

@@ -10,7 +10,7 @@ import { useCart } from "@/context/CartContext/page";
 import { useShopActivity } from "@/context/ShopActivityContext/page";
 import { useIsMobile } from "@/lib/useMobile";
 import { useSession, signOut } from "next-auth/react";
-import NyleLogo from "@/components/branding/NyleLogo";
+import NyleLogo from "@/components/branding/NyleLogo.png";
 
 // Enhanced holiday campaigns with more dynamic options
 const HOLIDAY_CAMPAIGNS = [
