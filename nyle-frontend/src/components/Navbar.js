@@ -123,7 +123,7 @@ const HOLIDAY_CAMPAIGNS = [
     ctaHref: "/deals",
     startDate: "2026-05-01T00:00:00+03:00",
     endDate: "2026-05-03T23:59:59+03:00",
-    gradient: "from-red-200 to-orange-200",
+    gradient: "from-red-500 to-orange-400",
     icon: "🔧"
   },
   {
