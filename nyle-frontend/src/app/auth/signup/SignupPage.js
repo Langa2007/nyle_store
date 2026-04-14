@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import Image from "next/image";
 import NyleLogo from "@/components/branding/NyleLogo.png";
 
 function PasswordStrength({ password }) {
@@ -172,7 +173,8 @@ export default function SignupPage() {
             Back to Home
           </Link>
           <div className="flex items-center gap-3 text-gray-800">
-            <NyleLogo
+            <Image
+              src={NyleLogo}
               alt="Nyle logo"
               width={40}
               height={40}

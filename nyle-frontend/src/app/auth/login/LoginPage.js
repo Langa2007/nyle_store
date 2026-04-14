@@ -14,6 +14,7 @@ import {
   FaCheckCircle
 } from "react-icons/fa";
 import Link from "next/link";
+import Image from "next/image";
 import { signIn } from "next-auth/react";
 import NyleLogo from "@/components/branding/NyleLogo.png";
 
@@ -115,7 +116,8 @@ export default function LoginPage() {
         {/* Logo Header */}
         <div className="text-center mb-8">
           <div className="mb-4 flex justify-center">
-            <NyleLogo
+            <Image
+              src={NyleLogo}
               alt="Nyle logo"
               width={84}
               height={84}

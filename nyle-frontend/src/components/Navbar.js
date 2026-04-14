@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
 import { ShoppingCart, Menu, X, Search, Sparkles, Zap, Tag, Gift, Star, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { FaHeart, FaUser, FaSignInAlt, FaUserPlus, FaStore, FaCog, FaHistory, FaSignOutAlt, FaGift, FaBolt, FaFire, FaCrown } from "react-icons/fa";
@@ -547,7 +548,8 @@ export default function Navbar() {
           <div className="flex h-16 justify-between items-center">
             {/* Logo with animation */}
             <Link href="/" className="flex items-center space-x-3 group">
-              <NyleLogo
+              <Image
+                src={NyleLogo}
                 alt="Nyle logo"
                 width={44}
                 height={44}
@@ -907,7 +909,8 @@ export default function Navbar() {
       >
         <div className="flex justify-between items-center px-6 py-5 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white">
           <div className="flex items-center gap-3">
-            <NyleLogo
+            <Image
+              src={NyleLogo}
               alt="Nyle logo"
               width={42}
               height={42}

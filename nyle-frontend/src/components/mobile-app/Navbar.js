@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { ShoppingCart, Menu, X, User as UserIcon } from "lucide-react";
 import Link from "next/link";
 import { useCart } from "../../context/CartContext/page";
 import { useSession } from "next-auth/react";
-import NyleLogo from "@/components/branding/NyleLogo";
+import NyleLogo from "@/components/branding/NyleLogo.png";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -31,7 +32,8 @@ export default function Navbar() {
         <div className="flex h-16 justify-between items-center">
           {/* Logo */}
           <Link href="/shop" className="flex flex-shrink-0 items-center gap-2.5">
-            <NyleLogo
+            <Image
+              src={NyleLogo}
               alt="Nyle logo"
               width={36}
               height={36}
