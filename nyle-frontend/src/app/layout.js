@@ -17,8 +17,11 @@ export const metadata = {
   description: "Shop smarter with Nyle Store.",
   manifest: "/manifest.json",
   icons: {
-    icon: [{ url: "/nyle-mark.svg", type: "image/svg+xml" }],
-    shortcut: "/nyle-mark.svg",
+    icon: [
+      { url: "/favicon.png", type: "image/png", sizes: "32x32" },
+      { url: "/nyle-mark.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.png",
   },
 };
 
