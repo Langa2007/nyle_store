@@ -96,7 +96,7 @@ export default function VendorAppPage() {
       rating: 5
     },
     {
-      name: "Sarah Chen",
+      name: "Maria Njeri",
       business: "Tech Gadgets Ltd",
       quote: "Managing inventory on my phone has been a game-changer",
       rating: 5
