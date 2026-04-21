@@ -572,11 +572,11 @@ export default function Navbar() {
             {/* ── Desktop Nav Links — Premium ── */}
             <div className="hidden md:flex items-center space-x-1">
               {[
-                { href: "/", label: "Home", icon: "🏠" },
-                { href: "/products", label: "Shop", hasMega: true, icon: "🛍️" },
-                { href: "/categories", label: "Categories", hasMega: true, icon: "📦" },
-                { href: "/deals", label: "Hot Deals", hot: true, icon: "🔥" },
-                { href: "/brands", label: "Brands", icon: "💎" },
+                { href: "/", label: "Home", icon: "" },
+                { href: "/products", label: "Shop", hasMega: true, icon: "" },
+                { href: "/categories", label: "Categories", hasMega: true, icon: "" },
+                { href: "/deals", label: "Hot Deals", hot: true, icon: "" },
+                { href: "/brands", label: "Brands", icon: "" },
               ].map((item) => (
                 <div
                   key={item.href}
