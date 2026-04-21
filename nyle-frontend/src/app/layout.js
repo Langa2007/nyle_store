@@ -1,5 +1,6 @@
 // src/app/layout.js
 import "./globals.css";
+import Script from "next/script";
 import { Suspense } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Navbar from "../components/Navbar";
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="overflow-hidden">
+        <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
         {/* Wrap everything with SessionProviderWrapper which contains SessionProvider */}
         <SessionProviderWrapper>
           <SessionSync />

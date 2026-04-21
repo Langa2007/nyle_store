@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { useAuthPopup } from "@/hooks/useAuthPopup";
+import GoogleIdentitySync from "@/components/GoogleIdentitySync";
 import Link from "next/link";
 import Image from "next/image";
 import NyleLogo from "@/components/branding/NyleLogo.png";
@@ -48,7 +48,7 @@ export default function SignupPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signInWithPopup, isAuthenticating: googleLoading } = useAuthPopup();
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [message, setMessage] = useState("");
 
   // Smart email attempt using Credential Management API (best-effort)
@@ -76,12 +76,9 @@ export default function SignupPage() {
   // Google Sign-In Handler
   const handleGoogleSignIn = () => {
     setMessage("");
-    signInWithPopup("google", {
-      onSuccess: () => {
-        router.push(next);
-        router.refresh();
-      }
-    });
+    if (window.google) {
+      window.google.accounts.id.prompt();
+    }
   };
 
   // Email/Password Signup Handler
@@ -209,8 +206,8 @@ export default function SignupPage() {
             </div>
           )}
 
-          {/* Google Sign-In Button */}
           <div className="mb-6">
+            <GoogleIdentitySync />
             <button
               onClick={handleGoogleSignIn}
               disabled={googleLoading}

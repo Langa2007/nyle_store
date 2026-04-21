@@ -52,6 +52,57 @@ export const getAuthOptions = async () => {
                         image: user.image,
                     }
                 }
+            }),
+            CredentialsProvider({
+                id: 'google-id-token',
+                name: 'Google ID Token',
+                credentials: {
+                    id_token: { label: 'ID Token', type: 'text' },
+                },
+                async authorize(credentials) {
+                    if (!credentials?.id_token) return null;
+
+                    try {
+                        const response = await fetch(
+                            `https://oauth2.googleapis.com/tokeninfo?id_token=${credentials.id_token}`
+                        );
+
+                        if (!response.ok) return null;
+
+                        const googleUser = await response.json();
+
+                        if (googleUser.aud !== process.env.GOOGLE_CLIENT_ID) {
+                            return null;
+                        }
+
+                        const db = await getPrisma();
+                        if (!db) return null;
+
+                        let user = await db.user.findUnique({
+                            where: { email: googleUser.email }
+                        });
+
+                        if (!user) {
+                            user = await db.user.create({
+                                data: {
+                                    email: googleUser.email,
+                                    name: googleUser.name || 'Google User',
+                                    image: googleUser.picture,
+                                }
+                            });
+                        }
+
+                        return {
+                            id: user.id,
+                            email: user.email,
+                            name: user.name,
+                            image: user.image,
+                        }
+                    } catch (error) {
+                        console.error('[Auth] Google token verification error:', error);
+                        return null;
+                    }
+                }
             })
         ],
         session: {
@@ -71,7 +122,7 @@ export const getAuthOptions = async () => {
                     token.email = user.email; // CRITICAL: Ensure email is preserved for Case 2
                     if (db) {
                         try {
-                            if (account?.provider === 'google') {
+                            if (account?.provider === 'google' || account?.provider === 'google-id-token') {
                                 let dbUser = await db.user.findUnique({
                                     where: { email: user.email }
                                 });
