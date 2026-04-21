@@ -5,8 +5,10 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ShoppingBag, Users, Building2, Globe, Search, ExternalLink,
-  Home, Sparkles, Zap, Crown, Map, ChevronRight, ArrowRight
+  Home, Sparkles, Zap, Crown, Map, ChevronRight, ArrowRight,
+  HelpCircle, Shield, FileText
 } from "lucide-react";
+import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 
 const siteSections = [
   {
@@ -14,8 +16,8 @@ const siteSections = [
     title: "Shopping & Products",
     subtitle: "Explore our full catalog",
     icon: <ShoppingBag size={22} />,
-    accent: "from-amber-500 to-orange-500",
-    glow: "rgba(251,191,36,0.2)",
+    accent: "from-blue-600 to-indigo-600",
+    glow: "rgba(37,99,235,0.2)",
     links: [
       { name: "All Products", href: "/products", icon: "📦", badge: null },
       { name: "Featured Products", href: "/products/featured", icon: "⭐", badge: "New" },
@@ -89,18 +91,33 @@ const quickLinks = [
   { name: "Deals", href: "/deals", icon: "🔥", color: "from-red-500 to-pink-500" },
   { name: "Categories", href: "/categories", icon: "📂", color: "from-purple-500 to-pink-500" },
   { name: "Sell", href: "/vendor/signup", icon: "🚀", color: "from-teal-500 to-cyan-500" },
-  { name: "Help", href: "/support/help-center", icon: "❓", color: "from-green-500 to-emerald-500" },
+  { name: "Help", href: "/support/help-center", icon: "❓", color: "from-blue-500 to-cyan-500" },
 ];
 
 const badgeColors = {
-  "Hot": "bg-red-500/20 text-red-400 border-red-500/30",
-  "New": "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  "Live": "bg-green-500/20 text-green-400 border-green-500/30 animate-pulse",
-  "Popular": "bg-orange-500/20 text-orange-400 border-orange-500/30",
-  "Free": "bg-teal-500/20 text-teal-400 border-teal-500/30",
-  "Join": "bg-purple-500/20 text-purple-400 border-purple-500/30",
-  "Hiring": "bg-blue-500/20 text-blue-400 border-blue-500/30",
+  "Hot": "bg-blue-500/20 text-blue-400 border-blue-500/30",
+  "New": "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
+  "Live": "bg-blue-400/20 text-blue-300 border-blue-400/30 animate-pulse",
+  "Popular": "bg-indigo-500/20 text-indigo-400 border-indigo-500/30",
+  "Free": "bg-cyan-600/20 text-cyan-300 border-cyan-600/30",
+  "Join": "bg-blue-600/20 text-blue-300 border-blue-600/30",
+  "Hiring": "bg-sky-500/20 text-sky-400 border-sky-500/30",
 };
+
+const footerPages = [
+  { href: "/others/privacy", label: "Privacy Policy", icon: <Shield size={18} />, color: "from-blue-500 to-cyan-500" },
+  { href: "/others/terms", label: "Terms of Service", icon: <FileText size={18} />, color: "from-blue-600 to-indigo-600" },
+  { href: "/others/cookies", label: "Cookie Policy", icon: <Globe size={18} />, color: "from-indigo-600 to-purple-600" },
+  { href: "/others/accessibility", label: "Accessibility", icon: <Users size={18} />, color: "from-cyan-500 to-blue-500" },
+];
+
+const footerQuickLinks = [
+  { href: "/", label: "Home" },
+  { href: "/products", label: "Shop Products" },
+  { href: "/categories", label: "Browse Categories" },
+  { href: "/support/help-center", label: "Help Center" },
+  { href: "/support/contact", label: "Contact Us" },
+];
 
 export default function SitemapPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -124,9 +141,9 @@ export default function SitemapPage() {
 
       {/* ── Ambient Background ── */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/3 right-1/4 w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-[100px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/3 rounded-full blur-[150px]" />
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/3 right-1/4 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-600/3 rounded-full blur-[150px]" />
         {/* Grid lines */}
         <div
           className="absolute inset-0 opacity-[0.03]"
@@ -151,16 +168,16 @@ export default function SitemapPage() {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-400/20 bg-amber-400/5 mb-8"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-400/20 bg-blue-400/5 mb-8"
           >
-            <Crown size={14} className="text-amber-400" />
-            <span className="text-xs font-bold text-amber-400 uppercase tracking-[0.2em]">Site Directory</span>
-            <Sparkles size={12} className="text-amber-400" />
+            <Crown size={14} className="text-blue-400" />
+            <span className="text-xs font-bold text-blue-400 uppercase tracking-[0.2em]">Site Directory</span>
+            <Sparkles size={12} className="text-blue-400" />
           </motion.div>
 
           <h1 className="text-5xl sm:text-7xl font-black tracking-tight mb-6">
             <span className="text-white">Site</span>
-            <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">map</span>
+            <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">map</span>
           </h1>
 
           <p className="text-white/40 text-lg max-w-xl mx-auto mb-12 font-medium">
@@ -169,9 +186,9 @@ export default function SitemapPage() {
 
           {/* Premium Search */}
           <div className="max-w-lg mx-auto relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-2xl blur-lg opacity-0 group-focus-within:opacity-100 transition-all duration-500" />
-            <div className="relative flex items-center bg-white/5 border border-white/10 group-focus-within:border-amber-400/40 rounded-2xl transition-all duration-300 overflow-hidden">
-              <Search className="ml-4 text-white/30 group-focus-within:text-amber-400 transition-colors flex-shrink-0" size={18} />
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-2xl blur-lg opacity-0 group-focus-within:opacity-100 transition-all duration-500" />
+            <div className="relative flex items-center bg-white/5 border border-white/10 group-focus-within:border-blue-400/40 rounded-2xl transition-all duration-300 overflow-hidden">
+              <Search className="ml-4 text-white/30 group-focus-within:text-blue-400 transition-colors flex-shrink-0" size={18} />
               <input
                 type="text"
                 value={searchQuery}
@@ -221,7 +238,7 @@ export default function SitemapPage() {
                     href={link.href}
                     className="group flex flex-col items-center gap-3 p-4 rounded-2xl bg-white/3 border border-white/5 hover:border-white/20 hover:bg-white/7 transition-all duration-300"
                   >
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${link.color} flex items-center justify-center text-xl shadow-lg group-hover:scale-110 group-hover:shadow-2xl transition-all duration-300`}>
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${link.color} flex items-center justify-center text-xl shadow-lg group-hover:scale-110 group-hover:shadow-2xl transition-all duration-300 ring-2 ring-blue-500/20`}>
                       {link.icon}
                     </div>
                     <span className="text-xs font-semibold text-white/50 group-hover:text-white transition-colors">{link.name}</span>
@@ -295,7 +312,7 @@ export default function SitemapPage() {
                           )}
                           <ExternalLink
                             size={12}
-                            className="text-white/10 group-hover/link:text-amber-400 transition-colors"
+                            className="text-white/10 group-hover/link:text-blue-400 transition-colors"
                           />
                         </div>
                       </Link>
@@ -325,7 +342,7 @@ export default function SitemapPage() {
               </p>
               <button
                 onClick={() => setSearchQuery("")}
-                className="px-8 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-black rounded-2xl hover:shadow-2xl hover:shadow-amber-900/30 transition-all"
+                className="px-8 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-black rounded-2xl hover:shadow-2xl hover:shadow-blue-900/30 transition-all font-sans"
               >
                 Clear Search
               </button>
@@ -362,17 +379,17 @@ export default function SitemapPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0 }}
-            className="mt-12 relative rounded-3xl overflow-hidden p-px bg-gradient-to-r from-amber-500/30 via-transparent to-amber-500/30"
+            className="mt-12 relative rounded-3xl overflow-hidden p-px bg-gradient-to-r from-blue-500/30 via-transparent to-blue-500/30"
           >
-            <div className="bg-gradient-to-r from-amber-500/5 via-[#0a0f1e] to-amber-500/5 rounded-3xl p-12 text-center relative">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(251,191,36,0.05),transparent_70%)]" />
-              <Crown size={40} className="text-amber-400/60 mx-auto mb-4" />
+            <div className="bg-gradient-to-r from-blue-500/5 via-[#0a0f1e] to-blue-500/5 rounded-3xl p-12 text-center relative">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.05),transparent_70%)]" />
+              <Crown size={40} className="text-blue-400/60 mx-auto mb-4" />
               <h2 className="text-3xl font-black text-white mb-3">Can't find what you need?</h2>
               <p className="text-white/40 mb-8 max-w-md mx-auto">Our support team is ready to guide you to the right place.</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/support/help-center"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-black rounded-2xl hover:shadow-2xl hover:shadow-amber-900/30 transition-all"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-black rounded-2xl hover:shadow-2xl hover:shadow-blue-900/30 transition-all"
                 >
                   Visit Help Center <ArrowRight size={16} />
                 </Link>
@@ -389,12 +406,96 @@ export default function SitemapPage() {
 
       </div>
 
-      {/* ── Structured Sitemap Footer Note ── */}
-      <div className="relative z-10 border-t border-white/5 py-8 text-center">
-        <p className="text-white/15 text-xs font-medium">
-          Nyle Store Sitemap · Last updated April 2026 · <span className="text-amber-400/30">Kenya's #1 Marketplace</span>
-        </p>
-      </div>
+      {/* ── Shared Modal Footer ── */}
+      <footer className="relative mt-24 bg-gradient-to-br from-[#060b18] via-blue-950 to-[#060b18] text-white overflow-hidden border-t border-white/5">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(37,99,235,0.05),transparent_40%)]" />
+        
+        <div className="container mx-auto px-6 py-16 relative z-10">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
+              {/* Company Info */}
+              <div className="space-y-6">
+                <div className="flex flex-col -space-y-0.5">
+                  <span className="text-2xl font-black tracking-tight text-white">
+                    Nyle<span className="text-blue-400">Store</span>
+                  </span>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/40">Kenya's #1 Marketplace</span>
+                </div>
+                <p className="text-white/40 text-sm leading-relaxed">
+                  Connecting premium buyers and trusted sellers across the region with transparency and trust.
+                </p>
+                <div className="flex gap-4">
+                  {[FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn].map((Icon, index) => (
+                    <a
+                      key={index}
+                      href="#"
+                      className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-blue-500/20 hover:text-blue-400 transition-all border border-white/10 hover:border-blue-500/30"
+                    >
+                      <Icon size={16} />
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quick Links */}
+              <div>
+                <h4 className="text-sm font-black uppercase tracking-widest text-white mb-6">Quick Access</h4>
+                <div className="space-y-3">
+                  {footerQuickLinks.map((link, index) => (
+                    <Link
+                      key={index}
+                      href={link.href}
+                      className="block text-sm text-white/40 hover:text-blue-400 transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Legal Pages */}
+              <div>
+                <h4 className="text-sm font-black uppercase tracking-widest text-white mb-6">Legal & Policies</h4>
+                <div className="space-y-3">
+                  {footerPages.map((page) => (
+                    <Link
+                      key={page.href}
+                      href={page.href}
+                      className="block text-sm text-white/40 hover:text-blue-400 transition-colors"
+                    >
+                      {page.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Support */}
+              <div>
+                <h4 className="text-sm font-black uppercase tracking-widest text-white mb-6">Support</h4>
+                <div className="space-y-3">
+                  <Link href="/support/help-center" className="block text-sm text-white/40 hover:text-blue-400 transition-colors">Help Center</Link>
+                  <Link href="/support/contact" className="block text-sm text-white/40 hover:text-blue-400 transition-colors">Contact Us</Link>
+                  <Link href="/support/faqs" className="block text-sm text-white/40 hover:text-blue-400 transition-colors">FAQs</Link>
+                  <Link href="/support/report-issue" className="block text-sm text-white/40 hover:text-blue-400 transition-colors">Report Issue</Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+              <div className="text-center md:text-left">
+                <p className="text-sm text-white/20 font-medium">
+                  © {new Date().getFullYear()} Nyle Store. Built for the future of commerce.
+                </p>
+              </div>
+              <div className="flex flex-wrap justify-center gap-6 text-[10px] font-black uppercase tracking-widest text-white/20">
+                <Link href="/others/privacy" className="hover:text-blue-400 transition-colors">Privacy</Link>
+                <Link href="/others/terms" className="hover:text-blue-400 transition-colors">Terms</Link>
+                <Link href="/others/sitemap" className="text-blue-400">Sitemap</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
