@@ -19,14 +19,14 @@ const siteSections = [
     accent: "from-blue-600 to-indigo-600",
     glow: "rgba(37,99,235,0.2)",
     links: [
-      { name: "All Products", href: "/products", icon: "📦", badge: null },
-      { name: "Featured Products", href: "/products/featured", icon: "⭐", badge: "New" },
-      { name: "New Arrivals", href: "/products/new", icon: "🆕", badge: null },
-      { name: "Best Sellers", href: "/products/bestsellers", icon: "🔥", badge: "Popular" },
-      { name: "Deals & Discounts", href: "/deals", icon: "💰", badge: "Hot" },
-      { name: "Categories", href: "/categories", icon: "🗂️", badge: null },
-      { name: "Brands", href: "/brands", icon: "💎", badge: null },
-      { name: "Flash Sales", href: "/deals?type=flash", icon: "⚡", badge: "Live" },
+      { name: "All Products", href: "/products", icon: "", badge: null },
+      { name: "Featured Products", href: "/products/featured", icon: "", badge: "New" },
+      { name: "New Arrivals", href: "/products/new", icon: "", badge: null },
+      { name: "Best Sellers", href: "/products/bestsellers", icon: "", badge: "Popular" },
+      { name: "Deals & Discounts", href: "/deals", icon: "", badge: "Hot" },
+      { name: "Categories", href: "/categories", icon: "", badge: null },
+      { name: "Brands", href: "/brands", icon: "", badge: null },
+      { name: "Flash Sales", href: "/deals?type=flash", icon: "", badge: "Live" },
     ]
   },
   {
@@ -37,14 +37,14 @@ const siteSections = [
     accent: "from-blue-500 to-indigo-500",
     glow: "rgba(99,102,241,0.2)",
     links: [
-      { name: "My Account", href: "/profile", icon: "👤", badge: null },
-      { name: "My Orders", href: "/orders", icon: "📦", badge: null },
-      { name: "Wishlist", href: "/wishlist", icon: "❤️", badge: null },
-      { name: "Address Book", href: "/profile/addresses", icon: "📍", badge: null },
-      { name: "Payment Methods", href: "/profile/payments", icon: "💳", badge: null },
-      { name: "Reviews & Ratings", href: "/profile/reviews", icon: "⭐", badge: null },
-      { name: "Sign In", href: "/auth/login", icon: "🔐", badge: null },
-      { name: "Create Account", href: "/auth/signup", icon: "✨", badge: "Free" },
+      { name: "My Account", href: "/profile", icon: "", badge: null },
+      { name: "My Orders", href: "/orders", icon: "", badge: null },
+      { name: "Wishlist", href: "/wishlist", icon: "", badge: null },
+      { name: "Address Book", href: "/profile/addresses", icon: "", badge: null },
+      { name: "Payment Methods", href: "/profile/payments", icon: "", badge: null },
+      { name: "Reviews & Ratings", href: "/profile/reviews", icon: "", badge: null },
+      { name: "Sign In", href: "/auth/login", icon: "", badge: null },
+      { name: "Create Account", href: "/auth/signup", icon: "", badge: "Free" },
     ]
   },
   {
@@ -55,14 +55,14 @@ const siteSections = [
     accent: "from-purple-500 to-pink-500",
     glow: "rgba(168,85,247,0.2)",
     links: [
-      { name: "Become a Seller", href: "/vendor/signup", icon: "🚀", badge: "Join" },
-      { name: "Seller Dashboard", href: "/vendor/dashboard", icon: "📊", badge: null },
-      { name: "Product Management", href: "/vendor/products", icon: "📦", badge: null },
-      { name: "Orders & Fulfillment", href: "/vendor/orders", icon: "🚚", badge: null },
-      { name: "Analytics", href: "/vendor/analytics", icon: "📈", badge: null },
-      { name: "Submit a Deal", href: "/vendor/products", icon: "🏷️", badge: "New" },
-      { name: "Seller Policies", href: "/vendor/policies", icon: "📜", badge: null },
-      { name: "Vendor Login", href: "/vendor/login", icon: "🔑", badge: null },
+      { name: "Become a Seller", href: "/vendor/signup", icon: "", badge: "Join" },
+      { name: "Seller Dashboard", href: "/vendor/dashboard", icon: "", badge: null },
+      { name: "Product Management", href: "/vendor/products", icon: "", badge: null },
+      { name: "Orders & Fulfillment", href: "/vendor/orders", icon: "", badge: null },
+      { name: "Analytics", href: "/vendor/analytics", icon: "", badge: null },
+      { name: "Submit a Deal", href: "/vendor/products", icon: "", badge: "New" },
+      { name: "Seller Policies", href: "/vendor/policies", icon: "", badge: null },
+      { name: "Vendor Login", href: "/vendor/login", icon: "", badge: null },
     ]
   },
   {
@@ -73,25 +73,25 @@ const siteSections = [
     accent: "from-teal-500 to-cyan-500",
     glow: "rgba(20,184,166,0.2)",
     links: [
-      { name: "About Nyle", href: "/about/know-nyle", icon: "🏢", badge: null },
-      { name: "Contact Us", href: "/support/contact", icon: "📞", badge: null },
-      { name: "Help Center", href: "/support/help-center", icon: "❓", badge: null },
-      { name: "FAQs", href: "/support/faqs", icon: "💬", badge: null },
-      { name: "Careers", href: "/about/careers", icon: "💼", badge: "Hiring" },
-      { name: "Blog & Newsletter", href: "/support/newsletter", icon: "📝", badge: null },
-      { name: "Privacy Policy", href: "/others/privacy", icon: "🔒", badge: null },
-      { name: "Terms of Service", href: "/others/terms", icon: "📋", badge: null },
+      { name: "About Nyle", href: "/about/know-nyle", icon: "", badge: null },
+      { name: "Contact Us", href: "/support/contact", icon: "", badge: null },
+      { name: "Help Center", href: "/support/help-center", icon: "", badge: null },
+      { name: "FAQs", href: "/support/faqs", icon: "", badge: null },
+      { name: "Careers", href: "/about/careers", icon: "", badge: "Hiring" },
+      { name: "Blog & Newsletter", href: "/support/newsletter", icon: "", badge: null },
+      { name: "Privacy Policy", href: "/others/privacy", icon: "", badge: null },
+      { name: "Terms of Service", href: "/others/terms", icon: "", badge: null },
     ]
   }
 ];
 
 const quickLinks = [
-  { name: "Home", href: "/", icon: "🏠", color: "from-blue-600 to-indigo-600" },
-  { name: "Shop", href: "/products", icon: "🛒", color: "from-amber-500 to-orange-500" },
-  { name: "Deals", href: "/deals", icon: "🔥", color: "from-red-500 to-pink-500" },
-  { name: "Categories", href: "/categories", icon: "📂", color: "from-purple-500 to-pink-500" },
-  { name: "Sell", href: "/vendor/signup", icon: "🚀", color: "from-teal-500 to-cyan-500" },
-  { name: "Help", href: "/support/help-center", icon: "❓", color: "from-blue-500 to-cyan-500" },
+  { name: "Home", href: "/", icon: "", color: "from-blue-600 to-indigo-600" },
+  { name: "Shop", href: "/products", icon: "", color: "from-amber-500 to-orange-500" },
+  { name: "Deals", href: "/deals", icon: "", color: "from-red-500 to-pink-500" },
+  { name: "Categories", href: "/categories", icon: "", color: "from-purple-500 to-pink-500" },
+  { name: "Sell", href: "/vendor/signup", icon: "", color: "from-teal-500 to-cyan-500" },
+  { name: "Help", href: "/support/help-center", icon: "", color: "from-blue-500 to-cyan-500" },
 ];
 
 const badgeColors = {
@@ -105,10 +105,10 @@ const badgeColors = {
 };
 
 const footerPages = [
-  { href: "/others/privacy", label: "Privacy Policy", icon: <Shield size={18} />, color: "from-blue-500 to-cyan-500" },
-  { href: "/others/terms", label: "Terms of Service", icon: <FileText size={18} />, color: "from-blue-600 to-indigo-600" },
-  { href: "/others/cookies", label: "Cookie Policy", icon: <Globe size={18} />, color: "from-indigo-600 to-purple-600" },
-  { href: "/others/accessibility", label: "Accessibility", icon: <Users size={18} />, color: "from-cyan-500 to-blue-500" },
+  { href: "/others/privacy", label: "Privacy Policy", icon: "", color: "from-blue-500 to-cyan-500" },
+  { href: "/others/terms", label: "Terms of Service", icon: "", color: "from-blue-600 to-indigo-600" },
+  { href: "/others/cookies", label: "Cookie Policy", icon: "", color: "from-indigo-600 to-purple-600" },
+  { href: "/others/accessibility", label: "Accessibility", icon: "", color: "from-cyan-500 to-blue-500" },
 ];
 
 const footerQuickLinks = [
@@ -409,7 +409,7 @@ export default function SitemapPage() {
       {/* ── Shared Modal Footer ── */}
       <footer className="relative mt-24 bg-gradient-to-br from-[#060b18] via-blue-950 to-[#060b18] text-white overflow-hidden border-t border-white/5">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(37,99,235,0.05),transparent_40%)]" />
-        
+
         <div className="container mx-auto px-6 py-16 relative z-10">
           <div className="max-w-7xl mx-auto">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
