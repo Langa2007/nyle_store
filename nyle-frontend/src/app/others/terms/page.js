@@ -60,7 +60,7 @@ export default function TermsOfServicePage() {
       title="Terms of Service"
       subtitle="By using Nyle Store, you agree to these terms. Please read them carefully."
       icon={<Scale className="h-8 w-8" />}
-      lastUpdated="January 1, 2024"
+      lastUpdated="January 1, 2026"
       category="Legal"
     >
       <div className="space-y-12">

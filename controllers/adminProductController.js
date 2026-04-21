@@ -149,8 +149,10 @@ export const adminCreateProduct = async (req, res) => {
       is_hot_deal,
       rating,
       review_count,
-      meta_title,
-      meta_description
+      meta_description,
+      discount_percentage,
+      is_deal_requested,
+      deal_status
     } = req.body;
 
     // Validate required fields
@@ -199,10 +201,11 @@ export const adminCreateProduct = async (req, res) => {
        original_price, features, warranty_info, shipping_info, 
        return_policy, specifications, tags, brand, color, material,
        estimated_delivery_days, is_featured, is_bestseller, is_hot_deal, rating,
-       review_count, meta_title, meta_description, status, created_by)
+       review_count, meta_title, meta_description, status, created_by,
+       discount_percentage, is_deal_requested, deal_status)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
               $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28,
-              $29, $30, $31, $32, $33, $34, $35)
+              $29, $30, $31, $32, $33, $34, $35, $36, $37, $38)
       RETURNING *
     `;
 
@@ -242,7 +245,10 @@ export const adminCreateProduct = async (req, res) => {
       meta_title,
       meta_description,
       'approved', // Auto-approve admin-created products
-      'admin'  // Created by admin
+      'admin',  // Created by admin
+      discount_percentage ? parseFloat(discount_percentage) : 0,
+      is_deal_requested === 'true',
+      deal_status || (is_hot_deal === 'true' ? 'approved' : 'none')
     ];
 
     const productResult = await connection.query(productQuery, productValues);
@@ -399,7 +405,8 @@ export const adminUpdateProduct = async (req, res) => {
       // NEW FIELDS
       original_price, features, warranty_info, shipping_info,
       return_policy, specifications, tags, brand, color, material,
-      estimated_delivery_days, is_featured, is_bestseller, is_hot_deal
+      estimated_delivery_days, is_featured, is_bestseller, is_hot_deal,
+      discount_percentage, is_deal_requested, deal_status
     } = req.body;
 
     // Check if product exists and belongs to vendor if vendor_id is changed
@@ -446,7 +453,21 @@ export const adminUpdateProduct = async (req, res) => {
     if (estimated_delivery_days !== undefined) { updates.push(`estimated_delivery_days = $${paramCount}`); values.push(parseInt(estimated_delivery_days)); paramCount++; }
     if (is_featured !== undefined) { updates.push(`is_featured = $${paramCount}`); values.push(is_featured === 'true'); paramCount++; }
     if (is_bestseller !== undefined) { updates.push(`is_bestseller = $${paramCount}`); values.push(is_bestseller === 'true'); paramCount++; }
-    if (is_hot_deal !== undefined) { updates.push(`is_hot_deal = $${paramCount}`); values.push(is_hot_deal === 'true'); paramCount++; }
+    if (is_hot_deal !== undefined) { 
+      updates.push(`is_hot_deal = $${paramCount}`); 
+      values.push(is_hot_deal === 'true'); 
+      paramCount++; 
+      
+      // If admin manually sets hot deal, also set deal_status to approved
+      if (is_hot_deal === 'true') {
+        updates.push(`deal_status = $${paramCount}`);
+        values.push('approved');
+        paramCount++;
+      }
+    }
+    if (discount_percentage !== undefined) { updates.push(`discount_percentage = $${paramCount}`); values.push(parseFloat(discount_percentage)); paramCount++; }
+    if (is_deal_requested !== undefined) { updates.push(`is_deal_requested = $${paramCount}`); values.push(is_deal_requested === 'true'); paramCount++; }
+    if (deal_status !== undefined) { updates.push(`deal_status = $${paramCount}`); values.push(deal_status); paramCount++; }
 
     // Handle image update if provided
     let imageUrl = null;
@@ -555,12 +576,16 @@ export const adminToggleHotDeal = async (req, res) => {
   try {
     const q = `
       UPDATE products 
-      SET is_hot_deal = $1, updated_at = NOW()
-      WHERE id = $2
-      RETURNING id, name, is_hot_deal
+      SET is_hot_deal = $1, 
+          deal_status = $2,
+          updated_at = NOW()
+      WHERE id = $3
+      RETURNING id, name, is_hot_deal, deal_status
     `;
 
-    const { rows } = await pool.query(q, [is_hot_deal, id]);
+    // If admin manually toggles hot deal to true, we mark the deal status as approved
+    const status = is_hot_deal ? 'approved' : 'none';
+    const { rows } = await pool.query(q, [is_hot_deal, status, id]);
 
     if (rows.length === 0) {
       return res.status(404).json({ error: "Product not found" });
@@ -572,6 +597,7 @@ export const adminToggleHotDeal = async (req, res) => {
     res.status(500).json({ error: "Failed to update hot deal status" });
   }
 };
+
 
 //  GET PRODUCTS BY VENDOR
 export const getProductsByVendor = async (req, res) => {

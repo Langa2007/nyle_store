@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
-import { ShoppingCart, Menu, X, Search, Sparkles, Zap, Tag, Gift, Star, ChevronRight } from "lucide-react";
+import { ShoppingCart, Menu, X, Search, Sparkles, Zap, Tag, Gift, Star, ChevronRight, Crown, Flame } from "lucide-react";
 import Link from "next/link";
-import { FaHeart, FaUser, FaSignInAlt, FaUserPlus, FaStore, FaCog, FaHistory, FaSignOutAlt, FaGift, FaBolt, FaFire, FaCrown } from "react-icons/fa";
+import { FaHeart, FaUser, FaSignInAlt, FaUserPlus, FaStore, FaCog, FaHistory, FaSignOutAlt, FaGift, FaBolt, FaFire, FaCrown, FaGem } from "react-icons/fa";
+
 import { useRouter, usePathname } from "next/navigation";
 import debounce from "lodash.debounce";
 import { useCart } from "@/context/CartContext/page";
@@ -436,20 +437,20 @@ export default function Navbar() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Background and text color logic
+  // Background and text color logic — Ultra Premium glassmorphism
   const getNavbarBackground = () => {
     if (isScrolled) {
-      return "bg-white/95 backdrop-blur-lg shadow-xl";
+      return "bg-[#0a0f1e]/95 backdrop-blur-2xl shadow-[0_8px_40px_-4px_rgba(0,0,0,0.6)] border-b border-white/5";
     }
-    return "bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 backdrop-blur-md";
+    return "bg-gradient-to-r from-[#070b17] via-[#0d1530] to-[#0a0e1c] backdrop-blur-xl";
   };
 
   const getTextColor = () => {
-    return isScrolled ? "text-gray-800" : "text-white";
+    return isScrolled ? "text-gray-100" : "text-white";
   };
 
   const getHoverColor = () => {
-    return isScrolled ? "hover:text-blue-600" : "hover:text-yellow-200";
+    return "hover:text-amber-400";
   };
 
   // Format price function
@@ -477,12 +478,13 @@ export default function Navbar() {
         ref={navRef}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${getNavbarBackground()} ${isVisible ? 'translate-y-0' : '-translate-y-full md:translate-y-0'}`}
       >
-        {/* Dynamic Holiday Offer Bar - Blitz Version */}
-        <div className={`bg-gradient-to-r ${campaign.gradient} text-white relative overflow-hidden`}>
-          {/* Animated background particles */}
+        {/* ── Premium Campaign Bar ── */}
+        <div className={`bg-gradient-to-r ${campaign.gradient} relative overflow-hidden`}>
+          {/* Shimmer sweep */}
+          <div className="absolute inset-0 bg-[linear-gradient(105deg,transparent_30%,rgba(255,255,255,0.15)_50%,transparent_70%)] animate-[shimmer_3s_infinite]" />
           <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 left-0 w-20 h-20 bg-white rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-0 right-0 w-32 h-32 bg-white rounded-full blur-3xl animate-pulse delay-1000"></div>
+            <div className="absolute top-0 left-0 w-20 h-20 bg-white rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-0 right-0 w-32 h-32 bg-white rounded-full blur-3xl animate-pulse delay-1000" />
           </div>
 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2.5 relative">
@@ -546,34 +548,35 @@ export default function Navbar() {
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 justify-between items-center">
-            {/* Logo with animation */}
+            {/* ── Shimmering Logo ── */}
             <Link href="/" className="flex items-center space-x-3 group">
-              <Image
-                src={NyleLogo}
-                alt="Nyle logo"
-                width={44}
-                height={44}
-                priority
-                className="h-11 w-11 shrink-0 drop-shadow-[0_10px_24px_rgba(245,158,11,0.35)] transition-transform duration-300 group-hover:scale-105"
-              />
-              <span className={`text-2xl font-black tracking-tight ${getTextColor()} group-hover:scale-105 transition-transform duration-300`}>
-                Nyle<span className="text-yellow-300">Store</span>
-              </span>
-              <div className="hidden lg:block">
-                <span className={`text-[10px] px-2 py-1 rounded-full ${isScrolled ? 'bg-blue-100 text-blue-700' : 'bg-white/20 text-white'} font-bold`}>
-                  Kenya's #1
+              <div className="relative">
+                <Image
+                  src={NyleLogo}
+                  alt="Nyle logo"
+                  width={44}
+                  height={44}
+                  priority
+                  className="h-11 w-11 shrink-0 drop-shadow-[0_0_18px_rgba(251,191,36,0.5)] transition-all duration-300 group-hover:drop-shadow-[0_0_30px_rgba(251,191,36,0.9)] group-hover:scale-110"
+                />
+                <div className="absolute inset-0 rounded-full bg-amber-400/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </div>
+              <div className="flex flex-col -space-y-0.5">
+                <span className="text-2xl font-black tracking-tight text-white group-hover:text-amber-300 transition-colors duration-300">
+                  Nyle<span className="text-amber-400">Store</span>
                 </span>
+                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/40">Kenya's #1 Marketplace</span>
               </div>
             </Link>
 
-            {/* Desktop Navigation Links with Mega Menu */}
-            <div className="hidden md:flex items-center space-x-6">
+            {/* ── Desktop Nav Links — Premium ── */}
+            <div className="hidden md:flex items-center space-x-1">
               {[
-                { href: "/", label: "Home" },
-                { href: "/products", label: "Shop", hasMega: true },
-                { href: "/categories", label: "Categories", hasMega: true },
-                { href: "/deals", label: "Hot Deals" },
-                { href: "/brands", label: "Brands" },
+                { href: "/", label: "Home", icon: "🏠" },
+                { href: "/products", label: "Shop", hasMega: true, icon: "🛍️" },
+                { href: "/categories", label: "Categories", hasMega: true, icon: "📦" },
+                { href: "/deals", label: "Hot Deals", hot: true, icon: "🔥" },
+                { href: "/brands", label: "Brands", icon: "💎" },
               ].map((item) => (
                 <div
                   key={item.href}
@@ -583,23 +586,32 @@ export default function Navbar() {
                 >
                   <Link
                     href={item.href}
-                    className={`flex items-center gap-1 font-bold text-sm tracking-wide transition-all duration-300 ${getTextColor()} ${getHoverColor()} group-hover:scale-105`}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl font-semibold text-sm tracking-wide transition-all duration-300 text-white/80 hover:text-amber-400 hover:bg-white/5 ${item.hot ? 'text-orange-400 hover:text-orange-300' : ''}`}
                   >
-                    <span>{item.icon}</span>
+                    <span className="text-base">{item.icon}</span>
                     <span>{item.label}</span>
+                    {item.hot && <span className="ml-1 text-[9px] bg-red-500 text-white px-1.5 py-0.5 rounded-full font-black uppercase animate-pulse">Live</span>}
                   </Link>
 
-                  {/* Mega Menu Dropdown */}
+                  {/* Premium Glassmorphism Mega Menu */}
                   {item.hasMega && hoveredCategory === item.label && categories.length > 0 && (
-                    <div className="absolute top-full left-0 mt-2 w-[600px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-fadeIn z-50">
-                      <div className="grid grid-cols-3 gap-4 p-6">
+                    <div className="absolute top-full left-0 mt-3 w-[640px] bg-[#0d1530]/95 backdrop-blur-2xl rounded-2xl shadow-[0_25px_80px_-5px_rgba(0,0,0,0.7)] border border-white/10 overflow-hidden animate-fadeIn z-50">
+                      {/* Header */}
+                      <div className="px-6 py-4 bg-gradient-to-r from-amber-500/10 to-transparent border-b border-white/5 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <FaGem className="text-amber-400" size={12} />
+                          <span className="text-xs font-black uppercase tracking-widest text-amber-400">{item.label}</span>
+                        </div>
+                        <span className="text-xs text-white/30">{categories.length} categories</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 p-4">
                         {categories.slice(0, 9).map((cat) => (
                           <Link
                             key={cat.id || cat._id}
                             href={`/products?category=${encodeURIComponent(cat.name)}`}
-                            className="group/item flex items-center gap-4 p-3 rounded-2xl hover:bg-blue-50 transition-all duration-300"
+                            className="group/item flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-all duration-200 border border-transparent hover:border-white/10"
                           >
-                            <div className="w-16 h-16 rounded-xl overflow-hidden shadow-md ring-2 ring-transparent group-hover/item:ring-blue-200 transition-all">
+                            <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg ring-1 ring-white/10 group-hover/item:ring-amber-400/40 transition-all flex-shrink-0">
                               <img
                                 src={cat.image_url || getCategoryImage(cat.name)}
                                 alt={cat.name}
@@ -607,15 +619,15 @@ export default function Navbar() {
                               />
                             </div>
                             <div>
-                              <p className="font-black text-gray-900 text-sm mb-0.5">{cat.name}</p>
-                              <p className="text-[10px] font-bold text-blue-600 uppercase tracking-tighter opacity-0 group-hover/item:opacity-100 transition-opacity">Explore now →</p>
+                              <p className="font-bold text-white/90 text-sm group-hover/item:text-amber-400 transition-colors">{cat.name}</p>
+                              <p className="text-[10px] font-semibold text-white/30 group-hover/item:text-amber-400/70 transition-colors">Explore →</p>
                             </div>
                           </Link>
                         ))}
                       </div>
-                      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 text-white">
-                        <Link href="/categories" className="flex items-center justify-between group">
-                          <span className="font-bold">View All Categories</span>
+                      <div className="bg-gradient-to-r from-amber-500/10 via-transparent to-amber-500/10 border-t border-white/5 px-6 py-3">
+                        <Link href="/categories" className="flex items-center justify-between group text-white/70 hover:text-amber-400 transition-colors">
+                          <span className="font-bold text-xs uppercase tracking-widest">View All {item.label}</span>
                           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </Link>
                       </div>
@@ -625,9 +637,9 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* Right side icons with animations */}
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              {/* Search with enhanced UI */}
+            {/* ── Right-side Icons ── */}
+            <div className="flex items-center space-x-1 sm:space-x-2">
+              {/* Search */}
               <div className="relative hidden md:block" ref={searchRef}>
                 <form onSubmit={handleSearchSubmit} className="relative group">
                   <input
@@ -636,18 +648,12 @@ export default function Navbar() {
                     value={searchQuery}
                     onChange={handleSearchChange}
                     onFocus={() => searchQuery && setShowSearchResults(true)}
-                    className={`pl-10 pr-12 py-2.5 rounded-full border-2 transition-all duration-300 w-64 focus:w-96 focus:outline-none text-base placeholder:text-sm ${isScrolled
-                        ? 'bg-gray-50 border-gray-200 text-gray-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-100'
-                        : 'bg-white/20 border-white/30 text-white placeholder-blue-100 focus:bg-white focus:text-gray-800 focus:border-white'
-                      }`}
+                    className="pl-10 pr-14 py-2 rounded-full border border-white/10 bg-white/5 text-white placeholder-white/30 focus:placeholder-white/50 transition-all duration-300 w-52 focus:w-80 focus:outline-none text-sm focus:bg-white/10 focus:border-amber-400/50 focus:ring-2 focus:ring-amber-400/20"
                   />
-                  <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${isScrolled ? 'text-gray-400' : 'text-blue-200'}`} />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/30" />
                   <button
                     type="submit"
-                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 px-3 py-1 rounded-full text-xs font-bold ${isScrolled
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'bg-white/30 text-white hover:bg-white/40'
-                      } transition`}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-black hover:bg-amber-400 transition"
                   >
                     Go
                   </button>
@@ -724,148 +730,126 @@ export default function Navbar() {
               <div className="relative hidden md:block" ref={quickActionsRef}>
                 <button
                   onClick={() => setShowQuickActions(!showQuickActions)}
-                  className={`p-2.5 rounded-xl transition-all relative group ${getTextColor()} ${getHoverColor()} hover:bg-white/10`}
+                  className="p-2.5 rounded-xl transition-all relative group text-white/60 hover:text-amber-400 hover:bg-white/5"
                 >
                   <Sparkles className="h-5 w-5" />
-                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-amber-400 rounded-full animate-pulse"></span>
                 </button>
 
                 {showQuickActions && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-slideDown z-50">
-                    <div className="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                      <h3 className="font-black">Quick Actions</h3>
+                  <div className="absolute right-0 mt-3 w-80 bg-[#0d1530]/95 backdrop-blur-2xl rounded-2xl shadow-[0_25px_80px_-5px_rgba(0,0,0,0.7)] border border-white/10 overflow-hidden animate-slideDown z-50">
+                    <div className="px-4 py-4 bg-gradient-to-r from-amber-500/10 to-transparent border-b border-white/5">
+                      <h3 className="font-black text-white flex items-center gap-2"><FaGem className="text-amber-400" size={12} /> Quick Actions</h3>
                     </div>
                     <div className="p-3">
-                      <Link
-                        href="/wishlist"
-                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-pink-50 transition group"
-                      >
-                        <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
-                          <FaHeart className="text-pink-600" />
+                      <Link href="/wishlist" className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition group border border-transparent hover:border-white/10">
+                        <div className="w-10 h-10 bg-pink-500/10 rounded-full flex items-center justify-center border border-pink-500/20">
+                          <FaHeart className="text-pink-400" />
                         </div>
                         <div className="flex-1">
-                          <p className="font-bold text-gray-900">Wishlist</p>
-                          <p className="text-xs text-gray-500">
-                            {wishlistCount === 0
-                              ? "No saved items yet"
-                              : `${wishlistCount} item${wishlistCount === 1 ? "" : "s"} saved`}
-                          </p>
+                          <p className="font-bold text-white/90 text-sm">Wishlist</p>
+                          <p className="text-xs text-white/40">{wishlistCount === 0 ? "No saved items yet" : `${wishlistCount} item${wishlistCount === 1 ? "" : "s"} saved`}</p>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                        <ChevronRight className="w-4 h-4 text-white/20 group-hover:translate-x-1 group-hover:text-amber-400 transition" />
                       </Link>
-
-                      <Link
-                        href="/#recently-viewed"
-                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 transition group"
-                      >
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <FaHistory className="text-blue-600" />
+                      <Link href="/#recently-viewed" className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition group border border-transparent hover:border-white/10">
+                        <div className="w-10 h-10 bg-blue-500/10 rounded-full flex items-center justify-center border border-blue-500/20">
+                          <FaHistory className="text-blue-400" />
                         </div>
                         <div className="flex-1">
-                          <p className="font-bold text-gray-900">Recently Viewed</p>
-                          <p className="text-xs text-gray-500">
-                            {recentlyViewedCount === 0
-                              ? "Nothing viewed yet"
-                              : `${recentlyViewedCount} recent item${recentlyViewedCount === 1 ? "" : "s"}`}
-                          </p>
+                          <p className="font-bold text-white/90 text-sm">Recently Viewed</p>
+                          <p className="text-xs text-white/40">{recentlyViewedCount === 0 ? "Nothing viewed yet" : `${recentlyViewedCount} recent item${recentlyViewedCount === 1 ? "" : "s"}`}</p>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                        <ChevronRight className="w-4 h-4 text-white/20 group-hover:translate-x-1 group-hover:text-amber-400 transition" />
                       </Link>
-
-                      <Link
-                        href="/deals"
-                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-orange-50 transition group"
-                      >
-                        <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                          <FaFire className="text-orange-600" />
+                      <Link href="/deals" className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition group border border-transparent hover:border-white/10">
+                        <div className="w-10 h-10 bg-orange-500/10 rounded-full flex items-center justify-center border border-orange-500/20">
+                          <FaFire className="text-orange-400" />
                         </div>
                         <div className="flex-1">
-                          <p className="font-bold text-gray-900">Flash Deals</p>
-                          <p className="text-xs text-gray-500">Ending soon</p>
+                          <p className="font-bold text-white/90 text-sm">Flash Deals</p>
+                          <p className="text-xs text-white/40">Limited time offers</p>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                        <ChevronRight className="w-4 h-4 text-white/20 group-hover:translate-x-1 group-hover:text-amber-400 transition" />
                       </Link>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* User Account Dropdown with enhanced styling */}
+              {/* User Account Dropdown — Premium Dark */}
               <div className="relative group">
-                <button className={`p-1.5 transition flex items-center relative ${getTextColor()} ${getHoverColor()}`}>
+                <button className="p-1.5 transition flex items-center relative">
                   {userLoggedIn ? (
-                    <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-xl ring-2 ring-white/30 group-hover:scale-110 transition-transform">
+                    <div className="w-9 h-9 bg-gradient-to-br from-amber-400 to-orange-500 text-black rounded-full flex items-center justify-center font-black text-sm shadow-xl ring-2 ring-amber-400/30 group-hover:scale-110 transition-transform">
                       {userInitial}
                     </div>
                   ) : (
-                    <div className="relative">
-                      <FaUser className="h-5 w-5" />
-                      <span className="absolute -top-2 -right-2 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse"></span>
+                    <div className="relative w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-amber-400/40 transition">
+                      <FaUser className="h-4 w-4 text-white/60 group-hover:text-amber-400 transition" />
+                      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-400 rounded-full border border-black animate-pulse"></span>
                     </div>
                   )}
                 </button>
 
-                {/* Dropdown Menu */}
-                <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 overflow-hidden">
+                {/* Premium Dark Dropdown */}
+                <div className="absolute right-0 mt-3 w-64 bg-[#0d1530]/95 backdrop-blur-2xl rounded-2xl shadow-[0_25px_80px_-5px_rgba(0,0,0,0.7)] border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 overflow-hidden">
                   {userLoggedIn ? (
                     <>
-                      <div className="px-4 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                        <p className="text-xs opacity-90 font-bold">Welcome back</p>
-                        <p className="font-black truncate">{userName || session?.user?.email}</p>
+                      <div className="px-4 py-4 bg-gradient-to-r from-amber-500/10 to-transparent border-b border-white/5">
+                        <p className="text-xs text-amber-400 font-bold uppercase tracking-widest">Welcome back</p>
+                        <p className="font-black text-white truncate mt-0.5">{userName || session?.user?.email}</p>
                       </div>
                       <div className="p-2">
-                        <Link href="/profile" className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-xl transition-all">
-                          <FaUser className="text-blue-500" size={14} />
-                          <span className="text-sm font-medium flex-1">My Profile</span>
-                          <ChevronRight size={14} className="text-gray-400" />
+                        <Link href="/profile" className="flex items-center gap-3 px-4 py-3 text-white/70 hover:text-amber-400 hover:bg-white/5 rounded-xl transition-all">
+                          <FaUser className="text-amber-400/60" size={13} />
+                          <span className="text-sm font-semibold flex-1">My Profile</span>
+                          <ChevronRight size={12} className="text-white/20" />
                         </Link>
-                        <Link href="/orders" className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-xl transition-all">
-                          <FaHistory className="text-blue-500" size={14} />
-                          <span className="text-sm font-medium flex-1">My Orders</span>
-                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">2</span>
+                        <Link href="/orders" className="flex items-center gap-3 px-4 py-3 text-white/70 hover:text-amber-400 hover:bg-white/5 rounded-xl transition-all">
+                          <FaHistory className="text-amber-400/60" size={13} />
+                          <span className="text-sm font-semibold flex-1">My Orders</span>
                         </Link>
-                        <Link href="/wishlist" className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-xl transition-all">
-                          <FaHeart className="text-pink-500" size={14} />
-                          <span className="text-sm font-medium flex-1">Wishlist</span>
-                          <span className="text-xs bg-pink-100 text-pink-700 px-2 py-1 rounded-full">
-                            {wishlistCount}
-                          </span>
+                        <Link href="/wishlist" className="flex items-center gap-3 px-4 py-3 text-white/70 hover:text-amber-400 hover:bg-white/5 rounded-xl transition-all">
+                          <FaHeart className="text-pink-400/60" size={13} />
+                          <span className="text-sm font-semibold flex-1">Wishlist</span>
+                          <span className="text-xs bg-pink-500/20 text-pink-300 px-2 py-0.5 rounded-full">{wishlistCount}</span>
                         </Link>
-                        <div className="border-t my-2"></div>
+                        <div className="border-t border-white/5 my-2"></div>
                         <button
                           onClick={() => signOut({ callbackUrl: '/' })}
-                          className="flex items-center gap-3 w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                          className="flex items-center gap-3 w-full text-left px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-xl transition-all"
                         >
-                          <FaSignOutAlt size={14} />
+                          <FaSignOutAlt size={13} />
                           <span className="text-sm font-bold">Log out</span>
                         </button>
                       </div>
                     </>
                   ) : (
                     <>
-                      <div className="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                        <p className="font-black">Welcome to Nyle</p>
-                        <p className="text-xs opacity-90">Sign in for exclusive deals</p>
+                      <div className="px-4 py-4 bg-gradient-to-r from-amber-500/10 to-transparent border-b border-white/5">
+                        <p className="font-black text-white">Welcome to Nyle</p>
+                        <p className="text-xs text-white/40 mt-0.5">Sign in for exclusive deals</p>
                       </div>
                       <div className="p-3">
                         <Link
                           href="/auth/login"
-                          className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-3 rounded-xl font-bold hover:shadow-xl transform hover:scale-[1.02] transition-all mb-2"
+                          className="flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-black px-4 py-3 rounded-xl font-black hover:shadow-xl hover:shadow-amber-900/20 transform hover:scale-[1.02] transition-all mb-2"
                         >
                           <FaSignInAlt />
                           Sign In
                         </Link>
                         <Link
                           href="/auth/signup"
-                          className="flex items-center justify-center gap-2 border-2 border-blue-600 text-blue-600 px-4 py-3 rounded-xl font-bold hover:bg-blue-50 transition-all"
+                          className="flex items-center justify-center gap-2 border border-white/10 text-white/70 px-4 py-3 rounded-xl font-bold hover:bg-white/5 hover:text-white transition-all"
                         >
                           <FaUserPlus />
                           Create Account
                         </Link>
-                        <div className="border-t my-3"></div>
+                        <div className="border-t border-white/5 my-3"></div>
                         <Link
                           href="/vendor/login"
-                          className="flex items-center justify-center gap-2 text-orange-600 font-bold hover:underline"
+                          className="flex items-center justify-center gap-2 text-amber-400 font-bold hover:text-amber-300 text-sm transition"
                         >
                           <FaStore />
                           Sell on Nyle
@@ -876,14 +860,14 @@ export default function Navbar() {
                 </div>
               </div>
 
-              {/* Cart with animation */}
+              {/* Cart */}
               <button
                 onClick={handleCartClick}
-                className={`p-2.5 rounded-xl transition-all relative group ${getTextColor()} ${getHoverColor()} hover:bg-white/10`}
+                className="p-2.5 rounded-xl transition-all relative group text-white/60 hover:text-amber-400 hover:bg-white/5"
               >
                 <ShoppingCart className="h-5 w-5 group-hover:scale-110 transition-transform" />
                 {itemCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold shadow-lg animate-bounce">
+                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-amber-400 to-orange-500 text-black text-xs rounded-full h-5 w-5 flex items-center justify-center font-black shadow-lg">
                     {itemCount}
                   </span>
                 )}
@@ -891,7 +875,7 @@ export default function Navbar() {
 
               {/* Mobile menu toggle */}
               <button
-                className={`p-2.5 rounded-xl md:hidden transition ${getTextColor()} hover:bg-white/10`}
+                className="p-2.5 rounded-xl md:hidden transition text-white/60 hover:text-amber-400 hover:bg-white/5"
                 onClick={toggleMenu}
                 aria-label="Toggle menu"
               >
@@ -902,26 +886,21 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Enhanced mobile drawer */}
+      {/* Premium Dark Mobile Drawer */}
       <div
-        className={`fixed top-0 right-0 h-full w-full max-w-sm bg-gradient-to-b from-white to-gray-50 shadow-2xl transform transition-transform duration-500 ease-out md:hidden z-50 ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-0 right-0 h-full w-full max-w-sm bg-gradient-to-b from-[#070b17] to-[#0a0f1e] shadow-2xl transform transition-transform duration-500 ease-out md:hidden z-50 border-l border-white/5 ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"
           }`}
       >
-        <div className="flex justify-between items-center px-6 py-5 bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white">
+        <div className="flex justify-between items-center px-6 py-5 border-b border-white/5">
           <div className="flex items-center gap-3">
-            <Image
-              src={NyleLogo}
-              alt="Nyle logo"
-              width={42}
-              height={42}
-              priority
-              className="h-10 w-10 shrink-0 drop-shadow-[0_8px_20px_rgba(245,158,11,0.3)]"
+            <Image src={NyleLogo} alt="Nyle logo" width={40} height={40} priority
+              className="h-10 w-10 drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]"
             />
-            <span className="text-xl font-black tracking-tight">
-              Nyle<span className="text-yellow-300">Store</span>
+            <span className="text-xl font-black tracking-tight text-white">
+              Nyle<span className="text-amber-400">Store</span>
             </span>
           </div>
-          <button onClick={toggleMenu} className="p-2 hover:bg-white/10 rounded-xl transition">
+          <button onClick={toggleMenu} className="p-2 hover:bg-white/5 rounded-xl transition text-white/60 hover:text-white">
             <X className="h-6 w-6" />
           </button>
         </div>
@@ -930,43 +909,35 @@ export default function Navbar() {
           <div className="px-6 py-4">
             {/* Mobile Search */}
             <div className="relative mb-6">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/30" />
               <input
                 type="text"
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white placeholder-white/30 focus:border-amber-400/50 focus:ring-2 focus:ring-amber-400/20 outline-none transition text-sm"
               />
             </div>
 
             {/* User Section */}
-            <div className="mb-6 pb-4 border-b">
+            <div className="mb-6 pb-4 border-b border-white/5">
               {userLoggedIn ? (
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white text-2xl font-black shadow-lg">
+                  <div className="w-14 h-14 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center text-black text-2xl font-black shadow-lg">
                     {userInitial}
                   </div>
                   <div className="flex-1">
-                    <p className="font-black text-gray-900">Welcome back!</p>
-                    <p className="text-sm text-gray-600 truncate">{userName || session?.user?.email}</p>
+                    <p className="font-black text-white">Welcome back!</p>
+                    <p className="text-xs text-white/40 truncate">{userName || session?.user?.email}</p>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <Link
-                    href="/auth/login"
-                    onClick={toggleMenu}
-                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-4 rounded-xl font-black hover:shadow-xl transform hover:scale-[1.02] transition-all"
-                  >
+                  <Link href="/auth/login" onClick={toggleMenu} className="flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-black px-4 py-4 rounded-xl font-black hover:shadow-xl transition-all">
                     <FaSignInAlt />
                     Sign In
                   </Link>
-                  <Link
-                    href="/auth/signup"
-                    onClick={toggleMenu}
-                    className="flex items-center justify-center gap-2 border-2 border-blue-600 text-blue-600 px-4 py-4 rounded-xl font-black hover:bg-blue-50 transition-all"
-                  >
+                  <Link href="/auth/signup" onClick={toggleMenu} className="flex items-center justify-center gap-2 border border-white/10 text-white/70 px-4 py-4 rounded-xl font-bold hover:bg-white/5 transition">
                     <FaUserPlus />
                     Create Account
                   </Link>
@@ -976,17 +947,17 @@ export default function Navbar() {
 
             {/* Categories Grid */}
             <div className="mb-6">
-              <h3 className="text-sm font-black text-gray-900 mb-4 uppercase tracking-widest">🔥 Trending Categories</h3>
-              <div className="grid grid-cols-2 gap-3">
+              <h3 className="text-xs font-black text-white/40 mb-4 uppercase tracking-widest">🔥 Trending Categories</h3>
+              <div className="grid grid-cols-2 gap-2">
                 {categories.slice(0, 6).map((cat) => (
                   <Link
                     key={cat.id || cat._id}
                     href={`/products?category=${encodeURIComponent(cat.name)}`}
                     onClick={toggleMenu}
-                    className="group relative h-24 rounded-xl overflow-hidden shadow-lg"
+                    className="group relative h-20 rounded-xl overflow-hidden shadow-lg border border-white/5"
                   >
                     <img src={getCategoryImage(cat.name)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={cat.name} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                     <span className="absolute bottom-2 left-2 text-xs font-black text-white">{cat.name}</span>
                   </Link>
                 ))}
@@ -995,33 +966,17 @@ export default function Navbar() {
 
             {/* Navigation Links */}
             <div className="space-y-1">
-              <Link
-                href="/"
-                onClick={toggleMenu}
-                className="flex items-center gap-3 py-3 text-lg font-bold text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-xl px-3 transition"
-              >
+              <Link href="/" onClick={toggleMenu} className="flex items-center gap-3 py-3 text-white/80 hover:text-amber-400 hover:bg-white/5 rounded-xl px-3 transition font-semibold">
                 <span>🏠</span> Home
               </Link>
-              <Link
-                href="/products"
-                onClick={toggleMenu}
-                className="flex items-center gap-3 py-3 text-lg font-bold text-gray-800 hover:text-blue-600 hover:bg-blue-50 rounded-xl px-3 transition"
-              >
+              <Link href="/products" onClick={toggleMenu} className="flex items-center gap-3 py-3 text-white/80 hover:text-amber-400 hover:bg-white/5 rounded-xl px-3 transition font-semibold">
                 <span>🛍️</span> Shop All
               </Link>
-              <Link
-                href="/deals"
-                onClick={toggleMenu}
-                className="flex items-center gap-3 py-3 text-lg font-bold text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded-xl px-3 transition"
-              >
+              <Link href="/deals" onClick={toggleMenu} className="flex items-center gap-3 py-3 text-orange-400 hover:text-orange-300 hover:bg-orange-500/5 rounded-xl px-3 transition font-semibold">
                 <span>🔥</span> Flash Deals
-                <span className="ml-auto text-xs bg-red-500 text-white px-2 py-1 rounded-full animate-pulse">HOT</span>
+                <span className="ml-auto text-[10px] bg-red-500 text-white px-2 py-0.5 rounded-full animate-pulse font-black uppercase">HOT</span>
               </Link>
-              <Link
-                href="/vendor/login"
-                onClick={toggleMenu}
-                className="flex items-center gap-3 py-3 text-lg font-bold text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-xl px-3 transition border-t mt-2 pt-4"
-              >
+              <Link href="/vendor/login" onClick={toggleMenu} className="flex items-center gap-3 py-3 text-amber-400 hover:text-amber-300 hover:bg-amber-500/5 rounded-xl px-3 transition font-semibold border-t border-white/5 mt-2 pt-4">
                 <FaStore />
                 Sell on Nyle
               </Link>
@@ -1029,15 +984,13 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Footer */}
-          <div className="mt-auto px-6 py-4 bg-gray-100">
-            <div className="text-xs text-gray-600 mb-3">
-              ✨ Kenya's fastest-growing marketplace
-            </div>
+          <div className="mt-auto px-6 py-4 border-t border-white/5">
+            <div className="text-xs text-white/30 mb-3 font-medium">✨ Kenya's fastest-growing marketplace</div>
             <div className="flex space-x-4 text-xs font-bold">
-              <Link href="/terms" className="text-blue-600 hover:underline">Terms</Link>
-              <Link href="/privacy" className="text-blue-600 hover:underline">Privacy</Link>
-              <Link href="/contact" className="text-blue-600 hover:underline">Contact</Link>
-              <Link href="/help" className="text-blue-600 hover:underline">Help</Link>
+              <Link href="/terms" className="text-white/30 hover:text-amber-400 transition">Terms</Link>
+              <Link href="/privacy" className="text-white/30 hover:text-amber-400 transition">Privacy</Link>
+              <Link href="/contact" className="text-white/30 hover:text-amber-400 transition">Contact</Link>
+              <Link href="/help" className="text-white/30 hover:text-amber-400 transition">Help</Link>
             </div>
           </div>
         </div>
@@ -1055,27 +1008,27 @@ export default function Navbar() {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-3 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 z-50 animate-bounce"
+          className="fixed bottom-6 right-6 bg-gradient-to-r from-amber-500 to-orange-500 text-black p-3 rounded-full shadow-2xl hover:shadow-amber-900/40 transform hover:scale-110 transition-all duration-300 z-50 font-black"
         >
           ↑
         </button>
       )}
 
       <style jsx>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(-10px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out;
-        }
+        .animate-fadeIn { animation: fadeIn 0.2s ease-out; }
         @keyframes slideDown {
-          from { opacity: 0; transform: translateY(-20px); }
+          from { opacity: 0; transform: translateY(-15px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .animate-slideDown {
-          animation: slideDown 0.2s ease-out;
-        }
+        .animate-slideDown { animation: slideDown 0.2s ease-out; }
       `}</style>
     </>
   );

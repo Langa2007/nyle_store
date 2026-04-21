@@ -77,7 +77,7 @@ function HomeContent() {
   const [scrollLeft, setScrollLeft] = useState(0);
   const categoriesContainerRef = useRef(null);
   const sliderRef = useRef(null);
-  
+
   // Hero Carousel State
   const [heroSlides, setHeroSlides] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -500,17 +500,17 @@ function HomeContent() {
               className="absolute inset-0"
             >
               {/* Background Image */}
-              <div 
+              <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-[30000ms] ease-linear scale-110 group-hover:scale-125"
-                style={{ 
+                style={{
                   backgroundImage: activeHeroSlide?.image_url ? `url(${activeHeroSlide.image_url})` : undefined,
                 }}
               />
-              
+
               {/* Overlays for readability and depth */}
               <div className="absolute inset-0 bg-gradient-to-r from-blue-950/90 via-blue-900/60 to-transparent" />
               <div className="absolute inset-0 bg-black/30" />
-              
+
               {/* Animated particles/glows */}
               <div className="absolute top-1/4 -right-20 w-96 h-96 bg-blue-500/20 rounded-full blur-[120px] animate-pulse" />
               <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-indigo-500/20 rounded-full blur-[120px] animate-pulse" />
@@ -528,7 +528,7 @@ function HomeContent() {
                   transition={{ duration: 0.8, delay: 0.2 }}
                   className="space-y-6"
                 >
-                  <motion.div 
+                  <motion.div
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.4 }}
@@ -589,7 +589,7 @@ function HomeContent() {
           </div>
 
           {/* Decorative scroll button */}
-          <motion.div 
+          <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ repeat: Infinity, duration: 2 }}
             className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/50 hidden md:block"
@@ -909,43 +909,55 @@ function HomeContent() {
                   className="flex-shrink-0 w-80 snap-start"
                 >
                   <Link href={`/products/${product.id || product._id}`}>
-                    <div className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border border-red-50 relative">
+                    <div className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border border-red-50 relative h-full flex flex-col">
                       {/* Deal Badge */}
-                      <div className="absolute top-4 left-4 z-20">
-                        <span className="bg-red-600 text-white px-4 py-1.5 rounded-full text-sm font-black shadow-lg animate-bounce">
-                          HOT DEAL
+                      <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
+                        {Math.round(((product.original_price || product.price * 1.25) - product.price) / (product.original_price || product.price * 1.25) * 100) > 0 && (
+                          <span className="bg-gradient-to-r from-red-600 to-orange-500 text-white px-4 py-1.5 rounded-full text-xs font-black shadow-lg shadow-red-900/20">
+                            -{Math.round(((product.original_price || product.price * 1.2) - product.price) / (product.original_price || product.price * 1.2) * 100)}% OFF
+                          </span>
+                        )}
+                        <span className="bg-gray-900/90 backdrop-blur-md text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm">
+                          🔥 Approved Deal
                         </span>
                       </div>
 
                       {/* Image */}
-                      <div className="relative h-64 overflow-hidden">
+                      <div className="relative h-64 overflow-hidden bg-gray-50 flex-shrink-0">
                         <img
                           src={product.image_url || "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"}
                           alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
-                        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                        <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
                       </div>
 
                       {/* Info */}
-                      <div className="p-6">
+                      <div className="p-6 flex flex-col flex-1">
                         <div className="flex justify-between items-start mb-2">
-                          <h3 className="text-xl font-bold text-gray-900 line-clamp-1">{product.name}</h3>
-                          <div className="flex items-center text-yellow-400">
-                            <FaStar />
-                            <span className="ml-1 text-sm font-bold text-gray-700">{product.rating || "4.8"}</span>
+                          <h3 className="text-lg font-bold text-gray-900 line-clamp-2 leading-tight flex-1">{product.name}</h3>
+                          <div className="flex items-center text-yellow-400 bg-gray-50 px-2 py-1 rounded-lg ml-2">
+                            <FaStar size={12} />
+                            <span className="ml-1 text-xs font-black text-gray-700">{product.rating || "4.8"}</span>
                           </div>
                         </div>
 
-                        <div className="flex items-end space-x-3 mb-4">
+                        <div className="flex items-end space-x-2 mb-1">
                           <span className="text-2xl font-black text-red-600">
                             {currency} {convertPrice(product.price)}
                           </span>
-                          {product.original_price && (
+                          {(product.original_price || product.price > 0) && (
                             <span className="text-sm text-gray-400 line-through mb-1">
-                              {currency} {convertPrice(product.original_price)}
+                              {currency} {convertPrice(product.original_price || product.price * 1.2)}
                             </span>
                           )}
+                        </div>
+
+                        <div className="mb-4">
+                          <span className="inline-flex items-center text-xs font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-lg">
+                            <FaBolt className="mr-1.5 text-[10px]" />
+                            ✓ You save {currency} {convertPrice((product.original_price || product.price * 1.2) - product.price)}
+                          </span>
                         </div>
 
                         <button

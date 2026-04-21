@@ -47,6 +47,8 @@ const productSchema = z.object({
   meta_description: z.string().optional().or(z.literal("")),
   is_featured: z.boolean().default(false),
   is_bestseller: z.boolean().default(false),
+  is_deal_requested: z.boolean().default(false),
+  discount_percentage: z.number().optional().or(z.nan()).or(z.null()),
   features: z.any().optional(),
   specifications: z.record(z.string()).optional(),
   tags: z.any().optional(),
@@ -132,6 +134,8 @@ export default function ProductForm({ product, onClose, onSuccess }) {
       meta_description: "",
       is_featured: false,
       is_bestseller: false,
+      is_deal_requested: false,
+      discount_percentage: 0,
       features: safeArray(product?.features),
       specifications: product?.specifications || {},
       tags: safeArray(product?.tags),
@@ -747,9 +751,42 @@ export default function ProductForm({ product, onClose, onSuccess }) {
                   <p className="text-xs text-gray-500">Request bestseller badge for this item</p>
                 </div>
               </label>
+
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  {...register("is_deal_requested")}
+                  className="w-5 h-5 text-red-600 rounded border-red-300 focus:ring-red-500"
+                />
+                <div>
+                  <div className="font-medium text-red-700">🔥 Hot Deal Request</div>
+                  <p className="text-xs text-red-500">Submit this product as a special deal</p>
+                </div>
+              </label>
             </div>
+
+            {watch("is_deal_requested") && (
+              <div className="mt-6 p-5 bg-red-50 rounded-xl border border-red-100 flex flex-col sm:flex-row gap-6 items-center animate-in fade-in slide-in-from-top-4">
+                <div className="w-full sm:w-1/3">
+                 <label className="block text-sm font-bold text-red-900 mb-2">Discount Percentage (%)</label>
+                 <input
+                    type="number"
+                    step="1"
+                    max="99"
+                    min="1"
+                    {...register("discount_percentage", { valueAsNumber: true })}
+                    className="w-full px-4 py-3 rounded-lg border border-red-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 outline-none transition"
+                    placeholder="e.g. 20"
+                 />
+                </div>
+                <div className="flex-1 text-sm text-red-800 bg-white/60 p-4 rounded-lg border border-red-100">
+                  <strong>Admin Review Required:</strong> By requesting a hot deal, this product will be reviewed by our platform administrators. Products offering genuine, substantial discounts are prioritized for prime placement on the deals page.
+                </div>
+              </div>
+            )}
+
             <p className="mt-4 text-sm text-amber-600 italic">
-              * Featured and Bestseller status are subject to admin review.
+              * Featured, Bestseller, and Hot Deal status are subject to admin review.
             </p>
           </section>
 

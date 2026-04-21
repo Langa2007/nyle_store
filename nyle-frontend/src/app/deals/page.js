@@ -129,84 +129,113 @@ function DealsContent() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {hotDeals.map((product, index) => (
-              <motion.div
-                key={product.id || product._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-              >
-                <Link href={`/products/${product.id || product._id}`}>
-                  <div className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 relative h-full flex flex-col">
-                    {/* Discount Badge */}
-                    <div className="absolute top-4 left-4 z-20">
-                      <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-black shadow-lg">
-                        HOT DEAL
-                      </span>
-                    </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {hotDeals.map((product, index) => {
+              // Smart discount % calculation
+              const discountPct = product.discount_percentage
+                ? Math.round(product.discount_percentage)
+                : product.original_price && product.price < product.original_price
+                ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
+                : null;
 
-                    {/* Image Area */}
-                    <div className="relative h-64 overflow-hidden bg-gray-50">
-                      <img
-                        src={product.image_url || "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"}
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:from-black/10 transition-all"></div>
-                      
-                      {/* Hover Actions */}
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button 
-                          onClick={(e) => {
-                            e.preventDefault(); e.stopPropagation();
-                            addToCart(product, 1);
-                          }}
-                          className="bg-white text-red-600 p-4 rounded-full shadow-2xl hover:bg-red-600 hover:text-white transition transform -translate-y-4 group-hover:translate-y-0 duration-300"
-                        >
-                          <FaShoppingCart className="text-xl" />
-                        </button>
+              const savings = product.original_price && product.price < product.original_price
+                ? convertPrice(product.original_price - product.price)
+                : null;
+
+              return (
+                <motion.div
+                  key={product.id || product._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <Link href={`/products/${product.id || product._id}`}>
+                    <div className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 relative h-full flex flex-col">
+
+                      {/* Badges — stacked */}
+                      <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5">
+                        {discountPct && (
+                          <span className="bg-gradient-to-r from-red-600 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-black shadow-lg shadow-red-900/20">
+                            {discountPct}% OFF
+                          </span>
+                        )}
+                        <span className="bg-gradient-to-r from-gray-900 to-gray-700 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow">
+                          🔥 Hot Deal
+                        </span>
                       </div>
-                    </div>
 
-                    {/* Details */}
-                    <div className="p-6 flex-grow flex flex-col">
-                      <div className="flex justify-between items-start mb-3">
-                        <h3 className="text-lg font-bold text-gray-900 group-hover:text-red-600 transition-colors line-clamp-1">
+                      {/* Image Area */}
+                      <div className="relative h-56 overflow-hidden bg-gray-50 flex-shrink-0">
+                        <img
+                          src={product.image_url || "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"}
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:from-black/10 transition-all"></div>
+
+                        {/* Hover quick-add */}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault(); e.stopPropagation();
+                              addToCart(product, 1);
+                            }}
+                            className="bg-white text-red-600 p-4 rounded-full shadow-2xl hover:bg-red-600 hover:text-white transition transform -translate-y-4 group-hover:translate-y-0 duration-300"
+                          >
+                            <FaShoppingCart className="text-xl" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Details */}
+                      <div className="p-5 flex-grow flex flex-col">
+                        {product.vendor_name && (
+                          <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-1">{product.vendor_name}</span>
+                        )}
+                        <h3 className="text-sm font-bold text-gray-900 group-hover:text-red-600 transition-colors line-clamp-2 mb-3 leading-snug flex-1">
                           {product.name}
                         </h3>
-                        <div className="flex items-center text-yellow-400">
-                          <FaStar size={14} />
-                          <span className="ml-1 text-sm font-bold text-gray-700">{product.rating || "4.8"}</span>
-                        </div>
-                      </div>
 
-                      <div className="flex items-end space-x-3 mb-6">
-                        <div className="text-2xl font-black text-red-600">
-                          {currency} {convertPrice(product.price)}
-                        </div>
-                        {product.original_price && (
-                          <div className="text-sm text-gray-400 line-through mb-1">
-                            {currency} {convertPrice(product.original_price)}
+                        {/* Pricing row */}
+                        <div className="flex items-end gap-2 mb-1">
+                          <div className="text-xl font-black text-red-600">
+                            {currency} {convertPrice(product.price)}
                           </div>
-                        )}
-                        <div className="text-xs bg-red-50 text-red-600 px-2 py-1 rounded font-bold ml-auto">
-                          SAVE {Math.round((1 - product.price / (product.original_price || product.price * 1.25)) * 100)}%
+                          {product.original_price && product.original_price > product.price && (
+                            <div className="text-sm text-gray-400 line-through mb-0.5">
+                              {currency} {convertPrice(product.original_price)}
+                            </div>
+                          )}
                         </div>
-                      </div>
 
-                      <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between text-sm text-gray-500">
-                        <div className="flex items-center">
-                          <FaTruck className="mr-2 text-green-500" />
-                          <span>Express Shipping</span>
+                        {/* Savings pill */}
+                        {savings && (
+                          <p className="text-xs font-bold text-green-600 bg-green-50 rounded-lg px-2 py-1 mb-3 inline-block">
+                            ✓ You save {currency} {savings}
+                          </p>
+                        )}
+
+                        {/* Stars */}
+                        <div className="flex items-center gap-1 mb-3">
+                          {[...Array(5)].map((_, i) => (
+                            <FaStar key={i} size={11} className={i < Math.round(product.rating || 4.5) ? 'text-yellow-400' : 'text-gray-200'} />
+                          ))}
+                          <span className="text-xs text-gray-400 ml-1">({product.review_count || '24'})</span>
                         </div>
-                        <span className="text-red-500 font-bold">Only {product.stock || 5} left!</span>
+
+                        <div className="mt-auto pt-3 border-t border-gray-50 flex items-center justify-between text-xs text-gray-500">
+                          <div className="flex items-center">
+                            <FaTruck className="mr-1.5 text-green-500" />
+                            <span>Express Delivery</span>
+                          </div>
+                          <span className="text-red-500 font-bold">Only {product.stock || 5} left!</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+                  </Link>
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </div>

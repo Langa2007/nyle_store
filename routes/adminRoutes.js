@@ -45,7 +45,9 @@ import {
 import {
   getPendingProducts,
   approveProduct,
-  rejectProduct
+  rejectProduct,
+  approveDeal,
+  rejectDeal
 } from "../controllers/adminProductApprovalController.js";
 
 import {
@@ -69,6 +71,9 @@ router.delete("/products/:id", verifyAdmin, adminActionLimiter, adminDeleteProdu
 router.get("/products/pending", verifyAdmin, getPendingProducts);
 router.put("/products/:id/approve", verifyAdmin, adminActionLimiter, approveProduct);
 router.put("/products/:id/reject", verifyAdmin, adminActionLimiter, rejectProduct);
+router.put("/products/:id/approve-deal", verifyAdmin, adminActionLimiter, approveDeal);
+router.put("/products/:id/reject-deal", verifyAdmin, adminActionLimiter, rejectDeal);
+
 
 // PRODUCT VENDOR HELPERS
 router.post("/vendors/create-or-select", verifyAdmin, adminActionLimiter, productUpload.fields([{ name: 'company_logo', maxCount: 1 }]), createOrSelectVendor);

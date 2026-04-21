@@ -251,3 +251,90 @@ export const bulkApproveProducts = async (req, res) => {
     connection.release();
   }
 };
+
+//  APPROVE DEAL
+export const approveDeal = async (req, res) => {
+  const { id } = req.params;
+  const adminId = req.admin?.id;
+
+  try {
+    const q = `
+      UPDATE products 
+      SET deal_status = 'approved',
+          is_hot_deal = true,
+          approved_by = $1,
+          approved_at = NOW()
+      WHERE id = $2 AND is_deal_requested = true
+      RETURNING *, (SELECT email FROM vendors WHERE id = products.vendor_id) as vendor_email
+    `;
+
+    const { rows } = await pool.query(q, [adminId, id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Product deal not found or not requested" });
+    }
+
+    const product = rows[0];
+
+    // Send email notification
+    if (product.vendor_email) {
+      sendProductStatusEmail(product.vendor_email, product, 'deal_approved').catch(console.error);
+    }
+
+    res.json({
+      message: "Deal approved successfully and product marked as Hot Deal",
+      product: product
+    });
+
+  } catch (err) {
+    console.error(" Approve deal error:", err.message);
+    res.status(500).json({ error: "Failed to approve deal" });
+  }
+};
+
+//  REJECT DEAL
+export const rejectDeal = async (req, res) => {
+  const { id } = req.params;
+  const { reason } = req.body;
+  const adminId = req.admin?.id;
+
+  if (!reason || reason.trim().length < 5) {
+    return res.status(400).json({
+      error: "Rejection reason is required (minimum 5 characters)"
+    });
+  }
+
+  try {
+    const q = `
+      UPDATE products 
+      SET deal_status = 'rejected',
+          is_deal_requested = false,
+          approved_by = $1,
+          rejection_reason = $2
+      WHERE id = $3
+      RETURNING *, (SELECT email FROM vendors WHERE id = products.vendor_id) as vendor_email
+    `;
+
+    const { rows } = await pool.query(q, [adminId, reason.trim(), id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    const product = rows[0];
+
+    // Send email notification
+    if (product.vendor_email) {
+      sendProductStatusEmail(product.vendor_email, product, 'deal_rejected', reason).catch(console.error);
+    }
+
+    res.json({
+      message: "Deal rejected",
+      product: product
+    });
+
+  } catch (err) {
+    console.error(" Reject deal error:", err.message);
+    res.status(500).json({ error: "Failed to reject deal" });
+  }
+};

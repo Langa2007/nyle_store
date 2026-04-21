@@ -190,6 +190,14 @@ export const addProduct = async (req, res) => {
     let approvedBy = null;
     let approvedAt = null;
 
+    const isDealRequested = req.body.is_deal_requested === 'true' || req.body.is_deal_requested === true;
+    const discountPercentage = safeFloat(req.body.discount_percentage, 0);
+    let dealStatus = 'none';
+
+    if (isDealRequested) {
+      dealStatus = 'pending';
+    }
+
     if (submitForApproval) {
       const vendor = (await connection.query(
         "SELECT is_trusted_vendor FROM vendors WHERE id = $1",
@@ -217,9 +225,11 @@ export const addProduct = async (req, res) => {
        original_price, features, warranty_info, shipping_info, 
        return_policy, specifications, tags, brand, color, material,
        estimated_delivery_days, meta_title, meta_description,
-       is_featured, is_bestseller)
+       is_featured, is_bestseller,
+       discount_percentage, is_deal_requested, deal_status)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, 'vendor', $17, $18,
-              $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33)
+              $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33,
+              $34, $35, $36)
       RETURNING *
     `;
 
@@ -259,7 +269,10 @@ export const addProduct = async (req, res) => {
       meta_title,
       meta_description,
       is_featured === true || is_featured === 'true',
-      is_bestseller === true || is_bestseller === 'true'
+      is_bestseller === true || is_bestseller === 'true',
+      discountPercentage,
+      isDealRequested,
+      dealStatus
     ];
 
 
@@ -441,6 +454,19 @@ export const updateProduct = async (req, res) => {
     if (meta_description !== undefined) { updates.push(`meta_description = $${paramCount}`); values.push(meta_description); paramCount++; }
     if (is_featured !== undefined) { updates.push(`is_featured = $${paramCount}`); values.push(is_featured === true || is_featured === 'true'); paramCount++; }
     if (is_bestseller !== undefined) { updates.push(`is_bestseller = $${paramCount}`); values.push(is_bestseller === true || is_bestseller === 'true'); paramCount++; }
+    if (discount_percentage !== undefined) { updates.push(`discount_percentage = $${paramCount}`); values.push(safeFloat(discount_percentage, 0)); paramCount++; }
+    if (is_deal_requested !== undefined) { 
+      const isRequested = is_deal_requested === true || is_deal_requested === 'true';
+      updates.push(`is_deal_requested = $${paramCount}`); 
+      values.push(isRequested); 
+      paramCount++; 
+      
+      if (isRequested) {
+        updates.push(`deal_status = $${paramCount}`);
+        values.push('pending');
+        paramCount++;
+      }
+    }
 
 
 

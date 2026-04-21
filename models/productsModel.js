@@ -11,6 +11,10 @@ const createProductTable = async () => {
       stock INTEGER DEFAULT 0,
       category TEXT,        -- Added
       image_url TEXT,       -- Cloudinary URL
+      is_hot_deal BOOLEAN DEFAULT FALSE,
+      discount_percentage NUMERIC DEFAULT 0,
+      is_deal_requested BOOLEAN DEFAULT FALSE,
+      deal_status TEXT DEFAULT 'none',
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `;
@@ -37,12 +41,12 @@ export const createProduct = async (
   const result = await pool.query(
     `
     INSERT INTO products
-      (name, description, price, stock, category, image_url)
+      (name, description, price, stock, category, image_url, is_hot_deal, discount_percentage, is_deal_requested, deal_status)
     VALUES
-      ($1, $2, $3, $4, $5, $6)
+      ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
     RETURNING *;
     `,
-    [name, description, price, stock, category, imageUrl]
+    [name, description, price, stock, category, imageUrl, false, 0, false, 'none']
   );
 
   return result.rows[0];

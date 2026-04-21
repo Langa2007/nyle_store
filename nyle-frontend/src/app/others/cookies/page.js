@@ -75,7 +75,7 @@ export default function CookiePolicyPage() {
       title="Cookie Policy"
       subtitle="We use cookies to enhance your browsing experience. Learn about our cookie usage and manage your preferences."
       icon={<Cookie className="h-8 w-8" />}
-      lastUpdated="January 15, 2024"
+      lastUpdated="January 15, 2026"
       category="Tracking & Preferences"
     >
       <div className="space-y-12">
