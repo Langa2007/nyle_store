@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
+import { useAuthPopup } from "@/hooks/useAuthPopup";
 import NyleLogo from "@/components/branding/NyleLogo.png";
 
 
@@ -33,7 +34,7 @@ export default function LoginPage() {
   const [showResetForm, setShowResetForm] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
+  const { signInWithPopup, isAuthenticating: googleLoading } = useAuthPopup();
 
 
   const RAW_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
@@ -59,16 +60,14 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setGoogleLoading(true);
+  const handleGoogleSignIn = () => {
     setMsg("");
-    try {
-      await signIn("google", { callbackUrl: next });
-    } catch (error) {
-      setMsg("Failed to sign in with Google");
-      console.error("Google sign-in error:", error);
-      setGoogleLoading(false);
-    }
+    signInWithPopup("google", {
+      onSuccess: () => {
+        router.push(next);
+        router.refresh();
+      }
+    });
   };
 
 

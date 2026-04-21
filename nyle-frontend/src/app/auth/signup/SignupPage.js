@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { useAuthPopup } from "@/hooks/useAuthPopup";
 import Link from "next/link";
 import Image from "next/image";
 import NyleLogo from "@/components/branding/NyleLogo.png";
@@ -47,7 +48,7 @@ export default function SignupPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
+  const { signInWithPopup, isAuthenticating: googleLoading } = useAuthPopup();
   const [message, setMessage] = useState("");
 
   // Smart email attempt using Credential Management API (best-effort)
@@ -73,27 +74,14 @@ export default function SignupPage() {
   };
 
   // Google Sign-In Handler
-  const handleGoogleSignIn = async () => {
-    setGoogleLoading(true);
+  const handleGoogleSignIn = () => {
     setMessage("");
-
-    try {
-      const result = await signIn("google", {
-        callbackUrl: next,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setMessage(result.error);
-      } else if (result?.url) {
-        router.push(result.url);
+    signInWithPopup("google", {
+      onSuccess: () => {
+        router.push(next);
+        router.refresh();
       }
-    } catch (error) {
-      setMessage("Failed to sign in with Google");
-      console.error("Google sign-in error:", error);
-    } finally {
-      setGoogleLoading(false);
-    }
+    });
   };
 
   // Email/Password Signup Handler
