@@ -15,9 +15,8 @@ import {
 } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
-import { signIn } from "next-auth/react";
-import GoogleIdentitySync from "@/components/GoogleIdentitySync";
 import NyleLogo from "@/components/branding/NyleLogo.png";
+import { useAuthPopup } from "@/hooks/useAuthPopup";
 
 
 export default function LoginPage() {
@@ -34,7 +33,7 @@ export default function LoginPage() {
   const [showResetForm, setShowResetForm] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
+  const { signInWithPopup, isAuthenticating } = useAuthPopup();
 
 
   const RAW_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
@@ -60,11 +59,16 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     setMsg("");
-    if (window.google) {
-      window.google.accounts.id.prompt();
-    }
+    await signInWithPopup("google", {
+      onSuccess: () => {
+        window.location.href = next;
+      },
+      onError: (errorMessage) => {
+        setMsg(errorMessage);
+      },
+    });
   };
 
 
@@ -202,13 +206,13 @@ export default function LoginPage() {
               // Login Form
               <>
                 <div className="mb-6">
-                  <GoogleIdentitySync />
                   <button
+                    type="button"
                     onClick={handleGoogleSignIn}
-                    disabled={googleLoading}
+                    disabled={isAuthenticating}
                     className="w-full p-3 rounded-xl border border-gray-300 flex items-center justify-center gap-3 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-sm hover:shadow"
                   >
-                    {googleLoading ? (
+                    {isAuthenticating ? (
                       <span className="flex items-center">
                         <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>

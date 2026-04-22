@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext/page';
-import { signIn } from 'next-auth/react';
-import { FaGoogle, FaEnvelope, FaLock, FaUser, FaArrowRight } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaUser, FaArrowRight } from 'react-icons/fa';
+import { useAuthPopup } from '@/hooks/useAuthPopup';
 
 export default function AuthModal() {
   const { showAuthModal, setShowAuthModal, authAction, syncCartAfterLogin } = useCart();
@@ -11,6 +11,7 @@ export default function AuthModal() {
   const [formData, setFormData] = useState({ email: '', password: '', name: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { signInWithPopup, isAuthenticating } = useAuthPopup();
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
@@ -60,14 +61,36 @@ export default function AuthModal() {
   };
 
   const handleGoogleSignIn = async () => {
-    try {
-      setLoading(true);
-      await signIn('google', { callbackUrl: window.location.href });
-    } catch (err) {
-      setError('Google sign-in failed');
-    } finally {
-      setLoading(false);
-    }
+    setError('');
+
+    await signInWithPopup('google', {
+      onSuccess: async (session) => {
+        if (session?.accessToken) {
+          localStorage.setItem('accessToken', session.accessToken);
+          localStorage.setItem('userAccessToken', session.accessToken);
+        }
+
+        if (session?.user) {
+          localStorage.setItem('user', JSON.stringify({
+            id: session.user.id,
+            name: session.user.name,
+            email: session.user.email,
+            image: session.user.image,
+          }));
+        }
+
+        if (session?.user?.id) {
+          await syncCartAfterLogin(session.user.id);
+        }
+
+        setShowAuthModal(false);
+        setFormData({ email: '', password: '', name: '' });
+        window.location.reload();
+      },
+      onError: (errorMessage) => {
+        setError(errorMessage || 'Google sign-in failed');
+      },
+    });
   };
 
   if (!showAuthModal) return null;
@@ -97,11 +120,11 @@ export default function AuthModal() {
         <div className="space-y-4">
           <button
             onClick={handleGoogleSignIn}
-            disabled={loading}
+            disabled={loading || isAuthenticating}
             className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 py-3.5 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition shadow-sm active:scale-95"
           >
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
-            Continue with Google
+            {isAuthenticating ? 'Connecting to Google...' : 'Continue with Google'}
           </button>
 
           <div className="flex items-center gap-4 my-6">
@@ -152,7 +175,7 @@ export default function AuthModal() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || isAuthenticating}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-100 active:scale-95 transition-all disabled:opacity-50"
             >
               {loading ? (

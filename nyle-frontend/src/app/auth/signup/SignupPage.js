@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import GoogleIdentitySync from "@/components/GoogleIdentitySync";
 import Link from "next/link";
 import Image from "next/image";
 import NyleLogo from "@/components/branding/NyleLogo.png";
+import { useAuthPopup } from "@/hooks/useAuthPopup";
 
 function PasswordStrength({ password }) {
   if (!password) return null;
@@ -48,8 +48,8 @@ export default function SignupPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const { signInWithPopup, isAuthenticating } = useAuthPopup();
 
   // Smart email attempt using Credential Management API (best-effort)
   useEffect(() => {
@@ -74,11 +74,16 @@ export default function SignupPage() {
   };
 
   // Google Sign-In Handler
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     setMessage("");
-    if (window.google) {
-      window.google.accounts.id.prompt();
-    }
+    await signInWithPopup("google", {
+      onSuccess: () => {
+        window.location.href = next === "/" ? "/dashboard" : next;
+      },
+      onError: (errorMessage) => {
+        setMessage(errorMessage);
+      },
+    });
   };
 
   // Email/Password Signup Handler
@@ -207,13 +212,13 @@ export default function SignupPage() {
           )}
 
           <div className="mb-6">
-            <GoogleIdentitySync />
             <button
+              type="button"
               onClick={handleGoogleSignIn}
-              disabled={googleLoading}
+              disabled={isAuthenticating}
               className="w-full p-3 rounded-xl border border-gray-300 flex items-center justify-center gap-3 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-sm hover:shadow"
             >
-              {googleLoading ? (
+              {isAuthenticating ? (
                 <span className="flex items-center">
                   <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>

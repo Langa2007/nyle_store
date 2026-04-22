@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { signIn } from 'next-auth/react';
+import { getSession, signIn } from 'next-auth/react';
 
 /**
  * useAuthPopup Hook for Nyle Store
@@ -33,43 +33,75 @@ export const useAuthPopup = () => {
         redirect: false,
       });
 
-      if (result?.url) {
-        const popup = window.open(result.url, 'NyleStoreAuth', popupFeatures);
-        
-        if (!popup) {
-          alert('Popup blocked. Please allow popups for this site.');
-          setIsAuthenticating(false);
-          return;
+      if (!result?.url) {
+        options.onError?.('Unable to start Google sign-in. Please try again.');
+        setIsAuthenticating(false);
+        return;
+      }
+
+      const popup = window.open(result.url, 'NyleStoreAuth', popupFeatures);
+      
+      if (!popup) {
+        const popupBlockedMessage = 'Popup blocked. Please allow popups for this site.';
+        options.onError?.(popupBlockedMessage);
+        alert(popupBlockedMessage);
+        setIsAuthenticating(false);
+        return;
+      }
+
+      const getFreshSession = async () => {
+        for (let attempt = 0; attempt < 5; attempt += 1) {
+          const session = await getSession();
+
+          if (session?.user) {
+            return session;
+          }
+
+          await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
         }
 
-        const messageHandler = (event) => {
-          if (event.origin !== window.location.origin) return;
-          
-          if (event.data?.type === 'AUTH_SUCCESS' && event.data?.source === 'next-auth-popup') {
-            window.removeEventListener('message', messageHandler);
-            
-            // Success! 
+        return null;
+      };
+
+      let checkClosed;
+
+      const messageHandler = async (event) => {
+        if (event.origin !== window.location.origin) return;
+        
+        if (event.data?.type === 'AUTH_SUCCESS' && event.data?.source === 'next-auth-popup') {
+          window.removeEventListener('message', messageHandler);
+          clearInterval(checkClosed);
+
+          try {
+            const session = await getFreshSession();
+
             if (options.onSuccess) {
-              options.onSuccess();
+              await options.onSuccess(session);
             } else {
               window.location.reload();
             }
+          } catch (callbackError) {
+            console.error('Nyle Store Popup Auth Success Handler Error:', callbackError);
+            options.onError?.('Google sign-in finished, but we could not complete the session setup.');
+          } finally {
             setIsAuthenticating(false);
           }
-        };
+        }
+      };
 
-        window.addEventListener('message', messageHandler);
+      window.addEventListener('message', messageHandler);
 
-        // Monitor if popup was closed without finishing
-        const checkClosed = setInterval(() => {
-          if (popup.closed) {
-            clearInterval(checkClosed);
-            setIsAuthenticating(false);
-          }
-        }, 1000);
-      }
+      // Monitor if popup was closed without finishing
+      checkClosed = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(checkClosed);
+          window.removeEventListener('message', messageHandler);
+          setIsAuthenticating(false);
+        }
+      }, 1000);
     } catch (error) {
       console.error('Nyle Store Popup Auth Error:', error);
+      options.onError?.('Authentication failed. Please try again.');
       setIsAuthenticating(false);
     }
   }, [isAuthenticating]);
