@@ -115,8 +115,9 @@ export const getAuthOptions = async () => {
                         return {
                             id: user.id,
                             email: user.email,
-                            name: user.name,
-                            image: user.image,
+                            // Always use the live Google name/picture — the DB may have a stale value like "Admin User"
+                            name: googleUser.name || user.name,
+                            image: googleUser.picture || user.image,
                         }
                     } catch (error) {
                         console.error('[Auth] Google token verification error:', error);
