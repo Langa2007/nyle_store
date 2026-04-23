@@ -1,6 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaNeon } from '@prisma/adapter-neon';
-import { Pool } from '@neondatabase/serverless';
 
 let prismaInstance = null;
 
@@ -22,21 +20,13 @@ export default async function getPrisma() {
     }
 
     try {
-        const isNeon = databaseUrl.includes('neon.tech');
-
-        if (isNeon) {
-            console.log("[Prisma] Initializing Neon adapter...");
-            const pool = new Pool({ connectionString: databaseUrl });
-            const adapter = new PrismaNeon(pool);
-            prismaInstance = new PrismaClient({ adapter });
-        } else {
-            console.log("[Prisma] Initializing standard PostgreSQL client...");
-            prismaInstance = new PrismaClient({
-                datasources: {
-                    db: { url: databaseUrl },
-                },
-            });
-        }
+        console.log(`[Prisma] Initializing standard PostgreSQL client... URL starts with: ${databaseUrl.substring(0, 15)}...`);
+        
+        prismaInstance = new PrismaClient({
+            datasources: {
+                db: { url: databaseUrl },
+            },
+        });
 
         // Store in global for dev mode to prevent connection exhaustion
         if (process.env.NODE_ENV !== 'production') {
