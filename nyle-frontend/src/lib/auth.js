@@ -2,6 +2,8 @@ import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import getPrisma from '@/lib/prisma'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 
 export const getAuthOptions = async () => {
     const prisma = await getPrisma();
@@ -37,8 +39,6 @@ export const getAuthOptions = async () => {
                         throw new Error('Invalid credentials')
                     }
 
-                    // Import bcrypt locally to avoid build-time worker crashes
-                    const bcrypt = (await import('bcryptjs')).default;
                     const isValid = await bcrypt.compare(credentials.password, user.password)
 
                     if (!isValid) {
@@ -188,10 +188,8 @@ export const getAuthOptions = async () => {
                     }
                 }
 
-                // If the ID was updated or it's a new login, refresh the backend-compatible accessToken
                 if (needsUpdate || !token.accessToken) {
-                    const jwtHelper = (await import('jsonwebtoken')).default;
-                    token.accessToken = jwtHelper.sign(
+                    token.accessToken = jwt.sign(
                         { id: token.id, email: token.email || user?.email, role: 'user' },
                         process.env.JWT_SECRET || 'fallback_secret_during_build',
                         { expiresIn: '24h' }
