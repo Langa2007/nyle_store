@@ -18,7 +18,6 @@ import Image from "next/image";
 import NyleLogo from "@/components/branding/NyleLogo.png";
 import GoogleIdentitySync from "@/components/GoogleIdentitySync";
 
-
 export default function LoginPage() {
   const router = useRouter();
   const params = useSearchParams();
