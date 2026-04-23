@@ -13,19 +13,18 @@ export default async function getPrisma() {
     }
 
     // Sanitize the URL to remove any accidental quotes (common in Vercel env vars)
-    const databaseUrl = process.env.DATABASE_URL?.replace(/^["']|["']$/g, '');
-    if (!databaseUrl) {
-        console.error("[Prisma] DATABASE_URL is not defined");
-        return null;
+    const sanitizedUrl = process.env.DATABASE_URL?.replace(/^["']|["']$/g, '');
+    
+    if (sanitizedUrl) {
+        // Set it back to the environment so Prisma's engine picks it up automatically
+        process.env.DATABASE_URL = sanitizedUrl;
     }
 
     try {
-        console.log(`[Prisma] Initializing standard PostgreSQL client... URL starts with: ${databaseUrl.substring(0, 15)}...`);
+        console.log(`[Prisma] Initializing standard client... (URL length: ${sanitizedUrl?.length || 0})`);
         
-        // Use datasourceUrl for explicit connection string override in newer Prisma versions
-        prismaInstance = new PrismaClient({
-            datasourceUrl: databaseUrl,
-        });
+        // No arguments needed, Prisma will use process.env.DATABASE_URL by default
+        prismaInstance = new PrismaClient();
 
         // Store in global for dev mode to prevent connection exhaustion
         if (process.env.NODE_ENV !== 'production') {
