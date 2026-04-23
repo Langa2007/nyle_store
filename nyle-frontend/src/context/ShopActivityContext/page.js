@@ -32,7 +32,8 @@ export function ShopActivityProvider({ children }) {
   const [recentlyViewedItems, setRecentlyViewedItems] = useState([]);
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const [recentlyViewedLoading, setRecentlyViewedLoading] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
+  const isSyncingRef = useRef(false);
+  const hasSyncedRef = useRef(false);
   const suspendCommerceFetches = shouldSuspendCommerceFetches(pathname);
 
   const getSessionId = useCallback(() => {
@@ -258,11 +259,12 @@ export function ShopActivityProvider({ children }) {
     const userId = getUserId();
     const sessionId = readExistingSessionId();
 
-    if (!userId || !sessionId || isSyncing) return;
+    // Only sync once per session: user must be logged in, session_id must exist, and we haven't synced yet
+    if (!userId || !sessionId || isSyncingRef.current || hasSyncedRef.current) return;
 
     const syncGuestData = async () => {
+      isSyncingRef.current = true;
       try {
-        setIsSyncing(true);
         await Promise.all([
           fetch(`${API_URL}/api/wishlist/sync`, {
             method: "POST",
@@ -275,16 +277,18 @@ export function ShopActivityProvider({ children }) {
             body: JSON.stringify({ user_id: userId, session_id: sessionId }),
           }),
         ]);
+        hasSyncedRef.current = true;
       } catch (error) {
         console.error("Shop activity sync error:", error);
       } finally {
-        setIsSyncing(false);
+        isSyncingRef.current = false;
         refreshActivity();
       }
     };
 
     syncGuestData();
-  }, [getUserId, isSyncing, refreshActivity, suspendCommerceFetches]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, suspendCommerceFetches]);
 
   const value = useMemo(() => ({
     wishlistItems,

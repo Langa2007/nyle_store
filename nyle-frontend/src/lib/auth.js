@@ -139,7 +139,9 @@ export const getAuthOptions = async () => {
 
                 // Case 1: Initial sign in - Link user to DB
                 if (user) {
-                    token.email = user.email; // CRITICAL: Ensure email is preserved for Case 2
+                    token.email = user.email;
+                    token.name = user.name;    // persist name
+                    token.picture = user.image; // persist avatar
                     if (db) {
                         try {
                             if (account?.provider === 'google' || account?.provider === 'google-id-token') {
@@ -200,10 +202,12 @@ export const getAuthOptions = async () => {
             },
             async session({ session, token }) {
                 if (token) {
-                    session.user.id = token.id
-                    session.accessToken = token.accessToken
+                    session.user.id = token.id;
+                    session.user.name = token.name ?? session.user.name;
+                    session.user.image = token.picture ?? session.user.image;
+                    session.accessToken = token.accessToken;
                 }
-                return session
+                return session;
             },
         },
         secret: process.env.NEXTAUTH_SECRET,
