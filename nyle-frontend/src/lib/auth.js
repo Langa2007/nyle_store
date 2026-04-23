@@ -60,29 +60,48 @@ export const getAuthOptions = async () => {
                     id_token: { label: 'ID Token', type: 'text' },
                 },
                 async authorize(credentials) {
-                    if (!credentials?.id_token) return null;
+                    if (!credentials?.id_token) {
+                        console.warn('[Auth] No id_token provided in credentials');
+                        return null;
+                    }
 
                     try {
+                        console.log('[Auth] Verifying Google ID token...');
                         const response = await fetch(
                             `https://oauth2.googleapis.com/tokeninfo?id_token=${credentials.id_token}`
                         );
 
-                        if (!response.ok) return null;
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            console.error(`[Auth] Google tokeninfo API error (${response.status}):`, errorText);
+                            return null;
+                        }
 
                         const googleUser = await response.json();
+                        console.log('[Auth] Google user verified:', googleUser.email);
 
-                        if (googleUser.aud !== process.env.GOOGLE_CLIENT_ID) {
+                        const envClientId = process.env.GOOGLE_CLIENT_ID;
+                        if (!envClientId) {
+                            console.error('[Auth] GOOGLE_CLIENT_ID is not defined in environment variables');
+                        }
+
+                        if (googleUser.aud !== envClientId) {
+                            console.error(`[Auth] Audience mismatch. Expected: ${envClientId}, Got: ${googleUser.aud}`);
                             return null;
                         }
 
                         const db = await getPrisma();
-                        if (!db) return null;
+                        if (!db) {
+                            console.error('[Auth] Database connection failed during Google sign-in');
+                            return null;
+                        }
 
                         let user = await db.user.findUnique({
                             where: { email: googleUser.email }
                         });
 
                         if (!user) {
+                            console.log(`[Auth] Creating new user for email: ${googleUser.email}`);
                             user = await db.user.create({
                                 data: {
                                     email: googleUser.email,
@@ -92,6 +111,7 @@ export const getAuthOptions = async () => {
                             });
                         }
 
+                        console.log('[Auth] Authorization successful for:', user.email);
                         return {
                             id: user.id,
                             email: user.email,
