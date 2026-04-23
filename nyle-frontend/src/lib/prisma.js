@@ -22,10 +22,9 @@ export default async function getPrisma() {
     try {
         console.log(`[Prisma] Initializing standard PostgreSQL client... URL starts with: ${databaseUrl.substring(0, 15)}...`);
         
+        // Use datasourceUrl for explicit connection string override in newer Prisma versions
         prismaInstance = new PrismaClient({
-            datasources: {
-                db: { url: databaseUrl },
-            },
+            datasourceUrl: databaseUrl,
         });
 
         // Store in global for dev mode to prevent connection exhaustion
