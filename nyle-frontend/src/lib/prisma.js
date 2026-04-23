@@ -14,7 +14,8 @@ export default async function getPrisma() {
         return prismaInstance;
     }
 
-    const databaseUrl = process.env.DATABASE_URL;
+    // Sanitize the URL to remove any accidental quotes (common in Vercel env vars)
+    const databaseUrl = process.env.DATABASE_URL?.replace(/^["']|["']$/g, '');
     if (!databaseUrl) {
         console.error("[Prisma] DATABASE_URL is not defined");
         return null;
