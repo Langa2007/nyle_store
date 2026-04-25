@@ -470,8 +470,7 @@ function HomeContent() {
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 px-4">
           <div className="container mx-auto flex flex-col md:flex-row items-center justify-center md:justify-between gap-2">
             <div className="flex items-center space-x-2">
-              <FaGift className="text-yellow-300" />
-              <span className="font-large">🎉 March Deals: Up to 60% OFF on Selected Items!</span>
+              <span className="font-large">April Deals: Up to 60% OFF on Selected Items!</span>
             </div>
             <div className="flex items-center space-x-4 text-sm">
               <div className="flex items-center space-x-1">
