@@ -57,12 +57,12 @@ export function HelpCenterContent() {
 
   const categories = [
     { id: "all", label: "All Topics", icon: Globe, color: "from-blue-500 to-cyan-500", href: "/support/help-center" },
-    { id: "getting-started", label: "Getting Started", icon: Zap, color: "from-green-500 to-emerald-500", href: "/support/help-center/getting-started" },
-    { id: "payments", label: "Payments & Billing", icon: CreditCard, color: "from-purple-500 to-pink-500", href: "/support/help-center/payments" },
-    { id: "shipping", label: "Shipping & Orders", icon: Truck, color: "from-orange-500 to-red-500", href: "/support/help-center/shipping" },
-    { id: "seller", label: "Seller Support", icon: Store, color: "from-indigo-500 to-blue-500", href: "/support/help-center/seller" },
-    { id: "app", label: "Mobile App", icon: Smartphone, color: "from-cyan-500 to-teal-500", href: "/support/help-center/app" },
-    { id: "security", label: "Security & Privacy", icon: Shield, color: "from-gray-700 to-gray-900", href: "/support/help-center/security" },
+    { id: "getting-started", label: "Getting Started", icon: Zap, color: "from-green-500 to-emerald-500", href: "/about/know-nyle" },
+    { id: "payments", label: "Payments & Billing", icon: CreditCard, color: "from-purple-500 to-pink-500", href: "/payments/policies" },
+    { id: "shipping", label: "Shipping & Orders", icon: Truck, color: "from-orange-500 to-red-500", href: "/source/shipping-policies" },
+    { id: "seller", label: "Seller Support", icon: Store, color: "from-indigo-500 to-blue-500", href: "/vendor/support" },
+    { id: "app", label: "Mobile App", icon: Smartphone, color: "from-cyan-500 to-teal-500", href: "/vendor/app" },
+    { id: "security", label: "Security & Privacy", icon: Shield, color: "from-gray-700 to-gray-900", href: "/others/privacy" },
   ];
 
   const faqs = [
@@ -471,20 +471,18 @@ export function HelpCenterContent() {
             will help you succeed on our platform.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl hover:shadow-lg"
+            <Link
+              href="/support/faqs"
+              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all hover:scale-105"
             >
               Explore All Guides
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-6 py-3 bg-white border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50"
+            </Link>
+            <Link
+              href="/vendor/faq"
+              className="px-6 py-3 bg-white border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all hover:scale-105"
             >
               Watch Tutorials
-            </motion.button>
+            </Link>
           </div>
         </motion.div>
       </div>
