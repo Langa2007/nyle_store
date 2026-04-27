@@ -1,6 +1,8 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSearchParams, useParams } from "next/navigation";
+import Link from "next/link";
 import { 
   Search, 
   BookOpen, 
@@ -36,9 +38,13 @@ import SupportInfoLayout from "@/components/support/SupportInfoLayout";
 import { MessageCircle as WhatsAppIcon } from "lucide-react";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
-export default function HelpCenterPage() {
+export function HelpCenterContent() {
+  const searchParams = useSearchParams();
+  const params = useParams();
+  const initialCategory = params?.category || searchParams.get("category") || "all";
+  
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [expandedFaq, setExpandedFaq] = useState(null);
   const [trendingArticles, setTrendingArticles] = useState([
     { id: 1, title: "How to Set Up NylePay", views: "12.4k", category: "payments", icon: CreditCard },
@@ -50,13 +56,13 @@ export default function HelpCenterPage() {
   const searchRef = useRef(null);
 
   const categories = [
-    { id: "all", label: "All Topics", icon: Globe, color: "from-blue-500 to-cyan-500" },
-    { id: "getting-started", label: "Getting Started", icon: Zap, color: "from-green-500 to-emerald-500" },
-    { id: "payments", label: "Payments & Billing", icon: CreditCard, color: "from-purple-500 to-pink-500" },
-    { id: "shipping", label: "Shipping & Orders", icon: Truck, color: "from-orange-500 to-red-500" },
-    { id: "seller", label: "Seller Support", icon: Store, color: "from-indigo-500 to-blue-500" },
-    { id: "app", label: "Mobile App", icon: Smartphone, color: "from-cyan-500 to-teal-500" },
-    { id: "security", label: "Security & Privacy", icon: Shield, color: "from-gray-700 to-gray-900" },
+    { id: "all", label: "All Topics", icon: Globe, color: "from-blue-500 to-cyan-500", href: "/support/help-center" },
+    { id: "getting-started", label: "Getting Started", icon: Zap, color: "from-green-500 to-emerald-500", href: "/support/help-center/getting-started" },
+    { id: "payments", label: "Payments & Billing", icon: CreditCard, color: "from-purple-500 to-pink-500", href: "/support/help-center/payments" },
+    { id: "shipping", label: "Shipping & Orders", icon: Truck, color: "from-orange-500 to-red-500", href: "/support/help-center/shipping" },
+    { id: "seller", label: "Seller Support", icon: Store, color: "from-indigo-500 to-blue-500", href: "/support/help-center/seller" },
+    { id: "app", label: "Mobile App", icon: Smartphone, color: "from-cyan-500 to-teal-500", href: "/support/help-center/app" },
+    { id: "security", label: "Security & Privacy", icon: Shield, color: "from-gray-700 to-gray-900", href: "/support/help-center/security" },
   ];
 
   const faqs = [
@@ -115,6 +121,12 @@ export default function HelpCenterPage() {
       searchRef.current.focus();
     }
   }, []);
+
+  useEffect(() => {
+    if (initialCategory) {
+      setActiveCategory(initialCategory);
+    }
+  }, [initialCategory]);
 
   return (
     <SupportInfoLayout
@@ -207,32 +219,35 @@ export default function HelpCenterPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">Browse by Category</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {categories.map((category) => (
-              <motion.button
+              <Link
                 key={category.id}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setActiveCategory(category.id)}
-                className={`relative overflow-hidden rounded-xl p-5 text-left transition-all ${
+                href={category.href}
+                className={`relative overflow-hidden rounded-xl p-5 text-left transition-all block ${
                   activeCategory === category.id 
                     ? 'ring-2 ring-blue-500 shadow-lg' 
                     : 'bg-white border border-gray-200 hover:border-blue-300'
                 }`}
               >
-                {activeCategory === category.id && (
-                  <motion.div
-                    layoutId="activeCategory"
-                    className="absolute inset-0 bg-gradient-to-r opacity-5 from-blue-500 to-cyan-500"
-                    transition={{ type: "spring", bounce: 0.2 }}
-                  />
-                )}
-                <div className={`inline-flex p-3 rounded-lg bg-gradient-to-r ${category.color} mb-3`}>
-                  <category.icon className="h-5 w-5 text-white" />
-                </div>
-                <h3 className="font-semibold text-gray-900">{category.label}</h3>
-                <ChevronRight className={`h-4 w-4 mt-2 ${
-                  activeCategory === category.id ? 'text-blue-600' : 'text-gray-400'
-                }`} />
-              </motion.button>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {activeCategory === category.id && (
+                    <motion.div
+                      layoutId="activeCategory"
+                      className="absolute inset-0 bg-gradient-to-r opacity-5 from-blue-500 to-cyan-500"
+                      transition={{ type: "spring", bounce: 0.2 }}
+                    />
+                  )}
+                  <div className={`inline-flex p-3 rounded-lg bg-gradient-to-r ${category.color} mb-3`}>
+                    <category.icon className="h-5 w-5 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900">{category.label}</h3>
+                  <ChevronRight className={`h-4 w-4 mt-2 ${
+                    activeCategory === category.id ? 'text-blue-600' : 'text-gray-400'
+                  }`} />
+                </motion.div>
+              </Link>
             ))}
           </div>
         </div>
@@ -477,3 +492,15 @@ export default function HelpCenterPage() {
     </SupportInfoLayout>
   );
 }
+
+export default function HelpCenterPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    }>
+      <HelpCenterContent />
+    </Suspense>
+  );
+}
