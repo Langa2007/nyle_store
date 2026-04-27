@@ -9,6 +9,7 @@ import {
   HelpCircle, Shield, FileText
 } from "lucide-react";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
+import { useIsMobile } from "@/lib/useMobile";
 
 const siteSections = [
   {
@@ -123,12 +124,18 @@ export default function SitemapPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSection, setActiveSection] = useState(null);
   const [mounted, setMounted] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => setMounted(true), []);
 
   const filteredSections = siteSections.map(section => ({
     ...section,
-    links: section.links.filter(link =>
+    links: section.links.map(link => ({
+      ...link,
+      href: (link.name === "My Account" && link.href.includes("/profile")) 
+        ? (isMobile ? "/profile" : "/dashboard") 
+        : link.href
+    })).filter(link =>
       link.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       link.href.toLowerCase().includes(searchQuery.toLowerCase())
     )

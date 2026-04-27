@@ -801,9 +801,18 @@ export default function Navbar() {
                         <p className="font-black text-white truncate mt-0.5">{userName || session?.user?.email}</p>
                       </div>
                       <div className="p-2">
-                        <Link href="/profile" className="flex items-center gap-3 px-4 py-3 text-white/70 hover:text-amber-400 hover:bg-white/5 rounded-xl transition-all">
-                          <FaUser className="text-amber-400/60" size={13} />
-                          <span className="text-sm font-semibold flex-1">My Profile</span>
+                        <Link href={isMobile ? "/profile" : "/dashboard"} className="flex items-center gap-3 px-4 py-3 text-white/70 hover:text-amber-400 hover:bg-white/5 rounded-xl transition-all">
+                          {isMobile ? (
+                            <>
+                              <FaUser className="text-amber-400/60" size={13} />
+                              <span className="text-sm font-semibold flex-1">My Profile</span>
+                            </>
+                          ) : (
+                            <>
+                              <FaGem className="text-amber-400/60" size={13} />
+                              <span className="text-sm font-semibold flex-1">Dashboard</span>
+                            </>
+                          )}
                           <ChevronRight size={12} className="text-white/20" />
                         </Link>
                         <Link href="/orders" className="flex items-center gap-3 px-4 py-3 text-white/70 hover:text-amber-400 hover:bg-white/5 rounded-xl transition-all">
