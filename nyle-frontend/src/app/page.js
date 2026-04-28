@@ -963,7 +963,7 @@ function HomeContent() {
                           onClick={async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            addToCart(product, 1);
+                            addToCart(product, 1, { buyNow: true });
                           }}
                           className="w-full py-3 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-xl font-bold hover:shadow-lg transition transform active:scale-95 flex items-center justify-center space-x-2"
                         >

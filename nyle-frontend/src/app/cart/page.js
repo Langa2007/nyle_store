@@ -3,202 +3,277 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext/page';
 import Link from 'next/link';
-import { FiTrash2, FiPlus, FiMinus, FiArrowLeft } from 'react-icons/fi';
+import { FiTrash2, FiPlus, FiMinus, FiArrowLeft, FiShoppingBag, FiShield, FiTruck, FiChevronRight } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CartPage() {
-  const { cart, updateQuantity, removeItem, clearCart, getCartTotals } = useCart();
+  const { cart, updateQuantity, removeItem, clearCart, getCartTotals, loading } = useCart();
   const totals = getCartTotals();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Check login status on client side only
     const accessToken = localStorage.getItem('accessToken') || localStorage.getItem('userAccessToken');
     setIsLoggedIn(!!accessToken);
   }, []);
 
-  if (cart.items.length === 0) {
+  if (cart.items.length === 0 && !loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-16">
+      <div className="min-h-screen bg-[#f8fafc] py-20">
         <div className="container mx-auto px-4 text-center">
-          <div className="max-w-md mx-auto">
-            <div className="w-24 h-24 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-6">
-              <svg className="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="max-w-md mx-auto"
+          >
+            <div className="w-32 h-32 mx-auto bg-blue-50 rounded-full flex items-center justify-center mb-8 relative">
+                <FiShoppingBag className="w-16 h-16 text-blue-500" />
+                <div className="absolute -top-2 -right-2 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center animate-bounce">
+                    <span className="text-xl">✨</span>
+                </div>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Your cart is empty</h1>
-            <p className="text-gray-600 mb-8">Looks like you haven't added any products to your cart yet.</p>
+            <h1 className="text-4xl font-black text-slate-900 mb-4">Your Cart is Empty</h1>
+            <p className="text-slate-500 mb-10 text-lg">Your shopping journey awaits! Discover our latest collections and find something you love.</p>
             <Link
               href="/"
-              className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium"
+              className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-2xl font-bold transition shadow-xl shadow-blue-200 group"
             >
-              <FiArrowLeft className="mr-2" />
-              Continue Shopping
+              <FiArrowLeft className="mr-3 group-hover:-translate-x-1 transition-transform" />
+              Start Shopping
             </Link>
-          </div>
+          </motion.div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
+    <div className="min-h-screen bg-[#f8fafc] py-12">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+            <div>
+                <Link href="/" className="text-blue-600 font-bold flex items-center gap-2 mb-2 text-sm hover:underline">
+                    <FiArrowLeft /> Back to Shop
+                </Link>
+                <h1 className="text-4xl font-black text-slate-900 tracking-tight">Shopping Bag</h1>
+            </div>
+            <div className="flex items-center gap-2 text-slate-400 font-medium">
+                <span className="text-blue-600 font-bold">{totals.itemCount} Items</span>
+                <span>•</span>
+                <span>Subtotal: Ksh {Number(totals.subtotal).toLocaleString()}</span>
+            </div>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl shadow p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold">Items ({totals.itemCount})</h2>
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
+          {/* Cart Items List */}
+          <div className="xl:col-span-8">
+            <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+              <div className="px-8 py-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
+                <h2 className="text-xl font-bold text-slate-800">Review Items</h2>
                 <button
                   onClick={clearCart}
-                  className="text-red-600 hover:text-red-800 text-sm font-medium flex items-center"
+                  className="text-rose-500 hover:text-rose-700 text-sm font-bold flex items-center gap-2 transition"
                 >
-                  <FiTrash2 className="mr-1" />
-                  Clear All
+                  <FiTrash2 />
+                  Clear Bag
                 </button>
               </div>
 
-              <div className="space-y-4">
+              <div className="divide-y divide-slate-50">
+                <AnimatePresence>
                 {cart.items.map((item) => (
-                  <div key={item.id || item.product_id} className="flex items-center p-4 border rounded-lg hover:bg-gray-50">
-                    <div className="flex-shrink-0 mr-4">
-                      <img
-                        src={item.image_url || item.product?.image_url}
-                        alt={item.name}
-                        className="w-20 h-20 object-cover rounded"
-                      />
-                    </div>
+                  <motion.div 
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    key={item.id || item.product_id} 
+                    className="p-8 hover:bg-slate-50/50 transition-colors group"
+                  >
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
+                      {/* Product Image */}
+                      <div className="relative w-40 h-40 flex-shrink-0">
+                        <div className="absolute inset-0 bg-slate-100 rounded-3xl animate-pulse -z-10" />
+                        <img
+                          src={item.image_url || item.product?.image_url || "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=400&q=80"}
+                          alt={item.name}
+                          className="w-full h-full object-cover rounded-3xl shadow-lg group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
 
-                    <div className="flex-1">
-                      <div className="flex justify-between">
-                        <div>
-                          <h3 className="font-medium text-gray-900">{item.name}</h3>
-                          <p className="text-gray-600 text-sm">Ksh {Number(item.price).toLocaleString()}</p>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-bold text-lg">
-                            Ksh {(Number(item.price) * item.quantity).toLocaleString()}
+                      {/* Product Details */}
+                      <div className="flex-1 w-full">
+                        <div className="flex flex-col lg:flex-row justify-between gap-4 mb-4">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                                <span className="text-[10px] font-black uppercase tracking-widest bg-blue-50 text-blue-600 px-2 py-0.5 rounded">PID: {item.product_id || item.id}</span>
+                                <span className="text-emerald-500 font-bold text-xs flex items-center gap-1">
+                                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> In Stock
+                                </span>
+                            </div>
+                            <h3 className="text-xl font-black text-slate-900 group-hover:text-blue-600 transition-colors">{item.name}</h3>
+                            <p className="text-slate-400 text-sm mt-1 line-clamp-1">Category: {item.category || "General"}</p>
                           </div>
-                          <button
-                            onClick={() => removeItem(item.id || item.product_id)}
-                            className="text-red-500 hover:text-red-700 text-sm mt-2"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between mt-4">
-                        <div className="flex items-center border rounded-lg">
-                          <button
-                            onClick={() => updateQuantity(item.id || item.product_id, item.quantity - 1)}
-                            className="px-3 py-2 hover:bg-gray-100"
-                            disabled={item.quantity <= 1}
-                          >
-                            <FiMinus />
-                          </button>
-                          <span className="px-4 py-2 border-x">{item.quantity}</span>
-                          <button
-                            onClick={() => updateQuantity(item.id || item.product_id, item.quantity + 1)}
-                            className="px-3 py-2 hover:bg-gray-100"
-                          >
-                            <FiPlus />
-                          </button>
+                          <div className="text-left lg:text-right">
+                            <div className="text-2xl font-black text-slate-900">
+                              Ksh {Number(item.price).toLocaleString()}
+                            </div>
+                            <p className="text-slate-400 text-xs font-bold uppercase mt-1">Price per unit</p>
+                          </div>
                         </div>
 
-                        <div className="text-sm text-gray-600">
-                          Stock: Available
+                        <div className="flex flex-wrap items-center justify-between gap-6 pt-6 border-t border-slate-50">
+                          {/* Quantity Controls */}
+                          <div className="flex items-center bg-slate-100 rounded-2xl p-1">
+                            <button
+                              onClick={() => updateQuantity(item.id || item.product_id, item.quantity - 1)}
+                              className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white hover:shadow-sm transition disabled:opacity-30"
+                              disabled={item.quantity <= 1}
+                            >
+                              <FiMinus className="w-4 h-4" />
+                            </button>
+                            <span className="w-12 text-center font-black text-slate-900">{item.quantity}</span>
+                            <button
+                              onClick={() => updateQuantity(item.id || item.product_id, item.quantity + 1)}
+                              className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white hover:shadow-sm transition"
+                            >
+                              <FiPlus className="w-4 h-4" />
+                            </button>
+                          </div>
+
+                          <div className="flex items-center gap-6">
+                            <div className="text-right">
+                                <div className="text-lg font-black text-blue-600">
+                                    Ksh {(Number(item.price) * item.quantity).toLocaleString()}
+                                </div>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase">Line Total</p>
+                            </div>
+                            <button
+                              onClick={() => removeItem(item.id || item.product_id)}
+                              className="w-12 h-12 flex items-center justify-center rounded-2xl bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white transition shadow-sm hover:shadow-rose-200"
+                              title="Remove item"
+                            >
+                              <FiTrash2 className="w-5 h-5" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
+                </AnimatePresence>
               </div>
+            </div>
+
+            {/* Extra Info */}
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-emerald-50 rounded-3xl p-6 border border-emerald-100 flex items-start gap-4">
+                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-emerald-500 shadow-sm">
+                        <FiTruck className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-emerald-900">Free Express Shipping</h4>
+                        <p className="text-emerald-700/70 text-sm">On all orders over Ksh 5,000. Delivered to your doorstep within 24-48 hours.</p>
+                    </div>
+                </div>
+                <div className="bg-blue-50 rounded-3xl p-6 border border-blue-100 flex items-start gap-4">
+                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-blue-500 shadow-sm">
+                        <FiShield className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-blue-900">Secure Payments</h4>
+                        <p className="text-blue-700/70 text-sm">PCI-DSS compliant payments via MPESA, Cards, and more. Your data is always safe.</p>
+                    </div>
+                </div>
             </div>
           </div>
 
-          {/* Order Summary */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow p-6 sticky top-8">
-              <h2 className="text-xl font-bold mb-6">Order Summary</h2>
+          {/* Order Summary Sidebar */}
+          <div className="xl:col-span-4">
+            <div className="bg-slate-900 rounded-[2.5rem] shadow-2xl p-10 text-white sticky top-24 overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-600/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl pointer-events-none" />
 
-              <div className="space-y-3 mb-6">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Subtotal ({totals.itemCount} items)</span>
-                  <span className="font-medium">Ksh {Number(totals.subtotal).toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Shipping</span>
-                  <span className="font-medium">
-                    {Number(totals.shipping) === 0 ? 'FREE' : `Ksh ${Number(totals.shipping).toLocaleString()}`}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Tax (16%)</span>
-                  <span className="font-medium">Ksh {Number(totals.tax).toLocaleString()}</span>
-                </div>
-                <div className="border-t pt-3">
-                  <div className="flex justify-between text-lg font-bold">
-                    <span>Total</span>
-                    <span>Ksh {Number(totals.total).toLocaleString()}</span>
-                  </div>
-                </div>
-              </div>
+                <h2 className="text-2xl font-black mb-10 relative">Order Summary</h2>
 
-              {!isLoggedIn && (
-                <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <p className="text-yellow-800 text-sm">
-                    ⚠️ <strong>Login required</strong> - Please login or create an account to proceed with checkout.
-                  </p>
-                  <div className="flex space-x-2 mt-3">
-                    <Link
-                      href="/auth/login?redirect=/checkout"
-                      className="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm"
+                <div className="space-y-6 mb-10 relative">
+                    <div className="flex justify-between items-center">
+                        <span className="text-slate-400 font-medium">Subtotal ({totals.itemCount} items)</span>
+                        <span className="text-xl font-bold italic">Ksh {Number(totals.subtotal).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                        <span className="text-slate-400 font-medium">Shipping Fee</span>
+                        <span className="text-xl font-bold italic text-emerald-400">
+                            {Number(totals.shipping) === 0 ? 'FREE' : `Ksh ${Number(totals.shipping).toLocaleString()}`}
+                        </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                        <span className="text-slate-400 font-medium">VAT (16%)</span>
+                        <span className="text-xl font-bold italic">Ksh {Number(totals.tax).toLocaleString()}</span>
+                    </div>
+                    
+                    <div className="h-px bg-white/10 my-8" />
+                    
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <span className="text-sm font-black uppercase tracking-widest text-blue-400">Total Amount</span>
+                            <div className="text-4xl font-black tracking-tighter mt-1 italic">
+                                Ksh {Number(totals.total).toLocaleString()}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {!isLoggedIn && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-10 p-6 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-sm"
                     >
-                      Login
-                    </Link>
+                        <p className="text-blue-200 text-sm font-medium mb-4">
+                            Log in to save your cart and access exclusive member deals.
+                        </p>
+                        <div className="flex flex-col gap-3">
+                            <Link
+                                href="/auth/login?redirect=/checkout"
+                                className="w-full text-center bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-2xl font-bold transition shadow-lg shadow-blue-900/40"
+                            >
+                                Login
+                            </Link>
+                            <Link
+                                href="/auth/register?redirect=/checkout"
+                                className="w-full text-center border border-white/20 text-white hover:bg-white/5 py-3 rounded-2xl font-bold transition"
+                            >
+                                Create Account
+                            </Link>
+                        </div>
+                    </motion.div>
+                )}
+
+                <div className="space-y-4 relative">
                     <Link
-                      href="/auth/register?redirect=/checkout"
-                      className="flex-1 text-center border border-blue-600 text-blue-600 hover:bg-blue-50 py-2 rounded-lg text-sm"
+                        href={isLoggedIn ? "/checkout" : "/auth/login?redirect=/checkout"}
+                        className="flex items-center justify-center gap-3 w-full bg-white text-slate-900 py-5 rounded-[1.5rem] font-black text-lg transition hover:bg-blue-50 hover:scale-[1.02] active:scale-[0.98] shadow-xl group"
                     >
-                      Sign Up
+                        Checkout Now
+                        <FiChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
-                  </div>
-                </div>
-              )}
 
-              <div className="space-y-3">
-                <Link
-                  href={isLoggedIn ? "/checkout" : "/auth/login?redirect=/checkout"}
-                  className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-3 rounded-lg font-semibold"
-                >
-                  {isLoggedIn ? 'Proceed to Checkout' : 'Login to Checkout'}
-                </Link>
-
-                <Link
-                  href="/"
-                  className="block w-full border border-gray-300 hover:bg-gray-50 text-gray-700 text-center py-3 rounded-lg font-medium"
-                >
-                  Continue Shopping
-                </Link>
-              </div>
-
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <h3 className="font-medium mb-3">We Accept</h3>
-                <div className="flex space-x-2">
-                  <div className="w-12 h-8 bg-blue-100 rounded flex items-center justify-center">VISA</div>
-                  <div className="w-12 h-8 bg-blue-100 rounded flex items-center justify-center">MPESA</div>
-                  <div className="w-12 h-8 bg-blue-100 rounded flex items-center justify-center">MC</div>
-                  <div className="w-12 h-8 bg-blue-100 rounded flex items-center justify-center">PP</div>
+                    <Link
+                        href="/"
+                        className="block w-full border border-white/10 hover:bg-white/5 text-white/70 hover:text-white text-center py-4 rounded-2xl font-bold transition"
+                    >
+                        Add More Items
+                    </Link>
                 </div>
 
-                <p className="text-xs text-gray-500 mt-4">
-                  Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our privacy policy.
-                </p>
-              </div>
+                <div className="mt-12 pt-8 border-t border-white/5 opacity-50 relative">
+                    <p className="text-[10px] font-black uppercase tracking-widest mb-4">Secure Checkout Powered By NylePay</p>
+                    <div className="flex flex-wrap gap-3">
+                        <div className="px-3 py-1 bg-white/10 rounded-lg text-[10px] font-bold">VISA</div>
+                        <div className="px-3 py-1 bg-white/10 rounded-lg text-[10px] font-bold">MPESA</div>
+                        <div className="px-3 py-1 bg-white/10 rounded-lg text-[10px] font-bold">MASTERCARD</div>
+                    </div>
+                </div>
             </div>
           </div>
         </div>

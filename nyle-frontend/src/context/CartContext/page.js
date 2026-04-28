@@ -95,6 +95,19 @@ export function CartProvider({ children }) {
       return { success: false, requiresAuth: true };
     }
 
+    // Check if item already exists in cart to prevent duplicates
+    const existingItem = cart.items.find(item => 
+      (item.product_id === product.id) || (item.id === product.id) || (item.product?.id === product.id)
+    );
+
+    if (existingItem) {
+      // If product exists, we update the quantity instead of adding a new item entry
+      await updateQuantity(existingItem.id || existingItem.product_id, existingItem.quantity + quantity);
+      if (options.buyNow && typeof window !== 'undefined') {
+        window.location.href = `/checkout?productId=${product.id}`;
+      }
+      return { success: true, requiresAuth: false, alreadyInCart: true };
+    }
 
     // User is logged in, add to backend
     try {
@@ -222,10 +235,10 @@ export function CartProvider({ children }) {
       return;
     }
 
-    // For backend cart, remove items one by one (or you could add a clear endpoint)
+    // For backend cart, remove items one by one
     if (cart.items.length > 0) {
       for (const item of cart.items) {
-        await removeItem(item.id);
+        await removeItem(item.id || item.product_id);
       }
     }
   };
