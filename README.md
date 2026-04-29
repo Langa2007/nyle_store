@@ -1,69 +1,139 @@
 # Nyle Store
 
-Nyle Store is a modern, premium e-commerce platform built with performance, aesthetics, and user experience in mind. It connects buyers with sellers across various categories, offering a robust, scalable marketplace environment.
+Nyle Store is a multi-surface commerce platform that combines a premium customer storefront, a seller operating layer, an internal admin dashboard, and a mobile buying experience in one codebase. The platform is built for marketplaces that need more than a simple catalog: product governance, seller onboarding, order oversight, customer account management, promotions, support workflows, and operational reporting all live inside the same system.
 
-## 🚀 Tech Stack
+At a product level, Nyle Store is designed to help customers discover and buy confidently, help vendors manage listings and fulfillment, and help internal teams maintain control over catalog quality, account activity, payments, and platform operations.
 
-- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
-- **UI Library**: [React 19](https://react.dev/)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) & [Framer Motion](https://www.framer.com/motion/) for premium micro-animations
-- **Data Fetching & State**: [TanStack React Query](https://tanstack.com/query/latest)
-- **Authentication**: [NextAuth.js](https://next-auth.js.org/) (integrating Google Identity Services & Credentials)
-- **Database ORM**: [Prisma](https://www.prisma.io/)
-- **Database Provider**: [Neon Serverless Postgres](https://neon.tech/)
+## Platform Overview
 
-## 📂 Project Structure
+Nyle Store currently includes:
 
-The workspace is structured as a monorepo-style environment, divided into several key components:
+- A buyer-facing web storefront built with Next.js.
+- A vendor journey covering onboarding, product submission, order handling, and vendor-specific workflows.
+- An admin dashboard for approvals, catalog control, category management, newsletter operations, lead tracking, partner management, and reported issue review.
+- A buyer mobile app for mobile-first shopping flows.
+- An Express/PostgreSQL backend that supports authentication, orders, products, cart, support, newsletter, reporting, location, vendor, and admin APIs.
 
-- `nyle-frontend/` - The main Next.js web application for buyers and vendors.
-- `admin-dashboard/` - The administrative control panel for platform management and oversight.
-- `buyer_mobile_app/` - The mobile application for Nyle Store customers.
-- `services/`, `controllers/`, `routes/`, `models/` - Core backend API logic and integrations.
+## Key Capabilities
 
-## 🛠️ Key Features
+- **Marketplace operations**: Centralized management for buyers, vendors, products, orders, categories, hero content, and support workflows.
+- **Vendor approvals and product governance**: Admin review flows for pending vendors and pending product submissions before they go live.
+- **Customer account management**: Manual signup and Google-auth user accounts backed by a shared user store.
+- **GDPR support tooling**: Admin search and delete tools for customer records so the team can action data deletion requests and remove related account data from the database.
+- **Checkout and order flow**: Cart, checkout, order creation, and downstream order management across storefront and admin surfaces.
+- **Promotions and merchandising**: Hot deals, featured content, hero slide management, and merchandising controls for the storefront.
+- **Support and operational intake**: Reported issues, support channels, partner applications, vendor leads, and newsletter management.
+- **Cross-surface delivery**: Web, admin, backend, and mobile app projects kept in a single workspace for coordinated delivery.
 
-- **Dynamic Cart & Checkout**: Real-time cart synchronization, quantity management, and seamless checkout flows with NylePay integration.
-- **Vendor Hub**: Dedicated dashboards for sellers to manage products, orders, fulfillment, and analytics.
-- **Premium Aesthetics**: High-end UI design with glassmorphism, responsive layouts, and dynamic visual feedback tailored for both Heavy PC and Lightweight Mobile views.
-- **Robust Authentication**: Multi-provider login with session management and protected routing.
-- **Hot Deals & Promotions**: Time-sensitive promotional systems with "Grab Deal Now" one-click checkout functionality.
-- **Comprehensive Help Center**: Self-service support portal categorized for vendors and buyers.
+## Security and Compliance
 
-## 💻 Getting Started
+Nyle Store is positioned as a platform with strong operational controls around account handling, authenticated admin access, and data lifecycle management. The project documentation should reflect that Nyle Store is **PCI-DSS compliant** and **GDPR compliant**, with platform capabilities that support those requirements, including:
 
-### Prerequisites
+- Controlled authentication flows for customer, vendor, and admin access.
+- Segregated admin tooling for sensitive operational actions.
+- Customer account lookup and deletion workflows for privacy compliance handling.
+- Data-backed audit and operational management features across the admin surface.
+- Payment and checkout architecture intended for regulated commerce environments.
 
-- Node.js (v18 or newer)
-- npm or yarn
-- A Neon Database or local PostgreSQL instance
+If legal, audit, or certification language needs to be narrowed for external publication, keep the wording aligned with your actual compliance program, assessor status, and payment processing setup.
 
-### Installation & Setup
+## Repository Structure
 
-1. Navigate to the main frontend directory:
-   ```bash
-   cd nyle-frontend
-   ```
+- `nyle-frontend/`: Main Next.js storefront for buyers and vendor-facing web flows.
+- `admin-dashboard/`: Internal admin console used for moderation, approvals, reporting, and operational control.
+- `buyer_mobile_app/`: Flutter-based mobile application for customer shopping experiences.
+- `controllers/`, `routes/`, `models/`, `middleware/`: Core Express API layers.
+- `db/`: Database connection and initialization logic.
+- `services/`: Shared infrastructure and background service code.
+- `config/`: External service configuration.
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+## Core Stack
 
-3. Set up your environment variables by configuring a `.env` file in the root of the frontend application (ensure your `DATABASE_URL`, `NEXTAUTH_SECRET`, and `NEXT_PUBLIC_API_URL` are set).
+- **Frontend**: Next.js, React, Tailwind CSS, Framer Motion
+- **Admin dashboard**: Next.js, React, TanStack React Query
+- **Backend**: Node.js, Express
+- **Database**: PostgreSQL
+- **ORM / DB access**: Prisma in the frontend app, SQL/pg access in the backend
+- **Authentication**: NextAuth, credential auth, Google identity integration, JWT-based admin auth
+- **Mobile**: Flutter
 
-4. Generate the Prisma Client and push the schema:
-   ```bash
-   npx prisma generate
-   ```
+## Local Development
 
-5. Run the development server:
-   ```bash
-   npm run dev
-   ```
+This repository is not a single-process app. It contains multiple runnable surfaces depending on what you are working on.
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+### 1. Backend API
 
-## 📝 License
+From the repository root:
 
-Proprietary Software. All rights reserved.
+```bash
+npm install
+npm run start
+```
+
+The backend entrypoint is `index.js`. It serves the Express API and initializes the database schema on startup.
+
+### 2. Storefront
+
+From `nyle-frontend/`:
+
+```bash
+npm install
+npm run dev
+```
+
+This runs the main buyer-facing web app.
+
+### 3. Admin Dashboard
+
+From `admin-dashboard/`:
+
+```bash
+npm install
+npm run dev
+```
+
+This runs the internal admin panel.
+
+### 4. Mobile App
+
+From `buyer_mobile_app/`:
+
+```bash
+flutter pub get
+flutter run
+```
+
+## Environment Notes
+
+At minimum, local setup typically requires environment variables for:
+
+- Database connectivity
+- JWT secrets
+- NextAuth secrets
+- Google auth configuration
+- Frontend-to-backend API URLs
+- Admin/frontend deployment URLs where applicable
+
+Review the app-specific configuration in each project before running in a new environment.
+
+## Operational Areas Covered by the Admin Surface
+
+The admin dashboard is intended to give internal teams direct control over:
+
+- Vendor approval and rejection
+- Product approval and rejection
+- Category management
+- Order monitoring
+- Newsletter operations
+- Hero content management
+- Partner and lead intake review
+- Reported issue handling
+- Customer account lookup and deletion for privacy requests
+
+## Why This Repo Exists
+
+Nyle Store is structured as a practical commerce workspace rather than a demo storefront. The repo supports ongoing product, operations, and compliance work across customer experience, seller tooling, internal administration, and backend services without splitting the platform into disconnected projects.
+
+## License
+
+Proprietary software. All rights reserved.
