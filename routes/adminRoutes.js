@@ -5,6 +5,8 @@ import { adminActionLimiter, searchLimiter } from "../middleware/rateLimit.js";
 
 import {
   getAllUsers,
+  getUserSummary,
+  searchUsers,
   deleteUser,
   promoteUser,
 } from "../controllers/adminController.js";
@@ -82,6 +84,8 @@ router.get("/vendors/details/:id", verifyAdmin, getVendorDetails);
 router.get("/vendors/:vendor_id/products", verifyAdmin, getProductsByVendor);
 
 //  USERS
+router.get("/users/summary", verifyAdmin, getUserSummary);
+router.get("/users/search", verifyAdmin, searchLimiter, searchUsers);
 router.get("/users", verifyAdmin, getAllUsers);
 router.delete("/users/:id", verifyAdmin, adminActionLimiter, deleteUser);
 router.put("/users/:id/promote", verifyAdmin, adminActionLimiter, promoteUser);
