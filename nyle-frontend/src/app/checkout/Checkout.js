@@ -37,7 +37,7 @@ export default function CheckoutPage() {
       return;
     }
     setIsLoggedIn(true);
-
+    if (productId) {
       // Direct buy flow for a specific product
       fetch(`${API_URL}/api/products/${productId}`, {
         credentials: "include"

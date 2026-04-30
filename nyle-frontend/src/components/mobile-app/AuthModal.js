@@ -39,7 +39,7 @@ export default function AuthModal() {
             }
 
             // Store auth data
-                        // Token handled by cookies
+            // Token handled by cookies
 
             localStorage.setItem('user', JSON.stringify(data.user));
 
@@ -61,6 +61,7 @@ export default function AuthModal() {
         }
     };
 
+    const handleGoogleSuccess = async (session) => {
         // Tokens are managed via secure HttpOnly cookies
 
         if (session?.user) {

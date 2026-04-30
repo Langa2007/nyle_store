@@ -276,8 +276,8 @@ export const verifyLoginOtp = async (req, res) => {
 
     res.cookie("vendorToken", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Lax",
+      secure: true,
+      sameSite: "None",
       maxAge: 12 * 60 * 60 * 1000 // 12 hours
     });
 
@@ -379,8 +379,8 @@ export const magicLogin = async (req, res) => {
 
     res.cookie("vendorToken", authToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Lax",
+      secure: true,
+      sameSite: "None",
       maxAge: 12 * 60 * 60 * 1000 // 12 hours
     });
 

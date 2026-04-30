@@ -46,15 +46,15 @@ export const adminLogin = async (req, res) => {
 
     res.cookie("adminAccessToken", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Lax",
+      secure: true,
+      sameSite: "None",
       maxAge: 2 * 60 * 60 * 1000 // 2 hours
     });
 
     res.cookie("adminRefreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Lax",
+      secure: true,
+      sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000 // 1 day
     });
 
@@ -76,7 +76,8 @@ export const adminLogin = async (req, res) => {
 // VERIFY ADMIN TOKEN 
 export const verifyAdminToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(" ")[1];
+  const token = (authHeader && authHeader.split(" ")[1]) || req.cookies.adminAccessToken;
+  
   if (!token) return res.status(401).json({ message: "No token provided" });
 
   try {
@@ -161,8 +162,8 @@ export const refreshAdminToken = async (req, res) => {
 
     res.cookie("adminAccessToken", newAccessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Lax",
+      secure: true,
+      sameSite: "None",
       maxAge: 60 * 60 * 1000 // 1 hour
     });
 
