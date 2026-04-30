@@ -8,6 +8,9 @@ import { getProducts } from "../services/productService";
 import { useCart } from "@/context/CartContext/page";
 import { useShopActivity } from "@/context/ShopActivityContext/page";
 import { motion, AnimatePresence } from "framer-motion";
+import GoogleOneTap from "@/components/GoogleOneTap";
+import CookieBanner from "@/components/CookieBanner";
+
 
 // Import ALL icons used in the component
 import {
@@ -464,6 +467,9 @@ function HomeContent() {
 
   return (
     <>
+      <GoogleOneTap />
+      <CookieBanner />
+
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
         {/* Desktop content continues... */}
         {/* STATIC Announcement Bar (NOT marquee) */}

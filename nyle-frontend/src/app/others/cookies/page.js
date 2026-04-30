@@ -3,6 +3,8 @@
 import { Cookie, Settings, Shield, Eye, Trash2, CheckCircle, RefreshCw } from "lucide-react";
 import FooterInfoLayout from "@/components/footer/FooterInfoLayout";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
+
 
 export default function CookiePolicyPage() {
   const [cookiePreferences, setCookiePreferences] = useState({
@@ -56,8 +58,25 @@ export default function CookiePolicyPage() {
     }
   };
 
-  const handleSavePreferences = () => {
+  const { data: session } = useSession();
+
+  const handleSavePreferences = async () => {
+    localStorage.setItem('cookie-consent', 'true');
     localStorage.setItem('cookie-preferences', JSON.stringify(cookiePreferences));
+    
+    if (session?.user?.id) {
+      try {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://nyle-store.onrender.com'}/api/user/cookie-preferences`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ preferences: cookiePreferences }),
+          credentials: 'include'
+        });
+      } catch (err) {
+        console.error('Failed to sync cookie preferences:', err);
+      }
+    }
+    
     alert('Cookie preferences saved!');
   };
 

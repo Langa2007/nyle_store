@@ -29,3 +29,22 @@ export const register = async (req, res) => {
     res.status(500).json({ error: 'Failed to register' });
   }
 };
+// Update cookie preferences
+export const updateCookiePreferences = async (req, res) => {
+  try {
+    const userId = req.user?.id || req.body.user_id;
+    const { preferences } = req.body;
+    
+    if (!userId) return res.status(401).json({ error: 'Authentication required' });
+    
+    await pool.query('UPDATE users SET cookie_preferences = $1 WHERE id = $2', [
+      JSON.stringify(preferences),
+      userId
+    ]);
+    
+    res.json({ success: true, message: 'Preferences updated' });
+  } catch (err) {
+    console.error('updateCookiePreferences failed', err);
+    res.status(500).json({ error: 'Failed to update preferences' });
+  }
+};
