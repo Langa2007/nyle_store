@@ -324,12 +324,12 @@ export default function PrivacyPolicyPage() {
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="text-slate-900 font-black text-2xl tracking-tighter">NYLE STORE</div>
-            <div className="flex flex-wrap justify-center gap-8 text-sm font-bold text-slate-500">
-              <Link href="/terms" className="hover:text-blue-600 transition-colors">Terms of Service</Link>
-              <Link href="/auth/privacy" className="hover:text-blue-600 transition-colors">Data Privacy</Link>
-              <Link href="/others/cookies" className="hover:text-blue-600 transition-colors">Cookie Policy</Link>
-              <Link href="/support" className="hover:text-blue-600 transition-colors">Support Center</Link>
-            </div>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+                <Link href="/auth/terms" className="text-slate-400 hover:text-white transition">Terms of Service</Link>
+                <Link href="/auth/privacy" className="text-slate-400 hover:text-white transition">Privacy Policy</Link>
+                <Link href="/support/help-center" className="text-slate-400 hover:text-white transition">Support Center</Link>
+                <Link href="/support/faqs" className="text-slate-400 hover:text-white transition">FAQs</Link>
+              </div>
             <div className="text-slate-400 text-sm">
               &copy; {new Date().getFullYear()} Nyle Store Corporation.
             </div>
