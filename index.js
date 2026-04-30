@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { connectDB } from "./db/connect.js";
 import { initDB } from "./db/init.js";
 import bodyparser from "body-parser";
+import cookieParser from "cookie-parser";
 import { publicLimiter } from "./middleware/rateLimit.js";
 import { createBullBoard } from "@bull-board/api";
 import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
@@ -110,6 +111,7 @@ app.options("*", (req, res) => {
 //  Body parsers 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 
 

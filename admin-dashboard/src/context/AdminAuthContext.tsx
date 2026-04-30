@@ -1,18 +1,17 @@
+// src/context/AdminAuthContext.tsx
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface AuthContextType {
-  accessToken: string | null;
-  refreshToken: string | null;
-  login: (access: string, refresh: string) => void;
+  isLoggedIn: boolean;
+  login: () => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
-  accessToken: null,
-  refreshToken: null,
+  isLoggedIn: false,
   login: () => {},
   logout: () => {},
 });
@@ -20,71 +19,49 @@ const AuthContext = createContext<AuthContextType>({
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const router = useRouter();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
-  // Load tokens from localStorage on mount
+  // Check login status on mount
   useEffect(() => {
-    const access = localStorage.getItem("adminAccessToken");
-    const refresh = localStorage.getItem("adminRefreshToken");
-    if (access && refresh) {
-      setAccessToken(access);
-      setRefreshToken(refresh);
-    } else {
+    const loggedIn = localStorage.getItem("adminLoggedIn") === "true";
+    setIsLoggedIn(loggedIn);
+    
+    // Note: Verification is handled by useAdminAuth hook, but we keep a basic check here
+    if (!loggedIn && window.location.pathname.startsWith("/dashboard")) {
       router.push("/login");
     }
   }, [router]);
 
-  // Refresh token automatically before expiry
-  useEffect(() => {
-    if (!refreshToken) return;
-
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch(`${API_URL}/api/admin/refresh`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refreshToken }),
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          localStorage.setItem("adminAccessToken", data.accessToken);
-          setAccessToken(data.accessToken);
-          console.log("🔄 Access token refreshed");
-        } else {
-          console.warn("⚠️ Failed to refresh access token, logging out");
-          logout();
-        }
-      } catch (err) {
-        console.error("❌ Token refresh failed:", err);
-        logout();
-      }
-    }, 13 * 60 * 1000); // refresh every 13 minutes
-
-    return () => clearInterval(interval);
-  }, [refreshToken]);
-
-  const login = (access: string, refresh: string) => {
-    localStorage.setItem("adminAccessToken", access);
-    localStorage.setItem("adminRefreshToken", refresh);
-    setAccessToken(access);
-    setRefreshToken(refresh);
+  const login = () => {
+    localStorage.setItem("adminLoggedIn", "true");
+    setIsLoggedIn(true);
     router.push("/dashboard");
   };
 
-  const logout = () => {
+  const logout = async () => {
+    localStorage.removeItem("adminLoggedIn");
     localStorage.removeItem("adminAccessToken");
     localStorage.removeItem("adminRefreshToken");
-    setAccessToken(null);
-    setRefreshToken(null);
+    localStorage.removeItem("adminName");
+    setIsLoggedIn(false);
+    
+    try {
+      // Clear HttpOnly cookies on the backend
+      await fetch(`${API_URL}/api/admin/auth/logout`, { 
+        method: "POST", 
+        credentials: "include" 
+      });
+    } catch (e) {
+      console.error("Logout error:", e);
+    }
+    
     router.push("/login");
   };
 
   return (
-    <AuthContext.Provider value={{ accessToken, refreshToken, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

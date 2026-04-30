@@ -160,10 +160,8 @@ function VendorLoginContent() {
         return;
       }
 
-      // Success - store token and redirect
-      if (data.token) {
-        localStorage.setItem('vendor_token', data.token);
-
+      // Success - user info is handled, token is in HttpOnly cookie
+      if (data) {
         if (data.vendor) {
           localStorage.setItem('vendor_data', JSON.stringify(data.vendor));
           setSuccessMessage(`Welcome back, ${data.vendor.company_name || data.vendor.business_name || data.vendor.contact_person}!`);
@@ -174,7 +172,7 @@ function VendorLoginContent() {
           router.push(redirect);
         }, 1500);
       } else {
-        setLoginError('Login successful but no token received. Please contact support.');
+        setLoginError('Login failed. Please contact support.');
         setLoading(false);
       }
 
@@ -210,8 +208,8 @@ function VendorLoginContent() {
         return;
       }
 
-      if (data.token) {
-        localStorage.setItem("vendor_token", data.token);
+      if (data) {
+        // Tokens are now set via HttpOnly cookies by the backend
         if (data.vendor) {
           localStorage.setItem("vendor_data", JSON.stringify(data.vendor));
           setSuccessMessage(`Welcome back, ${data.vendor.company_name || data.vendor.business_name || data.vendor.contact_person}!`);
@@ -897,7 +895,7 @@ function VendorLoginContent() {
             <div className="mt-6 pt-6 border-t border-gray-100">
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <a
-                  href="/support/help-center"
+                  href="/vendor/support"
                   className="text-gray-600 hover:text-blue-600 hover:underline text-center py-2"
                 >
                   Need Help?

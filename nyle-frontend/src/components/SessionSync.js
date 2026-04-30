@@ -37,9 +37,7 @@ export default function SessionSync() {
 
             migrationAttemptRef.current = null;
 
-            // Sync to localStorage for Express backend compatibility
-            localStorage.setItem("accessToken", session.accessToken);
-            localStorage.setItem("userAccessToken", session.accessToken);
+            // Tokens are now managed via secure HttpOnly cookies
 
             if (session.user) {
                 localStorage.setItem("user", JSON.stringify({
@@ -51,8 +49,7 @@ export default function SessionSync() {
             }
         } else if (status === "unauthenticated") {
             // ... (rest of the logic)
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("userAccessToken");
+            // Session cookies are cleared by the logout endpoint
             localStorage.removeItem("user");
             migrationAttemptRef.current = null;
         }

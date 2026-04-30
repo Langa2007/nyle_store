@@ -64,9 +64,6 @@ type UserSearchResponse = {
   users: UserSearchResult[];
 };
 
-const getAdminHeaders = () => ({
-  Authorization: `Bearer ${localStorage.getItem("adminAccessToken")}`,
-});
 
 const getErrorMessage = (error: unknown, fallback: string) => {
   if (error instanceof AxiosError) {
@@ -86,33 +83,25 @@ async function fetchPendingVendors(): Promise<PendingVendor[]> {
   return res.data;
 }
 
-// --- Fetch Pending Products ---
 async function fetchPendingProducts(): Promise<PendingProduct[]> {
-  const res = await axios.get<PendingProduct[]>(`${API_URL}/api/admin/products/pending`, {
-    headers: getAdminHeaders()
-  });
+  const res = await axios.get<PendingProduct[]>(`${API_URL}/api/admin/products/pending`);
   return res.data;
 }
 
 async function fetchUserSummary(): Promise<UserSummary> {
-  const res = await axios.get<UserSummary>(`${API_URL}/api/admin/users/summary`, {
-    headers: getAdminHeaders(),
-  });
+  const res = await axios.get<UserSummary>(`${API_URL}/api/admin/users/summary`);
   return res.data;
 }
 
 async function searchUsers(query: string): Promise<UserSearchResponse> {
   const res = await axios.get<UserSearchResponse>(`${API_URL}/api/admin/users/search`, {
-    headers: getAdminHeaders(),
     params: { q: query },
   });
   return res.data;
 }
 
 async function deleteUserById(id: string | number): Promise<ApiMessageResponse> {
-  const res = await axios.delete<ApiMessageResponse>(`${API_URL}/api/admin/users/${id}`, {
-    headers: getAdminHeaders(),
-  });
+  const res = await axios.delete<ApiMessageResponse>(`${API_URL}/api/admin/users/${id}`);
   return res.data;
 }
 
@@ -160,9 +149,7 @@ export default function AdminDashboardPage() {
 
   const approveProductMutation = useMutation({
     mutationFn: (id: number) =>
-      axios.put(`${API_URL}/api/admin/products/${id}/approve`, {}, {
-        headers: getAdminHeaders()
-      }),
+      axios.put(`${API_URL}/api/admin/products/${id}/approve`, {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pendingProducts"] });
       toast.success("Product approved!");
@@ -171,9 +158,7 @@ export default function AdminDashboardPage() {
 
   const rejectProductMutation = useMutation({
     mutationFn: ({ id, reason }: { id: number; reason: string }) =>
-      axios.put(`${API_URL}/api/admin/products/${id}/reject`, { reason }, {
-        headers: getAdminHeaders()
-      }),
+      axios.put(`${API_URL}/api/admin/products/${id}/reject`, { reason }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pendingProducts"] });
       toast.success("Product rejected");

@@ -23,6 +23,7 @@ export default function MagicLoginPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ token }),
+          credentials: "include",
         });
 
         const text = await res.text();
@@ -31,8 +32,7 @@ export default function MagicLoginPage() {
 
         if (!res.ok) throw new Error(data.message || "Magic login failed");
 
-        // store normal auth token
-        localStorage.setItem("vendorToken", data.token);
+        // Token is now set via HttpOnly cookie
         setStatus("success");
         setTimeout(() => router.push("/vendor/dashboard"), 1200);
       } catch (err) {

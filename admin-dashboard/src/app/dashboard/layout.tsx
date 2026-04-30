@@ -45,6 +45,8 @@ import Providers from "../providers";
 import RequireAuth from "../components/RequireAuth";
 import { useAdminNotifications } from "../hooks/useAdminNotifications";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
+
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -63,7 +65,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     if (storedName) setAdminName(storedName);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem("adminAccessToken");
     localStorage.removeItem("adminRefreshToken");
     localStorage.removeItem("adminLastActive");
@@ -71,7 +73,18 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     localStorage.removeItem("adminLoggedIn");
     localStorage.removeItem("adminTabHidden");
     localStorage.removeItem("adminSecurityReason");
+    localStorage.removeItem("adminName");
     localStorage.setItem("adminLogoutEvent", Date.now().toString());
+
+    try {
+      await fetch(`${API_URL}/api/admin/auth/logout`, {
+        method: "POST",
+        credentials: "include"
+      });
+    } catch (e) {
+      console.error("Logout error:", e);
+    }
+
     toast.success("Logged out successfully", {
       icon: <LogOut className="w-5 h-5 text-emerald-500" />
     });

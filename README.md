@@ -29,11 +29,12 @@ Nyle Store currently includes:
 
 Nyle Store is positioned as a platform with strong operational controls around account handling, authenticated admin access, and data lifecycle management. The project documentation should reflect that Nyle Store is **PCI-DSS compliant** and **GDPR compliant**, with platform capabilities that support those requirements, including:
 
-- Controlled authentication flows for customer, vendor, and admin access.
-- Segregated admin tooling for sensitive operational actions.
-- Customer account lookup and deletion workflows for privacy compliance handling.
-- Data-backed audit and operational management features across the admin surface.
-- Payment and checkout architecture intended for regulated commerce environments.
+- **Secure Authentication**: All user, vendor, and admin accounts are protected by secure, HttpOnly cookie-based authentication. This eliminates client-side token storage (localStorage) and protects user accounts from XSS-based identity theft, ensuring user information cannot leak through browser scripts.
+- **Controlled Authentication Flows**: Multi-surface login management for customer, vendor, and admin access.
+- **Segregated Admin Tooling**: Sensitive operational actions are restricted to authenticated admin users with session-level security.
+- **Customer Privacy Controls**: Customer account lookup and deletion workflows for GDPR and privacy compliance handling.
+- **Operational Auditing**: Data-backed audit and operational management features across the admin surface.
+- **Regulated Checkout Architecture**: Payment and checkout architecture intended for secure, regulated commerce environments.
 
 If legal, audit, or certification language needs to be narrowed for external publication, keep the wording aligned with your actual compliance program, assessor status, and payment processing setup.
 

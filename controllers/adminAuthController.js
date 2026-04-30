@@ -44,6 +44,20 @@ export const adminLogin = async (req, res) => {
 
     const { accessToken, refreshToken } = generateTokens(admin);
 
+    res.cookie("adminAccessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      maxAge: 2 * 60 * 60 * 1000 // 2 hours
+    });
+
+    res.cookie("adminRefreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      maxAge: 24 * 60 * 60 * 1000 // 1 day
+    });
+
     await pool.query("UPDATE users SET refresh_token = $1 WHERE id = $2", [
       refreshToken,
       admin.id,
@@ -51,8 +65,6 @@ export const adminLogin = async (req, res) => {
 
     res.status(200).json({
       message: "Login successful",
-      accessToken,
-      refreshToken,
       admin: { id: admin.id, email: admin.email, name: admin.name, last_ip: ip },
     });
   } catch (err) {
@@ -118,7 +130,7 @@ export const verifyAdminToken = async (req, res, next) => {
 
 
 export const refreshAdminToken = async (req, res) => {
-  const { refreshToken } = req.body;
+  const refreshToken = req.cookies.adminRefreshToken;
   const ip = req.headers['x-client-ip'] ||
     req.headers['x-forwarded-for']?.split(',')[0].trim() ||
     req.ip;
@@ -147,7 +159,14 @@ export const refreshAdminToken = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.json({ accessToken: newAccessToken });
+    res.cookie("adminAccessToken", newAccessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      maxAge: 60 * 60 * 1000 // 1 hour
+    });
+
+    res.json({ message: "Token refreshed" });
   } catch (err) {
     console.error("Token refresh error:", err.message);
     res.status(403).json({ error: "Invalid or expired refresh token" });
@@ -156,15 +175,18 @@ export const refreshAdminToken = async (req, res) => {
 
 // --- LOGOUT ---
 export const adminLogout = async (req, res) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(" ")[1];
-  if (!token) return res.status(400).json({ message: "No token provided" });
+  const token = req.cookies.adminAccessToken;
+  
+  res.clearCookie("adminAccessToken");
+  res.clearCookie("adminRefreshToken");
+
+  if (!token) return res.json({ message: "Logged out (no token found)" });
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     await pool.query("UPDATE users SET refresh_token = NULL WHERE id=$1", [decoded.id]);
     res.json({ message: "Logged out successfully" });
   } catch (err) {
-    res.status(400).json({ message: "Invalid token" });
+    res.json({ message: "Logged out (token invalid)" });
   }
 };

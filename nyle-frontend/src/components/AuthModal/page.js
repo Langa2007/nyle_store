@@ -38,7 +38,8 @@ export default function AuthModal() {
       }
 
       // Store auth data
-      localStorage.setItem('accessToken', data.token || data.accessToken);
+            // Token is now set via HttpOnly cookie by the backend
+
       localStorage.setItem('user', JSON.stringify(data.user));
 
       // Sync cart after login
@@ -60,10 +61,7 @@ export default function AuthModal() {
   };
 
   const handleGoogleSuccess = async (session) => {
-    if (session?.accessToken) {
-      localStorage.setItem('accessToken', session.accessToken);
-      localStorage.setItem('userAccessToken', session.accessToken);
-    }
+    // Tokens are managed via secure HttpOnly cookies
 
     if (session?.user) {
       localStorage.setItem('user', JSON.stringify({

@@ -78,8 +78,7 @@ interface ProductVariant {
 const baseurl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://nyle-store.onrender.com";
 
 const getAdminAuthHeaders = (): HeadersInit => {
-  const token = typeof window !== "undefined" ? localStorage.getItem("adminAccessToken") : null;
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  return {};
 };
 
 export default function AdminProductsPage() {
@@ -181,8 +180,14 @@ function AdminProductsContent() {
         setLoading(true);
 
         const [prodRes, catRes] = await Promise.all([
-          fetch(`${baseurl}/api/admin/products`, { headers: getAdminAuthHeaders() }),
-          fetch(`${baseurl}/api/admin/categories`, { headers: getAdminAuthHeaders() })
+          fetch(`${baseurl}/api/admin/products`, { 
+            headers: getAdminAuthHeaders(),
+            credentials: "include" 
+          }),
+          fetch(`${baseurl}/api/admin/categories`, { 
+            headers: getAdminAuthHeaders(),
+            credentials: "include" 
+          })
         ]);
 
         const [prodData, catData] = await Promise.all([
@@ -206,7 +211,8 @@ function AdminProductsContent() {
     const fetchVendors = async () => {
       try {
         const res = await fetch(`${baseurl}/api/admin/vendors`, {
-          headers: getAdminAuthHeaders()
+          headers: getAdminAuthHeaders(),
+          credentials: "include"
         });
 
         if (res.ok) {
@@ -334,7 +340,8 @@ function AdminProductsContent() {
       const res = await fetch(`${baseurl}/api/admin/vendors/create-or-select`, {
         method: "POST",
         body: formData,
-        headers: getAdminAuthHeaders()
+        headers: getAdminAuthHeaders(),
+        credentials: "include"
       });
 
       const data = await res.json();
@@ -453,7 +460,8 @@ function AdminProductsContent() {
       const res = await fetch(`${baseurl}/api/admin/products`, {
         method: "POST",
         body: form,
-        headers: getAdminAuthHeaders()
+        headers: getAdminAuthHeaders(),
+        credentials: "include"
       });
 
       const data = await res.json();
@@ -550,7 +558,8 @@ function AdminProductsContent() {
       const res = await fetch(`${baseurl}/api/admin/products/${editingProduct.id}`, {
         method: "PUT",
         body: form,
-        headers: getAdminAuthHeaders()
+        headers: getAdminAuthHeaders(),
+        credentials: "include"
       });
 
       if (res.ok) {
@@ -622,6 +631,7 @@ function AdminProductsContent() {
           ...getAdminAuthHeaders(),
           "Content-Type": "application/json"
         },
+        credentials: "include",
         body: JSON.stringify({ is_hot_deal: !currentStatus })
       });
 
@@ -658,6 +668,7 @@ function AdminProductsContent() {
           ...getAdminAuthHeaders(),
           "Content-Type": "application/json"
         },
+        credentials: "include",
         body: JSON.stringify({ reason: deleteReason })
       });
 

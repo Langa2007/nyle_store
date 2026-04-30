@@ -37,16 +37,21 @@ export const register = async (req, res) => {
     const user = insert.rows[0];
     console.log(`[Auth] User created successfully: ID ${user.id}`);
 
-    // Auto-login: create JWT
     const token = jwt.sign(
       { id: user.id, email: user.email, role: "user" },
       process.env.JWT_SECRET,
       { expiresIn: JWT_EXPIRES }
     );
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      maxAge: 2 * 60 * 60 * 1000 // 2 hours matching JWT_EXPIRES
+    });
+
     return res.status(201).json({
       message: "Account created",
-      token,
       user: { id: user.id, name: user.name, email: user.email },
     });
   } catch (err) {
@@ -94,10 +99,16 @@ export const login = async (req, res) => {
       expiresIn: JWT_EXPIRES,
     });
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      maxAge: 2 * 60 * 60 * 1000 // 2 hours
+    });
+
     console.log(`[Auth] Login successful for: ${normalizedEmail}`);
     return res.json({
       message: "Login successful",
-      token,
       user: { id: user.id, name: user.name, email: user.email },
     });
   } catch (err) {

@@ -33,8 +33,7 @@ interface Product {
 const baseurl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://nyle-store.onrender.com";
 
 const getAdminAuthHeaders = (): HeadersInit => {
-  const token = typeof window !== "undefined" ? localStorage.getItem("adminAccessToken") : null;
-  return token ? { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } : { "Content-Type": "application/json" };
+  return { "Content-Type": "application/json" };
 };
 
 export default function AllProductsPage() {
@@ -67,9 +66,9 @@ export default function AllProductsPage() {
     try {
       setLoading(true);
       const [prodRes, catRes, venRes] = await Promise.all([
-        fetch(`${baseurl}/api/admin/products`, { headers: getAdminAuthHeaders() }),
-        fetch(`${baseurl}/api/admin/categories`, { headers: getAdminAuthHeaders() }),
-        fetch(`${baseurl}/api/admin/vendors`, { headers: getAdminAuthHeaders() })
+        fetch(`${baseurl}/api/admin/products`, { headers: getAdminAuthHeaders(), credentials: "include" }),
+        fetch(`${baseurl}/api/admin/categories`, { headers: getAdminAuthHeaders(), credentials: "include" }),
+        fetch(`${baseurl}/api/admin/vendors`, { headers: getAdminAuthHeaders(), credentials: "include" })
       ]);
       if (prodRes.ok) setProducts(await prodRes.json());
       if (catRes.ok) setCategories(await catRes.json());
@@ -86,6 +85,7 @@ export default function AllProductsPage() {
       const res = await fetch(`${baseurl}/api/admin/products/${id}/toggle-hot-deal`, {
         method: "PUT",
         headers: getAdminAuthHeaders(),
+        credentials: "include",
         body: JSON.stringify({ is_hot_deal: !currentStatus })
       });
       if (res.ok) {
@@ -103,7 +103,8 @@ export default function AllProductsPage() {
     try {
       const res = await fetch(`${baseurl}/api/admin/products/${id}/approve-deal`, {
         method: "PUT",
-        headers: getAdminAuthHeaders()
+        headers: getAdminAuthHeaders(),
+        credentials: "include"
       });
       if (res.ok) {
         setProducts(prev => prev.map(p => p.id === id ? { ...p, deal_status: 'approved', is_hot_deal: true } : p));
@@ -124,6 +125,7 @@ export default function AllProductsPage() {
       const res = await fetch(`${baseurl}/api/admin/products/${dealToReject}/reject-deal`, {
         method: "PUT",
         headers: getAdminAuthHeaders(),
+        credentials: "include",
         body: JSON.stringify({ reason: rejectReason })
       });
       if (res.ok) {
@@ -155,6 +157,7 @@ export default function AllProductsPage() {
       const res = await fetch(`${baseurl}/api/admin/products/${productToDelete}`, {
         method: "DELETE",
         headers: getAdminAuthHeaders(),
+        credentials: "include",
         body: JSON.stringify({ reason: deleteReason })
       });
       if (res.ok) {

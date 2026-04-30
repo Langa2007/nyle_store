@@ -69,6 +69,8 @@ function LoginContent() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ email, password }),
+        // Include credentials (cookies) in the request
+        credentials: "include" as RequestCredentials
       });
 
       const text = await res.text();
@@ -87,9 +89,8 @@ function LoginContent() {
 
       if (!res.ok)
         throw new Error(data.error || data.message || "Login failed");
-      if (!data.accessToken || !data.refreshToken) {
-        throw new Error("Login response missing required tokens");
-      }
+      
+      // Note: Backend now sets tokens as HttpOnly cookies
 
       // Clear any existing session data to ensure a clean start
       localStorage.removeItem("adminAccessToken");
@@ -100,10 +101,6 @@ function LoginContent() {
       localStorage.removeItem("adminLogoutEvent");
       localStorage.removeItem("adminTabHidden");
       localStorage.removeItem("adminSecurityReason");
-
-      // Save tokens
-      localStorage.setItem("adminAccessToken", data.accessToken);
-      localStorage.setItem("adminRefreshToken", data.refreshToken);
 
       // Initialize security checks
       localStorage.setItem("adminInitialIp", currentIp);

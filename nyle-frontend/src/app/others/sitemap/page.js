@@ -76,7 +76,7 @@ const siteSections = [
     links: [
       { name: "About Nyle", href: "/about/know-nyle", icon: "", badge: null },
       { name: "Contact Us", href: "/support/contact", icon: "", badge: null },
-      { name: "Help Center", href: "/support/help-center", icon: "", badge: null },
+      { name: "Support & Help", href: "/support/contact", icon: "", badge: null },
       { name: "FAQs", href: "/support/faqs", icon: "", badge: null },
       { name: "Careers", href: "/about/careers", icon: "", badge: "Hiring" },
       { name: "Blog & Newsletter", href: "/support/newsletter", icon: "", badge: null },
@@ -92,7 +92,7 @@ const quickLinks = [
   { name: "Deals", href: "/deals", icon: "", color: "from-red-500 to-pink-500" },
   { name: "Categories", href: "/categories", icon: "", color: "from-purple-500 to-pink-500" },
   { name: "Sell", href: "/vendor/signup", icon: "", color: "from-teal-500 to-cyan-500" },
-  { name: "Help", href: "/support/help-center", icon: "", color: "from-blue-500 to-cyan-500" },
+  { name: "Help", href: "/support/contact", icon: "", color: "from-blue-500 to-cyan-500" },
 ];
 
 const badgeColors = {
@@ -116,7 +116,7 @@ const footerQuickLinks = [
   { href: "/", label: "Home" },
   { href: "/products", label: "Shop Products" },
   { href: "/categories", label: "Browse Categories" },
-  { href: "/support/help-center", label: "Help Center" },
+  { href: "/support/contact", label: "Help & Support" },
   { href: "/support/contact", label: "Contact Us" },
 ];
 
@@ -480,7 +480,7 @@ export default function SitemapPage() {
               <div>
                 <h4 className="text-sm font-black uppercase tracking-widest text-white mb-6">Support</h4>
                 <div className="space-y-3">
-                  <Link href="/support/help-center" className="block text-sm text-white/40 hover:text-blue-400 transition-colors">Help Center</Link>
+                  <Link href="/support/contact" className="block text-sm text-white/40 hover:text-blue-400 transition-colors">Support & Help</Link>
                   <Link href="/support/contact" className="block text-sm text-white/40 hover:text-blue-400 transition-colors">Contact Us</Link>
                   <Link href="/support/faqs" className="block text-sm text-white/40 hover:text-blue-400 transition-colors">FAQs</Link>
                   <Link href="/support/report-issue" className="block text-sm text-white/40 hover:text-blue-400 transition-colors">Report Issue</Link>

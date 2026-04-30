@@ -67,17 +67,18 @@ export default function AdminVendorsPage() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
   const getAuthHeaders = (): HeadersInit => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("adminAccessToken") : null;
     return {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
     };
   };
 
   const fetchVendors = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/api/admin/vendors`, { headers: getAuthHeaders() });
+      const res = await fetch(`${API_URL}/api/admin/vendors`, { 
+        headers: getAuthHeaders(),
+        credentials: "include" 
+      });
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data)) {
@@ -140,7 +141,8 @@ export default function AdminVendorsPage() {
       const endpoint = targetStatus === "approve" ? "approve" : "reject";
       const res = await fetch(`${API_URL}/api/admin/vendors/${vendorId}/${endpoint}`, {
         method: "PATCH",
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
+        credentials: "include"
       });
 
       if (res.ok) {
@@ -170,7 +172,8 @@ export default function AdminVendorsPage() {
     try {
       const res = await fetch(`${API_URL}/api/admin/vendors/${vendorId}`, {
         method: "DELETE",
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
+        credentials: "include"
       });
 
       if (res.ok) {

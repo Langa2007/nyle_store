@@ -26,8 +26,7 @@ interface UserReport {
 const baseurl = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
 const getAdminAuthHeaders = (): HeadersInit => {
-  const token = typeof window !== "undefined" ? localStorage.getItem("adminAccessToken") : null;
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  return {};
 };
 
 export default function UserReportsPage() {
@@ -46,7 +45,10 @@ export default function UserReportsPage() {
     try {
       setLoading(true);
       const url = filter === 'all' ? `${baseurl}/api/reports` : `${baseurl}/api/reports?status=${filter}`;
-      const res = await fetch(url, { headers: getAdminAuthHeaders() });
+      const res = await fetch(url, { 
+        headers: getAdminAuthHeaders(),
+        credentials: "include" 
+      });
       if (res.ok) {
         setReports(await res.json());
       } else {
@@ -72,6 +74,7 @@ export default function UserReportsPage() {
           ...getAdminAuthHeaders(),
           "Content-Type": "application/json"
         },
+        credentials: "include",
         body: JSON.stringify({ resolution_message: resolutionMessage })
       });
 

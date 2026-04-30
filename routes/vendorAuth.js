@@ -45,6 +45,12 @@ router.post("/magic-login", authLimiter, magicLogin);
 // Resend verification code - POST { email }
 router.post("/resend-code", authLimiter, resendVerificationCode);
 
+// Vendor Logout
+router.post("/logout", (req, res) => {
+  res.clearCookie("vendorToken");
+  res.json({ message: "Logged out successfully" });
+});
+
 // Verify session - GET (Requires Token)
 router.get("/verify-session", verifyVendor, verifySession);
 

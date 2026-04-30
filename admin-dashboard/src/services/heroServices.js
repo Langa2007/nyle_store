@@ -1,27 +1,25 @@
 // services/heroServices.js
 import { apiRequest } from "./api";
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
+
 export const getHeroSlides = () => apiRequest("/api/admin/hero-slides");
 
 export const createHeroSlide = (formData) => {
-  const token = localStorage.getItem("adminAccessToken");
-  return fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com"}/api/admin/hero-slides`, {
+  return fetch(`${BASE_URL}/api/admin/hero-slides`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    credentials: "include",
     body: formData, // FormData handles its own Content-Type for file uploads
   }).then(res => res.json());
 };
 
 export const updateHeroSlide = (id, data) => {
-  const token = localStorage.getItem("adminAccessToken");
   const isFormData = data instanceof FormData;
   
-  return fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com"}/api/admin/hero-slides/${id}`, {
+  return fetch(`${BASE_URL}/api/admin/hero-slides/${id}`, {
     method: "PUT",
+    credentials: "include",
     headers: {
-      Authorization: `Bearer ${token}`,
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
     },
     body: isFormData ? data : JSON.stringify(data),

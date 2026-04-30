@@ -84,8 +84,9 @@ export default function PartnersPage() {
             setLoading(true);
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/partners/applications`, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('adminAccessToken')}`
-                }
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
             });
             const data = await response.json();
             if (data.success) {
@@ -113,8 +114,9 @@ export default function PartnersPage() {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/partners/applications/${id}/contacted`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('adminAccessToken')}`
-                }
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
             });
             const data = await response.json();
             if (!response.ok || !data.success) {
@@ -142,8 +144,8 @@ export default function PartnersPage() {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('adminAccessToken')}`
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     status: newStatus,
                     terminationReason: reason || undefined

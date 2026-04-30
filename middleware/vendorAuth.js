@@ -2,7 +2,7 @@
 import jwt from "jsonwebtoken";
 
 export const verifyVendor = (req, res, next) => {
-  const token = req.header("Authorization")?.replace("Bearer ", "");
+  const token = req.cookies.vendorToken || req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
     return res.status(401).json({ error: "Access denied. No token provided." });

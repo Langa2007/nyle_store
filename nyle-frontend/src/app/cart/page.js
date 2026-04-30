@@ -1,20 +1,16 @@
 "use client";
 
-import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext/page';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { FiTrash2, FiPlus, FiMinus, FiArrowLeft, FiShoppingBag, FiShield, FiTruck, FiChevronRight } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CartPage() {
   const { cart, updateQuantity, removeItem, clearCart, getCartTotals, loading } = useCart();
   const totals = getCartTotals();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const accessToken = localStorage.getItem('accessToken') || localStorage.getItem('userAccessToken');
-    setIsLoggedIn(!!accessToken);
-  }, []);
+  const { data: session, status } = useSession();
+  const isLoggedIn = status === "authenticated";
 
   if (cart.items.length === 0 && !loading) {
     return (

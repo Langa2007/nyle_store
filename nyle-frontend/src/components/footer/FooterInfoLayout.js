@@ -74,7 +74,7 @@ export default function FooterInfoLayout({
     { href: "/", label: "Home", icon: <Home size={16} /> },
     { href: "/products", label: "Shop Products", icon: <ShoppingBag size={16} /> },
     { href: "/categories", label: "Browse Categories", icon: <LayoutGrid size={16} /> },
-    { href: "/support/help-center", label: "Help Center", icon: <HelpCircle size={16} /> },
+    { href: "/support/contact", label: "Support & Help", icon: <HelpCircle size={16} /> },
     { href: "/support/contact", label: "Contact Us", icon: <Phone size={16} /> },
   ];
 

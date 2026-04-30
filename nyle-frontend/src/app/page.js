@@ -1440,7 +1440,8 @@ function HomeContent() {
                   Support
                 </h3>
                 <ul className="space-y-2 text-sm">
-                  <li><Link href="/support/help-center" className="text-gray-300 hover:text-white transition hover:underline">Help Center</Link></li>
+                                    <li><Link href="/support/contact" className="text-gray-300 hover:text-white transition hover:underline">Help & Support</Link></li>
+
                   <li><Link href="/support/contact" className="text-gray-300 hover:text-white transition hover:underline">Contact Us</Link></li>
                   <li><Link href="/support/faqs" className="text-gray-300 hover:text-white transition hover:underline">FAQs</Link></li>
                   <li><Link href="/support/report-issue" className="text-gray-300 hover:text-white transition hover:underline">Report An Issue</Link></li>

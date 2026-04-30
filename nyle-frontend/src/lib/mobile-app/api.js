@@ -9,15 +9,8 @@ export async function fetchWithAuth(endpoint, options = {}) {
     const url = `${BASE_URL}${endpoint}`;
     const { authToken, headers: customHeaders = {}, ...fetchOptions } = options;
 
-    // Try to get token from localStorage (manual login) or NextAuth session (implicit via cookie)
-    // For client-side calls, NextAuth handles cookies automatically.
-    // However, the backend might still expect an Authorization header for some endpoints.
-    const token = authToken || (
-        typeof window !== 'undefined'
-            ? (localStorage.getItem('accessToken') || localStorage.getItem('userAccessToken'))
-            : null
-    );
-    const validToken = token && token !== "undefined" && token !== "null" ? token : null;
+    // Tokens are now managed via secure HttpOnly cookies
+    const validToken = authToken && authToken !== "undefined" && authToken !== "null" ? authToken : null;
 
     const headers = {
         "Content-Type": "application/json",
@@ -28,7 +21,7 @@ export async function fetchWithAuth(endpoint, options = {}) {
         headers["Authorization"] = `Bearer ${validToken}`;
     }
 
-    const response = await fetch(url, { ...fetchOptions, headers });
+    const response = await fetch(url, { ...fetchOptions, headers, credentials: "include" });
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));

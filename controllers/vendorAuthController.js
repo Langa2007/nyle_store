@@ -274,9 +274,15 @@ export const verifyLoginOtp = async (req, res) => {
       { expiresIn: "12h" }
     );
 
+    res.cookie("vendorToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      maxAge: 12 * 60 * 60 * 1000 // 12 hours
+    });
+
     return res.json({
       message: "Login successful",
-      token,
       vendor: {
         id: vendor.id,
         status: vendor.status,
@@ -371,8 +377,14 @@ export const magicLogin = async (req, res) => {
       { expiresIn: "12h" }
     );
 
+    res.cookie("vendorToken", authToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      maxAge: 12 * 60 * 60 * 1000 // 12 hours
+    });
+
     return res.json({
-      token: authToken,
       vendor: {
         id: v.id,
         status: v.status,

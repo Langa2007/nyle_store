@@ -35,17 +35,18 @@ export default function VendorLeadsPage() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
     const getAuthHeaders = (): HeadersInit => {
-        const token = typeof window !== "undefined" ? localStorage.getItem("adminAccessToken") : null;
         return {
             "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {})
         };
     };
 
     const fetchLeads = async () => {
         try {
             setLoading(true);
-            const res = await fetch(`${API_URL}/api/vendor-leads`, { headers: getAuthHeaders() });
+            const res = await fetch(`${API_URL}/api/vendor-leads`, { 
+                headers: getAuthHeaders(),
+                credentials: "include" 
+            });
             if (res.ok) {
                 const data = await res.json();
                 setLeads(data.leads || []);
@@ -64,6 +65,7 @@ export default function VendorLeadsPage() {
             const res = await fetch(`${API_URL}/api/vendor-leads/${id}`, {
                 method: "PATCH",
                 headers: getAuthHeaders(),
+                credentials: "include",
                 body: JSON.stringify({ status: newStatus }),
             });
             if (res.ok) {
@@ -81,6 +83,7 @@ export default function VendorLeadsPage() {
             const res = await fetch(`${API_URL}/api/vendor-leads/${id}/send-link`, {
                 method: "POST",
                 headers: getAuthHeaders(),
+                credentials: "include",
             });
 
             const data = await res.json().catch(() => ({}));

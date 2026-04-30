@@ -7,6 +7,7 @@ const API_BASE = API_BASE_URL.endsWith('/api') ? API_BASE_URL : `${API_BASE_URL}
 // Configure axios instance
 const api = axios.create({
   baseURL: API_BASE,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -14,12 +15,7 @@ const api = axios.create({
 
 // Add auth token to requests
 api.interceptors.request.use((config) => {
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('vendor_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  }
+  // Authorization is now handled via HttpOnly cookies
   return config;
 });
 
@@ -50,16 +46,7 @@ export const verifyVendorSession = async () => {
     if (typeof window === 'undefined') {
       return { authenticated: false, verified: false, message: 'SSR' };
     }
-    const token = localStorage.getItem('vendor_token');
-    const vendorData = localStorage.getItem('vendor_data');
-
-    if (!token) {
-      return {
-        authenticated: false,
-        verified: false,
-        message: 'No authentication token found'
-      };
-    }
+    // Session is verified via HttpOnly cookie
 
     // Try to get vendor profile to verify session
     const response = await api.get('/vendor/auth/verify-session');
@@ -242,9 +229,8 @@ export const vendorLogin = async (email, password) => {
   try {
     const response = await api.post('/vendor/auth/login', { email, password });
 
-    if (response.data?.token) {
-      localStorage.setItem('vendor_token', response.data.token);
-
+    if (response.data) {
+      // Tokens are now set via HttpOnly cookies by the backend
       if (response.data?.vendor) {
         localStorage.setItem('vendor_data', JSON.stringify(response.data.vendor));
       }
@@ -259,9 +245,12 @@ export const vendorLogin = async (email, password) => {
   }
 };
 
-// New: Logout function
-export const vendorLogout = () => {
-  localStorage.removeItem('vendor_token');
+export const vendorLogout = async () => {
+  try {
+    await api.post('/vendor/auth/logout');
+  } catch (err) {
+    console.error('Logout error:', err);
+  }
   localStorage.removeItem('vendor_data');
   sessionStorage.removeItem('vendor_session');
 
@@ -271,12 +260,10 @@ export const vendorLogout = () => {
   }
 };
 
-// New: Check if vendor is logged in (quick check)
 export const isVendorLoggedIn = () => {
-  const token = localStorage.getItem('vendor_token');
   const vendorData = localStorage.getItem('vendor_data');
 
-  if (!token || !vendorData) {
+  if (!vendorData) {
     return false;
   }
 

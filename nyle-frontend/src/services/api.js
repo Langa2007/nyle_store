@@ -8,6 +8,7 @@ const baseURL = envUrl.endsWith("/api") ? envUrl : `${envUrl.replace(/\/$/, "")}
 // Axios instance
 const api = axios.create({
   baseURL,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },

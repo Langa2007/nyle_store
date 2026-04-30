@@ -41,10 +41,9 @@ export function CartProvider({ children }) {
     }
 
     if (typeof window === 'undefined') return null;
-    const token = localStorage.getItem('accessToken') || localStorage.getItem('userAccessToken');
     const userData = localStorage.getItem('user');
 
-    if (token && userData) {
+    if (userData) {
       try {
         const user = JSON.parse(userData);
         if (user.id) {
@@ -67,7 +66,9 @@ export function CartProvider({ children }) {
       if (userId) params.append('user_id', userId);
       if (sessionId) params.append('session_id', sessionId);
 
-      const res = await fetch(`${API_URL}/api/cart?${params}`);
+      const res = await fetch(`${API_URL}/api/cart?${params}`, {
+        credentials: "include"
+      });
       if (!res.ok) throw new Error('Failed to fetch cart');
 
       const data = await res.json();
@@ -96,15 +97,16 @@ export function CartProvider({ children }) {
     }
 
     // Check if item already exists in cart to prevent duplicates
-    const existingItem = cart.items.find(item => 
-      (item.product_id === product.id) || (item.id === product.id) || (item.product?.id === product.id)
-    );
+    const existingItem = cart.items.find(item => {
+      const pId = String(product.id || product._id);
+      return String(item.product_id) === pId || String(item.id) === pId || String(item.product?.id) === pId;
+    });
 
     if (existingItem) {
       // If product exists, we update the quantity instead of adding a new item entry
       await updateQuantity(existingItem.id || existingItem.product_id, existingItem.quantity + quantity);
       if (options.buyNow && typeof window !== 'undefined') {
-        window.location.href = `/checkout?productId=${product.id}`;
+        window.location.href = `/checkout?productId=${product.id || product._id}`;
       }
       return { success: true, requiresAuth: false, alreadyInCart: true };
     }
@@ -119,7 +121,8 @@ export function CartProvider({ children }) {
           product_id: product.id,
           quantity,
           user_id: userId
-        })
+        }),
+        credentials: "include"
       });
 
       if (!res.ok) throw new Error('Failed to add to cart');
@@ -127,7 +130,7 @@ export function CartProvider({ children }) {
       const data = await res.json();
       setCart(data);
       if (options.buyNow && typeof window !== 'undefined') {
-        window.location.href = `/checkout?productId=${product.id}`;
+        window.location.href = `/checkout?productId=${product.id || product._id}`;
       }
       return { success: true, requiresAuth: false };
     } catch (error) {
@@ -160,7 +163,8 @@ export function CartProvider({ children }) {
       const res = await fetch(`${API_URL}/api/cart/items/${itemId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantity })
+        body: JSON.stringify({ quantity }),
+        credentials: "include"
       });
 
       if (res.ok) {
@@ -186,7 +190,8 @@ export function CartProvider({ children }) {
 
     try {
       const res = await fetch(`${API_URL}/api/cart/items/${itemId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: "include"
       });
 
       if (res.ok) {
@@ -212,7 +217,8 @@ export function CartProvider({ children }) {
               product_id: item.product_id,
               quantity: item.quantity
             }))
-          })
+          }),
+          credentials: "include"
         });
 
         if (res.ok) {

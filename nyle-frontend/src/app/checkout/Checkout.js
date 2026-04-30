@@ -27,32 +27,21 @@ export default function CheckoutPage() {
 
   const { getCoordinates, loading: geoLoading } = useGeolocation();
 
-  const getAuthToken = () => {
-    const token = (
-      session?.accessToken ||
-      session?.user?.accessToken ||
-      localStorage.getItem("accessToken") ||
-      localStorage.getItem("userAccessToken")
-    );
-    return token && token !== "undefined" && token !== "null" ? token : null;
-  };
 
   useEffect(() => {
     if (status === "loading") return;
 
-    const token = getAuthToken();
-    const hasSession = status === "authenticated";
-
-    if (!token && !hasSession) {
+    if (status === "unauthenticated") {
       const redirectUrl = productId ? `/checkout?productId=${productId}` : "/checkout";
       router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);
       return;
     }
     setIsLoggedIn(true);
 
-    if (productId) {
       // Direct buy flow for a specific product
-      fetch(`${API_URL}/api/products/${productId}`)
+      fetch(`${API_URL}/api/products/${productId}`, {
+        credentials: "include"
+      })
         .then((r) => r.json())
         .then((d) => setDirectProduct(d))
         .finally(() => setLoading(false));
@@ -61,10 +50,11 @@ export default function CheckoutPage() {
       fetchCart().finally(() => setLoading(false));
     }
 
-    // Fetch user saved locations only when token exists
-    if (token) {
+    // Fetch user saved locations
+    if (status === "authenticated") {
       fetch(`${API_URL}/api/location`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { "Content-Type": "application/json" },
+        credentials: "include"
       })
         .then(r => r.ok ? r.json() : null)
         .then(data => {
@@ -117,9 +107,6 @@ export default function CheckoutPage() {
   }, [productId, directProduct, getCartTotals]);
 
   const placeOrder = async () => {
-    const token = getAuthToken();
-    if (!token) return;
-
     if (!address.trim()) {
       alert("Please enter a shipping address");
       return;
@@ -131,8 +118,8 @@ export default function CheckoutPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
         body: JSON.stringify({
           items: checkoutItems.map(item => ({
             product_id: item.product_id,

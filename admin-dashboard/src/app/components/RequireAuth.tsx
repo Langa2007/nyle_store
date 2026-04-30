@@ -1,3 +1,4 @@
+// src/components/RequireAuth.tsx
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -37,14 +38,21 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
       isRedirectingRef.current = true;
 
       clearTimers();
+      // Clear all potential session indicators
       localStorage.removeItem("adminAccessToken");
       localStorage.removeItem("adminRefreshToken");
       localStorage.removeItem("adminLoggedIn");
       localStorage.removeItem("adminLastActive");
       localStorage.removeItem("adminInitialIp");
       localStorage.removeItem("adminTabHidden");
+      localStorage.removeItem("adminName");
+      
       localStorage.setItem("adminLogoutEvent", Date.now().toString());
       localStorage.setItem("adminSecurityReason", reason);
+      
+      // Also try to clear cookies on backend
+      fetch(`${API_URL}/api/admin/auth/logout`, { method: "POST", credentials: "include" }).catch(() => {});
+      
       setIsVerified(false);
       router.replace(`/login?reason=${reason}`);
     },
@@ -74,19 +82,18 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
   }, [forceLogout, setLastActiveNow]);
 
   const verifyOrRefresh = useCallback(async () => {
-    const accessToken = localStorage.getItem("adminAccessToken");
-    const refreshToken = localStorage.getItem("adminRefreshToken");
+    // Rely on HttpOnly cookies, but use adminLoggedIn as a client-side marker
+    const isLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
 
-    if (!accessToken || !refreshToken) {
+    if (!isLoggedIn) {
       forceLogout(UNAUTHORIZED_REASON);
       return false;
     }
 
     try {
+      // Verify token via cookie
       const verifyRes = await fetch(`${API_URL}/api/admin/auth/verify-token`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
+        credentials: "include"
       });
 
       if (verifyRes.ok) return true;
@@ -102,10 +109,10 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
         return false;
       }
 
-      const refreshRes = await fetch(`${API_URL}/api/admin/auth/refresh-token`, {
+      // If verification failed, try refreshing using the refresh cookie
+      const refreshRes = await fetch(`${API_URL}/api/admin/auth/refresh`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken }),
+        credentials: "include"
       });
 
       if (!refreshRes.ok) {
@@ -113,13 +120,6 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
         return false;
       }
 
-      const refreshData = await refreshRes.json();
-      if (!refreshData?.accessToken) {
-        forceLogout(UNAUTHORIZED_REASON);
-        return false;
-      }
-
-      localStorage.setItem("adminAccessToken", refreshData.accessToken);
       return true;
     } catch {
       forceLogout(UNAUTHORIZED_REASON);
@@ -177,7 +177,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
       };
 
       const handleStorage = (e: StorageEvent) => {
-        if (e.key === "adminLogoutEvent" || (e.key === "adminAccessToken" && !e.newValue)) {
+        if (e.key === "adminLogoutEvent") {
           forceLogout(UNAUTHORIZED_REASON);
         }
       };

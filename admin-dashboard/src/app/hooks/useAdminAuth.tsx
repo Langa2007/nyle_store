@@ -1,3 +1,4 @@
+// src/app/hooks/useAdminAuth.tsx
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -15,7 +16,7 @@ export const useAdminAuth = () => {
   const tokenRefreshTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isCheckingRef = useRef(false);
 
-  // Get client IP (simplified - in production use a proper IP service)
+  // Get client IP
   const getClientIp = useCallback(async () => {
     try {
       const response = await fetch('https://api.ipify.org?format=json');
@@ -28,27 +29,25 @@ export const useAdminAuth = () => {
   }, []);
 
   const logout = useCallback(async () => {
-    const accessToken = localStorage.getItem("adminAccessToken");
-    
     // Clear all storage
     localStorage.removeItem("adminAccessToken");
     localStorage.removeItem("adminRefreshToken");
     localStorage.removeItem("adminLastActive");
     localStorage.removeItem("adminInitialIp");
     localStorage.removeItem("adminLoggedIn");
+    localStorage.removeItem("adminName");
     
     // Broadcast logout to other tabs
     localStorage.setItem("adminLogoutEvent", Date.now().toString());
     
-    // Call backend logout if token exists
-    if (accessToken) {
-      try {
-        await fetch(`${API_URL}/api/admin/auth/logout`, {
-          headers: { Authorization: `Bearer ${accessToken}` }
-        });
-      } catch (error) {
-        console.error("Logout API error:", error);
-      }
+    try {
+      // Call backend logout to clear HttpOnly cookies
+      await fetch(`${API_URL}/api/admin/auth/logout`, {
+        method: "POST",
+        credentials: "include" as RequestCredentials
+      });
+    } catch (error) {
+      console.error("Logout API error:", error);
     }
     
     setAdmin(null);
@@ -56,63 +55,57 @@ export const useAdminAuth = () => {
   }, [router]);
 
   const refreshAccessToken = useCallback(async () => {
-    const refreshToken = localStorage.getItem("adminRefreshToken");
-    if (!refreshToken) return logout();
-
     try {
-      const res = await fetch(`${API_URL}/api/admin/auth/refresh-token`, {
+      const res = await fetch(`${API_URL}/api/admin/auth/refresh`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken }),
+        credentials: "include" as RequestCredentials
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to refresh token");
 
-      localStorage.setItem("adminAccessToken", data.accessToken);
-      
       // Restart token refresh timer
       setupTokenRefresh();
       
-      return data.accessToken;
+      return true;
     } catch {
       logout();
+      return false;
     }
   }, [logout]);
 
   const verifyToken = useCallback(async () => {
     if (isCheckingRef.current) return;
+    
+    // We check adminLoggedIn marker instead of accessToken (cookie is HttpOnly)
+    const isLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
+    if (!isLoggedIn) return;
+
     isCheckingRef.current = true;
 
-    const accessToken = localStorage.getItem("adminAccessToken");
-    if (!accessToken) {
-      isCheckingRef.current = false;
-      return logout();
-    }
-
     try {
-      // Get current IP for verification
       const currentIp = await getClientIp();
       
       const res = await fetch(`${API_URL}/api/admin/auth/verify-token`, {
         headers: { 
-          Authorization: `Bearer ${accessToken}`,
-          "X-Client-IP": currentIp // Send IP for verification
+          "X-Client-IP": currentIp
         },
+        credentials: "include" as RequestCredentials
       });
 
       const data = await res.json();
       if (!res.ok || !data.valid) {
         // Try refresh token if verification fails
-        const newToken = await refreshAccessToken();
-        if (!newToken) throw new Error("Token refresh failed");
+        const success = await refreshAccessToken();
+        if (!success) throw new Error("Token refresh failed");
         
-        // Retry with new token
+        // Retry with new token (now in cookie)
         const retryRes = await fetch(`${API_URL}/api/admin/auth/verify-token`, {
           headers: { 
-            Authorization: `Bearer ${newToken}`,
             "X-Client-IP": currentIp
           },
+          credentials: "include" as RequestCredentials
         });
         
         const retryData = await retryRes.json();
@@ -142,34 +135,28 @@ export const useAdminAuth = () => {
   }, [logout, refreshAccessToken, getClientIp]);
 
   const resetInactivityTimer = useCallback(() => {
-    // Clear existing timer
     if (inactivityTimerRef.current) {
       clearTimeout(inactivityTimerRef.current);
     }
     
-    // Set new timer
     inactivityTimerRef.current = setTimeout(() => {
       console.log("Inactivity timeout - logging out");
       logout();
     }, INACTIVITY_LIMIT);
     
-    // Update last active time
     localStorage.setItem("adminLastActive", Date.now().toString());
   }, [logout]);
 
   const setupTokenRefresh = useCallback(() => {
-    // Clear existing timer
     if (tokenRefreshTimerRef.current) {
       clearInterval(tokenRefreshTimerRef.current);
     }
     
-    // Refresh token every 30 minutes
     tokenRefreshTimerRef.current = setInterval(() => {
       refreshAccessToken();
     }, TOKEN_REFRESH_INTERVAL);
   }, [refreshAccessToken]);
 
-  // Check IP change
   const checkIpChange = useCallback(async () => {
     const storedIp = localStorage.getItem("adminInitialIp");
     if (!storedIp || storedIp === 'unknown') return;
@@ -181,10 +168,8 @@ export const useAdminAuth = () => {
     }
   }, [getClientIp, logout]);
 
-  // Activity detectors
   const setupActivityListeners = useCallback(() => {
     const events = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart'];
-    
     const resetTimer = () => resetInactivityTimer();
     
     events.forEach(event => {
@@ -198,79 +183,49 @@ export const useAdminAuth = () => {
     };
   }, [resetInactivityTimer]);
 
-  // Tab visibility change
   const handleVisibilityChange = useCallback(() => {
     if (document.visibilityState === 'hidden') {
-      // Tab switched away
       localStorage.setItem("adminTabHidden", Date.now().toString());
     } else {
-      // Tab came back - check if it was hidden too long
       const hiddenTime = localStorage.getItem("adminTabHidden");
       if (hiddenTime && Date.now() - parseInt(hiddenTime) > INACTIVITY_LIMIT) {
-        console.log("Tab was away too long - verifying session");
         logout();
         return;
       }
       localStorage.removeItem("adminTabHidden");
       resetInactivityTimer();
     }
-  }, [verifyToken, resetInactivityTimer]);
+  }, [logout, resetInactivityTimer]);
 
   useEffect(() => {
-    // Initial verification
     verifyToken();
-    
-    // Setup activity listeners
     const cleanupListeners = setupActivityListeners();
-    
-    // Setup tab visibility listener
     document.addEventListener('visibilitychange', handleVisibilityChange);
     
-    // Setup storage listener for cross-tab logout
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'adminLogoutEvent') {
-        console.log("Logout event detected from another tab");
         logout();
       }
     };
     window.addEventListener('storage', handleStorageChange);
     
-    // Check IP change periodically (every 2 minutes)
     const ipCheckInterval = setInterval(checkIpChange, 2 * 60 * 1000);
     
-    // Handle page refresh - check if user was logged in
     const wasLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
     if (wasLoggedIn) {
       verifyToken();
     }
     
-    // Mark as logged in
-    localStorage.setItem("adminLoggedIn", "true");
-    
-    // Setup initial timers
     resetInactivityTimer();
     setupTokenRefresh();
     
     return () => {
-      // Cleanup
       cleanupListeners();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('storage', handleStorageChange);
-      
-      if (inactivityTimerRef.current) {
-        clearTimeout(inactivityTimerRef.current);
-      }
-      
-      if (tokenRefreshTimerRef.current) {
-        clearInterval(tokenRefreshTimerRef.current);
-      }
-      
+      if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
+      if (tokenRefreshTimerRef.current) clearInterval(tokenRefreshTimerRef.current);
       clearInterval(ipCheckInterval);
-      
-      // Only clear login marker if explicitly logging out
-      if (!localStorage.getItem("adminAccessToken")) {
-        localStorage.removeItem("adminLoggedIn");
-      }
     };
   }, [verifyToken, setupActivityListeners, handleVisibilityChange, checkIpChange, resetInactivityTimer, setupTokenRefresh, logout]);
 

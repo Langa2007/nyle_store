@@ -43,10 +43,9 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // We still support original login for backward compatibility or direct access
       const data = await login({ email, password });
-      if (data.token) {
-        localStorage.setItem("accessToken", data.token);
+      // Token is now set via HttpOnly cookie by the backend
+      if (data.user) {
         localStorage.setItem("user", JSON.stringify(data.user || {}));
       }
       router.push(next);

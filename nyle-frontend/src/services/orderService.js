@@ -7,6 +7,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.
 export async function fetchOrders(token) {
   const res = await fetch(`${API_URL}/api/orders`, {
     headers: { Authorization: `Bearer ${token}` },
+    credentials: "include",
   });
   if (!res.ok) throw new Error("Failed to fetch orders");
   return res.json();
@@ -21,6 +22,7 @@ export async function createOrder(orderData, token) {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(orderData),
+    credentials: "include",
   });
   if (!res.ok) throw new Error("Failed to create order");
   return res.json();
@@ -30,6 +32,7 @@ export async function createOrder(orderData, token) {
 export async function getOrderById(orderId, token) {
   const res = await fetch(`${API_URL}/api/orders/${orderId}`, {
     headers: { Authorization: `Bearer ${token}` },
+    credentials: "include",
   });
   if (!res.ok) throw new Error("Failed to fetch order details");
   return res.json();

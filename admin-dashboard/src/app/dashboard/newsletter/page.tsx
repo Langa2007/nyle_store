@@ -13,10 +13,6 @@ interface Subscriber {
 
 const API_BASE = "https://nyle-store.onrender.com";
 
-function getAuthHeaders() {
-  const token = typeof window !== "undefined" ? localStorage.getItem("adminAccessToken") : null;
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
 
 export default function NewsletterPage() {
   const [emails, setEmails] = useState<Subscriber[]>([]);
@@ -31,9 +27,7 @@ export default function NewsletterPage() {
     setLoading(true);
     setFetchError(null);
     try {
-      const res = await axios.get(`${API_BASE}/api/newsletter/subscribers`, {
-        headers: getAuthHeaders(),
-      });
+      const res = await axios.get(`${API_BASE}/api/newsletter/subscribers`);
       setEmails(Array.isArray(res.data) ? res.data : []);
     } catch (err: any) {
       console.error("Failed to fetch emails:", err);
@@ -57,8 +51,7 @@ export default function NewsletterPage() {
     try {
       const res = await axios.post(
         `${API_BASE}/api/newsletter/send`,
-        { title: subject, message },
-        { headers: getAuthHeaders() }
+        { title: subject, message }
       );
       const data = res.data;
       const detail = data.sent !== undefined

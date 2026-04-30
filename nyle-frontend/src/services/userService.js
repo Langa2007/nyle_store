@@ -8,8 +8,12 @@ export async function registerUser(userData) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(userData),
+    credentials: "include",
   });
-  if (!res.ok) throw new Error("Registration failed");
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.message || "Registration failed");
+  }
   return res.json();
 }
 
@@ -19,15 +23,20 @@ export async function loginUser(credentials) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
+    credentials: "include",
   });
-  if (!res.ok) throw new Error("Login failed");
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.message || "Login failed");
+  }
   return res.json();
 }
 
 //Fetch current user profile.
-export async function getUserProfile(token) {
+export async function getUserProfile() {
   const res = await fetch(`${API_URL}/api/users/profile`, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
   });
   if (!res.ok) throw new Error("Failed to fetch user profile");
   return res.json();

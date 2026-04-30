@@ -39,8 +39,8 @@ export const getUserSummary = async (req, res) => {
 export const searchUsers = async (req, res) => {
   const query = String(req.query.q || "").trim().toLowerCase();
 
-  if (query.length < 2) {
-    return res.status(400).json({ error: "Search query must be at least 2 characters long" });
+  if (query.length < 4) {
+    return res.status(400).json({ error: "Search query must be at least 4 characters long" });
   }
 
   try {
