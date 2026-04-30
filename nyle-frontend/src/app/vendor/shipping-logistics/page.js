@@ -43,12 +43,12 @@ export default function ShippingLogisticsPage() {
   ];
 
   const regions = [
-    { id: "nairobi", name: "Nairobi Metro", delivery: "1-2 days", icon: "🏙️", baseCost: 300 },
-    { id: "mombasa", name: "Mombasa & Coast", delivery: "2-3 days", icon: "🏖️", baseCost: 450 },
-    { id: "kisumu", name: "Kisumu & Western", delivery: "3-4 days", icon: "🌊", baseCost: 500 },
-    { id: "nakuru", name: "Nakuru & Rift Valley", delivery: "2-3 days", icon: "⛰️", baseCost: 400 },
-    { id: "remote", name: "Remote Areas", delivery: "5-7 days", icon: "🗺️", baseCost: 600 },
-    { id: "international", name: "East Africa", delivery: "7-14 days", icon: "🌍", baseCost: 1200 },
+    { id: "nairobi", name: "Nairobi Metro", delivery: "1-2 days", icon: "", baseCost: 300 },
+    { id: "mombasa", name: "Mombasa & Coast", delivery: "2-3 days", icon: "", baseCost: 450 },
+    { id: "kisumu", name: "Kisumu & Western", delivery: "3-4 days", icon: "", baseCost: 500 },
+    { id: "nakuru", name: "Nakuru & Rift Valley", delivery: "2-3 days", icon: "", baseCost: 400 },
+    { id: "remote", name: "Remote Areas", delivery: "5-7 days", icon: "", baseCost: 600 },
+    { id: "international", name: "East Africa", delivery: "7-14 days", icon: "", baseCost: 1200 },
   ];
 
   const services = [

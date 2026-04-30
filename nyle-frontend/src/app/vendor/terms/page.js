@@ -71,10 +71,10 @@ export default function VendorTermsPage() {
   ];
 
   const vendorBenefits = [
-    { icon: "🚀", title: "Quick Approval", desc: "Get verified within 24-48 hours" },
-    { icon: "📊", title: "Sales Dashboard", desc: "Real-time analytics and insights" },
-    { icon: "💰", title: "Competitive Fees", desc: "Lowest commissions in Kenya" },
-    { icon: "🛡️", title: "Seller Protection", desc: "Secure payment processing" },
+    { icon: "", title: "Quick Approval", desc: "Get verified within 24-48 hours" },
+    { icon: "", title: "Sales Dashboard", desc: "Real-time analytics and insights" },
+    { icon: "", title: "Competitive Fees", desc: "Lowest commissions in Kenya" },
+    { icon: "", title: "Seller Protection", desc: "Secure payment processing" },
   ];
 
   return (
@@ -366,7 +366,7 @@ export default function VendorTermsPage() {
         <div className="container mx-auto px-6">
           <div className="text-center">
             <p className="text-emerald-300 mb-4">
-              © {new Date().getFullYear()} Nyle Store Seller Network. All rights reserved.
+               {new Date().getFullYear()} Nyle Store Seller Network. All rights reserved.
             </p>
             <div className="flex flex-wrap justify-center gap-6 text-sm text-emerald-400">
               <Link href="/vendor/privacy" className="hover:text-white transition">Seller Privacy Policy</Link>

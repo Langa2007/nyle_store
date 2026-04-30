@@ -480,7 +480,7 @@ function VendorLoginContent() {
                     onClick={() => { setLoginError(null); setSuccessMessage(null); }}
                     className="text-gray-400 hover:text-gray-600"
                   >
-                    ✕
+                    Close
                   </button>
                 </div>
               </div>

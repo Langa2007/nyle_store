@@ -759,7 +759,7 @@ export default function ProductForm({ product, onClose, onSuccess }) {
                   className="w-5 h-5 text-red-600 rounded border-red-300 focus:ring-red-500"
                 />
                 <div>
-                  <div className="font-medium text-red-700">🔥 Hot Deal Request</div>
+                  <div className="font-medium text-red-700"> Hot Deal Request</div>
                   <p className="text-xs text-red-500">Submit this product as a special deal</p>
                 </div>
               </label>

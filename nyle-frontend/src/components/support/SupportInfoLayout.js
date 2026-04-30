@@ -49,7 +49,7 @@ export default function SupportInfoLayout({ title, subtitle, children }) {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-200/10 rounded-full blur-3xl" />
       </div>
 
-      {/* 🌊 Top Banner */}
+      {/*  Top Banner */}
       <div className="relative bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white py-16 shadow-xl overflow-hidden">
         {/* Animated wave pattern */}
         <div className="absolute inset-0 opacity-10">
@@ -259,7 +259,7 @@ export default function SupportInfoLayout({ title, subtitle, children }) {
         </div>
       </div>
 
-      {/* 📞 Footer */}
+      {/*  Footer */}
       <footer className="mt-auto bg-gradient-to-r from-gray-900 to-gray-800 text-gray-300 py-10 relative z-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col lg:flex-row justify-between items-center gap-8">
@@ -282,14 +282,14 @@ export default function SupportInfoLayout({ title, subtitle, children }) {
                 Available 24 hours, 7 days a week
               </div>
               <div className="text-xs opacity-70">
-                © {new Date().getFullYear()} Nyle Marketplace. All rights reserved.
+                 {new Date().getFullYear()} Nyle Marketplace. All rights reserved.
               </div>
             </div>
           </div>
         </div>
       </footer>
 
-      {/* 🌊 Decorative Wave */}
+      {/*  Decorative Wave */}
       <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
         <svg
           xmlns="http://www.w3.org/2000/svg"

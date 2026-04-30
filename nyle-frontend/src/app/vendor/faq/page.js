@@ -64,7 +64,7 @@ export default function SellerFAQPage() {
     {
       id: "getting-started",
       title: "Getting Started",
-      icon: "🚀",
+      icon: <Rocket className="h-4 w-4" />,
       color: "from-blue-500 to-cyan-500",
       gradient: "bg-gradient-to-br from-blue-500/10 via-blue-100 to-cyan-50",
       faqs: [
@@ -97,7 +97,7 @@ export default function SellerFAQPage() {
     {
       id: "products-listings",
       title: "Products & Listings",
-      icon: "📦",
+      icon: <Package className="h-4 w-4" />,
       color: "from-blue-600 to-indigo-600",
       gradient: "bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50",
       faqs: [
@@ -130,7 +130,7 @@ export default function SellerFAQPage() {
     {
       id: "payments-payouts",
       title: "Payments & Payouts",
-      icon: "💰",
+      icon: <DollarSign className="h-4 w-4" />,
       color: "from-indigo-600 to-purple-600",
       gradient: "bg-gradient-to-br from-purple-50 via-indigo-50 to-pink-50",
       faqs: [
@@ -163,7 +163,7 @@ export default function SellerFAQPage() {
     {
       id: "shipping-logistics",
       title: "Shipping & Logistics",
-      icon: "🚚",
+      icon: <Truck className="h-4 w-4" />,
       color: "from-cyan-500 to-blue-500",
       gradient: "bg-gradient-to-br from-cyan-50 via-blue-50 to-teal-50",
       faqs: [
@@ -196,7 +196,7 @@ export default function SellerFAQPage() {
     {
       id: "marketing-growth",
       title: "Marketing & Growth",
-      icon: "📈",
+      icon: <TrendingUp className="h-4 w-4" />,
       color: "from-green-500 to-emerald-500",
       gradient: "bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50",
       faqs: [
@@ -221,7 +221,7 @@ export default function SellerFAQPage() {
     {
       id: "premium-features",
       title: "Premium Features",
-      icon: "👑",
+      icon: <Award className="h-4 w-4" />,
       color: "from-yellow-500 to-orange-500",
       gradient: "bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50",
       faqs: [
@@ -266,11 +266,11 @@ export default function SellerFAQPage() {
   ];
 
   const quickTips = [
-    { tip: "📸 Use high-quality product images with multiple angles", color: "bg-blue-100 text-blue-800" },
-    { tip: "⏰ Respond to customer queries within 24 hours", color: "bg-green-100 text-green-800" },
-    { tip: "🔍 Optimize product titles with relevant keywords", color: "bg-purple-100 text-purple-800" },
-    { tip: "🎁 Create product bundles for better average order value", color: "bg-orange-100 text-orange-800" },
-    { tip: "⭐ Encourage customer reviews with follow-up emails", color: "bg-yellow-100 text-yellow-800" },
+    { icon: <Package className="h-4 w-4" />, text: "Use high-quality product images with multiple angles", color: "bg-blue-100 text-blue-800" },
+    { icon: <MessageCircle className="h-4 w-4" />, text: "Respond to customer queries within 24 hours", color: "bg-green-100 text-green-800" },
+    { icon: <Search className="h-4 w-4" />, text: "Optimize product titles with relevant keywords", color: "bg-purple-100 text-purple-800" },
+    { icon: <BarChart className="h-4 w-4" />, text: "Create product bundles for better average order value", color: "bg-orange-100 text-orange-800" },
+    { icon: <Award className="h-4 w-4" />, text: "Encourage customer reviews with follow-up emails", color: "bg-yellow-100 text-yellow-800" },
   ];
 
   const sellerResources = [
@@ -281,9 +281,9 @@ export default function SellerFAQPage() {
   ];
 
   const successStories = [
-    { name: "Sarah K.", business: "African Crafts Co.", growth: "425%", period: "6 months" },
-    { name: "James M.", business: "Tech Gadgets KE", growth: "312%", period: "4 months" },
-    { name: "Fatima A.", business: "Fashion Essentials", growth: "567%", period: "8 months" },
+    { name: "Crafts Merchant", business: "African Crafts Category", growth: "425%", period: "6 months" },
+    { name: "Electronics Brand", business: "Technology & Devices", growth: "312%", period: "4 months" },
+    { name: "Fashion Retailer", business: "Apparel & Accessories", growth: "567%", period: "8 months" },
   ];
 
   return (
@@ -556,9 +556,9 @@ export default function SellerFAQPage() {
                   {quickTips.map((tip, index) => (
                     <div key={index} className="flex items-start gap-3">
                       <div className={`p-2 rounded-lg ${tip.color} bg-opacity-20 backdrop-blur-sm`}>
-                        <span className="text-lg">{tip.tip.split(' ')[0]}</span>
+                        {tip.icon}
                       </div>
-                      <span className="text-sm text-blue-100 flex-1">{tip.tip.substring(tip.tip.indexOf(' ') + 1)}</span>
+                      <span className="text-sm text-blue-100 flex-1">{tip.text}</span>
                     </div>
                   ))}
                 </div>

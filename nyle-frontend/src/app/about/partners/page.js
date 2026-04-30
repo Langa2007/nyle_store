@@ -1,6 +1,6 @@
 // app/about/partner/page.js
 import AboutInfoLayout from "@/components/about/AboutInfoLayout";
-import { HandshakeIcon, Truck, CreditCard, Building, Globe, Shield, Users, Award, Zap, TrendingUp } from "lucide-react";
+import { HandshakeIcon, Truck, CreditCard, Building, Globe, Shield, Users, Award, Zap, TrendingUp, CheckCircle } from "lucide-react";
 
 export default function PartnersPage() {
   // Partner categories - easily expandable
@@ -118,13 +118,13 @@ export default function PartnersPage() {
       partner: "SpeedPost Kenya",
       metric: "300% increase in parcel volume",
       quote: "Partnering with Nyle transformed our last-mile delivery network.",
-      author: "Jane M., CEO"
+      author: "Operations Team, SpeedPost Kenya"
     },
     {
       partner: "Flutterwave",
       metric: "2M+ transactions processed monthly",
       quote: "Nyle's platform integration expanded our reach across East Africa.",
-      author: "David K., Head of Partnerships"
+      author: "Partnerships Office, Flutterwave"
     },
   ];
 
@@ -391,26 +391,5 @@ export default function PartnersPage() {
         </div>
       </div>
     </AboutInfoLayout>
-  );
-}
-
-// Helper component for check marks
-function CheckCircle(props) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-      <polyline points="22 4 12 14.01 9 11.01"></polyline>
-    </svg>
   );
 }

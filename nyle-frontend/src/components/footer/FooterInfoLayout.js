@@ -12,7 +12,10 @@ import {
   Home,
   CheckCircle,
   AlertCircle,
-  Search
+  Search,
+  ShoppingBag,
+  LayoutGrid,
+  Phone
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -69,24 +72,24 @@ export default function FooterInfoLayout({
 
   const quickLinks = [
     { href: "/", label: "Home", icon: <Home size={16} /> },
-    { href: "/products", label: "Shop Products", icon: "🛒" },
-    { href: "/categories", label: "Browse Categories", icon: "📂" },
-    { href: "/support/help-center", label: "Help Center", icon: "❓" },
-    { href: "/support/contact", label: "Contact Us", icon: "📞" },
+    { href: "/products", label: "Shop Products", icon: <ShoppingBag size={16} /> },
+    { href: "/categories", label: "Browse Categories", icon: <LayoutGrid size={16} /> },
+    { href: "/support/help-center", label: "Help Center", icon: <HelpCircle size={16} /> },
+    { href: "/support/contact", label: "Contact Us", icon: <Phone size={16} /> },
   ];
 
   const keyPoints = [
-    { icon: "🔒", text: "Secure & Trusted Platform" },
-    { icon: "📖", text: "Transparent Policies" },
-    { icon: "🔄", text: "Regularly Updated" },
-    { icon: "👥", text: "User-Focused Design" },
+    { icon: <Shield className="h-5 w-5 text-blue-600" />, text: "Secure & Trusted Platform" },
+    { icon: <FileText className="h-5 w-5 text-blue-600" />, text: "Transparent Policies" },
+    { icon: <CheckCircle className="h-5 w-5 text-blue-600" />, text: "Regularly Updated" },
+    { icon: <Users className="h-5 w-5 text-blue-600" />, text: "User-Focused Design" },
   ];
 
   if (!mounted) return null;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-indigo-50">
-      {/* 🌊 Hero Section */}
+      {/*  Hero Section */}
       <div className="relative bg-gradient-to-r from-blue-600 via-indigo-700 to-purple-800 text-white py-20 overflow-hidden">
         {/* Animated background */}
         <div className="absolute inset-0">
@@ -150,10 +153,10 @@ export default function FooterInfoLayout({
         </div>
       </div>
 
-      {/* 🧭 Main Content Area */}
+      {/*  Main Content Area */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <div className="grid lg:grid-cols-4 gap-8 md:gap-12">
-          {/* 📚 Enhanced Sidebar */}
+          {/*  Enhanced Sidebar */}
           <motion.aside
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
@@ -187,7 +190,7 @@ export default function FooterInfoLayout({
                           <span className="font-medium">{page.label}</span>
                           {isActive && (
                             <span className="ml-auto text-xs px-2 py-1 bg-white/20 rounded-full">
-                              ✓ Viewing
+                              Viewing
                             </span>
                           )}
                         </Link>
@@ -226,7 +229,7 @@ export default function FooterInfoLayout({
             </div>
           </motion.aside>
 
-          {/* 📝 Main Content */}
+          {/*  Main Content */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -290,7 +293,7 @@ export default function FooterInfoLayout({
         </div>
       </div>
 
-      {/* 🏁 Enhanced Footer */}
+      {/*  Enhanced Footer */}
       <footer className="relative mt-24 bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 text-white overflow-hidden">
         {/* Wave Divider */}
         <div className="absolute -top-1 left-0 right-0">
@@ -369,7 +372,7 @@ export default function FooterInfoLayout({
               <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div className="text-center md:text-left">
                   <p className="text-blue-300">
-                    © {new Date().getFullYear()} Nyle Store. All rights reserved.
+                     {new Date().getFullYear()} Nyle Store. All rights reserved.
                   </p>
                   <p className="text-sm text-blue-400/70 mt-1">
                     Building trust through transparency

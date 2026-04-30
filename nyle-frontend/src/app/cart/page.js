@@ -28,7 +28,7 @@ export default function CartPage() {
             <div className="w-32 h-32 mx-auto bg-blue-50 rounded-full flex items-center justify-center mb-8 relative">
                 <FiShoppingBag className="w-16 h-16 text-blue-500" />
                 <div className="absolute -top-2 -right-2 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center animate-bounce">
-                    <span className="text-xl">✨</span>
+                    <span className="text-xl"></span>
                 </div>
             </div>
             <h1 className="text-4xl font-black text-slate-900 mb-4">Your Cart is Empty</h1>

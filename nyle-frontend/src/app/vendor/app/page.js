@@ -35,7 +35,7 @@ export default function VendorAppPage() {
   });
   const [appVersion, setAppVersion] = useState("2.4.1");
   const [isComingSoon, setIsComingSoon] = useState(true);
-  const [countdown, setCountdown] = useState("Q1 2024");
+  const [countdown, setCountdown] = useState("Next major release");
 
   const appFeatures = [
     {
@@ -90,20 +90,20 @@ export default function VendorAppPage() {
 
   const testimonials = [
     {
-      name: "David Kimani",
-      business: "Fashion Store Nairobi",
+      name: "Fashion Retailer",
+      business: "Apparel & Accessories",
       quote: "The app cut my order processing time by 70%",
       rating: 5
     },
     {
-      name: "Maria Njeri",
-      business: "Tech Gadgets Ltd",
+      name: "Electronics Merchant",
+      business: "Consumer Devices",
       quote: "Managing inventory on my phone has been a game-changer",
       rating: 5
     },
     {
-      name: "James Omondi",
-      business: "Organic Foods Kenya",
+      name: "Food Supplier",
+      business: "Packaged Goods",
       quote: "Real-time notifications help me never miss an order",
       rating: 4
     },
@@ -159,21 +159,12 @@ export default function VendorAppPage() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full text-sm font-medium mb-6">
               <Sparkles className="h-4 w-4" />
-              Version {appVersion} Available Soon
+              Version {appVersion}
             </div>
 
             <div className="relative mb-8">
               <div className="w-24 h-24 mx-auto bg-gradient-to-r from-blue-500 to-cyan-500 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-500/30">
                 <Smartphone className="h-12 w-12 text-white" />
-              </div>
-              <div className="absolute -top-2 -right-4 md:right-8">
-                <motion.div
-                  animate={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="text-4xl"
-                >
-                  📱
-                </motion.div>
               </div>
             </div>
 
@@ -384,7 +375,7 @@ export default function VendorAppPage() {
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <Clock className="h-3 w-3" />
-                    <span>Expected Q1 2024</span>
+                    <span>Release schedule to be announced</span>
                   </div>
                 </div>
               ))}

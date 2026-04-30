@@ -48,12 +48,12 @@ export default function QuotationPage() {
   ];
 
   const categories = [
-    { id: "electronics", label: "Electronics", icon: "📱", count: 24 },
-    { id: "fashion", label: "Fashion & Apparel", icon: "👕", count: 18 },
-    { id: "home", label: "Home & Garden", icon: "🏠", count: 15 },
-    { id: "industrial", label: "Industrial Supplies", icon: "⚙️", count: 32 },
-    { id: "food", label: "Food & Beverage", icon: "🍎", count: 12 },
-    { id: "automotive", label: "Automotive", icon: "🚗", count: 9 },
+    { id: "electronics", label: "Electronics", icon: "", count: 24 },
+    { id: "fashion", label: "Fashion & Apparel", icon: "", count: 18 },
+    { id: "home", label: "Home & Garden", icon: "", count: 15 },
+    { id: "industrial", label: "Industrial Supplies", icon: "", count: 32 },
+    { id: "food", label: "Food & Beverage", icon: "", count: 12 },
+    { id: "automotive", label: "Automotive", icon: "", count: 9 },
   ];
 
   const sampleOffers = [

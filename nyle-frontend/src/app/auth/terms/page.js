@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { FileText, User, CreditCard, Truck, RotateCcw, Shield, CheckCircle } from "lucide-react";
 
 export default function TermsOfServicePage() {
   const [acceptedSections, setAcceptedSections] = useState([]);
@@ -10,7 +11,7 @@ export default function TermsOfServicePage() {
   const termsSections = [
     {
       id: "agreement",
-      icon: "📝",
+      icon: <FileText className="h-6 w-6" />,
       title: "Agreement to Terms",
       color: "from-blue-500 to-cyan-500",
       content: [
@@ -21,7 +22,7 @@ export default function TermsOfServicePage() {
     },
     {
       id: "account",
-      icon: "👤",
+      icon: <User className="h-6 w-6" />,
       title: "User Accounts",
       color: "from-purple-500 to-pink-500",
       content: [
@@ -33,7 +34,7 @@ export default function TermsOfServicePage() {
     },
     {
       id: "purchases",
-      icon: "🛒",
+      icon: <CreditCard className="h-6 w-6" />,
       title: "Purchases & Payments",
       color: "from-green-500 to-emerald-500",
       content: [
@@ -45,7 +46,7 @@ export default function TermsOfServicePage() {
     },
     {
       id: "shipping",
-      icon: "🚚",
+      icon: <Truck className="h-6 w-6" />,
       title: "Shipping & Delivery",
       color: "from-orange-500 to-amber-500",
       content: [
@@ -57,7 +58,7 @@ export default function TermsOfServicePage() {
     },
     {
       id: "returns",
-      icon: "↩️",
+      icon: <RotateCcw className="h-6 w-6" />,
       title: "Returns & Refunds",
       color: "from-red-500 to-pink-500",
       content: [
@@ -69,7 +70,7 @@ export default function TermsOfServicePage() {
     },
     {
       id: "prohibited",
-      icon: "🚫",
+      icon: <Shield className="h-6 w-6" />,
       title: "Prohibited Uses",
       color: "from-indigo-500 to-purple-500",
       content: [
@@ -81,7 +82,7 @@ export default function TermsOfServicePage() {
     },
     {
       id: "intellectual",
-      icon: "💡",
+      icon: <FileText className="h-6 w-6" />,
       title: "Intellectual Property",
       color: "from-cyan-500 to-blue-500",
       content: [
@@ -93,7 +94,7 @@ export default function TermsOfServicePage() {
     },
     {
       id: "liability",
-      icon: "⚖️",
+      icon: <Shield className="h-6 w-6" />,
       title: "Limitation of Liability",
       color: "from-gray-600 to-gray-800",
       content: [
@@ -129,7 +130,7 @@ export default function TermsOfServicePage() {
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center justify-center gap-3 mb-6">
               <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
-                <span className="text-3xl">⚖️</span>
+                <span className="text-3xl"></span>
               </div>
               <div>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight">
@@ -167,7 +168,7 @@ export default function TermsOfServicePage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
-                <span className="text-2xl">📋</span>
+                <span className="text-2xl"></span>
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-white">Interactive Terms Review</h2>
@@ -175,7 +176,7 @@ export default function TermsOfServicePage() {
                   Mark each section as read to acknowledge understanding
                   {allAccepted && (
                     <span className="ml-2 inline-flex items-center">
-                      <span className="mr-1">✅</span>
+                      <span className="mr-1"></span>
                       All sections reviewed!
                     </span>
                   )}
@@ -256,7 +257,7 @@ export default function TermsOfServicePage() {
                           : 'bg-white text-gray-800 hover:bg-gray-100'
                       }`}
                     >
-                      {isAccepted ? '✓ Reviewed' : 'Mark as Read'}
+                      {isAccepted ? "Reviewed" : "Mark as Read"}
                     </button>
                   </div>
                 </div>
@@ -266,9 +267,11 @@ export default function TermsOfServicePage() {
                     {section.content.map((item, itemIndex) => (
                       <li key={itemIndex} className="flex items-start gap-3">
                         <div className={`p-1.5 rounded-lg mt-1 ${isAccepted ? 'bg-green-100' : 'bg-blue-100'}`}>
-                          <span className={`text-sm ${isAccepted ? 'text-green-600' : 'text-blue-600'}`}>
-                            {isAccepted ? '✓' : '•'}
-                          </span>
+                          {isAccepted ? (
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <div className="h-2 w-2 rounded-full bg-blue-600 mt-1" />
+                          )}
                         </div>
                         <span className="text-gray-700">{item}</span>
                       </li>
@@ -278,7 +281,7 @@ export default function TermsOfServicePage() {
                   {isAccepted && (
                     <div className="mt-6 p-4 bg-green-50 rounded-xl border border-green-200">
                       <div className="flex items-center gap-2 text-green-700">
-                        <span>✅</span>
+                        <span></span>
                         <span className="font-medium">You've reviewed this section</span>
                       </div>
                     </div>
@@ -291,7 +294,7 @@ export default function TermsOfServicePage() {
           {/* Important Notes */}
           <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-8 text-white">
             <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-              <span>⚠️</span>
+              <span></span>
               Important Legal Notes
             </h3>
             
@@ -318,7 +321,7 @@ export default function TermsOfServicePage() {
           <div className="bg-white rounded-2xl shadow-xl border-2 border-blue-200 p-8">
             <div className="text-center max-w-3xl mx-auto">
               <div className="w-20 h-20 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <span className="text-3xl">🎯</span>
+                <span className="text-3xl"></span>
               </div>
               
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
@@ -369,7 +372,7 @@ export default function TermsOfServicePage() {
           <div className="bg-white rounded-2xl max-w-md w-full p-8 animate-scale-in">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">✅</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">
                 Terms Accepted!
@@ -441,16 +444,16 @@ export default function TermsOfServicePage() {
             <div>
               <h4 className="text-xl font-bold mb-4">Buyer Protection</h4>
               <div className="text-sm text-orange-400">
-                <p>✅ Secure Payment Gateway</p>
-                <p>✅ Money-Back Guarantee</p>
-                <p>✅ 24/7 Customer Support</p>
+                <p> Secure Payment Gateway</p>
+                <p> Money-Back Guarantee</p>
+                <p> 24/7 Customer Support</p>
               </div>
             </div>
           </div>
           
           <div className="mt-8 pt-8 border-t border-white/10 text-center">
             <p className="text-orange-300">
-              © {new Date().getFullYear()} Nyle Store. All rights reserved. Version 2.1.3
+               {new Date().getFullYear()} Nyle Store. All rights reserved. Version 2.1.3
             </p>
           </div>
         </div>

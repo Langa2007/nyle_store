@@ -41,12 +41,12 @@ export default function QuotationsPage() {
   ];
 
   const categories = [
-    { id: "all", label: "All Categories", icon: "📦", count: 48 },
-    { id: "electronics", label: "Electronics", icon: "📱", count: 12 },
-    { id: "fashion", label: "Fashion & Apparel", icon: "👕", count: 8 },
-    { id: "home", label: "Home & Garden", icon: "🏠", count: 7 },
-    { id: "industrial", label: "Industrial", icon: "⚙️", count: 15 },
-    { id: "food", label: "Food & Beverage", icon: "🍎", count: 6 },
+    { id: "all", label: "All Categories", icon: "", count: 48 },
+    { id: "electronics", label: "Electronics", icon: "", count: 12 },
+    { id: "fashion", label: "Fashion & Apparel", icon: "", count: 8 },
+    { id: "home", label: "Home & Garden", icon: "", count: 7 },
+    { id: "industrial", label: "Industrial", icon: "", count: 15 },
+    { id: "food", label: "Food & Beverage", icon: "", count: 6 },
   ];
 
   const sampleRFQs = [

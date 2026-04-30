@@ -123,19 +123,19 @@ export default function TradeAssurancePage() {
       title: "Damaged Goods Refund",
       amount: "$1,850",
       resolution: "Full refund within 3 days",
-      icon: "✅"
+      icon: ""
     },
     {
       title: "Late Delivery Compensation",
       amount: "$3,200",
       resolution: "20% compensation for delay",
-      icon: "⚡"
+      icon: ""
     },
     {
       title: "Wrong Item Replacement",
       amount: "$750",
       resolution: "Correct item shipped overnight",
-      icon: "🔄"
+      icon: ""
     },
   ];
 
@@ -552,10 +552,10 @@ export default function TradeAssurancePage() {
             
             <div className="space-y-4">
               {[
-                { icon: "🔒", title: "Escrow Protection", desc: "Funds held until delivery confirmation" },
-                { icon: "📦", title: "Order Tracking", desc: "Milestone notifications at every step" },
-                { icon: "🧾", title: "Performance History", desc: "Documented supplier reliability scores" },
-                { icon: "⚖️", title: "Quick Resolution", desc: "Guaranteed timelines for claims and disputes" },
+                { icon: "", title: "Escrow Protection", desc: "Funds held until delivery confirmation" },
+                { icon: "", title: "Order Tracking", desc: "Milestone notifications at every step" },
+                { icon: "", title: "Performance History", desc: "Documented supplier reliability scores" },
+                { icon: "", title: "Quick Resolution", desc: "Guaranteed timelines for claims and disputes" },
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <span className="text-xl">{item.icon}</span>

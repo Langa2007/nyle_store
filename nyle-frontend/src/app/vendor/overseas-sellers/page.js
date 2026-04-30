@@ -16,8 +16,7 @@ import * as Flags from 'country-flag-icons/react/3x2';
 const countries = Object.values(countriesList).map(country => ({
     name: country.name,
     code: country.code,
-    dialCode: country.dialCode,
-    emoji: country.emoji
+    dialCode: country.dialCode
 })).sort((a, b) => a.name.localeCompare(b.name));
 
 const businessTypes = [
@@ -218,7 +217,7 @@ export default function OverseasVendorSignup() {
                         onClick={() => setShowKenyaModal(false)}
                         className="text-gray-400 hover:text-gray-600"
                     >
-                        ✕
+                        Close
                     </button>
                 </div>
 
@@ -447,7 +446,7 @@ export default function OverseasVendorSignup() {
                                                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center">
                                                     {(() => {
                                                         const Flag = Flags[selectedCountry.code];
-                                                        return Flag ? <Flag className="w-6 h-4 mr-2" /> : <span className="text-xl mr-2">{selectedCountry.emoji}</span>;
+                                                        return Flag ? <Flag className="w-6 h-4 mr-2" /> : null;
                                                     })()}
                                                 </div>
                                             )}
@@ -487,7 +486,7 @@ export default function OverseasVendorSignup() {
                                             <option value="">Select Country</option>
                                             {countries.map((country, i) => (
                                                 <option key={i} value={country.name}>
-                                                    {country.emoji} {country.name} ({country.dialCode})
+                                                    {country.name} ({country.dialCode})
                                                 </option>
                                             ))}
                                         </select>

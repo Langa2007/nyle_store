@@ -551,7 +551,7 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [],
                 Secure shopping experience with 256-bit encryption
               </div>
               <div className="flex items-center gap-4 text-xs opacity-70">
-                <span>© {new Date().getFullYear()} Nyle Marketplace. All rights reserved.</span>
+                <span> {new Date().getFullYear()} Nyle Marketplace. All rights reserved.</span>
                 <span>•</span>
                 <span>Version 2.0.1</span>
               </div>

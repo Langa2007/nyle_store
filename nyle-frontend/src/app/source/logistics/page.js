@@ -73,11 +73,11 @@ export default function LogisticsPage() {
   ];
 
   const coverageAreas = [
-    { region: "Nairobi Metro", delivery: "1-2 days", icon: "📍" },
-    { region: "Mombasa & Coast", delivery: "2-3 days", icon: "🏖️" },
-    { region: "Kisumu & Western", delivery: "3-4 days", icon: "🌊" },
-    { region: "Nakuru & Rift Valley", delivery: "2-3 days", icon: "⛰️" },
-    { region: "East Africa Region", delivery: "5-7 days", icon: "🌍" },
+    { region: "Nairobi Metro", delivery: "1-2 days", icon: "" },
+    { region: "Mombasa & Coast", delivery: "2-3 days", icon: "" },
+    { region: "Kisumu & Western", delivery: "3-4 days", icon: "" },
+    { region: "Nakuru & Rift Valley", delivery: "2-3 days", icon: "" },
+    { region: "East Africa Region", delivery: "5-7 days", icon: "" },
   ];
 
   const trackingSteps = [

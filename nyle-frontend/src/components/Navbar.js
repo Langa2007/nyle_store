@@ -18,18 +18,18 @@ import NyleLogo from "@/components/branding/NyleLogo.png";
 const HOLIDAY_CAMPAIGNS = [
   {
     id: "international-womens-day",
-    badge: "👩 International Women's Day",
+    badge: " International Women's Day",
     headline: "Celebrate with 62% OFF on premium collections",
     ctaLabel: "Shop Now",
     ctaHref: "/deals",
     startDate: "2026-03-01T00:00:00+03:00",
     endDate: "2026-03-09T00:00:00+03:00",
     gradient: "from-pink-500 via-purple-500 to-indigo-500",
-    icon: "👩‍🦰"
+    icon: ""
   },
   {
     id: "easter-special",
-    badge: "🐰 Easter Weekend",
+    badge: " Easter Weekend",
     headline: "Exciting deals: Up to 45% OFF family favorites",
     ctaLabel: "Hop to Deals",
     ctaHref: "/deals",
@@ -47,40 +47,40 @@ const HOLIDAY_CAMPAIGNS = [
     startDate: "2026-12-05T00:00:00+03:00",
     endDate: "2026-12-13T00:00:00+03:00",
     gradient: "from-green-600 via-yellow-500 to-red-600",
-    icon: "🎉"
+    icon: ""
   },
   {
     id: "black-friday",
-    badge: "🖤 Black Friday",
+    badge: " Black Friday",
     headline: "Biggest sale of the year: Up to 80% OFF + Flash deals",
     ctaLabel: "Grab Deals",
     ctaHref: "/deals",
     startDate: "2026-11-25T00:00:00+03:00",
     endDate: "2026-11-30T23:59:59+03:00",
     gradient: "from-purple-900 via-purple-700 to-black",
-    icon: "🔥"
+    icon: ""
   },
   {
     id: "christmas",
-    badge: "🎄 Christmas",
+    badge: " Christmas",
     headline: "12 Days of Christmas: Daily surprises + 40% OFF",
     ctaLabel: "Open Gifts",
     ctaHref: "/deals",
     startDate: "2026-12-20T00:00:00+03:00",
     endDate: "2026-12-26T23:59:59+03:00",
     gradient: "from-red-600 via-green-600 to-red-600",
-    icon: "🎅"
+    icon: ""
   },
   {
     id: "new-year",
-    badge: "🎉 New Year",
+    badge: " New Year",
     headline: "2027 Starts Now: First orders get 50% OFF",
     ctaLabel: "New Year Deals",
     ctaHref: "/deals",
     startDate: "2026-12-30T00:00:00+03:00",
     endDate: "2027-01-05T23:59:59+03:00",
     gradient: "from-blue-600 via-purple-600 to-pink-600",
-    icon: "✨"
+    icon: ""
   },
   // Kenyan public holidays
   {
@@ -92,40 +92,40 @@ const HOLIDAY_CAMPAIGNS = [
     startDate: "2026-01-01T00:00:00+03:00",
     endDate: "2026-01-03T23:59:59+03:00",
     gradient: "from-blue-600 to-indigo-600",
-    icon: "🎊"
+    icon: ""
   },
   {
     id: "good-friday",
-    badge: "✝️ Good Friday",
+    badge: " Good Friday",
     headline: "Easter blessings: Special discounts for the family",
     ctaLabel: "Easter Deals",
     ctaHref: "/deals",
     startDate: "2026-04-03T00:00:00+03:00",
     endDate: "2026-04-06T23:59:59+03:00",
     gradient: "from-amber-600 to-yellow-600",
-    icon: "🙏"
+    icon: ""
   },
   {
     id: "easter-monday",
-    badge: "🐣 Easter Monday",
+    badge: " Easter Monday",
     headline: "Egg hunt continues: Extra 30% OFF",
     ctaLabel: "Continue Shopping",
     ctaHref: "/deals",
     startDate: "2026-04-06T00:00:00+03:00",
     endDate: "2026-04-07T23:59:59+03:00",
     gradient: "from-orange-400 to-pink-400",
-    icon: "🐰"
+    icon: ""
   },
   {
     id: "labour-day",
-    badge: "⚒️ Labour Day",
+    badge: " Labour Day",
     headline: "Celebrate workers: 35% OFF work essentials",
     ctaLabel: "Shop Now",
     ctaHref: "/deals",
     startDate: "2026-05-01T00:00:00+03:00",
     endDate: "2026-05-03T23:59:59+03:00",
     gradient: "from-red-500 to-orange-400",
-    icon: "🔧"
+    icon: ""
   },
   {
     id: "madaraka-day",
@@ -136,42 +136,42 @@ const HOLIDAY_CAMPAIGNS = [
     startDate: "2026-06-01T00:00:00+03:00",
     endDate: "2026-06-02T23:59:59+03:00",
     gradient: "from-green-600 to-black",
-    icon: "🎌"
+    icon: ""
   },
   {
     id: "huduma-day",
-    badge: "🤝 Huduma Day",
+    badge: " Huduma Day",
     headline: "Honoring heroes: 30% OFF + Donations to veterans",
     ctaLabel: "Shop & Support",
     ctaHref: "/deals",
     startDate: "2026-10-10T00:00:00+03:00",
     endDate: "2026-10-12T23:59:59+03:00",
     gradient: "from-blue-800 to-indigo-800",
-    icon: "🎖️"
+    icon: ""
   },
   {
     id: "mashujaa-day",
-    badge: "🦁 Mashujaa Day",
+    badge: " Mashujaa Day",
     headline: "Heroes' deals: Up to 50% OFF on top brands",
     ctaLabel: "Shop Heroes",
     ctaHref: "/deals",
     startDate: "2026-10-20T00:00:00+03:00",
     endDate: "2026-10-21T23:59:59+03:00",
     gradient: "from-yellow-600 via-red-600 to-black",
-    icon: "🏆"
+    icon: ""
   }
 ];
 
 const FALLBACK_CAMPAIGN = {
   id: "monthly-picks",
-  badge: "✨ Nyle Monthly Picks",
+  badge: " Nyle Monthly Picks",
   headline: "Fresh discounts added every week. Don't miss out!",
   ctaLabel: "Browse Deals",
   ctaHref: "/deals",
   startDate: "2026-01-01T00:00:00+03:00",
   endDate: "2026-12-31T23:59:59+03:00",
   gradient: "from-blue-600 via-indigo-600 to-purple-600",
-  icon: "⭐"
+  icon: ""
 };
 
 const pickCampaign = (currentDate = new Date()) => {
@@ -956,7 +956,7 @@ export default function Navbar() {
 
             {/* Categories Grid */}
             <div className="mb-6">
-              <h3 className="text-xs font-black text-white/40 mb-4 uppercase tracking-widest">🔥 Trending Categories</h3>
+              <h3 className="text-xs font-black text-white/40 mb-4 uppercase tracking-widest"> Trending Categories</h3>
               <div className="grid grid-cols-2 gap-2">
                 {categories.slice(0, 6).map((cat) => (
                   <Link
@@ -976,13 +976,13 @@ export default function Navbar() {
             {/* Navigation Links */}
             <div className="space-y-1">
               <Link href="/" onClick={toggleMenu} className="flex items-center gap-3 py-3 text-white/80 hover:text-amber-400 hover:bg-white/5 rounded-xl px-3 transition font-semibold">
-                <span>🏠</span> Home
+                <span></span> Home
               </Link>
               <Link href="/products" onClick={toggleMenu} className="flex items-center gap-3 py-3 text-white/80 hover:text-amber-400 hover:bg-white/5 rounded-xl px-3 transition font-semibold">
-                <span>🛍️</span> Shop All
+                <span></span> Shop All
               </Link>
               <Link href="/deals" onClick={toggleMenu} className="flex items-center gap-3 py-3 text-orange-400 hover:text-orange-300 hover:bg-orange-500/5 rounded-xl px-3 transition font-semibold">
-                <span>🔥</span> Flash Deals
+                <span></span> Flash Deals
                 <span className="ml-auto text-[10px] bg-red-500 text-white px-2 py-0.5 rounded-full animate-pulse font-black uppercase">HOT</span>
               </Link>
               <Link href="/vendor/login" onClick={toggleMenu} className="flex items-center gap-3 py-3 text-amber-400 hover:text-amber-300 hover:bg-amber-500/5 rounded-xl px-3 transition font-semibold border-t border-white/5 mt-2 pt-4">
@@ -994,7 +994,7 @@ export default function Navbar() {
 
           {/* Mobile Footer */}
           <div className="mt-auto px-6 py-4 border-t border-white/5">
-            <div className="text-xs text-white/30 mb-3 font-medium">✨ Kenya's fastest-growing marketplace</div>
+            <div className="text-xs text-white/30 mb-3 font-medium"> Kenya's fastest-growing marketplace</div>
             <div className="flex space-x-4 text-xs font-bold">
               <Link href="/terms" className="text-white/30 hover:text-amber-400 transition">Terms</Link>
               <Link href="/privacy" className="text-white/30 hover:text-amber-400 transition">Privacy</Link>

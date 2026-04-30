@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Shield, Database, Lock, Users, Globe, Cookie, CheckCircle } from "lucide-react";
 
 export default function PrivacyPolicyPage() {
   const [activeSection, setActiveSection] = useState("overview");
@@ -9,7 +10,7 @@ export default function PrivacyPolicyPage() {
   const privacySections = [
     {
       id: "overview",
-      icon: "🔍",
+      icon: <Shield className="h-6 w-6" />,
       title: "Overview",
       color: "from-blue-500 to-cyan-500",
       points: [
@@ -20,7 +21,7 @@ export default function PrivacyPolicyPage() {
     },
     {
       id: "data-collection",
-      icon: "📊",
+      icon: <Database className="h-6 w-6" />,
       title: "Data Collection",
       color: "from-purple-500 to-pink-500",
       points: [
@@ -32,7 +33,7 @@ export default function PrivacyPolicyPage() {
     },
     {
       id: "data-use",
-      icon: "⚙️",
+      icon: <Users className="h-6 w-6" />,
       title: "How We Use Your Data",
       color: "from-green-500 to-emerald-500",
       points: [
@@ -45,7 +46,7 @@ export default function PrivacyPolicyPage() {
     },
     {
       id: "data-protection",
-      icon: "🛡️",
+      icon: <Lock className="h-6 w-6" />,
       title: "Data Protection",
       color: "from-orange-500 to-red-500",
       points: [
@@ -57,7 +58,7 @@ export default function PrivacyPolicyPage() {
     },
     {
       id: "your-rights",
-      icon: "🎯",
+      icon: <Globe className="h-6 w-6" />,
       title: "Your Rights",
       color: "from-indigo-500 to-purple-500",
       points: [
@@ -70,7 +71,7 @@ export default function PrivacyPolicyPage() {
     },
     {
       id: "cookies",
-      icon: "🍪",
+      icon: <Cookie className="h-6 w-6" />,
       title: "Cookies & Tracking",
       color: "from-yellow-500 to-amber-500",
       points: [
@@ -83,10 +84,10 @@ export default function PrivacyPolicyPage() {
   ];
 
   const securityFeatures = [
-    { icon: "🔐", title: "Bank-Level Encryption", desc: "256-bit SSL encryption for all data" },
-    { icon: "📋", title: "GDPR Compliant", desc: "Adheres to international data protection standards" },
-    { icon: "👁️", title: "Transparent Practices", desc: "Clear and accessible privacy policies" },
-    { icon: "🔄", title: "Regular Updates", desc: "Continually improving security measures" },
+    { icon: <Lock className="h-6 w-6 text-blue-600" />, title: "Bank-Level Encryption", desc: "256-bit SSL encryption for all data" },
+    { icon: <Shield className="h-6 w-6 text-blue-600" />, title: "GDPR Compliant", desc: "Adheres to international data protection standards" },
+    { icon: <Database className="h-6 w-6 text-blue-600" />, title: "Transparent Practices", desc: "Clear and accessible privacy policies" },
+    { icon: <CheckCircle className="h-6 w-6 text-blue-600" />, title: "Regular Updates", desc: "Continually improving security measures" },
   ];
 
   const faqs = [
@@ -155,7 +156,7 @@ export default function PrivacyPolicyPage() {
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center justify-center gap-3 mb-6">
               <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
-                <span className="text-3xl">🛡️</span>
+                <span className="text-3xl"></span>
               </div>
               <div>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight">
@@ -194,7 +195,7 @@ export default function PrivacyPolicyPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
-                <span className="text-2xl">🔒</span>
+                <span className="text-2xl"></span>
               </div>
               <div>
                 <h2 className="text-2xl font-bold">Your Data is Protected</h2>
@@ -229,7 +230,7 @@ export default function PrivacyPolicyPage() {
               {/* Navigation */}
               <div className="bg-white rounded-2xl shadow-xl border border-blue-100 p-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <span className="text-blue-600">📑</span>
+                  <span className="text-blue-600"></span>
                   Quick Navigation
                 </h3>
                 
@@ -254,7 +255,7 @@ export default function PrivacyPolicyPage() {
               {/* Security Features */}
               <div className="bg-white rounded-2xl shadow-xl border border-blue-100 p-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <span className="text-green-600">🛡️</span>
+                  <span className="text-green-600"></span>
                   Security Features
                 </h3>
                 
@@ -274,7 +275,7 @@ export default function PrivacyPolicyPage() {
               {/* Download Policy */}
               <div className="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl p-6 text-white">
                 <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
-                  <span>📥</span>
+                  <span></span>
                   Download Policy
                 </h4>
                 <p className="text-blue-100 mb-4 text-sm">
@@ -293,7 +294,7 @@ export default function PrivacyPolicyPage() {
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
-                  <span className="text-white text-xl">🏪</span>
+                  <span className="text-white text-xl"></span>
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">Your Privacy Matters</h2>
@@ -348,7 +349,7 @@ export default function PrivacyPolicyPage() {
                     {section.points.map((point, pointIndex) => (
                       <li key={pointIndex} className="flex items-start gap-3">
                         <div className="p-1.5 bg-blue-100 rounded-lg mt-1">
-                          <span className="text-blue-600 text-sm">✓</span>
+                          <CheckCircle className="h-4 w-4 text-blue-600" />
                         </div>
                         <span className="text-gray-700">{point}</span>
                       </li>
@@ -361,7 +362,7 @@ export default function PrivacyPolicyPage() {
             {/* FAQs */}
             <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white">
               <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                <span>❓</span>
+                <span></span>
                 Frequently Asked Questions
               </h3>
               
@@ -369,7 +370,7 @@ export default function PrivacyPolicyPage() {
                 {faqs.map((faq, index) => (
                   <div key={index} className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
                     <h4 className="font-bold text-lg mb-3 flex items-center gap-2">
-                      <span>💡</span>
+                      <span></span>
                       {faq.question}
                     </h4>
                     <p className="text-blue-100">{faq.answer}</p>
@@ -381,7 +382,7 @@ export default function PrivacyPolicyPage() {
             {/* Contact & Updates */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
               <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <span className="text-blue-600">📞</span>
+                <span className="text-blue-600"></span>
                 Contact & Policy Updates
               </h3>
               
@@ -390,15 +391,15 @@ export default function PrivacyPolicyPage() {
                   <h4 className="text-lg font-bold text-gray-900 mb-4">Contact Our Privacy Team</h4>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-blue-600">📧</span>
+                      <span className="text-blue-600"></span>
                       <span className="text-gray-700">Email: privacy@nylestore.com</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-blue-600">📞</span>
+                      <span className="text-blue-600"></span>
                       <span className="text-gray-700">Phone: +254 700 123 456</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-blue-600">🏢</span>
+                      <span className="text-blue-600"></span>
                       <span className="text-gray-700">Nairobi, Kenya</span>
                     </div>
                   </div>
@@ -461,16 +462,16 @@ export default function PrivacyPolicyPage() {
             <div>
               <h4 className="text-xl font-bold mb-4">Trust & Safety</h4>
               <div className="text-sm text-blue-400">
-                <p>✅ Kenya Data Protection Act, 2019</p>
-                <p>✅ Secure Payment Processing</p>
-                <p>✅ Buyer Protection Program</p>
+                <p> Kenya Data Protection Act, 2019</p>
+                <p> Secure Payment Processing</p>
+                <p> Buyer Protection Program</p>
               </div>
             </div>
           </div>
           
           <div className="mt-8 pt-8 border-t border-white/10 text-center">
             <p className="text-blue-300">
-              © {new Date().getFullYear()} Nyle Store. All rights reserved.
+               {new Date().getFullYear()} Nyle Store. All rights reserved.
             </p>
           </div>
         </div>

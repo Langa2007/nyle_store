@@ -151,7 +151,7 @@ function HomeContent() {
 
       if (response.ok) {
         setNewsletterStatus("success");
-        setNewsletterMessage("🎉 Thank you for subscribing! Check your inbox for updates.");
+        setNewsletterMessage(" Thank you for subscribing! Check your inbox for updates.");
         setNewsletterEmail("");
         setTimeout(() => setNewsletterStatus("idle"), 5000);
       } else {
@@ -662,11 +662,11 @@ function HomeContent() {
                     }`}
                 >
                   <div className="text-4xl mb-4 transform hover:scale-110 transition-transform">
-                    🌟
+                    
                   </div>
                   <h3 className="text-xl font-bold mb-2">All Products</h3>
                   <div className="text-sm opacity-80">
-                    {selectedCategory === "all" ? '✓ Viewing Now' : 'Click to Explore'}
+                    {selectedCategory === "all" ? "Viewing now" : "Click to explore"}
                   </div>
                 </button>
               </div>
@@ -740,7 +740,7 @@ function HomeContent() {
                     </div>
                     <h3 className="text-xl font-bold mb-2">{category.name}</h3>
                     <div className="text-sm opacity-80">
-                      {selectedCategory === category.id ? '✓ Viewing Now' : 'Click to Explore'}
+                      {selectedCategory === category.id ? "Viewing now" : "Click to explore"}
                     </div>
                   </button>
                 </div>
@@ -798,7 +798,7 @@ function HomeContent() {
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
               >
-                🌟 All
+                 All
               </button>
               {categories.slice(0, 8).map((cat) => (
                 <button
@@ -917,7 +917,7 @@ function HomeContent() {
                           </span>
                         )}
                         <span className="bg-gray-900/90 backdrop-blur-md text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm">
-                          🔥 Approved Deal
+                           Approved Deal
                         </span>
                       </div>
 
@@ -955,7 +955,7 @@ function HomeContent() {
                         <div className="mb-4">
                           <span className="inline-flex items-center text-xs font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-lg">
                             <FaBolt className="mr-1.5 text-[10px]" />
-                            ✓ You save {currency} {convertPrice((product.original_price || product.price * 1.2) - product.price)}
+                            Save {currency} {convertPrice((product.original_price || product.price * 1.2) - product.price)}
                           </span>
                         </div>
 
@@ -1092,7 +1092,7 @@ function HomeContent() {
             <div className="inline-flex items-center bg-blue-100 text-blue-700 px-4 py-2 rounded-full mb-4">
               <FaFire className="mr-2" />
               <span className="font-medium">
-                {selectedCategory === "all" ? "🔥 All Products" : `🔥 ${selectedCategory} Products`}
+                {selectedCategory === "all" ? " All Products" : ` ${selectedCategory} Products`}
               </span>
             </div>
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -1519,7 +1519,7 @@ function HomeContent() {
               {/* Copyright & Legal */}
               <div className="text-center pt-6 border-t border-gray-800">
                 <p className="text-sm text-blue-100">
-                  © {new Date().getFullYear()} Nyle Store. All rights reserved.
+                   {new Date().getFullYear()} Nyle Store. All rights reserved.
                 </p>
                 <div className="mt-4 flex flex-wrap justify-center gap-6 text-xs text-gray-400">
                   <Link href="others/privacy" className="hover:text-white transition">Privacy Policy</Link>

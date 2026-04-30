@@ -64,7 +64,7 @@ export default function PaymentLayout({ title, subtitle = "Your secure and relia
           >
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
               <Shield size={16} />
-              <span className="text-sm font-medium">🔒 Bank-Level Security</span>
+              <span className="text-sm font-medium"> Bank-Level Security</span>
             </div>
             
             <motion.h1
@@ -335,7 +335,7 @@ export default function PaymentLayout({ title, subtitle = "Your secure and relia
               <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div className="text-center md:text-left">
                   <p className="text-blue-300">
-                    © {new Date().getFullYear()} Nyle Marketplace. All rights reserved.
+                     {new Date().getFullYear()} Nyle Marketplace. All rights reserved.
                   </p>
                   <p className="text-sm text-blue-400/70 mt-1">
                     Processing payments securely across Africa

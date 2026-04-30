@@ -249,10 +249,10 @@ export default function CookiePolicyPage() {
             
             <div className="space-y-4">
               {[
-                { icon: "🍪", text: "Cookies enhance your experience" },
-                { icon: "⚙️", text: "You can manage preferences anytime" },
-                { icon: "📱", text: "Settings sync across devices" },
-                { icon: "🗑️", text: "Clear cookies via browser settings" }
+                { icon: "", text: "Cookies enhance your experience" },
+                { icon: "", text: "You can manage preferences anytime" },
+                { icon: "", text: "Settings sync across devices" },
+                { icon: "", text: "Clear cookies via browser settings" }
               ].map((item, index) => (
                 <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                   <span className="text-2xl">{item.icon}</span>

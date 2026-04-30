@@ -41,12 +41,12 @@ export default function VendorAboutPage() {
   ];
 
   const teamMembers = [
-    { name: "James Kariuki", role: "Vendor Success Lead", department: "Support" },
-    { name: "Fatima Ali", role: "Account Manager", department: "Partnerships" },
-    { name: "David Ochieng", role: "Technical Support", department: "Engineering" },
-    { name: "Sarah Mwangi", role: "Business Development", department: "Growth" },
-    { name: "Peter Kamau", role: "Security Specialist", department: "Security" },
-    { name: "Lydia Njeri", role: "Training Coordinator", department: "Education" }
+    { name: "Vendor Success Desk", role: "Onboarding and account support", department: "Support" },
+    { name: "Partner Operations", role: "Account planning and escalations", department: "Partnerships" },
+    { name: "Technical Enablement", role: "Platform setup and integration support", department: "Engineering" },
+    { name: "Growth Advisory", role: "Performance reviews and growth planning", department: "Growth" },
+    { name: "Security Operations", role: "Account integrity and platform protection", department: "Security" },
+    { name: "Seller Education", role: "Training, guides, and operational readiness", department: "Education" }
   ];
 
   const values = [
@@ -66,12 +66,12 @@ export default function VendorAboutPage() {
   ];
 
   const benefits = [
-    { icon: "📱", title: "Mobile Management", description: "Manage your store on the go" },
-    { icon: "📊", title: "Advanced Analytics", description: "Real-time sales insights" },
-    { icon: "🚚", title: "Logistics Support", description: "Integrated shipping solutions" },
-    { icon: "💳", title: "Secure Payments", description: "Multiple payment options" },
-    { icon: "🎓", title: "Free Training", description: "Seller education programs" },
-    { icon: "⭐", title: "Premium Features", description: "Growth tools for success" }
+    { icon: <Smartphone className="h-7 w-7 text-blue-600" />, title: "Mobile Management", description: "Manage your store on the go" },
+    { icon: <BarChart className="h-7 w-7 text-blue-600" />, title: "Advanced Analytics", description: "Real-time sales insights" },
+    { icon: <Truck className="h-7 w-7 text-blue-600" />, title: "Logistics Support", description: "Integrated shipping solutions" },
+    { icon: <DollarSign className="h-7 w-7 text-blue-600" />, title: "Secure Payments", description: "Multiple payment options" },
+    { icon: <Award className="h-7 w-7 text-blue-600" />, title: "Free Training", description: "Seller education programs" },
+    { icon: <Package className="h-7 w-7 text-blue-600" />, title: "Premium Features", description: "Growth tools for success" }
   ];
 
   return (
@@ -172,7 +172,7 @@ export default function VendorAboutPage() {
             </button>
             <button
               onClick={() => setActiveSection("milestones")}
-              className={`px-6 py 3 rounded-xl font-medium transition ${activeSection === "milestones" 
+              className={`px-6 py-3 rounded-xl font-medium transition ${activeSection === "milestones" 
                 ? "bg-blue-600 text-white" 
                 : "bg-white text-gray-700 hover:bg-gray-100 border"}`}
             >
@@ -331,7 +331,7 @@ export default function VendorAboutPage() {
                 <div className="grid md:grid-cols-3 gap-6 mb-8">
                   {benefits.map((benefit, index) => (
                     <div key={index} className="group p-6 border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-lg transition">
-                      <div className="text-3xl mb-3">{benefit.icon}</div>
+                      <div className="mb-3">{benefit.icon}</div>
                       <h3 className="font-bold text-gray-900 mb-2">{benefit.title}</h3>
                       <p className="text-gray-600 text-sm">{benefit.description}</p>
                     </div>
@@ -351,7 +351,7 @@ export default function VendorAboutPage() {
                       <div className="text-sm text-gray-600">Commission (Lowest)</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-blue-700 mb-1">∞</div>
+                      <div className="text-2xl font-bold text-blue-700 mb-1">Unlimited</div>
                       <div className="text-sm text-gray-600">Product Listings</div>
                     </div>
                     <div>

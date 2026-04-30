@@ -169,7 +169,7 @@ export default function CareersPage() {
                             {role.location}
                           </span>
                           <span className="inline-flex items-center gap-1 text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                            📅 {role.type}
+                             {role.type}
                           </span>
                         </div>
                       </div>

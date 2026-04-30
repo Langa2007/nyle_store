@@ -357,7 +357,7 @@ export default function SignupPage() {
         </div>
 
         <div className="mt-6 text-center text-xs text-gray-500">
-          © {new Date().getFullYear()} Nyle Store. All rights reserved.
+           {new Date().getFullYear()} Nyle Store. All rights reserved.
         </div>
       </div>
     </div>

@@ -366,10 +366,10 @@ export default function SitemapPage() {
             className="mt-24 grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/5 rounded-3xl overflow-hidden"
           >
             {[
-              { value: `${siteSections.reduce((a, s) => a + s.links.length, 0)}+`, label: "Pages Listed", icon: "🗺️" },
-              { value: "4", label: "Key Sections", icon: "📂" },
-              { value: "24/7", label: "Support Available", icon: "💬" },
-              { value: "100%", label: "Free to Browse", icon: "✨" },
+              { value: `${siteSections.reduce((a, s) => a + s.links.length, 0)}+`, label: "Pages Listed", icon: "" },
+              { value: "4", label: "Key Sections", icon: "" },
+              { value: "24/7", label: "Support Available", icon: "" },
+              { value: "100%", label: "Free to Browse", icon: "" },
             ].map((stat, i) => (
               <div key={i} className="bg-white/[0.02] px-6 py-8 text-center hover:bg-white/5 transition-colors">
                 <div className="text-3xl mb-2">{stat.icon}</div>
@@ -491,7 +491,7 @@ export default function SitemapPage() {
             <div className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="text-center md:text-left">
                 <p className="text-sm text-white/20 font-medium">
-                  © {new Date().getFullYear()} Nyle Store. Built for the future of commerce.
+                   {new Date().getFullYear()} Nyle Store. Built for the future of commerce.
                 </p>
               </div>
               <div className="flex flex-wrap justify-center gap-6 text-[10px] font-black uppercase tracking-widest text-white/20">

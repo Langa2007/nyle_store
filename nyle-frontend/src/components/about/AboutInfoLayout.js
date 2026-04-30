@@ -37,7 +37,7 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
         <div className="absolute top-3/4 left-1/3 w-64 h-64 bg-indigo-200/10 rounded-full blur-3xl"></div>
       </div>
 
-      {/* 🌊 Enhanced Hero Section */}
+      {/*  Enhanced Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-600 text-white py-20 md:py-24">
         {/* Animated background */}
         <div className="absolute inset-0">
@@ -98,7 +98,7 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
         </div>
       </div>
 
-      {/* 🧭 Main Content Area */}
+      {/*  Main Content Area */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <div className="grid lg:grid-cols-4 gap-8 md:gap-12">
           {/* Enhanced Sidebar Navigation */}
@@ -255,7 +255,7 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
         </div>
       </div>
 
-      {/* 🌊 Enhanced Footer */}
+      {/*  Enhanced Footer */}
       <footer className="relative mt-24 bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white overflow-hidden">
         {/* Wave Divider */}
         <div className="absolute -top-1 left-0 right-0">
@@ -310,7 +310,7 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
               <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div className="text-center md:text-left">
                   <p className="text-blue-300">
-                    © {new Date().getFullYear()} Nyle Marketplace. All rights reserved.
+                     {new Date().getFullYear()} Nyle Marketplace. All rights reserved.
                   </p>
                   <p className="text-sm text-blue-400/70 mt-1">
                     Building Kenya's premier digital marketplace
@@ -327,7 +327,7 @@ export default function AboutInfoLayout({ title, subtitle, children }) {
         </div>
       </footer>
 
-      {/* 🌟 Floating Help Button */}
+      {/*  Floating Help Button */}
       <motion.button
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}

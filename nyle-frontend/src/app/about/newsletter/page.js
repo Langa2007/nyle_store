@@ -225,7 +225,7 @@ export default function NewsletterPage() {
                     <div className="flex items-center gap-3">
                       <CheckCircle className="text-green-300" size={20} />
                       <div>
-                        <p className="font-medium text-white">🎉 Successfully Subscribed!</p>
+                        <p className="font-medium text-white"> Successfully Subscribed!</p>
                         <p className="text-green-200 text-sm mt-1">
                           Welcome to Nyle Insights! Check your inbox for confirmation.
                         </p>
@@ -237,7 +237,7 @@ export default function NewsletterPage() {
                 {status === "error" && (
                   <div className="mt-4 p-4 bg-red-500/20 backdrop-blur-sm rounded-lg border border-red-400/30">
                     <div className="flex items-center gap-3">
-                      <span className="text-red-300">⚠️</span>
+                      <span className="text-red-300"></span>
                       <div>
                         <p className="font-medium text-white">Subscription Failed</p>
                         <p className="text-red-200 text-sm mt-1">
@@ -308,7 +308,7 @@ export default function NewsletterPage() {
             <p className="text-sm text-gray-600 mt-1">Industry-leading engagement</p>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold text-blue-700 mb-2">4.8★</div>
+            <div className="text-4xl font-bold text-blue-700 mb-2">4.8</div>
             <div className="text-gray-700 font-medium">Reader Rating</div>
             <p className="text-sm text-gray-600 mt-1">Based on subscriber feedback</p>
           </div>

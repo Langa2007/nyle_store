@@ -83,7 +83,7 @@ export default function WhySellPage() {
 
   const successStories = [
     {
-      name: "Sarah's Handcrafts",
+      name: "Independent craft seller",
       growth: "3x revenue growth",
       timeline: "6 months on Nyle",
       quote: "Nyle helped me reach customers I never could have found on my own.",
@@ -97,7 +97,7 @@ export default function WhySellPage() {
       category: "Electronics"
     },
     {
-      name: "Organic Farms Kenya",
+      name: "Regional food supplier",
       growth: "National distribution",
       timeline: "9 months on Nyle",
       quote: "From local farm to national brand – Nyle made it possible.",

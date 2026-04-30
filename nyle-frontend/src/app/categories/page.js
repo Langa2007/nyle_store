@@ -105,7 +105,7 @@ function CategoriesContent() {
                     </div>
                 ) : (
                     <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
-                        <div className="text-5xl mb-4">🔍</div>
+                        <div className="text-5xl mb-4"></div>
                         <h3 className="text-2xl font-bold text-gray-800">No categories found</h3>
                         <p className="text-gray-500 mt-2">Try adjusting your search for "{searchTerm}"</p>
                         <button

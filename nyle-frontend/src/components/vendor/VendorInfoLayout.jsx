@@ -107,10 +107,10 @@ export default function VendorInfoLayout({
   ];
 
   const vendorBadges = {
-    "starter": { label: "Starter", color: "bg-gray-100 text-gray-800", icon: "🚀" },
-    "verified": { label: "Verified", color: "bg-blue-100 text-blue-800", icon: "✅" },
-    "premium": { label: "Premium", color: "bg-purple-100 text-purple-800", icon: "⭐" },
-    "elite": { label: "Elite", color: "bg-gradient-to-r from-yellow-400 to-orange-500 text-white", icon: "👑" },
+    "starter": { label: "Starter", color: "bg-gray-100 text-gray-800", icon: "" },
+    "verified": { label: "Verified", color: "bg-blue-100 text-blue-800", icon: "" },
+    "premium": { label: "Premium", color: "bg-purple-100 text-purple-800", icon: "" },
+    "elite": { label: "Elite", color: "bg-gradient-to-r from-yellow-400 to-orange-500 text-white", icon: "" },
   };
 
   const quickStats = [
@@ -551,7 +551,7 @@ export default function VendorInfoLayout({
                 Secure vendor platform
               </div>
               <div className="flex items-center gap-4 text-xs opacity-70">
-                <span>© {new Date().getFullYear()} Nyle Marketplace</span>
+                <span> {new Date().getFullYear()} Nyle Marketplace</span>
                 <span>•</span>
                 <span>All rights reserved</span>
               </div>

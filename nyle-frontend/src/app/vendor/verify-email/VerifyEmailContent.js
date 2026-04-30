@@ -59,14 +59,14 @@ export default function VerifyEmailContent() {
 
       {status === "success" && (
         <div className="text-green-600 space-y-2">
-          <p className="text-lg font-semibold">✅ Email verified successfully!</p>
+          <p className="text-lg font-semibold"> Email verified successfully!</p>
           <p className="text-gray-700 text-sm">Redirecting to login...</p>
         </div>
       )}
 
       {status === "pending" && (
         <div className="text-yellow-600 space-y-2">
-          <p className="text-lg font-semibold">🕒 Account Under Review</p>
+          <p className="text-lg font-semibold"> Account Under Review</p>
           <p className="text-gray-700 text-sm">
             Your email is verified, but your account is awaiting admin approval.
           </p>
@@ -74,17 +74,17 @@ export default function VerifyEmailContent() {
       )}
 
       {status === "invalid" && (
-        <p className="text-red-600 font-semibold">❌ Invalid or missing verification token.</p>
+        <p className="text-red-600 font-semibold"> Invalid or missing verification token.</p>
       )}
 
       {status === "failed" && (
         <p className="text-red-600 font-semibold">
-          ⚠️ Verification failed. The token may have expired or already been used.
+           Verification failed. The token may have expired or already been used.
         </p>
       )}
 
       {status === "error" && (
-        <p className="text-red-600 font-semibold">⚠️ Server error. Please try again later.</p>
+        <p className="text-red-600 font-semibold"> Server error. Please try again later.</p>
       )}
     </div>
   );

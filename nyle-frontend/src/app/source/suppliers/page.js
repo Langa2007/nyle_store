@@ -45,14 +45,14 @@ export default function SuppliersPage() {
   ];
 
   const categories = [
-    { id: "all", label: "All Categories", icon: "📦", count: 2400 },
-    { id: "electronics", label: "Electronics", icon: "📱", count: 450 },
-    { id: "fashion", label: "Fashion & Apparel", icon: "👕", count: 380 },
-    { id: "home", label: "Home & Garden", icon: "🏠", count: 320 },
-    { id: "industrial", label: "Industrial", icon: "⚙️", count: 560 },
-    { id: "food", label: "Food & Beverage", icon: "🍎", count: 290 },
-    { id: "health", label: "Health & Beauty", icon: "💄", count: 210 },
-    { id: "automotive", label: "Automotive", icon: "🚗", count: 190 },
+    { id: "all", label: "All Categories", icon: "", count: 2400 },
+    { id: "electronics", label: "Electronics", icon: "", count: 450 },
+    { id: "fashion", label: "Fashion & Apparel", icon: "", count: 380 },
+    { id: "home", label: "Home & Garden", icon: "", count: 320 },
+    { id: "industrial", label: "Industrial", icon: "", count: 560 },
+    { id: "food", label: "Food & Beverage", icon: "", count: 290 },
+    { id: "health", label: "Health & Beauty", icon: "", count: 210 },
+    { id: "automotive", label: "Automotive", icon: "", count: 190 },
   ];
 
   const regions = [
@@ -524,10 +524,10 @@ export default function SuppliersPage() {
             
             <div className="space-y-4">
               {[
-                { icon: "✅", title: "Business Documents", desc: "Company registration and trade licenses verified" },
-                { icon: "🌍", title: "Transparent Profiles", desc: "Complete company profiles with reviews and ratings" },
-                { icon: "📈", title: "Performance Tracking", desc: "Real-time reliability scores and transaction history" },
-                { icon: "🎯", title: "Dispute Resolution", desc: "Nyle's mediation for secure transactions" },
+                { icon: "", title: "Business Documents", desc: "Company registration and trade licenses verified" },
+                { icon: "", title: "Transparent Profiles", desc: "Complete company profiles with reviews and ratings" },
+                { icon: "", title: "Performance Tracking", desc: "Real-time reliability scores and transaction history" },
+                { icon: "", title: "Dispute Resolution", desc: "Nyle's mediation for secure transactions" },
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <span className="text-xl">{item.icon}</span>

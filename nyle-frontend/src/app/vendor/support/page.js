@@ -22,12 +22,12 @@ export default function SellerSupportPage() {
   const [activeCategory, setActiveCategory] = useState("general");
   
   const supportCategories = [
-    { id: "general", label: "General Support", icon: "🎯", count: 5 },
-    { id: "technical", label: "Technical Issues", icon: "🔧", count: 3 },
-    { id: "payments", label: "Payments & Payouts", icon: "💰", count: 4 },
-    { id: "account", label: "Account Management", icon: "👤", count: 2 },
-    { id: "products", label: "Product Listings", icon: "📦", count: 6 },
-    { id: "shipping", label: "Shipping & Logistics", icon: "🚚", count: 3 },
+    { id: "general", label: "General Support", icon: <Headphones className="h-5 w-5" />, count: 5 },
+    { id: "technical", label: "Technical Issues", icon: <Zap className="h-5 w-5" />, count: 3 },
+    { id: "payments", label: "Payments & Payouts", icon: <Shield className="h-5 w-5" />, count: 4 },
+    { id: "account", label: "Account Management", icon: <Users className="h-5 w-5" />, count: 2 },
+    { id: "products", label: "Product Listings", icon: <CheckCircle className="h-5 w-5" />, count: 6 },
+    { id: "shipping", label: "Shipping & Logistics", icon: <Clock className="h-5 w-5" />, count: 3 },
   ];
 
   const supportTopics = {
@@ -83,9 +83,9 @@ export default function SellerSupportPage() {
   ];
 
   const successStories = [
-    { name: "Sarah M.", business: "Handmade Crafts", growth: "+320%", period: "6 months" },
-    { name: "James K.", business: "Electronics Store", growth: "+180%", period: "4 months" },
-    { name: "Premium Foods", business: "Gourmet Foods", growth: "+450%", period: "1 year" },
+    { name: "Home Decor Seller", business: "Lifestyle & Home", growth: "+320%", period: "6 months" },
+    { name: "Electronics Retailer", business: "Consumer Electronics", growth: "+180%", period: "4 months" },
+    { name: "Food Supplier", business: "Packaged Foods", growth: "+450%", period: "1 year" },
   ];
 
   return (
@@ -406,10 +406,10 @@ export default function SellerSupportPage() {
             <div>
               <h4 className="text-xl font-bold mb-4">Resources</h4>
               <div className="text-sm text-blue-400">
-                <p>📚 Seller Guides & Tutorials</p>
-                <p>📈 Growth Strategies</p>
-                <p>🎯 Marketing Tips</p>
-                <p>📊 Analytics Tools</p>
+                <p> Seller Guides & Tutorials</p>
+                <p> Growth Strategies</p>
+                <p> Marketing Tips</p>
+                <p> Analytics Tools</p>
               </div>
             </div>
           </div>
@@ -418,7 +418,7 @@ export default function SellerSupportPage() {
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <div className="text-center md:text-left">
                 <p className="text-blue-300">
-                  © {new Date().getFullYear()} Nyle Store Seller Support. All rights reserved.
+                   {new Date().getFullYear()} Nyle Store Seller Support. All rights reserved.
                 </p>
                 <p className="text-sm text-blue-400/70 mt-1">
                   Committed to your selling success

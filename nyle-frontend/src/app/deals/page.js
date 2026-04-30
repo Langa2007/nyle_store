@@ -57,7 +57,7 @@ function DealsContent() {
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-7xl font-black mb-6"
           >
-            🔥 HOT DEALS
+             HOT DEALS
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -160,7 +160,7 @@ function DealsContent() {
                           </span>
                         )}
                         <span className="bg-gradient-to-r from-gray-900 to-gray-700 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow">
-                          🔥 Hot Deal
+                           Hot Deal
                         </span>
                       </div>
 
@@ -211,7 +211,7 @@ function DealsContent() {
                         {/* Savings pill */}
                         {savings && (
                           <p className="text-xs font-bold text-green-600 bg-green-50 rounded-lg px-2 py-1 mb-3 inline-block">
-                            ✓ You save {currency} {savings}
+                            Save {currency} {savings}
                           </p>
                         )}
 

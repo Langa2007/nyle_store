@@ -104,7 +104,7 @@ export default function ShopPage() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 pb-20">
-      {/* 🔹 Nyle Luxe Header */}
+      {/*  Nyle Luxe Header */}
       <div className="px-4 pt-6 pb-2">
         <motion.h1
           className="text-2xl font-bold tracking-tight"
@@ -117,7 +117,7 @@ export default function ShopPage() {
         <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-medium mt-1">Premium Curated Essentials</p>
       </div>
 
-      {/* 🏷️ Animated Categories Bar */}
+      {/*  Animated Categories Bar */}
       <div className="sticky top-16 z-30 bg-gray-950/80 backdrop-blur-md py-4 mb-2">
         {/* Soft edge fades to hint scrollability */}
         <div className="relative">
@@ -162,7 +162,7 @@ export default function ShopPage() {
         </div>
       </div>
 
-      {/* 🛍️ Product Grid */}
+      {/*  Product Grid */}
       <div className="px-4">
         {loading ? (
           <div className="flex flex-col justify-center items-center h-48 space-y-3">

@@ -53,12 +53,12 @@ export default function VendorVerifyPage() {
 
       if (!res.ok) throw new Error(data.message || "Verification failed");
 
-      setMessage("✅ Code verified! A login link has been sent to your email.");
+      setMessage(" Code verified! A login link has been sent to your email.");
       localStorage.removeItem("vendorSignupEmail");
 
       setTimeout(() => router.push("/vendor/login"), 2500);
     } catch (err) {
-      setMessage(err.message || "❌ Network or server error");
+      setMessage(err.message || " Network or server error");
     } finally {
       setLoading(false);
     }
@@ -80,10 +80,10 @@ export default function VendorVerifyPage() {
 
       if (!res.ok) throw new Error(data.message || "Could not resend code");
 
-      setMessage("📨 Code resent! Check your inbox.");
+      setMessage(" Code resent! Check your inbox.");
       setCooldown(60);
     } catch (err) {
-      setMessage(err.message || "❌ Network or server error");
+      setMessage(err.message || " Network or server error");
     } finally {
       setResending(false);
     }

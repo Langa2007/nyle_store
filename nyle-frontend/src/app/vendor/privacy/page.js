@@ -70,10 +70,10 @@ export default function VendorPrivacyPage() {
   ];
 
   const securityFeatures = [
-    { icon: "🔒", title: "256-bit Encryption", desc: "Bank-level security for all data" },
-    { icon: "📋", title: "GDPR Compliant", desc: "International data protection standards" },
-    { icon: "👁️", title: "Access Control", desc: "Role-based data access" },
-    { icon: "🔄", title: "Regular Audits", desc: "Security compliance checks" },
+    { icon: "", title: "256-bit Encryption", desc: "Bank-level security for all data" },
+    { icon: "", title: "GDPR Compliant", desc: "International data protection standards" },
+    { icon: "", title: "Access Control", desc: "Role-based data access" },
+    { icon: "", title: "Regular Audits", desc: "Security compliance checks" },
   ];
 
   return (
@@ -364,15 +364,15 @@ export default function VendorPrivacyPage() {
                   <h4 className="text-lg font-bold text-gray-900 mb-4">Data Protection Officer</h4>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-blue-600">📧</span>
+                      <span className="text-blue-600"></span>
                       <span className="text-gray-700">Email: privacy-sellers@nylestore.com</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-blue-600">📞</span>
+                      <span className="text-blue-600"></span>
                       <span className="text-gray-700">Phone: +254 700 123 456</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-blue-600">🏢</span>
+                      <span className="text-blue-600"></span>
                       <span className="text-gray-700">Nairobi, Kenya</span>
                     </div>
                   </div>
@@ -434,16 +434,16 @@ export default function VendorPrivacyPage() {
             <div>
               <h4 className="text-xl font-bold mb-4">Compliance</h4>
               <div className="text-sm text-blue-400">
-                <p>✅ Kenya Data Protection Act, 2019</p>
-                <p>✅ GDPR Compliant</p>
-                <p>✅ ISO 27001 Certified</p>
+                <p> Kenya Data Protection Act, 2019</p>
+                <p> GDPR Compliant</p>
+                <p> ISO 27001 Certified</p>
               </div>
             </div>
           </div>
           
           <div className="mt-8 pt-8 border-t border-white/10 text-center">
             <p className="text-blue-300">
-              © {new Date().getFullYear()} Nyle Store Seller Network. All rights reserved.
+               {new Date().getFullYear()} Nyle Store Seller Network. All rights reserved.
             </p>
           </div>
         </div>

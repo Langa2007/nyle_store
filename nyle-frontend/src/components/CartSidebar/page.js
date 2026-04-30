@@ -155,7 +155,7 @@ export default function CartSidebar() {
                 <div className="space-y-3">
                   {!isLoggedIn && (
                     <div className="text-sm text-yellow-600 bg-yellow-50 p-3 rounded-lg">
-                      ⚠️ Login to save your cart and proceed to checkout
+                       Login to save your cart and proceed to checkout
                     </div>
                   )}
 

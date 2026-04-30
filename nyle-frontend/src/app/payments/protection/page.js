@@ -142,22 +142,22 @@ export default function CustomerProtection() {
 
   const successStories = [
     {
-      user: "Sarah K., Nairobi",
+      user: "Verified buyer, Nairobi",
       issue: "Received counterfeit headphones",
       resolution: "Received 200% refund within 3 days",
       quote: "Nyle's protection made me feel safe shopping online again."
     },
     {
-      user: "James M., Mombasa",
+      user: "Verified buyer, Mombasa",
       issue: "Package never arrived",
       resolution: "Full refund + Ksh 2,000 compensation",
       quote: "The dispute process was straightforward and fair."
     },
     {
-      user: "Amina W., Kisumu",
+      user: "Verified buyer, Kisumu",
       issue: "Wrong size clothing delivered",
       resolution: "Free exchange + Ksh 500 shopping credit",
-      quote: "Customer protection actually works here!"
+      quote: "Customer protection worked exactly as described."
     }
   ];
 

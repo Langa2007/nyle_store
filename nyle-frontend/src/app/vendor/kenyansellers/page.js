@@ -464,7 +464,7 @@ export default function VendorSignup() {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                     />
                     {form.confirm_password && form.password === form.confirm_password && (
-                      <p className="text-green-600 text-sm mt-2">✓ Passwords match</p>
+                      <p className="text-green-600 text-sm mt-2">Passwords match</p>
                     )}
                   </div>
                 </div>

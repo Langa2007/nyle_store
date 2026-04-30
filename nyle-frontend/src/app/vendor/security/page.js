@@ -86,11 +86,11 @@ export default function VendorSecurityPage() {
   ];
 
   const incidentResponse = [
-    { step: 1, action: "Immediate account lock", icon: "🔒" },
-    { step: 2, action: "Notification to vendor", icon: "📧" },
-    { step: 3, action: "Security team investigation", icon: "🔍" },
-    { step: 4, action: "Password reset required", icon: "🔄" },
-    { step: 5, action: "Detailed report provided", icon: "📋" }
+    { step: 1, action: "Immediate account lock", icon: "" },
+    { step: 2, action: "Notification to vendor", icon: "" },
+    { step: 3, action: "Security team investigation", icon: "" },
+    { step: 4, action: "Password reset required", icon: "" },
+    { step: 5, action: "Detailed report provided", icon: "" }
   ];
 
   return (

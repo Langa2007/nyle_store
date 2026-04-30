@@ -82,10 +82,10 @@ export default function ShippingPoliciesPage() {
   ];
 
   const regions = [
-    { id: "nairobi", name: "Nairobi Metro", delivery: "1-2 days", icon: "🏙️" },
-    { id: "mombasa", name: "Mombasa & Coast", delivery: "2-3 days", icon: "🏖️" },
-    { id: "kisumu", name: "Kisumu & Western", delivery: "3-4 days", icon: "🌊" },
-    { id: "other", name: "Other Regions", delivery: "4-7 days", icon: "🗺️" },
+    { id: "nairobi", name: "Nairobi Metro", delivery: "1-2 days", icon: "" },
+    { id: "mombasa", name: "Mombasa & Coast", delivery: "2-3 days", icon: "" },
+    { id: "kisumu", name: "Kisumu & Western", delivery: "3-4 days", icon: "" },
+    { id: "other", name: "Other Regions", delivery: "4-7 days", icon: "" },
   ];
 
   const policyPoints = [

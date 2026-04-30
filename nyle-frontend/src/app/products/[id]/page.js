@@ -286,8 +286,12 @@ export default function ProductDetailPage() {
               <div className="flex items-center space-x-4 mb-6">
                 <div className="flex items-center">
                   <div className="flex text-yellow-400">
-                    {'★'.repeat(Math.floor(product.rating || 4))}
-                    {'☆'.repeat(5 - Math.floor(product.rating || 4))}
+                    {[...Array(5)].map((_, index) => (
+                      <FaStar
+                        key={index}
+                        className={index < Math.floor(product.rating || 4) ? "text-yellow-400" : "text-gray-300"}
+                      />
+                    ))}
                   </div>
                   <span className="ml-2 text-gray-600">
                     {product.rating || 4.2} ({product.review_count || 128} reviews)
@@ -434,7 +438,7 @@ export default function ProductDetailPage() {
               {/* Trust Badges */}
               <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
                 <div className="text-center">
-                  <div className="text-2xl text-blue-600">✓</div>
+                  <FaCheckCircle className="text-2xl text-blue-600 mx-auto mb-1" />
                   <div className="text-sm text-gray-700">Secure Payment</div>
                 </div>
                 <div className="text-center">
@@ -579,7 +583,7 @@ export default function ProductDetailPage() {
               <div className="text-right">
                 <div className="flex items-center justify-end mb-2">
                   <div className="flex text-yellow-400">
-                    ★★★★★
+                    
                   </div>
                   <span className="ml-2 text-gray-600">4.8 Rating</span>
                 </div>
