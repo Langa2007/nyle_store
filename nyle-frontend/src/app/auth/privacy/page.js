@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Shield, Database, Lock, Users, Globe, Cookie, CheckCircle } from "lucide-react";
+import { Shield, Database, Lock, Users, Globe, Cookie, CheckCircle, FileText, Scale } from "lucide-react";
 
 export default function PrivacyPolicyPage() {
   const [activeSection, setActiveSection] = useState("overview");
@@ -11,102 +11,102 @@ export default function PrivacyPolicyPage() {
     {
       id: "overview",
       icon: <Shield className="h-6 w-6" />,
-      title: "Overview",
-      color: "from-blue-500 to-cyan-500",
+      title: "Executive Overview",
+      color: "from-slate-800 to-slate-900",
+      content: "Nyle Store operates with a commitment to the highest standards of data privacy and integrity. This document outlines our protocols for the acquisition, processing, and retention of personal data. We adhere strictly to the General Data Protection Regulation (GDPR) and the Data Protection Act of 2019 (Kenya), ensuring that your digital footprint remains secure and under your absolute control.",
       points: [
-        "We respect your privacy and are committed to protecting your personal data",
-        "This policy explains how we collect, use, and safeguard your information",
-        "By using Nyle Store, you agree to the collection and use of information in accordance with this policy"
+        "Commitment to data minimization and purpose limitation principles.",
+        "Strict adherence to international data protection frameworks and local statutes.",
+        "Transparent communication regarding all data processing activities.",
+        "Establishment of robust technical and organizational measures to prevent unauthorized access."
       ]
     },
     {
       id: "data-collection",
       icon: <Database className="h-6 w-6" />,
-      title: "Data Collection",
-      color: "from-purple-500 to-pink-500",
+      title: "Data Acquisition Protocols",
+      color: "from-blue-700 to-indigo-800",
+      content: "We collect specific categories of data necessary to provide a functional and secure marketplace experience. This includes both information provided voluntarily by the user and data collected through automated technical processes.",
       points: [
-        "Personal information (name, email, shipping address)",
-        "Payment information (processed securely via payment gateways)",
-        "Usage data (pages visited, products viewed, time spent)",
-        "Device information (browser type, IP address, operating system)"
+        "Identity Data: Full legal name, primary contact email, and verified shipping coordinates.",
+        "Financial Data: Secure processing of transaction tokens; Nyle Store does not store raw credit card information on its primary servers.",
+        "Technical Data: Internet Protocol (IP) addresses, browser telemetry, and system-level configuration data for session security.",
+        "Behavioral Data: Aggregated usage patterns and product interaction history used for algorithmic service optimization."
       ]
     },
     {
       id: "data-use",
       icon: <Users className="h-6 w-6" />,
-      title: "How We Use Your Data",
-      color: "from-green-500 to-emerald-500",
+      title: "Information Processing Objectives",
+      color: "from-teal-700 to-emerald-800",
+      content: "Data processing is restricted to legitimate business interests and the fulfillment of contractual obligations between the user and the platform. We utilize advanced data handling techniques to ensure that all processing remains aligned with the original intent of collection.",
       points: [
-        "Process transactions and deliver your purchases",
-        "Personalize your shopping experience",
-        "Send order updates and promotional offers (with consent)",
-        "Improve our platform and develop new features",
-        "Prevent fraud and ensure platform security"
+        "Contractual Fulfillment: Execution of sales agreements, logistics coordination, and post-purchase support.",
+        "Service Optimization: Enhancing platform performance through data-driven architectural improvements.",
+        "Security & Compliance: Implementation of anti-fraud detection systems and verification of user authenticity.",
+        "Marketing Governance: Distribution of service-related communications and promotional materials strictly upon explicit user opt-in."
       ]
     },
     {
       id: "data-protection",
       icon: <Lock className="h-6 w-6" />,
-      title: "Data Protection",
-      color: "from-orange-500 to-red-500",
+      title: "Security Architecture",
+      color: "from-red-800 to-rose-950",
+      content: "Nyle Store employs enterprise-grade security protocols to safeguard all information assets. Our defense-in-depth strategy ensures multiple layers of protection against evolving cyber threats.",
       points: [
-        "256-bit SSL encryption for all data transmission",
-        "Regular security audits and vulnerability testing",
-        "Access controls and authentication protocols",
-        "Secure data storage with backup systems"
+        "Encryption: Mandatory 256-bit SSL/TLS encryption for all data in transit and at rest.",
+        "Infrastructure Security: Hosting on SOC 2 Type II compliant cloud infrastructure with perimeter defense and real-time monitoring.",
+        "Access Management: Role-based access control (RBAC) and mandatory multi-factor authentication (MFA) for administrative operations.",
+        "Audit Protocols: Periodic penetration testing and security vulnerability assessments by independent third-party agencies."
+      ]
+    },
+    {
+      id: "compliance",
+      icon: <Scale className="h-6 w-6" />,
+      title: "Compliance & Governance",
+      color: "from-amber-700 to-orange-900",
+      content: "Nyle Store is fully compliant with global and regional data protection laws. Our operations are governed by a strict legal framework designed to protect user interests and ensure accountability.",
+      points: [
+        "GDPR Compliance: Full alignment with the European Union's General Data Protection Regulation for all users globally.",
+        "Data Protection Act (2019): Compliance with Kenya's legislative framework for digital identity and data handling.",
+        "International Standards: Adherence to ISO/IEC 27001 principles for information security management systems.",
+        "Cross-Border Transfers: All international data transfers are protected by standard contractual clauses and adequacy findings."
       ]
     },
     {
       id: "your-rights",
       icon: <Globe className="h-6 w-6" />,
-      title: "Your Rights",
-      color: "from-indigo-500 to-purple-500",
+      title: "Statutory User Rights",
+      color: "from-indigo-800 to-purple-950",
+      content: "In accordance with data protection legislation, you are entitled to several rights regarding your personal information. Nyle Store provides direct tools within the user interface to exercise these rights autonomously.",
       points: [
-        "Access your personal data we hold",
-        "Correct inaccurate or incomplete data",
-        "Request deletion of your personal data",
-        "Opt-out of marketing communications",
-        "Data portability (get your data in a readable format)"
+        "Right of Access: Request a comprehensive report of all personal data currently stored in our systems.",
+        "Right to Rectification: Correct any inaccuracies or update outdated information within your account profile.",
+        "Right to Erasure: Exercise your 'right to be forgotten' by requesting permanent deletion of your account and associated data.",
+        "Right to Portability: Export your data in a structured, commonly used, and machine-readable format.",
+        "Right to Restriction: Temporarily suspend the processing of your data during legal or verification proceedings."
       ]
     },
     {
       id: "cookies",
       icon: <Cookie className="h-6 w-6" />,
-      title: "Cookies & Tracking",
-      color: "from-yellow-500 to-amber-500",
+      title: "Cookie Technology Policy",
+      color: "from-slate-700 to-slate-900",
+      content: "Our platform utilizes cookie technology and similar identifiers to ensure session stability and enhance site performance. Users may manage these settings through their browser or our centralized cookie preference center.",
       points: [
-        "Essential cookies for website functionality",
-        "Analytics cookies to improve user experience",
-        "Marketing cookies (only with your consent)",
-        "You can manage cookie preferences in browser settings"
+        "Strictly Necessary: Essential identifiers for security, session management, and shopping cart persistence.",
+        "Analytical Tracking: Anonymous telemetry used to monitor site health and user navigation efficiency.",
+        "Functional Preferences: Storage of user-selected settings such as language, currency, and display modes.",
+        "Marketing Transparency: Zero use of third-party tracking cookies for advertising without explicit consent."
       ]
     }
   ];
 
   const securityFeatures = [
-    { icon: <Lock className="h-6 w-6 text-blue-600" />, title: "Bank-Level Encryption", desc: "256-bit SSL encryption for all data" },
-    { icon: <Shield className="h-6 w-6 text-blue-600" />, title: "GDPR Compliant", desc: "Adheres to international data protection standards" },
-    { icon: <Database className="h-6 w-6 text-blue-600" />, title: "Transparent Practices", desc: "Clear and accessible privacy policies" },
-    { icon: <CheckCircle className="h-6 w-6 text-blue-600" />, title: "Regular Updates", desc: "Continually improving security measures" },
-  ];
-
-  const faqs = [
-    {
-      question: "Can I delete my account and all my data?",
-      answer: "Yes, you can request account deletion from your settings. We'll remove your personal data within 30 days, except for data we're legally required to retain."
-    },
-    {
-      question: "Do you sell my personal information?",
-      answer: "Never. We do not sell, trade, or rent your personal information to third parties for marketing purposes."
-    },
-    {
-      question: "How long do you keep my data?",
-      answer: "We retain personal data for as long as your account is active or as needed to provide services. After account closure, we retain data for legal obligations."
-    },
-    {
-      question: "Can I opt-out of marketing emails?",
-      answer: "Yes, you can unsubscribe from marketing emails at any time using the link in our emails or in your account settings."
-    }
+    { icon: <Lock className="h-5 w-5 text-blue-600" />, title: "Military-Grade Encryption", desc: "AES-256 encryption protocols for sensitive data" },
+    { icon: <Scale className="h-5 w-5 text-blue-600" />, title: "Regulatory Compliance", desc: "Certified GDPR and Data Protection Act compliance" },
+    { icon: <Shield className="h-5 w-5 text-blue-600" />, title: "Secure Infrastructure", desc: "Redundant, SOC-compliant cloud data centers" },
+    { icon: <CheckCircle className="h-5 w-5 text-blue-600" />, title: "Privacy by Design", desc: "Security architecture integrated into core development" },
   ];
 
   useEffect(() => {
@@ -126,7 +126,7 @@ export default function PrivacyPolicyPage() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [privacySections]);
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
@@ -139,340 +139,200 @@ export default function PrivacyPolicyPage() {
         top: offsetPosition,
         behavior: 'smooth'
       });
+      setActiveSection(sectionId);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-blue-50">
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white py-20 overflow-hidden">
-        {/* Animated background */}
-        <div className="absolute inset-0">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        </div>
-
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center justify-center gap-3 mb-6">
-              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
-                <span className="text-3xl"></span>
-              </div>
-              <div>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight">
-                  Privacy Policy
-                </h1>
-                <p className="text-lg text-blue-100 mt-2">Your Privacy, Our Priority</p>
-              </div>
-            </div>
-            
-            <p className="text-xl text-blue-100/90 max-w-3xl mx-auto mb-8">
-              We're committed to protecting your personal information with transparent practices 
-              and enterprise-grade security measures.
+    <div className="min-h-screen bg-white">
+      {/* Professional Header Section */}
+      <div className="bg-slate-900 text-white py-24 border-b border-slate-800">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl">
+            <nav className="flex mb-8 text-slate-400 text-sm uppercase tracking-widest">
+              <Link href="/" className="hover:text-blue-400 transition-colors">Home</Link>
+              <span className="mx-3">/</span>
+              <span className="text-white">Legal Documentation</span>
+            </nav>
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+              Privacy and Data Protection Policy
+            </h1>
+            <p className="text-xl text-slate-300 max-w-3xl leading-relaxed">
+              This document establishes the legal framework for data handling within Nyle Store. 
+              We prioritize the sovereignty of user information through rigorous security standards 
+              and full compliance with international privacy mandates.
             </p>
-            
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link 
-                href="/" 
-                className="px-6 py-3 bg-white text-blue-700 font-semibold rounded-xl hover:shadow-lg transition-all hover:scale-105"
+            <div className="mt-10 flex flex-wrap gap-4">
+              <button 
+                onClick={() => scrollToSection('overview')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold transition-all"
               >
-                ← Back to Home
-              </Link>
+                Read Policy
+              </button>
               <Link 
                 href="/terms" 
-                className="px-6 py-3 bg-white/20 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-white/30 transition-all"
+                className="border border-slate-700 hover:bg-slate-800 text-white px-8 py-3 rounded-lg font-bold transition-all"
               >
-                View Terms of Service →
+                Terms of Service
               </Link>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Security Badge */}
-      <div className="container mx-auto px-6 -mt-8 z-10 relative">
-        <div className="bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl p-6 text-white shadow-2xl transform hover:scale-[1.02] transition-transform">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
-                <span className="text-2xl"></span>
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold">Your Data is Protected</h2>
-                <p className="text-green-100">Industry-leading security measures keep your information safe</p>
-              </div>
-            </div>
-            
-            <div className="flex flex-wrap gap-3">
-              <div className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                <div className="font-bold">A+ Rating</div>
-                <div className="text-xs text-green-100">Security Score</div>
-              </div>
-              <div className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                <div className="font-bold">256-bit</div>
-                <div className="text-xs text-green-100">Encryption</div>
-              </div>
-              <div className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                <div className="font-bold">24/7</div>
-                <div className="text-xs text-green-100">Monitoring</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
+      {/* Main Layout */}
       <div className="container mx-auto px-6 py-16">
-        <div className="grid lg:grid-cols-3 gap-12">
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 space-y-6">
-              {/* Navigation */}
-              <div className="bg-white rounded-2xl shadow-xl border border-blue-100 p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <span className="text-blue-600"></span>
-                  Quick Navigation
+        <div className="flex flex-col lg:flex-row gap-16">
+          
+          {/* Enhanced Sidebar Navigation */}
+          <aside className="lg:w-1/4">
+            <div className="sticky top-28 space-y-8">
+              <div>
+                <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-6 px-4">
+                  Document Sections
                 </h3>
-                
-                <nav className="space-y-2">
+                <nav className="space-y-1">
                   {privacySections.map((section) => (
                     <button
                       key={section.id}
                       onClick={() => scrollToSection(section.id)}
-                      className={`w-full text-left px-4 py-3 rounded-lg transition-all flex items-center gap-3 ${
+                      className={`w-full group text-left px-4 py-4 rounded-xl transition-all flex items-center gap-4 ${
                         activeSection === section.id
-                          ? 'bg-gradient-to-r from-blue-50 to-cyan-50 text-blue-600 border-l-4 border-blue-500'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          ? 'bg-blue-50 text-blue-700 shadow-sm border border-blue-100'
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                       }`}
                     >
-                      <span>{section.icon}</span>
-                      <span className="font-medium">{section.title}</span>
+                      <span className={`p-2 rounded-lg transition-colors ${
+                        activeSection === section.id ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200'
+                      }`}>
+                        {section.icon}
+                      </span>
+                      <span className="font-bold text-sm tracking-tight">{section.title}</span>
                     </button>
                   ))}
                 </nav>
               </div>
 
-              {/* Security Features */}
-              <div className="bg-white rounded-2xl shadow-xl border border-blue-100 p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <span className="text-green-600"></span>
-                  Security Features
-                </h3>
-                
-                <div className="space-y-4">
-                  {securityFeatures.map((feature, index) => (
-                    <div key={index} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
-                      <span className="text-xl mt-1">{feature.icon}</span>
-                      <div>
-                        <h4 className="font-bold text-gray-900">{feature.title}</h4>
-                        <p className="text-sm text-gray-600">{feature.desc}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Download Policy */}
-              <div className="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl p-6 text-white">
-                <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
-                  <span></span>
-                  Download Policy
+              {/* Compliance Badges */}
+              <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100">
+                <h4 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-6">
+                  Compliance Status
                 </h4>
-                <p className="text-blue-100 mb-4 text-sm">
-                  Save a copy of our Privacy Policy for your records.
-                </p>
-                <button className="w-full px-4 py-2 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors">
-                  Download PDF
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="text-blue-600 h-5 w-5" />
+                    <span className="text-sm font-bold text-slate-900">GDPR Compliant</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="text-blue-600 h-5 w-5" />
+                    <span className="text-sm font-bold text-slate-900">Data Protection Act (KE)</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="text-blue-600 h-5 w-5" />
+                    <span className="text-sm font-bold text-slate-900">SSL Encrypted</span>
+                  </div>
+                </div>
+                <hr className="my-6 border-slate-200" />
+                <button className="text-blue-600 font-bold text-sm hover:underline flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Request Certification
                 </button>
               </div>
             </div>
-          </div>
+          </aside>
 
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Introduction */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
-                  <span className="text-white text-xl"></span>
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Your Privacy Matters</h2>
-                  <p className="text-gray-600">Transparent data practices for confident shopping</p>
-                </div>
-              </div>
-
-              <p className="text-gray-700 leading-relaxed mb-6">
-                At Nyle Store, we believe that privacy is a fundamental right. This Privacy Policy explains 
-                how we collect, use, disclose, and safeguard your information when you visit our marketplace. 
-                We're committed to protecting your personal data and giving you control over your information.
-              </p>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                  <h4 className="font-bold text-gray-900 mb-2">Scope</h4>
-                  <p className="text-sm text-gray-600">
-                    Applies to all personal information collected from buyers on Nyle Store platform.
-                  </p>
-                </div>
-                <div className="p-4 bg-green-50 rounded-xl border border-green-100">
-                  <h4 className="font-bold text-gray-900 mb-2">Compliance</h4>
-                  <p className="text-sm text-gray-600">
-                    Adheres to data protection regulations including Kenya's Data Protection Act, 2019.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Privacy Sections */}
-            {privacySections.map((section, index) => (
-              <div
-                key={index}
-                id={section.id}
-                className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow"
+          {/* Detailed Content Documents */}
+          <main className="lg:w-3/4 space-y-20">
+            {privacySections.map((section) => (
+              <section 
+                key={section.id} 
+                id={section.id} 
+                className="scroll-mt-32 transition-opacity duration-500"
+                style={{ opacity: activeSection === section.id ? 1 : 0.8 }}
               >
-                <div className={`bg-gradient-to-r ${section.color} p-6 text-white`}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm text-2xl">
-                        {section.icon}
-                      </div>
-                      <div>
-                        <h3 className="text-2xl font-bold">{section.title}</h3>
-                      </div>
-                    </div>
+                <div className="flex items-center gap-4 mb-8">
+                  <div className={`p-4 rounded-2xl bg-gradient-to-br ${section.color} text-white shadow-lg`}>
+                    {section.icon}
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-bold text-slate-900 tracking-tight">{section.title}</h2>
+                    <div className="h-1 w-20 bg-blue-600 mt-2 rounded-full"></div>
                   </div>
                 </div>
-                
-                <div className="p-8">
-                  <ul className="space-y-4">
-                    {section.points.map((point, pointIndex) => (
-                      <li key={pointIndex} className="flex items-start gap-3">
-                        <div className="p-1.5 bg-blue-100 rounded-lg mt-1">
-                          <CheckCircle className="h-4 w-4 text-blue-600" />
-                        </div>
-                        <span className="text-gray-700">{point}</span>
-                      </li>
+
+                <div className="prose prose-slate max-w-none">
+                  <p className="text-xl text-slate-600 leading-relaxed mb-8">
+                    {section.content}
+                  </p>
+                  
+                  <div className="grid md:grid-cols-2 gap-6 bg-slate-50 p-8 rounded-3xl border border-slate-100">
+                    {section.points.map((point, idx) => (
+                      <div key={idx} className="flex gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-100">
+                        <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                        <span className="text-slate-700 font-medium leading-relaxed">{point}</span>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
-              </div>
+              </section>
             ))}
 
-            {/* FAQs */}
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white">
-              <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                <span></span>
-                Frequently Asked Questions
-              </h3>
-              
-              <div className="space-y-4">
-                {faqs.map((faq, index) => (
-                  <div key={index} className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-                    <h4 className="font-bold text-lg mb-3 flex items-center gap-2">
-                      <span></span>
-                      {faq.question}
-                    </h4>
-                    <p className="text-blue-100">{faq.answer}</p>
+            {/* Governance Information Section */}
+            <section className="bg-slate-900 rounded-[3rem] p-12 text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
+              <div className="relative z-10">
+                <h3 className="text-3xl font-bold mb-8">Global Data Governance</h3>
+                <p className="text-slate-300 text-lg leading-relaxed mb-10 max-w-2xl">
+                  Nyle Store maintains a global perspective on data protection. We treat all user data with the rigor 
+                  required by the General Data Protection Regulation (GDPR), regardless of the user's geographic location. 
+                  This universal standard ensures that our Kenyan operations meet and exceed international expectations 
+                  for digital safety and corporate accountability.
+                </p>
+                <div className="grid sm:grid-cols-2 gap-8">
+                  <div className="border-l-2 border-blue-500 pl-6">
+                    <h4 className="font-bold text-xl mb-2">Legal Representative</h4>
+                    <p className="text-slate-400">Chief Information Security Officer<br/>Nyle Store Corporate Office</p>
                   </div>
-                ))}
+                  <div className="border-l-2 border-blue-500 pl-6">
+                    <h4 className="font-bold text-xl mb-2">Audit Frequency</h4>
+                    <p className="text-slate-400">Security audits conducted quarterly<br/>External legal review annually</p>
+                  </div>
+                </div>
               </div>
-            </div>
+            </section>
 
-            {/* Contact & Updates */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <span className="text-blue-600"></span>
-                Contact & Policy Updates
-              </h3>
-              
-              <div className="grid md:grid-cols-2 gap-8">
-                <div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-4">Contact Our Privacy Team</h4>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-blue-600"></span>
-                      <span className="text-gray-700">Email: privacy@nylestore.com</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-blue-600"></span>
-                      <span className="text-gray-700">Phone: +254 700 123 456</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-blue-600"></span>
-                      <span className="text-gray-700">Nairobi, Kenya</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-4">Policy Updates</h4>
-                  <p className="text-gray-700 mb-4">
-                    We may update this policy to reflect changes in our practices. 
-                    We'll notify you of any significant changes via email and in-app notifications.
-                  </p>
-                  <div className="p-3 bg-blue-50 rounded-lg">
-                    <p className="text-sm text-gray-700">
-                      <strong>Last Updated:</strong> {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}<br/>
-                      <strong>Version:</strong> 3.2.1
-                    </p>
-                  </div>
-                </div>
+            {/* Final Contact Statement */}
+            <div className="text-center py-10 border-t border-slate-100">
+              <p className="text-slate-500 mb-6">
+                Direct legal inquiries and data subject requests to our centralized privacy portal.
+              </p>
+              <div className="flex justify-center gap-6">
+                <a href="mailto:legal@nylestore.com" className="text-blue-600 font-bold hover:underline">legal@nylestore.com</a>
+                <span className="text-slate-300">|</span>
+                <span className="text-slate-700 font-bold">Nairobi, Kenya</span>
               </div>
-
-              <div className="mt-8 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <p className="text-gray-700">
-                    By using Nyle Store, you acknowledge and agree to this Privacy Policy.
-                  </p>
-                  <Link
-                    href="/auth/signup"
-                    className="px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
-                  >
-                    Join Securely
-                  </Link>
-                </div>
-              </div>
+              <p className="mt-10 text-xs text-slate-400 uppercase tracking-widest">
+                Last Document Revision: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              </p>
             </div>
-          </div>
+          </main>
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 text-white py-12">
+      {/* Corporate Footer */}
+      <footer className="bg-slate-50 py-16 border-t border-slate-200">
         <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div>
-              <h4 className="text-xl font-bold mb-4">Nyle Store</h4>
-              <p className="text-blue-300">
-                Kenya's trusted marketplace with your privacy at heart.
-              </p>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="text-slate-900 font-black text-2xl tracking-tighter">NYLE STORE</div>
+            <div className="flex flex-wrap justify-center gap-8 text-sm font-bold text-slate-500">
+              <Link href="/terms" className="hover:text-blue-600 transition-colors">Terms of Service</Link>
+              <Link href="/auth/privacy" className="hover:text-blue-600 transition-colors">Data Privacy</Link>
+              <Link href="/others/cookies" className="hover:text-blue-600 transition-colors">Cookie Policy</Link>
+              <Link href="/support" className="hover:text-blue-600 transition-colors">Support Center</Link>
             </div>
-            
-            <div>
-              <h4 className="text-xl font-bold mb-4">Quick Links</h4>
-              <div className="grid grid-cols-2 gap-2">
-                <Link href="/terms" className="text-blue-300 hover:text-white transition">Terms of Service</Link>
-                <Link href="/privacy" className="text-blue-300 hover:text-white transition">Privacy Policy</Link>
-                <Link href="/support" className="text-blue-300 hover:text-white transition">Support Center</Link>
-                <Link href="/faq" className="text-blue-300 hover:text-white transition">FAQs</Link>
-              </div>
+            <div className="text-slate-400 text-sm">
+              &copy; {new Date().getFullYear()} Nyle Store Corporation.
             </div>
-            
-            <div>
-              <h4 className="text-xl font-bold mb-4">Trust & Safety</h4>
-              <div className="text-sm text-blue-400">
-                <p> Kenya Data Protection Act, 2019</p>
-                <p> Secure Payment Processing</p>
-                <p> Buyer Protection Program</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-8 pt-8 border-t border-white/10 text-center">
-            <p className="text-blue-300">
-               {new Date().getFullYear()} Nyle Store. All rights reserved.
-            </p>
           </div>
         </div>
       </footer>
