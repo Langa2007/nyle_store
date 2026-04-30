@@ -125,15 +125,18 @@ export default function AuthModal() {
                         <div className="flex-1 h-px bg-gray-800"></div>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
                         {!isLogin && (
                             <div className="relative group">
                                 <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-500 transition-colors" />
                                 <input
+                                    id="mobile-auth-modal-name"
+                                    name="name"
                                     type="text"
                                     required
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    autoComplete="name"
                                     className="w-full pl-12 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-white placeholder:text-gray-500"
                                     placeholder="Full Name"
                                 />
@@ -143,10 +146,15 @@ export default function AuthModal() {
                         <div className="relative group">
                             <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-500 transition-colors" />
                             <input
+                                id="mobile-auth-modal-email"
+                                name="email"
                                 type="email"
                                 required
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                autoComplete="email"
+                                autoCapitalize="none"
+                                autoCorrect="off"
                                 className="w-full pl-12 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-white placeholder:text-gray-500"
                                 placeholder="Email Address"
                             />
@@ -155,10 +163,15 @@ export default function AuthModal() {
                         <div className="relative group">
                             <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-500 transition-colors" />
                             <input
+                                id="mobile-auth-modal-password"
+                                name="password"
                                 type="password"
                                 required
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                autoComplete={isLogin ? "current-password" : "new-password"}
+                                autoCapitalize="none"
+                                autoCorrect="off"
                                 className="w-full pl-12 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-white placeholder:text-gray-500"
                                 placeholder="Password"
                                 minLength="6"

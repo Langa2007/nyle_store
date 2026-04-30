@@ -124,15 +124,18 @@ export default function AuthModal() {
             <div className="flex-1 h-px bg-gray-100"></div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
             {!isLogin && (
               <div className="relative group">
                 <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
                 <input
+                  id="auth-modal-name"
+                  name="name"
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  autoComplete="name"
                   className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-blue-100 transition-all font-medium text-gray-900"
                   placeholder="Full Name"
                 />
@@ -142,10 +145,15 @@ export default function AuthModal() {
             <div className="relative group">
               <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
               <input
+                id="auth-modal-email"
+                name="email"
                 type="email"
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                autoComplete="email"
+                autoCapitalize="none"
+                autoCorrect="off"
                 className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-blue-100 transition-all font-medium text-gray-900"
                 placeholder="Email Address"
               />
@@ -154,10 +162,15 @@ export default function AuthModal() {
             <div className="relative group">
               <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
               <input
+                id="auth-modal-password"
+                name="password"
                 type="password"
                 required
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                autoComplete={isLogin ? "current-password" : "new-password"}
+                autoCapitalize="none"
+                autoCorrect="off"
                 className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-blue-100 transition-all font-medium text-gray-900"
                 placeholder="Password"
                 minLength="6"
