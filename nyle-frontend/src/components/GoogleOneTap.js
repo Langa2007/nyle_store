@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { getSession, signIn, useSession } from 'next-auth/react';
 
 const GOOGLE_CLIENT_ID =
@@ -17,7 +18,8 @@ async function waitForSession() {
 }
 
 export default function GoogleOneTap() {
-  const { status } = useSession();
+  const { status, update } = useSession();
+  const router = useRouter();
   const initializedRef = useRef(false);
 
   useEffect(() => {
@@ -38,8 +40,12 @@ export default function GoogleOneTap() {
 
         if (result?.error) throw new Error(result.error);
 
+        // Wait for the session to be fully established before refreshing
         await waitForSession();
-        window.location.reload();
+        // Trigger NextAuth to re-read the JWT cookie on the client side
+        await update();
+        // Soft refresh — re-renders server components without a full page reload
+        router.refresh();
       } catch (error) {
         console.error('[Nyle Store] One Tap error:', error);
       }
@@ -53,6 +59,8 @@ export default function GoogleOneTap() {
         client_id: GOOGLE_CLIENT_ID,
         callback: handleCredentialResponse,
         itp_support: true,
+        use_fedcm_for_prompt: true,
+        auto_select: true,
         cancel_on_tap_outside: true,
       });
 
@@ -79,7 +87,7 @@ export default function GoogleOneTap() {
       }, 100);
       return () => clearInterval(interval);
     }
-  }, [status]);
+  }, [status, router, update]);
 
   return null; // This component doesn't render anything visible
 }
