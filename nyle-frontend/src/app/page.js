@@ -1451,6 +1451,7 @@ function HomeContent() {
                   <li><Link href="/support/contact" className="text-gray-300 hover:text-white transition hover:underline">Contact Us</Link></li>
                   <li><Link href="/support/faqs" className="text-gray-300 hover:text-white transition hover:underline">FAQs</Link></li>
                   <li><Link href="/support/report-issue" className="text-gray-300 hover:text-white transition hover:underline">Report An Issue</Link></li>
+                  <li><Link href="/support/reviews" className="text-gray-300 hover:text-white transition hover:underline">Leave a Review</Link></li>
                 </ul>
               </div>
 

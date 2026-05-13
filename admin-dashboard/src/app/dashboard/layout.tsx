@@ -39,7 +39,8 @@ import {
   ChevronDown,
   Building2,
   Layers,
-  Tag
+  Tag,
+  MessageSquare
 } from "lucide-react";
 import Providers from "../providers";
 import RequireAuth from "../components/RequireAuth";
@@ -165,6 +166,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       href: "/dashboard/reports",
       icon: <AlertTriangle size={18} />,
       badge: (liveNotifications?.details?.openReportedIssues > 0) ? liveNotifications.details.openReportedIssues.toString() : null
+    },
+    {
+      name: "Store Reviews",
+      href: "/dashboard/reviews",
+      icon: <MessageSquare size={18} />,
+      badge: "New"
     },
     {
       name: "Settings",

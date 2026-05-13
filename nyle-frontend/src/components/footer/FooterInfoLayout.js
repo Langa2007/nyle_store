@@ -364,6 +364,7 @@ export default function FooterInfoLayout({
                   <Link href="/support/contact" className="block text-blue-300 hover:text-white transition">Contact Us</Link>
                   <Link href="/support/faqs" className="block text-blue-300 hover:text-white transition">FAQs</Link>
                   <Link href="/support/report-issue" className="block text-blue-300 hover:text-white transition">Report Issue</Link>
+                  <Link href="/support/reviews" className="block text-blue-300 hover:text-white transition">Leave a Review</Link>
                 </div>
               </div>
             </div>

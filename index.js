@@ -30,6 +30,7 @@ import supportRoutes from "./routes/supportRoutes.js";
 import faqRoutes from "./routes/faqRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import vendorRoutes from "./routes/vendorRoutes.js";
+import reviewsRoutes from "./routes/reviewsRoutes.js";
 import authRoutes from "./routes/auth.js";
 import passwordroutes from "./routes/passwordResetRoutes.js";
 import userResetPasswordRoutes from "./routes/UserResetPasswordRoutes.js";
@@ -175,8 +176,9 @@ app.use("/api/support", supportRoutes);
 // FAQ routes
 app.use("/api/faqs", faqRoutes);
 
-// Reported issues routes
+// Reported issues & reviews routes
 app.use("/api/reports", reportRoutes);
+app.use("/api/reviews", reviewsRoutes);
 app.use("/api/location", locationRoutes);
 app.use("/api/vendor-leads", vendorLeadRoutes);
 app.use("/api/partners", partnerRoutes);
