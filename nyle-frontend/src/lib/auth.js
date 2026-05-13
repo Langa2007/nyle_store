@@ -143,6 +143,8 @@ export const getAuthOptions = async () => {
                     token.email = user.email;
                     token.name = user.name;    // persist name
                     token.picture = user.image; // persist avatar
+                    token.id = String(user.id); // aggressively capture ID (often already the internal DB ID)
+                    
                     if (db) {
                         try {
                             if (account?.provider === 'google' || account?.provider === 'google-id-token') {

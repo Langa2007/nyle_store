@@ -22,22 +22,21 @@ export default function SessionSync() {
 
             if (isBadId) {
                 const migrationKey = `${session.user?.email || "unknown"}:${session.user?.id}`;
-                if (migrationAttemptRef.current === migrationKey) {
-                    return;
+                if (migrationAttemptRef.current !== migrationKey) {
+                    migrationAttemptRef.current = migrationKey;
+                    console.warn("[SessionSync] Detected provider ID in session. Requesting migration...");
+                    // Trigger a session refresh to run the JWT migrator
+                    void update();
                 }
-
-                migrationAttemptRef.current = migrationKey;
-                console.warn("[SessionSync] Detected provider ID in session. Requesting migration...");
-                // Clear any residue from localStorage to stop the backend error immediately
-                localStorage.removeItem("user");
-                // Trigger a session refresh to run the JWT migrator
-                void update();
-                return;
+                // Do NOT return here or clear localStorage immediately.
+                // We allow the "bad" ID to sync to localStorage temporarily
+                // so the UI doesn't force a logout while update() processes.
+            } else {
+                migrationAttemptRef.current = null;
             }
 
-            migrationAttemptRef.current = null;
-
             // Tokens are now managed via secure HttpOnly cookies
+
 
             if (session.user) {
                 localStorage.setItem("user", JSON.stringify({

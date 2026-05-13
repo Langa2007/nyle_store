@@ -11,7 +11,6 @@ import {
   CreditCard, 
   User, 
   ChevronRight,
-  Bell,
   Settings,
   Shield,
   Package,
@@ -20,7 +19,6 @@ import {
   TrendingUp,
   Sparkles,
   LogOut,
-  Home,
   Calendar,
   Wallet,
   Gift,
@@ -165,28 +163,7 @@ export default function BuyerInfoLayout({ title, subtitle, children, icons = [],
             </div>
 
             <div className="flex items-center gap-3">
-              {/* Notifications */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className="p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors relative"
-                >
-                  <Bell className="h-5 w-5" />
-                  {notificationCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {notificationCount}
-                    </span>
-                  )}
-                </button>
-              </div>
-
-              {/* Quick Actions */}
-              <Link
-                href="/"
-                className="p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors"
-              >
-                <Home className="h-5 w-5" />
-              </Link>
+              {/* Icons removed for cleaner import per user request */}
             </div>
           </div>
 

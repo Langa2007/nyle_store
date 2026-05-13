@@ -1,12 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Send, 
-  MessageSquare, 
-  Phone, 
-  Mail, 
-  CheckCircle, 
+import {
+  Send,
+  MessageSquare,
+  Phone,
+  Mail,
+  CheckCircle,
   Sparkles,
   ShieldCheck,
   AlertTriangle,
@@ -80,26 +80,26 @@ export default function ContactPage() {
   };
 
   const contactMethods = [
-    { 
-      id: "phone", 
-      title: "WhatsApp Support", 
-      icon: WhatsAppIcon, 
+    {
+      id: "phone",
+      title: "WhatsApp Support",
+      icon: WhatsAppIcon,
       color: "from-green-500 to-emerald-500",
       description: "0704521408",
       action: "https://wa.me/254704521408"
     },
-    { 
-      id: "call", 
-      title: "Call Support", 
-      icon: Phone, 
+    {
+      id: "call",
+      title: "Call Support",
+      icon: Phone,
       color: "from-blue-500 to-cyan-500",
       description: "+254 704521408",
       action: "tel:+254704521408"
     },
-    { 
-      id: "email", 
-      title: "Email Support", 
-      icon: Mail, 
+    {
+      id: "email",
+      title: "Email Support",
+      icon: Mail,
       color: "from-indigo-500 to-purple-500",
       description: "support@nyle.store",
       action: "mailto:support@nyle.store"
@@ -109,7 +109,7 @@ export default function ContactPage() {
   if (isSubmitted) {
     return (
       <SupportInfoLayout title="Report Received" subtitle="We've got your back">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-xl mx-auto bg-white rounded-3xl p-12 text-center shadow-2xl border border-green-100"
@@ -119,10 +119,10 @@ export default function ContactPage() {
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Submission Successful</h2>
           <p className="text-gray-600 mb-8 leading-relaxed">
-            Thank you for reporting this issue. We have sent a confirmation email to <strong>{form.reporter_email}</strong>. 
+            Thank you for reporting this issue. We have sent a confirmation email to <strong>{form.reporter_email}</strong>.
             Our support team will investigate and notify you once it's resolved.
           </p>
-          <button 
+          <button
             onClick={() => setIsSubmitted(false)}
             className="px-8 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all shadow-lg shadow-red-500/30"
           >
@@ -134,8 +134,8 @@ export default function ContactPage() {
   }
 
   return (
-    <SupportInfoLayout 
-      title="Contact Nyle Support" 
+    <SupportInfoLayout
+      title="Contact Nyle Support"
       subtitle="Report bugs, payment issues, or get technical assistance directly"
     >
       <div className="max-w-6xl mx-auto space-y-12">
@@ -160,7 +160,7 @@ export default function ContactPage() {
         <div className="grid lg:grid-cols-5 gap-12">
           {/* Form Side */}
           <div className="lg:col-span-3">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-white rounded-3xl p-8 shadow-2xl border border-gray-50"
@@ -179,13 +179,13 @@ export default function ContactPage() {
                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 block">Full Name</label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         required
                         className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:bg-white transition-all outline-none"
-                        placeholder="John Doe"
+                        placeholder="your name here"
                         value={form.reporter_name}
-                        onChange={(e) => setForm({...form, reporter_name: e.target.value})}
+                        onChange={(e) => setForm({ ...form, reporter_name: e.target.value })}
                       />
                     </div>
                   </div>
@@ -193,13 +193,13 @@ export default function ContactPage() {
                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 block">Email Address</label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
-                      <input 
-                        type="email" 
+                      <input
+                        type="email"
                         required
                         className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:bg-white transition-all outline-none"
-                        placeholder="john@example.com"
+                        placeholder="your email here"
                         value={form.reporter_email}
-                        onChange={(e) => setForm({...form, reporter_email: e.target.value})}
+                        onChange={(e) => setForm({ ...form, reporter_email: e.target.value })}
                       />
                     </div>
                   </div>
@@ -209,12 +209,12 @@ export default function ContactPage() {
                   <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 block">Phone Number</label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <input 
-                      type="tel" 
+                    <input
+                      type="tel"
                       className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:bg-white transition-all outline-none"
-                      placeholder="+254 704 521 408"
+                      placeholder="your phone number here"
                       value={form.reporter_phone}
-                      onChange={(e) => setForm({...form, reporter_phone: e.target.value})}
+                      onChange={(e) => setForm({ ...form, reporter_phone: e.target.value })}
                     />
                   </div>
                 </div>
@@ -223,11 +223,11 @@ export default function ContactPage() {
                   <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 block">Issue Category</label>
                   <div className="relative">
                     <HelpCircle className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <select 
+                    <select
                       required
                       className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:bg-white transition-all outline-none appearance-none"
                       value={form.issue_category_id}
-                      onChange={(e) => setForm({...form, issue_category_id: e.target.value})}
+                      onChange={(e) => setForm({ ...form, issue_category_id: e.target.value })}
                     >
                       <option value="">Select what's wrong...</option>
                       {ISSUE_CATEGORIES.map(cat => (
@@ -241,19 +241,19 @@ export default function ContactPage() {
                   <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 block">Problem Details</label>
                   <div className="relative">
                     <MessageSquare className="absolute left-3 top-4 text-gray-400 h-4 w-4" />
-                    <textarea 
+                    <textarea
                       required
                       rows={4}
                       className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:bg-white transition-all outline-none resize-none"
                       placeholder="Please describe what happened..."
                       value={form.description}
-                      onChange={(e) => setForm({...form, description: e.target.value})}
+                      onChange={(e) => setForm({ ...form, description: e.target.value })}
                     />
                   </div>
                 </div>
 
                 {error && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm flex items-start gap-3"
@@ -263,7 +263,7 @@ export default function ContactPage() {
                   </motion.div>
                 )}
 
-                <button 
+                <button
                   type="submit"
                   disabled={isSubmitting}
                   className="w-full py-4 bg-gradient-to-r from-red-600 to-orange-600 text-white font-bold rounded-xl shadow-lg shadow-red-500/20 hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:translate-y-0 flex items-center justify-center gap-3"
@@ -314,10 +314,10 @@ export default function ContactPage() {
                   <Phone className="h-5 w-5" />
                   Call Emergency Support
                 </a>
-                <a 
-                  href="https://wa.me/254704521408" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href="https://wa.me/254704521408"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center justify-center gap-3 py-3 bg-green-50 text-green-600 font-bold rounded-xl hover:bg-green-100 transition-colors"
                 >
                   <WhatsAppIcon className="h-5 w-5" />
