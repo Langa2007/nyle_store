@@ -3,17 +3,22 @@ import { pool } from "../db/connect.js";
 // Submit a new review
 export const submitReview = async (req, res) => {
   try {
-    const { reviewer_name, reviewer_email, feedback_changes, would_recommend, general_thoughts } = req.body;
+    const { reviewer_name, reviewer_email, feedback_changes, would_recommend, general_thoughts, rating } = req.body;
 
-    if (!reviewer_name || !reviewer_email || !feedback_changes || would_recommend === undefined || !general_thoughts) {
+    if (!reviewer_name || !reviewer_email || !feedback_changes || would_recommend === undefined || !general_thoughts || !rating) {
       return res.status(400).json({ message: "All fields are required." });
+    }
+
+    const ratingInt = parseInt(rating);
+    if (isNaN(ratingInt) || ratingInt < 1 || ratingInt > 5) {
+      return res.status(400).json({ message: "Invalid rating. Must be between 1 and 5." });
     }
 
     const insertQ = await pool.query(
       `INSERT INTO store_reviews (
-        reviewer_name, reviewer_email, feedback_changes, would_recommend, general_thoughts, status
-      ) VALUES ($1, $2, $3, $4, $5, 'pending') RETURNING id`,
-      [reviewer_name, reviewer_email, feedback_changes, would_recommend, general_thoughts]
+        reviewer_name, reviewer_email, feedback_changes, would_recommend, general_thoughts, rating, status
+      ) VALUES ($1, $2, $3, $4, $5, $6, 'pending') RETURNING id`,
+      [reviewer_name, reviewer_email, feedback_changes, would_recommend, general_thoughts, ratingInt]
     );
 
     res.status(201).json({
@@ -23,6 +28,25 @@ export const submitReview = async (req, res) => {
     });
   } catch (err) {
     console.error("submitReview error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Get average rating and total count
+export const getReviewStats = async (req, res) => {
+  try {
+    const q = await pool.query(
+      "SELECT ROUND(AVG(rating), 1) as average_rating, COUNT(*) as total_reviews FROM store_reviews WHERE status = 'approved'"
+    );
+    
+    // Fallback if no approved reviews yet
+    const stats = q.rows[0];
+    res.json({
+      average_rating: stats.average_rating || 0,
+      total_reviews: parseInt(stats.total_reviews) || 0
+    });
+  } catch (err) {
+    console.error("getReviewStats error:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };

@@ -1,19 +1,39 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SupportInfoLayout from "@/components/support/SupportInfoLayout";
 import { toast } from "sonner";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle, FaStar, FaRegStar } from "react-icons/fa";
 
 export default function ReviewsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [stats, setStats] = useState({ average_rating: 0, total_reviews: 0 });
   const [formData, setFormData] = useState({
     reviewer_name: "",
     reviewer_email: "",
     feedback_changes: "",
     would_recommend: true,
     general_thoughts: "",
+    rating: 5,
   });
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://nyle-store.onrender.com';
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/reviews/stats`);
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch stats:", error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -27,12 +47,16 @@ export default function ReviewsPage() {
     setFormData((prev) => ({ ...prev, would_recommend: value }));
   };
 
+  const handleRatingChange = (value) => {
+    setFormData((prev) => ({ ...prev, rating: value }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://nyle-store.onrender.com'}/api/reviews`, {
+      const response = await fetch(`${API_URL}/api/reviews`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -50,7 +74,10 @@ export default function ReviewsPage() {
           feedback_changes: "",
           would_recommend: true,
           general_thoughts: "",
+          rating: 5,
         });
+        // Optionally refresh stats, though the new review is likely 'pending'
+        fetchStats();
       } else {
         toast.error(data.message || "Failed to submit review.");
       }
@@ -69,9 +96,54 @@ export default function ReviewsPage() {
       category="Feedback"
     >
       <div className="max-w-3xl mx-auto py-8">
+        {/* Rating Stats Display */}
+        <div className="mb-8 bg-blue-600 rounded-2xl p-8 text-white shadow-lg text-center">
+          <h3 className="text-xl font-bold mb-2">Our Community Rating</h3>
+          <div className="flex flex-col items-center justify-center">
+            <div className="flex items-center gap-1 mb-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <FaStar 
+                  key={star} 
+                  className={`w-8 h-8 ${star <= Math.round(stats.average_rating) ? 'text-yellow-400' : 'text-blue-400'}`} 
+                />
+              ))}
+            </div>
+            <div className="text-4xl font-extrabold mb-1">{stats.average_rating} / 5</div>
+            <p className="text-blue-100 text-sm">Based on {stats.total_reviews} verified reviews</p>
+          </div>
+        </div>
+
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             
+            {/* 5-Star Rating Selector */}
+            <div className="space-y-2 text-center pb-4 border-b border-gray-50">
+              <label className="block text-lg font-bold text-gray-900 mb-2">How would you rate us?</label>
+              <div className="flex justify-center gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => handleRatingChange(star)}
+                    className="p-1 transition-transform hover:scale-110 focus:outline-none"
+                  >
+                    {star <= formData.rating ? (
+                      <FaStar className="w-10 h-10 text-yellow-400" />
+                    ) : (
+                      <FaRegStar className="w-10 h-10 text-gray-300 hover:text-yellow-200" />
+                    )}
+                  </button>
+                ))}
+              </div>
+              <p className="text-sm text-gray-500 font-medium">
+                {formData.rating === 1 && "Poor"}
+                {formData.rating === 2 && "Fair"}
+                {formData.rating === 3 && "Good"}
+                {formData.rating === 4 && "Very Good"}
+                {formData.rating === 5 && "Excellent"}
+              </p>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label htmlFor="reviewer_name" className="block text-sm font-medium text-gray-700">Full Name</label>
@@ -83,7 +155,7 @@ export default function ReviewsPage() {
                   value={formData.reviewer_name}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-colors bg-gray-50"
-                  placeholder="John Doe"
+                  placeholder="your name"
                 />
               </div>
 
@@ -97,7 +169,7 @@ export default function ReviewsPage() {
                   value={formData.reviewer_email}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-colors bg-gray-50"
-                  placeholder="john@example.com"
+                  placeholder="youremail@example.com"
                 />
               </div>
             </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { CheckCircle, XCircle, Search, MessageSquare, Loader2 } from "lucide-react";
+import { CheckCircle, XCircle, Search, MessageSquare, Loader2, Star } from "lucide-react";
 
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState([]);
@@ -121,8 +121,19 @@ export default function ReviewsPage() {
                 className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded-xl border border-gray-100 dark:border-gray-700/50"
               >
                 <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">{review.reviewer_name}</h3>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-1">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{review.reviewer_name}</h3>
+                      <div className="flex items-center gap-0.5">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star 
+                            key={star} 
+                            size={14} 
+                            className={`${star <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300 dark:text-gray-600'}`} 
+                          />
+                        ))}
+                      </div>
+                    </div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{review.reviewer_email}</p>
                     <p className="text-xs text-gray-400 mt-1">{new Date(review.created_at).toLocaleString()}</p>
                   </div>
