@@ -5,8 +5,20 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { CheckCircle, XCircle, Search, MessageSquare, Loader2, Star } from "lucide-react";
 
+interface Review {
+  id: number | string;
+  reviewer_name: string;
+  reviewer_email: string;
+  rating: number;
+  feedback_changes: string;
+  general_thoughts: string;
+  would_recommend: boolean;
+  status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
+}
+
 export default function ReviewsPage() {
-  const [reviews, setReviews] = useState([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -39,7 +51,7 @@ export default function ReviewsPage() {
     }
   };
 
-  const handleStatusUpdate = async (id, status) => {
+  const handleStatusUpdate = async (id: number | string, status: 'approved' | 'rejected') => {
     try {
       const res = await fetch(`${API_URL}/api/reviews/admin/${id}/status`, {
         method: "PATCH",
@@ -62,7 +74,7 @@ export default function ReviewsPage() {
     }
   };
 
-  const filteredReviews = reviews.filter(r => {
+  const filteredReviews = reviews.filter((r: Review) => {
     const matchesSearch = r.reviewer_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           r.reviewer_email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === "all" || r.status === filterStatus;
@@ -113,7 +125,7 @@ export default function ReviewsPage() {
           </div>
         ) : (
           <div className="grid gap-6">
-            {filteredReviews.map((review) => (
+            {filteredReviews.map((review: Review) => (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
