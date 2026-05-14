@@ -7,6 +7,7 @@ import { FaCheckCircle, FaStar, FaRegStar } from "react-icons/fa";
 
 export default function ReviewsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittedMessage, setSubmittedMessage] = useState("");
   const [stats, setStats] = useState({ average_rating: 0, total_reviews: 0 });
   const [formData, setFormData] = useState({
     reviewer_name: "",
@@ -54,6 +55,7 @@ export default function ReviewsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmittedMessage("");
 
     try {
       const response = await fetch(`${API_URL}/api/reviews`, {
@@ -65,7 +67,9 @@ export default function ReviewsPage() {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success("Thank you for your feedback! Your review has been submitted.", {
+        const message = data.message || "Review submitted successfully. Thank you for submitting your review.";
+        setSubmittedMessage(message);
+        toast.success(message, {
           icon: <FaCheckCircle className="text-green-500" />
         });
         setFormData({
@@ -114,6 +118,13 @@ export default function ReviewsPage() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          {submittedMessage && (
+            <div className="mb-6 flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 p-4 text-green-800">
+              <FaCheckCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-green-600" />
+              <p className="text-sm font-medium">{submittedMessage}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             
             {/* 5-Star Rating Selector */}

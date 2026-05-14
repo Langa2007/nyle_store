@@ -3,6 +3,15 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+function escapeHtml(value = "") {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 /**
  * Send a 6-digit verification code to vendor email
  * @param {string} toEmail
@@ -293,6 +302,91 @@ export async function sendSupportResolutionEmail(toEmail, issueData) {
     return true;
   } catch (err) {
     console.error(" sendSupportResolutionEmail error:", err);
+    return false;
+  }
+}
+
+/**
+ * Notify the admin team that a store review needs moderation.
+ * @param {object} review
+ */
+export async function sendReviewSubmittedAdminEmail(review) {
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (!adminEmail) {
+    console.warn(" ADMIN_EMAIL is not configured; skipping review admin email.");
+    return false;
+  }
+
+  const adminUrl = process.env.ADMIN_URL || "https://nyle-admin.vercel.app";
+  const reviewerName = escapeHtml(review.reviewer_name || "Customer");
+  const reviewerEmail = escapeHtml(review.reviewer_email || "");
+  const feedbackChanges = escapeHtml(review.feedback_changes || "");
+  const generalThoughts = escapeHtml(review.general_thoughts || "");
+  const rating = escapeHtml(review.rating || "");
+  const recommendation = review.would_recommend ? "Yes" : "No";
+
+  const html = `
+    <div style="font-family: sans-serif; max-width: 640px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; color: #1e293b;">
+      <h2 style="color: #2563eb; margin-top: 0;">New Store Review Submitted</h2>
+      <p><strong>${reviewerName}</strong> submitted a new review for moderation.</p>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 20px 0;">
+        <p style="margin: 0 0 8px;"><strong>Email:</strong> ${reviewerEmail}</p>
+        <p style="margin: 0 0 8px;"><strong>Rating:</strong> ${rating}/5</p>
+        <p style="margin: 0;"><strong>Would recommend:</strong> ${recommendation}</p>
+      </div>
+      <h3 style="font-size: 14px; color: #475569; text-transform: uppercase;">Requested changes</h3>
+      <p style="line-height: 1.5;">${feedbackChanges}</p>
+      <h3 style="font-size: 14px; color: #475569; text-transform: uppercase;">General thoughts</h3>
+      <p style="line-height: 1.5;">${generalThoughts}</p>
+      <p style="margin-top: 24px;">
+        <a href="${adminUrl}/dashboard/reviews" style="background:#2563eb;color:white;padding:10px 18px;text-decoration:none;border-radius:6px;">Review in Admin Dashboard</a>
+      </p>
+    </div>
+  `;
+
+  try {
+    const resp = await resend.emails.send({
+      from: "Nyle Reviews <support@resend.dev>",
+      to: adminEmail,
+      subject: `New Store Review from ${reviewerName}`,
+      html,
+    });
+    console.log(" Review admin email sent, id:", resp.id);
+    return true;
+  } catch (err) {
+    console.error(" sendReviewSubmittedAdminEmail error:", err);
+    return false;
+  }
+}
+
+/**
+ * Send review submission confirmation to the reviewer.
+ * @param {string} toEmail
+ * @param {object} review
+ */
+export async function sendReviewReceiptEmail(toEmail, review) {
+  const reviewerName = escapeHtml(review.reviewer_name || "there");
+  const html = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; color: #1e293b;">
+      <h2 style="color: #2563eb; margin-top: 0;">Thank You for Your Review</h2>
+      <p>Hello ${reviewerName},</p>
+      <p>Your review has been submitted successfully. Thank you for helping us improve Nyle Store.</p>
+      <p>Our team will review it before it appears publicly.</p>
+      <p style="margin-top: 24px; color: #64748b; font-size: 14px;">Best regards,<br>The Nyle Store Team</p>
+    </div>
+  `;
+
+  try {
+    const resp = await resend.emails.send({
+      from: "Nyle Support <support@resend.dev>",
+      to: toEmail,
+      subject: "Thank you for submitting your review",
+      html,
+    });
+    console.log(" Review receipt email sent, id:", resp.id);
+    return true;
+  } catch (err) {
+    console.error(" sendReviewReceiptEmail error:", err);
     return false;
   }
 }

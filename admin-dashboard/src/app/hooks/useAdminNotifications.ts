@@ -9,6 +9,7 @@ interface NotificationSummary {
         pendingOrders: number;
         openSupportMessages: number;
         openReportedIssues: number;
+        pendingReviews: number;
     };
 }
 
@@ -23,6 +24,7 @@ export function useAdminNotifications(pollingIntervalMs = 60000) {
             pendingOrders: 0,
             openSupportMessages: 0,
             openReportedIssues: 0,
+            pendingReviews: 0,
         }
     });
     const [loading, setLoading] = useState<boolean>(true);

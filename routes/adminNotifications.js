@@ -12,13 +12,15 @@ router.get('/summary', async (req, res) => {
             pendingPartnersResult,
             pendingOrdersResult,
             openSupportMessagesResult,
-            openReportedIssuesResult
+            openReportedIssuesResult,
+            pendingReviewsResult
         ] = await Promise.all([
             pool.query("SELECT COUNT(*) FROM vendors WHERE status = 'pending'"),
             pool.query("SELECT COUNT(*) FROM partner_applications WHERE status = 'pending' OR status = 'termination_notice'"),
             pool.query("SELECT COUNT(*) FROM orders WHERE status = 'pending'"),
             pool.query("SELECT COUNT(*) FROM support_messages WHERE status = 'open'"),
-            pool.query("SELECT COUNT(*) FROM reported_issues WHERE status = 'open'")
+            pool.query("SELECT COUNT(*) FROM reported_issues WHERE status = 'open'"),
+            pool.query("SELECT COUNT(*) FROM store_reviews WHERE status = 'pending'")
         ]);
 
         const pendingVendors = parseInt(pendingVendorsResult.rows[0].count, 10) || 0;
@@ -26,8 +28,9 @@ router.get('/summary', async (req, res) => {
         const pendingOrders = parseInt(pendingOrdersResult.rows[0].count, 10) || 0;
         const openSupportMessages = parseInt(openSupportMessagesResult.rows[0].count, 10) || 0;
         const openReportedIssues = parseInt(openReportedIssuesResult.rows[0].count, 10) || 0;
+        const pendingReviews = parseInt(pendingReviewsResult.rows[0].count, 10) || 0;
 
-        const totalNotifications = pendingVendors + pendingPartners + pendingOrders + openSupportMessages + openReportedIssues;
+        const totalNotifications = pendingVendors + pendingPartners + pendingOrders + openSupportMessages + openReportedIssues + pendingReviews;
 
         res.status(200).json({
             success: true,
@@ -37,7 +40,8 @@ router.get('/summary', async (req, res) => {
                 pendingPartners,
                 pendingOrders,
                 openSupportMessages,
-                openReportedIssues
+                openReportedIssues,
+                pendingReviews
             }
         });
 

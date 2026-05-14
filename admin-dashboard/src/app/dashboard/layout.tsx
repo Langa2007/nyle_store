@@ -171,7 +171,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       name: "Store Reviews",
       href: "/dashboard/reviews",
       icon: <MessageSquare size={18} />,
-      badge: "New"
+      badge: liveNotifications?.details?.pendingReviews > 0 ? liveNotifications.details.pendingReviews.toString() : null
     },
     {
       name: "Settings",
@@ -187,7 +187,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     ...(liveNotifications.details.pendingPartners > 0 ? [{ id: 'partner', title: `${liveNotifications.details.pendingPartners} Pending Partner Application(s)`, time: "Requires action", unread: true, type: "warning" }] : []),
     ...(liveNotifications.details.pendingOrders > 0 ? [{ id: 'order', title: `${liveNotifications.details.pendingOrders} Pending Order(s)`, time: "Requires processing", unread: true, type: "info" }] : []),
     ...(liveNotifications.details.openSupportMessages > 0 ? [{ id: 'support', title: `${liveNotifications.details.openSupportMessages} Open Support Ticket(s)`, time: "Unresolved", unread: true, type: "warning" }] : []),
-    ...(liveNotifications.details.openReportedIssues > 0 ? [{ id: 'report', title: `${liveNotifications.details.openReportedIssues} Open Reported Issue(s)`, time: "Unresolved", unread: true, type: "warning" }] : [])
+    ...(liveNotifications.details.openReportedIssues > 0 ? [{ id: 'report', title: `${liveNotifications.details.openReportedIssues} Open Reported Issue(s)`, time: "Unresolved", unread: true, type: "warning" }] : []),
+    ...(liveNotifications.details.pendingReviews > 0 ? [{ id: 'review', title: `${liveNotifications.details.pendingReviews} Pending Store Review(s)`, time: "Requires moderation", unread: true, type: "info" }] : [])
   ];
 
   const unreadCount = liveNotifications.total;

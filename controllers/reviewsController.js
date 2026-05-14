@@ -1,11 +1,13 @@
 import { pool } from "../db/connect.js";
+import { sendReviewReceiptEmail, sendReviewSubmittedAdminEmail } from "../services/emailService.js";
 
 // Submit a new review
 export const submitReview = async (req, res) => {
   try {
     const { reviewer_name, reviewer_email, feedback_changes, would_recommend, general_thoughts, rating } = req.body;
+    const reviewerEmail = reviewer_email?.trim().toLowerCase();
 
-    if (!reviewer_name || !reviewer_email || !feedback_changes || would_recommend === undefined || !general_thoughts || !rating) {
+    if (!reviewer_name || !reviewerEmail || !feedback_changes || would_recommend === undefined || !general_thoughts || !rating) {
       return res.status(400).json({ message: "All fields are required." });
     }
 
@@ -18,13 +20,34 @@ export const submitReview = async (req, res) => {
       `INSERT INTO store_reviews (
         reviewer_name, reviewer_email, feedback_changes, would_recommend, general_thoughts, rating, status
       ) VALUES ($1, $2, $3, $4, $5, $6, 'pending') RETURNING id`,
-      [reviewer_name, reviewer_email, feedback_changes, would_recommend, general_thoughts, ratingInt]
+      [reviewer_name.trim(), reviewerEmail, feedback_changes, would_recommend, general_thoughts, ratingInt]
     );
+
+    const review = {
+      id: insertQ.rows[0].id,
+      reviewer_name: reviewer_name.trim(),
+      reviewer_email: reviewerEmail,
+      feedback_changes,
+      would_recommend,
+      general_thoughts,
+      rating: ratingInt
+    };
+
+    Promise.allSettled([
+      sendReviewSubmittedAdminEmail(review),
+      sendReviewReceiptEmail(reviewerEmail, review)
+    ]).then((results) => {
+      results.forEach((result, index) => {
+        if (result.status === "rejected") {
+          console.error(`Review notification ${index} failed:`, result.reason);
+        }
+      });
+    });
 
     res.status(201).json({
       success: true,
-      message: "Review submitted successfully.",
-      id: insertQ.rows[0].id
+      message: "Review submitted successfully. Thank you for submitting your review.",
+      id: review.id
     });
   } catch (err) {
     console.error("submitReview error:", err);
