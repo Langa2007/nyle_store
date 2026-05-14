@@ -8,6 +8,7 @@ import { FaCheckCircle, FaStar, FaRegStar } from "react-icons/fa";
 export default function ReviewsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedMessage, setSubmittedMessage] = useState("");
+  const [ratingStatus, setRatingStatus] = useState({ checkedEmail: "", hasRating: false, rating: null, loading: false });
   const [stats, setStats] = useState({ average_rating: 0, total_reviews: 0 });
   const [formData, setFormData] = useState({
     reviewer_name: "",
@@ -42,6 +43,10 @@ export default function ReviewsPage() {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+
+    if (name === "reviewer_email") {
+      setRatingStatus({ checkedEmail: "", hasRating: false, rating: null, loading: false });
+    }
   };
 
   const handleRecommendChange = (value) => {
@@ -49,7 +54,34 @@ export default function ReviewsPage() {
   };
 
   const handleRatingChange = (value) => {
+    if (ratingStatus.hasRating) return;
     setFormData((prev) => ({ ...prev, rating: value }));
+  };
+
+  const checkRatingStatus = async () => {
+    const email = formData.reviewer_email.trim().toLowerCase();
+    if (!email) return;
+
+    setRatingStatus((prev) => ({ ...prev, loading: true }));
+    try {
+      const response = await fetch(`${API_URL}/api/reviews/rating-status?email=${encodeURIComponent(email)}`);
+      if (!response.ok) return;
+
+      const data = await response.json();
+      setRatingStatus({
+        checkedEmail: email,
+        hasRating: Boolean(data.has_rating),
+        rating: data.rating,
+        loading: false
+      });
+
+      if (data.has_rating && data.rating) {
+        setFormData((prev) => ({ ...prev, rating: Number(data.rating) }));
+      }
+    } catch (error) {
+      console.error("Failed to check rating status:", error);
+      setRatingStatus({ checkedEmail: "", hasRating: false, rating: null, loading: false });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -80,6 +112,7 @@ export default function ReviewsPage() {
           general_thoughts: "",
           rating: 5,
         });
+        setRatingStatus({ checkedEmail: "", hasRating: false, rating: null, loading: false });
         // Optionally refresh stats, though the new review is likely 'pending'
         fetchStats();
       } else {
@@ -136,7 +169,10 @@ export default function ReviewsPage() {
                     key={star}
                     type="button"
                     onClick={() => handleRatingChange(star)}
-                    className="p-1 transition-transform hover:scale-110 focus:outline-none"
+                    disabled={ratingStatus.hasRating}
+                    className={`p-1 transition-transform focus:outline-none ${
+                      ratingStatus.hasRating ? 'cursor-not-allowed opacity-80' : 'hover:scale-110'
+                    }`}
                   >
                     {star <= formData.rating ? (
                       <FaStar className="w-10 h-10 text-yellow-400" />
@@ -147,11 +183,13 @@ export default function ReviewsPage() {
                 ))}
               </div>
               <p className="text-sm text-gray-500 font-medium">
-                {formData.rating === 1 && "Poor"}
-                {formData.rating === 2 && "Fair"}
-                {formData.rating === 3 && "Good"}
-                {formData.rating === 4 && "Very Good"}
-                {formData.rating === 5 && "Excellent"}
+                {ratingStatus.loading && "Checking rating history..."}
+                {!ratingStatus.loading && ratingStatus.hasRating && `This email has already rated us ${ratingStatus.rating} / 5. You can still submit another review.`}
+                {!ratingStatus.loading && !ratingStatus.hasRating && formData.rating === 1 && "Poor"}
+                {!ratingStatus.loading && !ratingStatus.hasRating && formData.rating === 2 && "Fair"}
+                {!ratingStatus.loading && !ratingStatus.hasRating && formData.rating === 3 && "Good"}
+                {!ratingStatus.loading && !ratingStatus.hasRating && formData.rating === 4 && "Very Good"}
+                {!ratingStatus.loading && !ratingStatus.hasRating && formData.rating === 5 && "Excellent"}
               </p>
             </div>
 
@@ -179,6 +217,7 @@ export default function ReviewsPage() {
                   required
                   value={formData.reviewer_email}
                   onChange={handleChange}
+                  onBlur={checkRatingStatus}
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-colors bg-gray-50"
                   placeholder="youremail@example.com"
                 />

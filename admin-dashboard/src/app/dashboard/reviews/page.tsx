@@ -3,26 +3,65 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { CheckCircle, XCircle, Search, MessageSquare, Loader2, Star } from "lucide-react";
+import { CheckCircle, ChevronDown, ChevronRight, XCircle, Search, MessageSquare, Loader2, Star } from "lucide-react";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
+
+type ReviewStatus = 'pending' | 'approved' | 'rejected';
 
 interface Review {
   id: number | string;
   reviewer_name: string;
   reviewer_email: string;
-  rating: number;
+  rating: number | null;
+  display_rating?: number | null;
+  first_rating_review_id?: number | string | null;
+  total_reviews_by_email?: number;
   feedback_changes: string;
   general_thoughts: string;
   would_recommend: boolean;
-  status: 'pending' | 'approved' | 'rejected';
+  status: ReviewStatus;
   created_at: string;
 }
+
+const statusSections: Array<{
+  key: ReviewStatus;
+  title: string;
+  description: string;
+  emptyText: string;
+  badgeClass: string;
+}> = [
+  {
+    key: 'pending',
+    title: 'Unseen Yet',
+    description: 'New customer reviews waiting for moderation',
+    emptyText: 'No unseen reviews',
+    badgeClass: 'bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-500/10 dark:text-yellow-400 dark:border-yellow-500/20'
+  },
+  {
+    key: 'approved',
+    title: 'Approved',
+    description: 'Reviews allowed into the public rating pool',
+    emptyText: 'No approved reviews',
+    badgeClass: 'bg-green-100 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20'
+  },
+  {
+    key: 'rejected',
+    title: 'Rejected',
+    description: 'Reviews declined during moderation',
+    emptyText: 'No rejected reviews',
+    badgeClass: 'bg-red-100 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20'
+  }
+];
 
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
+  const [openSections, setOpenSections] = useState<Record<ReviewStatus, boolean>>({
+    pending: true,
+    approved: false,
+    rejected: false
+  });
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
 
@@ -73,9 +112,29 @@ export default function ReviewsPage() {
   const filteredReviews = reviews.filter((r: Review) => {
     const matchesSearch = r.reviewer_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           r.reviewer_email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === "all" || r.status === filterStatus;
-    return matchesSearch && matchesStatus;
+    return matchesSearch;
   });
+
+  const groupedReviews = statusSections.reduce((groups, section) => {
+    groups[section.key] = filteredReviews.filter((review) => review.status === section.key);
+    return groups;
+  }, {} as Record<ReviewStatus, Review[]>);
+
+  const toggleSection = (status: ReviewStatus) => {
+    setOpenSections((prev) => ({ ...prev, [status]: !prev[status] }));
+  };
+
+  const renderStars = (rating: number | null | undefined) => (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          size={14}
+          className={`${rating && star <= rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300 dark:text-gray-600'}`}
+        />
+      ))}
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -98,16 +157,6 @@ export default function ReviewsPage() {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white"
             />
           </div>
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white"
-          >
-            <option value="all">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
-          </select>
         </div>
 
         {loading ? (
@@ -120,79 +169,112 @@ export default function ReviewsPage() {
             <p>No reviews found</p>
           </div>
         ) : (
-          <div className="grid gap-6">
-            {filteredReviews.map((review: Review) => (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                key={review.id}
-                className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded-xl border border-gray-100 dark:border-gray-700/50"
-              >
-                <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                      <h3 className="font-semibold text-gray-900 dark:text-white">{review.reviewer_name}</h3>
-                      <div className="flex items-center gap-0.5">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star 
-                            key={star} 
-                            size={14} 
-                            className={`${star <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300 dark:text-gray-600'}`} 
-                          />
-                        ))}
+          <div className="space-y-4">
+            {statusSections.map((section) => {
+              const sectionReviews = groupedReviews[section.key];
+              const isOpen = openSections[section.key];
+
+              return (
+                <section key={section.key} className="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => toggleSection(section.key)}
+                    className="w-full flex items-center justify-between gap-4 px-5 py-4 bg-gray-50 dark:bg-gray-800/70 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 text-left">
+                      {isOpen ? <ChevronDown className="w-5 h-5 text-gray-500" /> : <ChevronRight className="w-5 h-5 text-gray-500" />}
+                      <div>
+                        <h2 className="font-semibold text-gray-900 dark:text-white">{section.title}</h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{section.description}</p>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{review.reviewer_email}</p>
-                    <p className="text-xs text-gray-400 mt-1">{new Date(review.created_at).toLocaleString()}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                      review.status === 'approved' ? 'bg-green-100 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20' :
-                      review.status === 'rejected' ? 'bg-red-100 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20' :
-                      'bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-500/10 dark:text-yellow-400 dark:border-yellow-500/20'
-                    }`}>
-                      {review.status.charAt(0).toUpperCase() + review.status.slice(1)}
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${section.badgeClass}`}>
+                      {sectionReviews.length}
                     </span>
-                  </div>
-                </div>
+                  </button>
 
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">What should be changed, added, or removed?</h4>
-                    <p className="text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 p-3 rounded-lg border border-gray-100 dark:border-gray-800 text-sm">{review.feedback_changes}</p>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">General Thoughts</h4>
-                    <p className="text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 p-3 rounded-lg border border-gray-100 dark:border-gray-800 text-sm">{review.general_thoughts}</p>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="font-medium text-gray-700 dark:text-gray-300">Would recommend to friends/family?</span>
-                    {review.would_recommend ? (
-                      <span className="text-green-600 dark:text-green-400 flex items-center gap-1"><CheckCircle className="w-4 h-4" /> Yes</span>
-                    ) : (
-                      <span className="text-red-600 dark:text-red-400 flex items-center gap-1"><XCircle className="w-4 h-4" /> No</span>
-                    )}
-                  </div>
-                </div>
+                  {isOpen && (
+                    <div className="p-4 bg-white dark:bg-gray-900">
+                      {sectionReviews.length === 0 ? (
+                        <p className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">{section.emptyText}</p>
+                      ) : (
+                        <div className="space-y-4">
+                          {sectionReviews.map((review: Review) => {
+                            const displayedRating = review.display_rating ?? review.rating;
+                            const isAdditionalReview = Boolean(displayedRating) && String(review.id) !== String(review.first_rating_review_id ?? review.id);
 
-                {review.status === 'pending' && (
-                  <div className="mt-6 flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <button
-                      onClick={() => handleStatusUpdate(review.id, 'approved')}
-                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => handleStatusUpdate(review.id, 'rejected')}
-                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors"
-                    >
-                      Reject
-                    </button>
-                  </div>
-                )}
-              </motion.div>
-            ))}
+                            return (
+                              <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                key={review.id}
+                                className="bg-gray-50 dark:bg-gray-800/50 p-5 rounded-lg border border-gray-100 dark:border-gray-700/50"
+                              >
+                                <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
+                                  <div className="flex-1">
+                                    <div className="flex flex-wrap items-center gap-3 mb-1">
+                                      <h3 className="font-semibold text-gray-900 dark:text-white">{review.reviewer_name}</h3>
+                                      {renderStars(displayedRating)}
+                                      {isAdditionalReview && (
+                                        <span className="text-xs text-blue-600 dark:text-blue-400">Original rating kept</span>
+                                      )}
+                                    </div>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">{review.reviewer_email}</p>
+                                    <p className="text-xs text-gray-400 mt-1">
+                                      {new Date(review.created_at).toLocaleString()}
+                                      {review.total_reviews_by_email && review.total_reviews_by_email > 1 ? ` - ${review.total_reviews_by_email} reviews from this email` : ''}
+                                    </p>
+                                  </div>
+                                  <span className={`self-start px-3 py-1 rounded-full text-xs font-medium border ${section.badgeClass}`}>
+                                    {section.title}
+                                  </span>
+                                </div>
+
+                                <div className="space-y-4">
+                                  <div>
+                                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">What should be changed, added, or removed?</h4>
+                                    <p className="text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 p-3 rounded-lg border border-gray-100 dark:border-gray-800 text-sm">{review.feedback_changes}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">General Thoughts</h4>
+                                    <p className="text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 p-3 rounded-lg border border-gray-100 dark:border-gray-800 text-sm">{review.general_thoughts}</p>
+                                  </div>
+                                  <div className="flex flex-wrap items-center gap-2 text-sm">
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">Would recommend to friends/family?</span>
+                                    {review.would_recommend ? (
+                                      <span className="text-green-600 dark:text-green-400 flex items-center gap-1"><CheckCircle className="w-4 h-4" /> Yes</span>
+                                    ) : (
+                                      <span className="text-red-600 dark:text-red-400 flex items-center gap-1"><XCircle className="w-4 h-4" /> No</span>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {review.status === 'pending' && (
+                                  <div className="mt-5 flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                    <button
+                                      onClick={() => handleStatusUpdate(review.id, 'approved')}
+                                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
+                                    >
+                                      Approve
+                                    </button>
+                                    <button
+                                      onClick={() => handleStatusUpdate(review.id, 'rejected')}
+                                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors"
+                                    >
+                                      Reject
+                                    </button>
+                                  </div>
+                                )}
+                              </motion.div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </section>
+              );
+            })}
           </div>
         )}
       </div>
