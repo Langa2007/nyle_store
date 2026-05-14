@@ -13,7 +13,7 @@ export default function CookieBanner() {
   useEffect(() => {
     const consent = localStorage.getItem('cookie-consent');
     if (!consent) {
-      const timer = setTimeout(() => setIsVisible(true), 2000);
+      const timer = setTimeout(() => setIsVisible(true), 1500);
       return () => clearTimeout(timer);
     }
   }, []);
@@ -30,7 +30,6 @@ export default function CookieBanner() {
     localStorage.setItem('cookie-consent', 'true');
     localStorage.setItem('cookie-preferences', JSON.stringify(preferences));
     
-    // Connect to backend if user is logged in
     if (session?.user?.id) {
       try {
         await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://nyle-store.onrender.com'}/api/user/cookie-preferences`, {
@@ -57,62 +56,45 @@ export default function CookieBanner() {
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 100, opacity: 0 }}
-        className="fixed bottom-6 left-6 right-6 z-[200] md:left-auto md:max-w-md"
+        initial={{ y: 100 }}
+        animate={{ y: 0 }}
+        exit={{ y: 100 }}
+        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+        className="fixed bottom-0 left-0 right-0 z-[1000] border-t border-gray-200"
       >
-        <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-blue-100 p-6 relative overflow-hidden">
-          {/* Decorative background element */}
-          <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full -mr-12 -mt-12 opacity-50" />
-          
-          <div className="flex items-start gap-4 relative z-10">
-            <div className="p-3 bg-blue-600 rounded-xl text-white shadow-lg shadow-blue-200">
-              <Cookie size={24} />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-bold text-gray-900">Cookie Settings</h3>
-                <button 
-                  onClick={() => setIsVisible(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  <X size={18} />
-                </button>
+        <div className="bg-white/95 backdrop-blur-md shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] py-4 px-6 md:py-3">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-600 rounded-lg text-white hidden sm:block">
+                <Cookie size={18} />
               </div>
-              <p className="text-sm text-gray-600 leading-relaxed mb-6">
-                We use cookies to personalize content, analyze traffic, and provide a better experience. Choose how you want to interact with Nyle Store.
+              <p className="text-xs md:text-sm text-gray-700 font-medium leading-tight text-center md:text-left max-w-2xl">
+                We use cookies to personalize content, analyze traffic, and improve your experience. 
+                <Link href="/others/cookies" className="text-blue-600 hover:underline ml-1">Learn more</Link>
               </p>
-              
-              <div className="flex flex-col gap-3">
-                <button
-                  onClick={handleAcceptAll}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-md active:scale-[0.98]"
-                >
-                  <Check size={18} />
-                  Accept All
-                </button>
-                <div className="flex gap-2">
-                  <Link 
-                    href="/others/cookies"
-                    className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold text-center text-sm transition-colors border border-gray-200 flex items-center justify-center gap-2"
-                  >
-                    <Settings size={16} />
-                    Customize
-                  </Link>
-                  <button
-                    onClick={handleDecline}
-                    className="px-6 bg-white hover:bg-red-50 text-red-600 py-3 rounded-xl font-semibold text-sm transition-colors border border-red-100"
-                  >
-                    Decline
-                  </button>
-                </div>
-              </div>
             </div>
-          </div>
-          
-          <div className="mt-4 pt-4 border-t border-gray-100 text-[10px] text-gray-400 text-center">
-            View our <Link href="/auth/privacy" className="text-blue-500 hover:underline">Privacy Policy</Link> for more details.
+            
+            <div className="flex items-center gap-2 w-full md:w-auto">
+              <button
+                onClick={handleAcceptAll}
+                className="flex-1 md:flex-none whitespace-nowrap bg-gray-900 hover:bg-black text-white px-5 py-2 rounded-lg font-bold text-xs md:text-sm transition-all shadow-sm active:scale-95"
+              >
+                Accept All
+              </button>
+              <Link 
+                href="/others/cookies"
+                className="flex-1 md:flex-none whitespace-nowrap bg-white hover:bg-gray-50 text-gray-700 px-5 py-2 rounded-lg font-bold text-xs md:text-sm transition-colors border border-gray-200 text-center active:scale-95"
+              >
+                Customize
+              </Link>
+              <button
+                onClick={handleDecline}
+                className="flex-none text-gray-400 hover:text-red-500 p-2 transition-colors ml-1"
+                title="Decline all"
+              >
+                <X size={20} />
+              </button>
+            </div>
           </div>
         </div>
       </motion.div>
