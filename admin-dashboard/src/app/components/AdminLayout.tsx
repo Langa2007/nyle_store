@@ -15,7 +15,6 @@ import {
   LogOut,
   Users,
   Mail,
-  BarChart3,
   Shield,
   Bell,
   Search,
@@ -98,12 +97,6 @@ export default function AdminLayout({
       href: "/dashboard/newsletter",
       icon: <Mail size={18} />,
       badge: "New"
-    },
-    {
-      name: "Analytics",
-      href: "/dashboard/analytics",
-      icon: <BarChart3 size={18} />,
-      badge: null
     },
     {
       name: "User Reports",

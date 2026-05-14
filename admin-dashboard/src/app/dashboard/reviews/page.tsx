@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { CheckCircle, XCircle, Search, MessageSquare, Loader2, Star } from "lucide-react";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 interface Review {
   id: number | string;
@@ -32,11 +33,7 @@ export default function ReviewsPage() {
   const fetchReviews = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/api/reviews/admin/list`, {
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("adminAccessToken")}`
-        }
-      });
+      const res = await fetchWithAuth(`${API_URL}/api/reviews/admin/list`);
       if (res.ok) {
         const data = await res.json();
         setReviews(data);
@@ -53,11 +50,10 @@ export default function ReviewsPage() {
 
   const handleStatusUpdate = async (id: number | string, status: 'approved' | 'rejected') => {
     try {
-      const res = await fetch(`${API_URL}/api/reviews/admin/${id}/status`, {
+      const res = await fetchWithAuth(`${API_URL}/api/reviews/admin/${id}/status`, {
         method: "PATCH",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("adminAccessToken")}`
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({ status })
       });

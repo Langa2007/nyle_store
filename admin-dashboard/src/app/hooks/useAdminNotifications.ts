@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAdminAuth } from './useAdminAuth';
+import { fetchWithAuth } from '@/utils/fetchWithAuth';
 
 interface NotificationSummary {
     total: number;
@@ -31,20 +32,14 @@ export function useAdminNotifications(pollingIntervalMs = 60000) {
     const [error, setError] = useState<string | null>(null);
 
     const fetchNotifications = useCallback(async () => {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('adminAccessToken') : null;
-
-        if (!isLoggedIn || !token) {
+        if (!isLoggedIn) {
             setLoading(false);
             return;
         }
 
         try {
             setError(null);
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://nyle-store.onrender.com'}/api/admin/notifications/summary`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const res = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL || 'https://nyle-store.onrender.com'}/api/admin/notifications/summary`);
 
             if (!res.ok) {
                 throw new Error('Failed to fetch admin notifications');

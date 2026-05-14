@@ -22,7 +22,6 @@ import {
   ChevronRight,
   Bell,
   Search,
-  BarChart3,
   Shield,
   User,
   HelpCircle,
@@ -154,12 +153,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       href: "/dashboard/newsletter",
       icon: <Mail size={18} />,
       badge: "New"
-    },
-    {
-      name: "Analytics",
-      href: "/dashboard/analytics",
-      icon: <BarChart3 size={18} />,
-      badge: null
     },
     {
       name: "User Reports",

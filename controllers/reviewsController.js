@@ -33,8 +33,13 @@ export const submitReview = async (req, res) => {
       rating: ratingInt
     };
 
+    const adminEmailsQ = await pool.query(
+      "SELECT email FROM users WHERE is_admin = true AND email IS NOT NULL"
+    );
+    const adminEmails = adminEmailsQ.rows.map((admin) => admin.email);
+
     Promise.allSettled([
-      sendReviewSubmittedAdminEmail(review),
+      sendReviewSubmittedAdminEmail(review, adminEmails),
       sendReviewReceiptEmail(reviewerEmail, review)
     ]).then((results) => {
       results.forEach((result, index) => {

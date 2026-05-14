@@ -15,7 +15,6 @@ import {
   ChevronRight,
   Bell,
   Search,
-  BarChart3,
   Shield
 } from "lucide-react"
 import { useState } from "react"
@@ -27,7 +26,6 @@ const navItems = [
   { href: "/dashboard/orders", label: "Orders", icon: ShoppingCart, badge: "3+" },
   { href: "/dashboard/categories", label: "Categories", icon: FolderTree, badge: null },
   { href: "/dashboard/newsletter", label: "Newsletter", icon: Mail, badge: "New" },
-  { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3, badge: null },
   { href: "/dashboard/settings", label: "Settings", icon: Settings, badge: null },
 ]
 

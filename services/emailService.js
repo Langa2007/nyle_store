@@ -3,6 +3,10 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+function getResendEmailId(resp) {
+  return resp?.data?.id || resp?.id || "unknown";
+}
+
 function escapeHtml(value = "") {
   return String(value)
     .replace(/&/g, "&amp;")
@@ -32,7 +36,7 @@ export async function sendVerificationCodeEmail(toEmail, code) {
       subject: "Your Nyle Vendor Verification Code",
       html,
     });
-    console.log(" Verification email sent, id:", resp.id);
+    console.log(" Verification email sent, id:", getResendEmailId(resp));
     return true;
   } catch (err) {
     console.error(" Resend email error:", err);
@@ -93,7 +97,7 @@ export async function sendProductStatusEmail(toEmail, product, status, reason = 
       subject,
       html,
     });
-    console.log(` Product ${status} email sent to ${toEmail}, id:`, resp.id);
+    console.log(` Product ${status} email sent to ${toEmail}, id:`, getResendEmailId(resp));
     return true;
   } catch (err) {
     console.error(` Resend ${status} email error:`, err);
@@ -149,7 +153,7 @@ export async function sendPartnerApplicationEmail(toEmail, applicationData) {
       subject,
       html,
     });
-    console.log(" Partner application email sent, id:", resp.id);
+    console.log(" Partner application email sent, id:", getResendEmailId(resp));
     return true;
   } catch (err) {
     console.error(" Partner email error:", err);
@@ -216,7 +220,7 @@ export async function sendPartnerStatusEmail(toEmail, applicationData, status) {
       subject,
       html,
     });
-    console.log(` Partner ${status} email sent to ${toEmail}, id:`, resp.id);
+    console.log(` Partner ${status} email sent to ${toEmail}, id:`, getResendEmailId(resp));
     return true;
   } catch (err) {
     console.error(` Partner ${status} email error:`, err);
@@ -257,7 +261,7 @@ export async function sendSupportReceiptEmail(toEmail, issueData) {
       subject,
       html,
     });
-    console.log(" Support receipt email sent, id:", resp.id);
+    console.log(" Support receipt email sent, id:", getResendEmailId(resp));
     return true;
   } catch (err) {
     console.error(" sendSupportReceiptEmail error:", err);
@@ -298,7 +302,7 @@ export async function sendSupportResolutionEmail(toEmail, issueData) {
       subject,
       html,
     });
-    console.log(" Support resolution email sent, id:", resp.id);
+    console.log(" Support resolution email sent, id:", getResendEmailId(resp));
     return true;
   } catch (err) {
     console.error(" sendSupportResolutionEmail error:", err);
@@ -310,10 +314,15 @@ export async function sendSupportResolutionEmail(toEmail, issueData) {
  * Notify the admin team that a store review needs moderation.
  * @param {object} review
  */
-export async function sendReviewSubmittedAdminEmail(review) {
-  const adminEmail = process.env.ADMIN_EMAIL;
-  if (!adminEmail) {
-    console.warn(" ADMIN_EMAIL is not configured; skipping review admin email.");
+export async function sendReviewSubmittedAdminEmail(review, adminRecipients = []) {
+  const adminEmails = [
+    ...adminRecipients,
+    ...(process.env.ADMIN_EMAIL ? process.env.ADMIN_EMAIL.split(",") : [])
+  ].map((email) => email.trim()).filter(Boolean);
+
+  const uniqueAdminEmails = [...new Set(adminEmails)];
+  if (uniqueAdminEmails.length === 0) {
+    console.warn(" No admin email recipients found; skipping review admin email.");
     return false;
   }
 
@@ -347,11 +356,11 @@ export async function sendReviewSubmittedAdminEmail(review) {
   try {
     const resp = await resend.emails.send({
       from: "Nyle Reviews <support@resend.dev>",
-      to: adminEmail,
+      to: uniqueAdminEmails,
       subject: `New Store Review from ${reviewerName}`,
       html,
     });
-    console.log(" Review admin email sent, id:", resp.id);
+    console.log(" Review admin email sent, id:", getResendEmailId(resp));
     return true;
   } catch (err) {
     console.error(" sendReviewSubmittedAdminEmail error:", err);
@@ -383,7 +392,7 @@ export async function sendReviewReceiptEmail(toEmail, review) {
       subject: "Thank you for submitting your review",
       html,
     });
-    console.log(" Review receipt email sent, id:", resp.id);
+    console.log(" Review receipt email sent, id:", getResendEmailId(resp));
     return true;
   } catch (err) {
     console.error(" sendReviewReceiptEmail error:", err);
