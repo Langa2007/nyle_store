@@ -185,34 +185,49 @@ export default function CartPage() {
 
           {/* Order Summary Sidebar */}
           <div className="xl:col-span-4">
-            <div className="bg-slate-900 rounded-[2.5rem] shadow-2xl p-10 text-white sticky top-24 overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-600/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl pointer-events-none" />
+            <div className="bg-white rounded-[2rem] shadow-xl p-8 text-slate-900 sticky top-24 border border-slate-100 overflow-hidden">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-blue-50 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
-                <h2 className="text-2xl font-black mb-10 relative">Order Summary</h2>
+                <h2 className="text-2xl font-black mb-6 relative">Order Summary</h2>
+
+                <div className="mb-6 rounded-3xl bg-blue-50 border border-blue-100 p-4 relative">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-2xl bg-white text-blue-600 flex items-center justify-center shadow-sm">
+                      <FiTruck className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="font-black text-blue-950">
+                        {Number(totals.shipping) === 0 ? "Free shipping unlocked" : "Doorstep delivery ready"}
+                      </p>
+                      <p className="text-sm text-blue-700">
+                        {Number(totals.shipping) === 0 ? "Your bag qualifies for free delivery." : "Free shipping starts at Ksh 5,000."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="space-y-6 mb-10 relative">
                     <div className="flex justify-between items-center">
-                        <span className="text-slate-400 font-medium">Subtotal ({totals.itemCount} items)</span>
-                        <span className="text-xl font-bold italic">Ksh {Number(totals.subtotal).toLocaleString()}</span>
+                        <span className="text-slate-500 font-medium">Subtotal ({totals.itemCount} items)</span>
+                        <span className="text-lg font-bold">Ksh {Number(totals.subtotal).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                        <span className="text-slate-400 font-medium">Shipping Fee</span>
-                        <span className="text-xl font-bold italic text-emerald-400">
+                        <span className="text-slate-500 font-medium">Shipping Fee</span>
+                        <span className="text-lg font-bold text-emerald-600">
                             {Number(totals.shipping) === 0 ? 'FREE' : `Ksh ${Number(totals.shipping).toLocaleString()}`}
                         </span>
                     </div>
                     <div className="flex justify-between items-center">
-                        <span className="text-slate-400 font-medium">VAT (16%)</span>
-                        <span className="text-xl font-bold italic">Ksh {Number(totals.tax).toLocaleString()}</span>
+                        <span className="text-slate-500 font-medium">VAT (16%)</span>
+                        <span className="text-lg font-bold">Ksh {Number(totals.tax).toLocaleString()}</span>
                     </div>
                     
-                    <div className="h-px bg-white/10 my-8" />
+                    <div className="h-px bg-slate-100 my-8" />
                     
                     <div className="flex justify-between items-center">
                         <div>
-                            <span className="text-sm font-black uppercase tracking-widest text-blue-400">Total Amount</span>
-                            <div className="text-4xl font-black tracking-tighter mt-1 italic">
+                            <span className="text-sm font-black uppercase tracking-widest text-blue-600">Total Amount</span>
+                            <div className="text-4xl font-black tracking-tighter mt-1 text-blue-700">
                                 Ksh {Number(totals.total).toLocaleString()}
                             </div>
                         </div>
@@ -223,21 +238,21 @@ export default function CartPage() {
                     <motion.div 
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mb-10 p-6 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-sm"
+                        className="mb-10 p-6 bg-amber-50 border border-amber-100 rounded-3xl"
                     >
-                        <p className="text-blue-200 text-sm font-medium mb-4">
+                        <p className="text-amber-800 text-sm font-medium mb-4">
                             Log in to save your cart and access exclusive member deals.
                         </p>
                         <div className="flex flex-col gap-3">
                             <Link
                                 href="/auth/login?redirect=/checkout"
-                                className="w-full text-center bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-2xl font-bold transition shadow-lg shadow-blue-900/40"
+                                className="w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-2xl font-bold transition shadow-lg shadow-blue-100"
                             >
                                 Login
                             </Link>
                             <Link
                                 href="/auth/register?redirect=/checkout"
-                                className="w-full text-center border border-white/20 text-white hover:bg-white/5 py-3 rounded-2xl font-bold transition"
+                                className="w-full text-center border border-amber-200 text-amber-900 hover:bg-white py-3 rounded-2xl font-bold transition"
                             >
                                 Create Account
                             </Link>
@@ -248,7 +263,7 @@ export default function CartPage() {
                 <div className="space-y-4 relative">
                     <Link
                         href={isLoggedIn ? "/checkout" : "/auth/login?redirect=/checkout"}
-                        className="flex items-center justify-center gap-3 w-full bg-white text-slate-900 py-5 rounded-[1.5rem] font-black text-lg transition hover:bg-blue-50 hover:scale-[1.02] active:scale-[0.98] shadow-xl group"
+                        className="flex items-center justify-center gap-3 w-full bg-blue-600 text-white py-5 rounded-[1.5rem] font-black text-lg transition hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-blue-100 group"
                     >
                         Checkout Now
                         <FiChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -256,18 +271,18 @@ export default function CartPage() {
 
                     <Link
                         href="/"
-                        className="block w-full border border-white/10 hover:bg-white/5 text-white/70 hover:text-white text-center py-4 rounded-2xl font-bold transition"
+                        className="block w-full border border-slate-200 hover:bg-slate-50 text-slate-700 text-center py-4 rounded-2xl font-bold transition"
                     >
                         Add More Items
                     </Link>
                 </div>
 
-                <div className="mt-12 pt-8 border-t border-white/5 opacity-50 relative">
-                    <p className="text-[10px] font-black uppercase tracking-widest mb-4">Secure Checkout Powered By NylePay</p>
+                <div className="mt-10 pt-6 border-t border-slate-100 relative">
+                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-4">Secure Checkout Powered By NylePay</p>
                     <div className="flex flex-wrap gap-3">
-                        <div className="px-3 py-1 bg-white/10 rounded-lg text-[10px] font-bold">VISA</div>
-                        <div className="px-3 py-1 bg-white/10 rounded-lg text-[10px] font-bold">MPESA</div>
-                        <div className="px-3 py-1 bg-white/10 rounded-lg text-[10px] font-bold">MASTERCARD</div>
+                        <div className="px-3 py-1 bg-slate-100 rounded-lg text-[10px] font-bold text-slate-600">VISA</div>
+                        <div className="px-3 py-1 bg-slate-100 rounded-lg text-[10px] font-bold text-slate-600">MPESA</div>
+                        <div className="px-3 py-1 bg-slate-100 rounded-lg text-[10px] font-bold text-slate-600">MASTERCARD</div>
                     </div>
                 </div>
             </div>
