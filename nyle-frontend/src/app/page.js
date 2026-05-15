@@ -418,6 +418,10 @@ function HomeContent() {
     }
   };
 
+  const handleQuickBuyNow = async (product) => {
+    await addToCart(product, 1, { buyNow: true });
+  };
+
   // Handle category click
   const handleCategoryClick = (categoryId) => {
     // If clicking the same category that's already selected, toggle it off (undo)
@@ -969,7 +973,7 @@ function HomeContent() {
                           onClick={async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            addToCart(product, 1, { buyNow: true });
+                            await handleQuickBuyNow(product);
                           }}
                           className="w-full py-3 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-xl font-bold hover:shadow-lg transition transform active:scale-95 flex items-center justify-center space-x-2"
                         >
@@ -1288,6 +1292,29 @@ function HomeContent() {
                             <span>2Y Warranty</span>
                           </div> 
                           */}
+                          </div>
+
+                          <div className="mt-5 grid grid-cols-2 gap-3">
+                            <button
+                              onClick={async (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                await handleQuickAddToCart(product);
+                              }}
+                              className="py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition active:scale-95"
+                            >
+                              Add to Cart
+                            </button>
+                            <button
+                              onClick={async (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                await handleQuickBuyNow(product);
+                              }}
+                              className="py-2.5 border border-blue-600 text-blue-700 rounded-xl font-bold text-sm hover:bg-blue-50 transition active:scale-95"
+                            >
+                              Buy Now
+                            </button>
                           </div>
                         </div>
                       </div>

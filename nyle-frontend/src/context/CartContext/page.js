@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { useSession } from 'next-auth/react';
+import { getSession, useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://nyle-store.onrender.com";
@@ -56,6 +56,20 @@ export function CartProvider({ children }) {
     return null;
   }, [status, session]);
 
+  const resolveUserId = useCallback(async () => {
+    const currentUserId = getUserId();
+    if (currentUserId) return currentUserId;
+
+    if (status === "loading") {
+      const liveSession = await getSession();
+      if (liveSession?.user?.id) {
+        return String(liveSession.user.id);
+      }
+    }
+
+    return null;
+  }, [getUserId, status]);
+
   // Fetch cart from backend
   const fetchCart = useCallback(async () => {
     try {
@@ -86,7 +100,7 @@ export function CartProvider({ children }) {
 
   // Add item to cart
   const addToCart = async (product, quantity = 1, options = {}) => {
-    const userId = getUserId();
+    const userId = await resolveUserId();
     const sessionId = userId ? null : getSessionId();
 
     // If user is not logged in, handle guest cart

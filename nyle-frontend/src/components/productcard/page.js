@@ -7,23 +7,31 @@ import { useCart } from "@/context/CartContext/page";
 const ProductCard = ({ product, currency, convertPrice }) => {
   const { addToCart } = useCart();
 
+  const showAddedNotification = (message = "Added to cart!") => {
+    const notification = document.createElement("div");
+    notification.className = "fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-in";
+    notification.innerHTML = `
+      <div class="flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        ${message}
+      </div>
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+  };
+
   const handleAddToCart = async () => {
     const result = await addToCart(product, 1);
 
     if (result.success && !result.requiresAuth) {
-      const notification = document.createElement("div");
-      notification.className = "fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-in";
-      notification.innerHTML = `
-        <div class="flex items-center">
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-          Added to cart!
-        </div>
-      `;
-      document.body.appendChild(notification);
-      setTimeout(() => notification.remove(), 3000);
+      showAddedNotification();
     }
+  };
+
+  const handleBuyNow = async () => {
+    await addToCart(product, 1, { buyNow: true });
   };
 
   return (
@@ -94,19 +102,19 @@ const ProductCard = ({ product, currency, convertPrice }) => {
         </div>
       </Link>
 
-      <div className="mt-4 flex gap-2">
+      <div className="mt-4 grid grid-cols-2 gap-2">
         <button
           onClick={handleAddToCart}
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium transition-colors text-sm"
+          className="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium transition-colors text-sm"
         >
           Add to Cart
         </button>
         <button
           type="button"
-          aria-label="More product actions"
-          className="px-3 border border-gray-300 hover:border-blue-600 hover:text-blue-600 rounded-lg transition-colors"
+          onClick={handleBuyNow}
+          className="border border-blue-600 text-blue-700 hover:bg-blue-50 py-2 rounded-lg font-medium transition-colors text-sm"
         >
-          ...
+          Buy Now
         </button>
       </div>
     </div>
