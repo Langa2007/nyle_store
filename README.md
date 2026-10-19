@@ -117,6 +117,30 @@ At minimum, local setup typically requires environment variables for:
 
 Review the app-specific configuration in each project before running in a new environment.
 
+## Database synchronization
+
+`sync-db.js` copies the complete schema and data from one PostgreSQL database to the
+other. It defaults to Neon → local, which is useful for refreshing a local
+development database:
+
+```bash
+node sync-db.js
+```
+
+The local URL may use the JDBC form (`jdbc:postgresql://...`); the sync script
+converts it for `pg_dump` and `psql` and uses
+`DATABASE_URL_LOCAL_USERNAME`/`DATABASE_URL_LOCAL_PASSWORD` when the URL has no
+credentials. To copy in the other direction, run:
+
+```bash
+node sync-db.js --from=local-to-neon
+```
+
+The restore replaces matching objects and data in the target database. The
+script intentionally requires an explicit direction rather than guessing which
+database changed; reliable automatic conflict detection needs database change
+tracking or an audit/CDC system.
+
 ## Operational Areas Covered by the Admin Surface
 
 The admin dashboard is intended to give internal teams direct control over:
