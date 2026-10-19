@@ -95,7 +95,7 @@ app.use(
 );
 
 // Enhanced preflight handler
-app.options("*", (req, res) => {
+app.options(/.*/, (req, res) => {
   const origin = req.headers.origin;
 
   if (origin && allowedOrigins.includes(origin)) {
